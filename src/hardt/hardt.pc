@@ -1,0 +1,12 @@
+prefix=/usr/local
+exec_prefix=/usr/local
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: Hardt
+Description: 
+Version: 
+
+Requires:
+Libs: -L${libdir} -lhardt
+Cflags: -I${includedir}
