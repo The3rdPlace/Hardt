@@ -1,1 +1,0 @@
-clang++      CMakeFiles/dspcmd.dir/dspcmd.cpp.o  -o dspcmd -Wl,-rpath,/home/developer/Git/Hardt/src/hardt -rdynamic ../hardt/libhardt.so -lm 
