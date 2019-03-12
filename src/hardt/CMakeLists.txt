@@ -4,7 +4,7 @@ target_link_libraries(hardt m)
 target_sources(hardt
     PRIVATE
         hardt.cpp
-        samplegenerator.cpp
+        generator.cpp
 )
 
 set_target_properties(hardt PROPERTIES PUBLIC_HEADER include/hardtapi.h)

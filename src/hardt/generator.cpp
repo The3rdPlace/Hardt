@@ -1,8 +1,10 @@
-#include <samplegenerator.h>
+#include <generator.h>
+//#include <stdio.h>
+
 
 using namespace Hardt;
 
-std::complex<double>* SampleGenerator::GetSamples(int sampleFreq, int duration, int amplitude, int* frequencies, int num_frequencies)
+std::complex<double>* GetSamples(int sampleFreq, int duration, int amplitude, int* frequencies, int num_frequencies)
 {
     int length = sampleFreq * duration;
 
@@ -12,12 +14,12 @@ std::complex<double>* SampleGenerator::GetSamples(int sampleFreq, int duration, 
     {
         for ( int i = 0; i < length; i++ )
         {
-            //data[i] = (0.0, 0.0);
+            data[i] = 0.0;
 
             // sum several known sinusoids into data[i]
             for ( int j = 0; j < num_frequencies; j++ )
             {
-                data[i] += (amplitude * sin(2 * M_PI * frequencies[j] * i / sampleFreq), 0);
+                data[i] += (amplitude * sin(2 * M_PI * frequencies[j] * i / sampleFreq));
             }
         }
     }
