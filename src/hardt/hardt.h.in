@@ -2,7 +2,14 @@
 #define MINORVERSION @Hardt_VERSION_MINOR@
 #define BUILDNO @Hardt_VERSION_BUILD@
 
-#define HARDT_VERSION MAJORVERSION + "." + MINORVERSION + "." + BUILDNO
+#include <sstream>
+
+std::string getversion()
+{
+    std::stringstream ss;
+    ss << "version " << MAJORVERSION << "." << MINORVERSION << "." << BUILDNO;
+    return ss.str();
+}
 
 #ifndef __HARDT_H
 #define __HARDT_H
