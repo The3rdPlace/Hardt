@@ -1,10 +1,8 @@
 #include <generator.h>
-//#include <stdio.h>
+#include <stdio.h>
+#include <math.h>
 
-
-using namespace Hardt;
-
-std::complex<double>* GetSamples(int sampleFreq, int duration, int amplitude, int* frequencies, int num_frequencies)
+std::complex<double>* Generator::GetSamples(int sampleFreq, int duration, int amplitude, int* frequencies, int num_frequencies)
 {
     int length = sampleFreq * duration;
 
