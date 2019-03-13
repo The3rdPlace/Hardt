@@ -1,0 +1,46 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/developer/Git/Hardt/src/hardt/hardt.h
+sstream
+-
+
+/home/developer/Git/Hardt/src/hardt/include/generator.h
+complex
+-
+
+/home/developer/Git/Hardt/src/hardt/include/hardtapi.h
+../hardt.h
+/home/developer/Git/Hardt/src/hardt/hardt.h
+generator.h
+/home/developer/Git/Hardt/src/hardt/include/generator.h
+
+/home/developer/Git/Hardt/src/test/generator_test.cpp
+stdio.h
+-
+iostream
+-
+
+/home/developer/Git/Hardt/src/test/test.cpp
+stdio.h
+-
+iostream
+-
+vector
+-
+exception
+-
+../hardt/include/hardtapi.h
+/home/developer/Git/Hardt/src/hardt/include/hardtapi.h
+test.h
+/home/developer/Git/Hardt/src/test/test.h
+
+/home/developer/Git/Hardt/src/test/test.h
+generator_test.cpp
+/home/developer/Git/Hardt/src/test/generator_test.cpp
+
