@@ -30,3 +30,15 @@
 *.exe
 *.out
 *.app
+dspcmd
+hardt_test
+
+.idea
+Makefile
+CMakeFiles
+CMakeCache.txt
+
+cmake_install.cmake
+src/.DS_Store
+src/hardt/hardt.h
+src/hardt/hardt.pc
