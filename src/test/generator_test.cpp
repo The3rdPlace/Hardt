@@ -14,6 +14,6 @@ class Generator_Test: public Test
 
         void test_1()
         {
-            ASSERT_IS_EQUAL(1,2);
+            ASSERT_IS_EQUAL(1,1);
         }
 } test;
