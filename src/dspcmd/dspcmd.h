@@ -2,7 +2,7 @@
 #define __DSPCMD_H
 
 #include <stdio.h>
-#include <iostream>
+//#include <iostream.h>
 
 template <typename T>
 void print_array(T* array, int sizeOfArray)

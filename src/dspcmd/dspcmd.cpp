@@ -1,4 +1,4 @@
-#include "dspcmd.h"
+//#include "dspcmd.h"
 #include <stdio.h>
 #include <iostream>
 #include <string.h>
@@ -13,11 +13,21 @@
 
 #include "portaudio.h"
 
+// condition_variable::wait (with predicate)
+#include <iostream>           // std::cout
+#include <thread>             // std::thread, std::this_thread::yield
+#include <mutex>              // std::mutex, std::unique_lock
+#include <condition_variable> // std::condition_variable
+
 struct USERDATA
 {
 	int a;
 	int b;
 };
+
+std::mutex mtx;
+std::condition_variable cv;
+std::condition_variable cv2;
 
 #define FRAME_SIZE 1024
 #define NUMBER_OF_BUFFERS 4
@@ -38,10 +48,31 @@ void writeToNw();
 
 
 
+/*void consume (int n) {
+  for (int i=0; i<n; ++i) {
+    std::unique_lock<std::mutex> lck(mtx);
+    cv.wait(lck,shipment_available);
+    // consume:
+    std::cout << cargo << '\n';
+    cargo=0;
+  }
+}*/
+
+bool shipment_available() {return wrloc != rdloc;}
+
+
 static int s_interrupted = 0;
 static void s_signal_handler (int signal_value)
 {
     s_interrupted = 1;
+    std::unique_lock<std::mutex> lck(mtx);
+    std::cout << "outer handler locked" << std::endl;
+    cv2.notify_one();
+    std::cout << "outer handler cv2.notify_one()" << std::endl;
+}
+
+bool is_interrupted() {
+    return s_interrupted != 0;
 }
 
 static void s_catch_signals (void)
@@ -191,9 +222,23 @@ int main(int argc, char**argv)
         return 5;
     }
 
+
+    std::thread consumer_thread (writeToNw);
+
+    // produce 10 items when needed:
+    /*
+    for (int i=0; i<10; ++i) {
+        while (shipment_available()) std::this_thread::yield();
+        std::unique_lock<std::mutex> lck(mtx);
+        cargo = i+1;
+        cv.notify_one();
+    }
+    */
+
+    int outerExecs = 0;
     while(1)
     {
-        try
+        /*try
         {
             //std::cout << "wr\n";
             writeToNw();
@@ -201,13 +246,32 @@ int main(int argc, char**argv)
         catch( std::exception )
         {
             std::cout << "exception\n";
-        }
+        }*/
+
+
+        //std::this_thread::yield();
+
+        //while (!shipment_available()) std::this_thread::yield();
+
+        std::cout << "before outer lock" << std::endl;
+        std::unique_lock<std::mutex> lck(mtx);
+        std::cout << "before outer wait" << std::endl;
+        cv2.wait(lck,is_interrupted);
+        std::cout << "after outer wait" << std::endl;
 
         if (s_interrupted) {
                     std::cout << "Stopping" << std::endl;
+                    //consumer_thread.terminate();
                     break;
                     }
+
+        outerExecs++;
+        std::cout << "outer yielding" << std::endl;
+        std::this_thread::yield();
+        //std::cout << "spin" << std::endl;
     }
+
+    consumer_thread.join();
 
 	/*char ch;
 	do
@@ -235,7 +299,7 @@ int main(int argc, char**argv)
 	std::cout << "Frames read: " << frames_in << std::endl;
 	std::cout << "Frames transmitted: " << frames_out << std::endl;
 	std::cout << "Latency: " << latencyAvail/1000 << std::endl;
-
+    std::cout << "Outer latency: " << outerExecs << std::endl;
 	return 0;
 }
 
@@ -249,7 +313,7 @@ static int callback( const void *inputBuffer, void *outputBuffer,
     //paTestData *data = (paTestData*)userData;
     static unsigned int rotor = 0;
 
-
+    std::cout << "data" << std::endl;
     memcpy((void*) &buffer[wrloc], inputBuffer, framesPerBuffer * sizeof(paFloat32));
     rotor = (rotor + 1) & 0x3;
     wrloc = FRAME_SIZE * rotor;
@@ -261,36 +325,60 @@ static int callback( const void *inputBuffer, void *outputBuffer,
         std::cout << "Dropped frame!" << std::endl;
     }
 
+    std::unique_lock<std::mutex> lck(mtx);
+    std::cout << "locked" << std::endl;
+    cv.notify_one();
+    std::cout << "cv.notify_one()" << std::endl;
+
     return 0;
 }
 
 
 void writeToNw()
 {
-    static unsigned int rotor = 0;
-    static unsigned int latency = 0;
+    while(!s_interrupted){
+        static unsigned int rotor = 0;
+        static unsigned int latency = 0;
 
-    if( wrloc != rdloc )
-    {
-        // Transfer frames to network
+        std::cout << "before lock" << std::endl;
+        std::unique_lock<std::mutex> lck(mtx);
+        std::cout << "before wait" << std::endl;
+        cv.wait(lck,shipment_available);
+        std::cout << "after wait" << std::endl;
 
-        rotor = (rotor + 1) & 0x3;
-        rdloc = FRAME_SIZE * rotor;
+        /*if( s_interrupted ) {
+            std::cout << "IS TERMINATED" << std::endl;
+            //std::terminate();
 
-        frames_out++;
+        }*/
 
-        if( latencyAvail == -1 )
-            latencyAvail = latency;
-        else if( latency > latencyAvail )
-            latencyAvail++;
-        else if( latency < latencyAvail )
-            latencyAvail--;
-        //std::cout << latency << std::endl;
-        latency = 0;
+        if( wrloc != rdloc )
+        {
+            // Transfer frames to network
+
+            std::cout << "read " << frames_out << std::endl;
+
+            rotor = (rotor + 1) & 0x3;
+            rdloc = FRAME_SIZE * rotor;
+
+            frames_out++;
+
+            if( latencyAvail == -1 )
+                latencyAvail = latency;
+            else if( latency > latencyAvail )
+                latencyAvail++;
+            else if( latency < latencyAvail )
+                latencyAvail--;
+            //std::cout << latency << std::endl;
+            latency = 0;
+        }
+        else
+        {
+            std::cout << "waste" << std::endl;
+            latency++;
+            //std::cout << "skip" << std::endl;
+        }
     }
-    else
-    {
-        latency++;
-        //std::cout << "skip" << std::endl;
-    }
+
+    std::cout << "writeToNw GOODBYE" << std::endl;
 }
