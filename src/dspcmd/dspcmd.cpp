@@ -8,6 +8,25 @@
 #include <string>
 #include <unistd.h>
 
+
+// SERVER
+//#include <unistd.h>
+//#include <stdio.h>
+#include <sys/socket.h>
+#include <stdlib.h>
+#include <netinet/in.h>
+//#include <string.h>
+#define PORT 8080
+
+// CLIENT
+//#include <sys/socket.h>
+//#include <stdlib.h>
+//#include <netinet/in.h>
+//#include <string.h>
+#include <arpa/inet.h>
+
+#include <fstream>
+
 #include "../hardt/include/hardtapi.h"
 #include "dspcmd.h"
 
@@ -44,7 +63,7 @@ static int callback( const void *inputBuffer, void *outputBuffer,
                            const PaStreamCallbackTimeInfo* timeInfo,
                            PaStreamCallbackFlags statusFlags,
                            void *userData );
-void writeToNw();
+void writeToNw(int new_socket);
 
 
 
@@ -87,7 +106,119 @@ static void s_catch_signals (void)
 
 int main(int argc, char**argv)
 {
+    int server_fd, new_socket, valread;
+    struct sockaddr_in address;
+    int opt = 1;
+    int addrlen = sizeof(address);
+    char buffer[1024] = {0};
+    char hello[] = "Hello from server";
+
+    s_catch_signals();
+
+    std::cout << argv[1] << std::endl;
+    if( argc == 2 && strncmp(argv[1], "c", 1) == 0 ) {
+        //struct sockaddr_in address;
+        int sock = 0, valread;
+        struct sockaddr_in serv_addr;
+        //char *hello = "Hello from client";
+        char buffer[1024] = {0};
+        std::cout << "client" << std::endl;
+
+
+        if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+        {
+            printf("\n Socket creation error \n");
+            return -1;
+        }
+
+        memset(&serv_addr, '0', sizeof(serv_addr));
+
+        serv_addr.sin_family = AF_INET;
+        serv_addr.sin_port = htons(PORT);
+
+        // Convert IPv4 and IPv6 addresses from text to binary form
+        if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0)
+        {
+            printf("\nInvalid address/ Address not supported \n");
+            return -1;
+        }
+
+        if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+        {
+            printf("\nConnection Failed \n");
+            return -1;
+        }
+
+
+        std::ofstream myfile;
+        myfile.open ("data.raw", std::ios::out | std::ios::binary | std::ios::trunc);
+        //myfile << "Writing this to a file.\n";
+        //myfile.close();
+
+        do
+        {
+            valread = read( sock , buffer, FRAME_SIZE);
+            //printf("%s\n",buffer );
+            std::cout << "valread: " << valread << std::endl;
+            myfile.write(buffer, valread);
+        }
+        while( valread > -1 && s_interrupted == 0);
+        close(sock);
+        myfile.close();
+
+        return 0;
+    }
+
+
+
+    // Creating socket file descriptor
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
+    {
+        perror("socket failed");
+        exit(EXIT_FAILURE);
+    }
+
+    // Forcefully attaching socket to the port 8080
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
+                                                  &opt, sizeof(opt)))
+    {
+        perror("setsockopt");
+        exit(EXIT_FAILURE);
+    }
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons( PORT );
+
+    // Forcefully attaching socket to the port 8080
+    if (bind(server_fd, (struct sockaddr *)&address,
+                                 sizeof(address))<0)
+    {
+        perror("bind failed");
+        exit(EXIT_FAILURE);
+    }
+    if (listen(server_fd, 3) < 0)
+    {
+        perror("listen");
+        exit(EXIT_FAILURE);
+    }
+    if ((new_socket = accept(server_fd, (struct sockaddr *)&address,
+                       (socklen_t*)&addrlen))<0)
+    {
+        perror("accept");
+        exit(EXIT_FAILURE);
+    }
+
+
+
+    //send(new_socket , hello , strlen(hello) , 0 );
+    //printf("Hello message sent\n");
+    //close(new_socket);
+
 	std::cout << "dspcmd: using Hardt " + getversion() << "\n" ;
+    //return 0;
+
+
+
 
     /*Generator* g = new Generator();
 
@@ -100,7 +231,7 @@ int main(int argc, char**argv)
 
 
 
-    s_catch_signals();
+
 
     // CLOSE STDERR
     fprintf(stderr, "This will go to the terminal.\n");
@@ -223,7 +354,7 @@ int main(int argc, char**argv)
     }
 
 
-    std::thread consumer_thread (writeToNw);
+    std::thread consumer_thread (writeToNw, new_socket);
 
     // produce 10 items when needed:
     /*
@@ -334,8 +465,9 @@ static int callback( const void *inputBuffer, void *outputBuffer,
 }
 
 
-void writeToNw()
+void writeToNw(int new_socket)
 {
+    std::cout << "writeToNew(" << new_socket << ")" << std::endl;
     while(!s_interrupted){
         static unsigned int rotor = 0;
         static unsigned int latency = 0;
@@ -355,6 +487,10 @@ void writeToNw()
         if( wrloc != rdloc )
         {
             // Transfer frames to network
+            //memcpy((void*) &buffer[wrloc], inputBuffer, framesPerBuffer * sizeof(paFloat32));
+            send(new_socket, (void*) &buffer[rdloc], FRAME_SIZE * sizeof(paFloat32), 0 );
+
+
 
             std::cout << "read " << frames_out << std::endl;
 
