@@ -291,7 +291,7 @@ int main(int argc, char**argv)
             PaStreamParameters testParameters;
             testParameters.device = i;
             testParameters.channelCount = 1;
-            testParameters.sampleFormat = paFloat32;
+            testParameters.sampleFormat = paInt16;
             testParameters.suggestedLatency = Pa_GetDeviceInfo(i)->defaultLowInputLatency ;
             testParameters.hostApiSpecificStreamInfo = NULL; //See you specific host's API docs for info on using this field
 
@@ -319,7 +319,7 @@ int main(int argc, char**argv)
     PaStreamParameters inputParameters;
     inputParameters.device = device;
     inputParameters.channelCount = 1;
-    inputParameters.sampleFormat = paFloat32;
+    inputParameters.sampleFormat = paInt16;
     inputParameters.suggestedLatency = Pa_GetDeviceInfo(device)->defaultLowInputLatency ;
     inputParameters.hostApiSpecificStreamInfo = NULL; //See you specific host's API docs for info on using this field
 
