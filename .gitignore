@@ -34,8 +34,8 @@ dspcmd
 hardt_test
 
 .idea
-Makefile
-CMakeFiles
+CMakeFiles/
+CMakeFiles/*
 CMakeCache.txt
 
 cmake_install.cmake

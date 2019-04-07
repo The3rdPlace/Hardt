@@ -1,1 +1,0 @@
-clang++      CMakeFiles/abc.dir/test.cpp.o  -o abc -Wl,-rpath,/home/developer/Git/Hardt/src/hardt -rdynamic ../hardt/libhardt.so -lm 
