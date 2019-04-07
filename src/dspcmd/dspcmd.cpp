@@ -168,9 +168,7 @@ int main(int argc, char**argv)
 
         return 0;
     }
-
-
-
+//include_directories("${PROJECT_BINARY_DIR}/src/hardt")
     // Creating socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {

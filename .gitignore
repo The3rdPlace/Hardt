@@ -42,3 +42,5 @@ cmake_install.cmake
 src/.DS_Store
 src/hardt/hardt.h
 src/hardt/hardt.pc
+
+build

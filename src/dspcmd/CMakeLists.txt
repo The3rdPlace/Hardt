@@ -1,5 +1,5 @@
-#include_directories ("${PROJECT_SOURCE_DIR}/")
-#add_subdirectory (MathFunctions)
+include_directories("${PROJECT_BINARY_DIR}/src/hardt")
+include_directories ("${PROJECT_SOURCE_DIR}")
 
 # add the executable
 add_executable (dspcmd dspcmd.cpp)
