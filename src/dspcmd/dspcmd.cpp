@@ -113,6 +113,90 @@ int main(int argc, char**argv)
     char buffer[1024] = {0};
     char hello[] = "Hello from server";
 
+
+
+    // CLOSE STDERR
+    fprintf(stderr, "stderr is being redirected to dspcmd.err\n");
+    //Save position of current standard output
+    fpos_t pos;
+    fgetpos(stderr, &pos);
+    int fd = dup(fileno(stderr));
+    freopen("dspcmd.err", "w", stderr);
+
+
+    if( argc == 2 && strncmp(argv[1], "d", 1) == 0 ) {
+
+        PaError err = Pa_Initialize();
+    	if( err != paNoError )
+    	{
+    		printf("Initialization error\n");
+    		return 1;
+    	}
+
+
+    	int numDevices;
+        numDevices = Pa_GetDeviceCount();
+        if( numDevices < 0 )
+        {
+            printf("No devices\n");
+            return 2;
+        }
+        printf("Number of devices: %d\n", numDevices);
+
+        PaDeviceIndex x = Pa_GetDefaultInputDevice ();
+        std::cout << "Default device is: " << x << std::endl;
+
+
+        const   PaDeviceInfo *deviceInfo;
+        for( int i=0; i<numDevices; i++ )
+        {
+            deviceInfo = Pa_GetDeviceInfo(i);
+            double desiredSampleRate;
+            PaStreamParameters testParameters;
+            testParameters.device = i;
+            testParameters.channelCount = 1;
+            testParameters.sampleFormat = paInt16;
+            testParameters.suggestedLatency = Pa_GetDeviceInfo(i)->defaultLowInputLatency ;
+            testParameters.hostApiSpecificStreamInfo = NULL; //See you specific host's API docs for info on using this field
+
+            std::cout << "==========================================" << std::endl;
+            std::cout << "Device: " << i << " = " << deviceInfo->name << std::endl;
+            std::cout << "Input: " << deviceInfo->maxInputChannels << " channels" << std::endl;
+            std::cout << "Output: " << deviceInfo->maxOutputChannels << " channels" << std::endl;
+
+            int rates[] = { 8000, 11025, 22050, 32000, 44100, 48000 };
+            bool gotOne = false;
+            for( int j = 0; j < 6; j++)
+            {
+                PaError err;
+                err = Pa_IsFormatSupported( &testParameters, NULL, rates[j] );
+                if( err == paFormatIsSupported )
+                {
+                   std::cout << (j > 0 ? ", " : "") << rates[j];
+                   gotOne = true;
+                }
+            }
+            if( !gotOne )
+            {
+                std::cout << "(no supported rates)";
+            }
+            std::cout << std::endl;
+        }
+
+
+        err = Pa_Terminate();
+        if ( err != paNoError )
+        {
+            printf("Termination error\n");
+            return 3;
+        }
+
+
+        return 0;
+
+    }
+
+
     s_catch_signals();
 
     std::cout << argv[1] << std::endl;
@@ -168,7 +252,7 @@ int main(int argc, char**argv)
 
         return 0;
     }
-//include_directories("${PROJECT_BINARY_DIR}/src/hardt")
+
     // Creating socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
@@ -231,13 +315,7 @@ int main(int argc, char**argv)
 
 
 
-    // CLOSE STDERR
-    fprintf(stderr, "This will go to the terminal.\n");
-    //Save position of current standard output
-    fpos_t pos;
-    fgetpos(stderr, &pos);
-    int fd = dup(fileno(stderr));
-    freopen("/tmp/somefile.txt", "w", stderr);
+
 
     fprintf(stderr, "This will go to the file /tmp/somefile.txt.\n");
     //Flush stdout so any buffered messages are delivered
@@ -251,14 +329,14 @@ int main(int argc, char**argv)
 	}
 
 
-    fflush(stderr);
+    /*fflush(stderr);
     //Close file and restore standard output to stdout - which should be the terminal
     dup2(fd, fileno(stderr));
     close(fd);
     clearerr(stderr);
     fsetpos(stderr, &pos);
     fprintf(stderr, "This will go to the terminal again.\n");
-    fflush(stderr);
+    fflush(stderr);*/
 
     // BACK AGAIN
 
@@ -266,51 +344,6 @@ int main(int argc, char**argv)
 
     std::cout << "INIT complete" << std::endl;
 
-	int numDevices;
-	numDevices = Pa_GetDeviceCount();
-	if( numDevices < 0 )
-	{
-		printf("No devices\n");
-		return 2;
-	}
-	printf("Number of devices: %d\n", numDevices);
-
-    PaDeviceIndex x = Pa_GetDefaultInputDevice ();
-    std::cout << "Default device is: " << x << std::endl;
-
-
-    if( argc == 1 )
-    {
-        const   PaDeviceInfo *deviceInfo;
-        for( int i=0; i<numDevices; i++ )
-        {
-
-            double desiredSampleRate;
-            PaStreamParameters testParameters;
-            testParameters.device = i;
-            testParameters.channelCount = 1;
-            testParameters.sampleFormat = paInt16;
-            testParameters.suggestedLatency = Pa_GetDeviceInfo(i)->defaultLowInputLatency ;
-            testParameters.hostApiSpecificStreamInfo = NULL; //See you specific host's API docs for info on using this field
-
-            int rates[] = { 8000, 11025, 22050, 32000, 44100, 48000 };
-            for( int j = 0; j < 6; j++)
-            {
-                std::cout << "-  test rate " << rates[j] << std::endl;
-                PaError err;
-                err = Pa_IsFormatSupported( &testParameters, NULL, rates[j] );
-                if( err == paFormatIsSupported )
-                {
-                   std::cout << "   * is ok" << std::endl;
-                }
-                else
-                {
-                    std::cout << "   * is bad" << std::endl;
-                }
-            }
-        }
-        return 0;
-    }
 
     int device = atoi(argv[1]);
     std::cout << "Using device " << device << std::endl;
