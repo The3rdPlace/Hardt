@@ -51,7 +51,7 @@ std::condition_variable cv2;
 #define FRAME_SIZE 1024
 #define NUMBER_OF_BUFFERS 4
 
-int16_t buffer[NUMBER_OF_BUFFERS * FRAME_SIZE];
+char buffer[NUMBER_OF_BUFFERS * FRAME_SIZE * sizeof(paInt16)];
 unsigned int wrloc = 0;
 unsigned int rdloc = 0;
 int frames_in = 0;
@@ -104,6 +104,8 @@ static void s_catch_signals (void)
     sigaction (SIGTERM, &action, NULL);
 }
 
+std::ofstream samplefile;
+
 int main(int argc, char**argv)
 {
     int server_fd, new_socket, valread;
@@ -114,6 +116,30 @@ int main(int argc, char**argv)
     char hello[] = "Hello from server";
 
 
+    int x = 0;
+    for( int a = 0; a < FRAME_SIZE; a += 2 )
+    {
+        buffer[a] = 0xAA;
+        buffer[a + 1] = 0x55;
+    }
+    x += FRAME_SIZE * 2;
+    for( int a = 0; a < FRAME_SIZE; a += 2 )
+    {
+        buffer[a] = 0x55;
+        buffer[a + 1] = 0xAA;
+    }
+    x +=  FRAME_SIZE * 2;
+    for( int a = 0; a < FRAME_SIZE; a += 2 )
+    {
+        buffer[a] = 0xAA;
+        buffer[a + 1] = 0x55;
+    }
+    x +=  FRAME_SIZE * 2;
+    for( int a = 0; a < FRAME_SIZE; a += 2 )
+    {
+        buffer[a] = 0x55;
+        buffer[a + 1] = 0xAA;
+    }
 
     // CLOSE STDERR
     fprintf(stderr, "stderr is being redirected to dspcmd.err\n");
@@ -397,6 +423,9 @@ int main(int argc, char**argv)
     }
     */
 
+
+    samplefile.open ("samples.raw", std::ios::out | std::ios::binary | std::ios::trunc);
+
     int outerExecs = 0;
     while(1)
     {
@@ -434,6 +463,8 @@ int main(int argc, char**argv)
     }
 
     consumer_thread.join();
+
+    samplefile.close();
 
 	/*char ch;
 	do
@@ -476,9 +507,12 @@ static int callback( const void *inputBuffer, void *outputBuffer,
     static unsigned int rotor = 0;
 
     std::cout << "data" << std::endl;
-    memcpy((void*) &buffer[wrloc], inputBuffer, framesPerBuffer * sizeof(paInt16));
+    //memcpy((void*) &buffer[wrloc], inputBuffer, framesPerBuffer * sizeof(paInt16));
+
+    samplefile.write(&buffer[wrloc], framesPerBuffer * sizeof(paInt16));
+
     rotor = (rotor + 1) & 0x3;
-    wrloc = FRAME_SIZE * rotor;
+    wrloc = FRAME_SIZE * sizeof(paInt16) * rotor;
     frames_in++;
 
 
@@ -526,7 +560,7 @@ void writeToNw(int new_socket)
             std::cout << "read " << frames_out << std::endl;
 
             rotor = (rotor + 1) & 0x3;
-            rdloc = FRAME_SIZE * rotor;
+            rdloc = FRAME_SIZE * sizeof(paInt16) * rotor;
 
             frames_out++;
 
