@@ -51,7 +51,7 @@ std::condition_variable cv2;
 #define FRAME_SIZE 1024
 #define NUMBER_OF_BUFFERS 4
 
-float buffer[NUMBER_OF_BUFFERS * FRAME_SIZE];
+int16_t buffer[NUMBER_OF_BUFFERS * FRAME_SIZE];
 unsigned int wrloc = 0;
 unsigned int rdloc = 0;
 int frames_in = 0;
@@ -221,7 +221,7 @@ int main(int argc, char**argv)
         serv_addr.sin_port = htons(PORT);
 
         // Convert IPv4 and IPv6 addresses from text to binary form
-        if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0)
+        if(inet_pton(AF_INET, "192.168.1.59", &serv_addr.sin_addr)<=0)
         {
             printf("\nInvalid address/ Address not supported \n");
             return -1;
@@ -476,7 +476,7 @@ static int callback( const void *inputBuffer, void *outputBuffer,
     static unsigned int rotor = 0;
 
     std::cout << "data" << std::endl;
-    memcpy((void*) &buffer[wrloc], inputBuffer, framesPerBuffer * sizeof(paFloat32));
+    memcpy((void*) &buffer[wrloc], inputBuffer, framesPerBuffer * sizeof(paInt16));
     rotor = (rotor + 1) & 0x3;
     wrloc = FRAME_SIZE * rotor;
     frames_in++;
@@ -519,7 +519,7 @@ void writeToNw(int new_socket)
         {
             // Transfer frames to network
             //memcpy((void*) &buffer[wrloc], inputBuffer, framesPerBuffer * sizeof(paFloat32));
-            send(new_socket, (void*) &buffer[rdloc], FRAME_SIZE * sizeof(paFloat32), 0 );
+            send(new_socket, (void*) &buffer[rdloc], FRAME_SIZE * sizeof(paInt16), 0 );
 
 
 
