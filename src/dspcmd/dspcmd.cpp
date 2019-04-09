@@ -10,19 +10,12 @@
 
 
 // SERVER
-//#include <unistd.h>
-//#include <stdio.h>
 #include <sys/socket.h>
 #include <stdlib.h>
 #include <netinet/in.h>
-//#include <string.h>
 #define PORT 8080
 
 // CLIENT
-//#include <sys/socket.h>
-//#include <stdlib.h>
-//#include <netinet/in.h>
-//#include <string.h>
 #include <arpa/inet.h>
 
 #include <fstream>
@@ -50,8 +43,10 @@ std::condition_variable cv2;
 
 #define FRAME_SIZE 1024
 #define NUMBER_OF_BUFFERS 4
+#define SAMPLE_FORMAT paInt32
+#define SAMPLE_SIZE Pa_GetSampleSize(SAMPLE_FORMAT)
 
-char buffer[NUMBER_OF_BUFFERS * FRAME_SIZE * sizeof(paInt16)];
+unsigned char* buffer;
 unsigned int wrloc = 0;
 unsigned int rdloc = 0;
 int frames_in = 0;
@@ -66,16 +61,6 @@ static int callback( const void *inputBuffer, void *outputBuffer,
 void writeToNw(int new_socket);
 
 
-
-/*void consume (int n) {
-  for (int i=0; i<n; ++i) {
-    std::unique_lock<std::mutex> lck(mtx);
-    cv.wait(lck,shipment_available);
-    // consume:
-    std::cout << cargo << '\n';
-    cargo=0;
-  }
-}*/
 
 bool shipment_available() {return wrloc != rdloc;}
 
@@ -104,7 +89,8 @@ static void s_catch_signals (void)
     sigaction (SIGTERM, &action, NULL);
 }
 
-std::ofstream samplefile;
+
+int volume;
 
 int main(int argc, char**argv)
 {
@@ -112,34 +98,8 @@ int main(int argc, char**argv)
     struct sockaddr_in address;
     int opt = 1;
     int addrlen = sizeof(address);
-    char buffer[1024] = {0};
-    char hello[] = "Hello from server";
 
 
-    int x = 0;
-    for( int a = 0; a < FRAME_SIZE; a += 2 )
-    {
-        buffer[a] = 0xAA;
-        buffer[a + 1] = 0x55;
-    }
-    x += FRAME_SIZE * 2;
-    for( int a = 0; a < FRAME_SIZE; a += 2 )
-    {
-        buffer[a] = 0x55;
-        buffer[a + 1] = 0xAA;
-    }
-    x +=  FRAME_SIZE * 2;
-    for( int a = 0; a < FRAME_SIZE; a += 2 )
-    {
-        buffer[a] = 0xAA;
-        buffer[a + 1] = 0x55;
-    }
-    x +=  FRAME_SIZE * 2;
-    for( int a = 0; a < FRAME_SIZE; a += 2 )
-    {
-        buffer[a] = 0x55;
-        buffer[a + 1] = 0xAA;
-    }
 
     // CLOSE STDERR
     fprintf(stderr, "stderr is being redirected to dspcmd.err\n");
@@ -226,7 +186,11 @@ int main(int argc, char**argv)
     s_catch_signals();
 
     std::cout << argv[1] << std::endl;
-    if( argc == 2 && strncmp(argv[1], "c", 1) == 0 ) {
+    if( argc == 3 && strncmp(argv[1], "c", 1) == 0 ) {
+
+
+
+
         //struct sockaddr_in address;
         int sock = 0, valread;
         struct sockaddr_in serv_addr;
@@ -247,7 +211,7 @@ int main(int argc, char**argv)
         serv_addr.sin_port = htons(PORT);
 
         // Convert IPv4 and IPv6 addresses from text to binary form
-        if(inet_pton(AF_INET, "192.168.1.59", &serv_addr.sin_addr)<=0)
+        if(inet_pton(AF_INET, argv[2], &serv_addr.sin_addr)<=0)
         {
             printf("\nInvalid address/ Address not supported \n");
             return -1;
@@ -262,14 +226,11 @@ int main(int argc, char**argv)
 
         std::ofstream myfile;
         myfile.open ("data.raw", std::ios::out | std::ios::binary | std::ios::trunc);
-        //myfile << "Writing this to a file.\n";
-        //myfile.close();
 
         do
         {
             valread = read( sock , buffer, FRAME_SIZE);
-            //printf("%s\n",buffer );
-            std::cout << "valread: " << valread << std::endl;
+
             myfile.write(buffer, valread);
         }
         while( valread > -1 && s_interrupted == 0);
@@ -287,12 +248,13 @@ int main(int argc, char**argv)
     }
 
     // Forcefully attaching socket to the port 8080
-    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
+    /*if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
                                                   &opt, sizeof(opt)))
     {
+        std::cout << "setsockopt failed" << std::endl;
         perror("setsockopt");
         exit(EXIT_FAILURE);
-    }
+    }*/
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons( PORT );
@@ -317,13 +279,7 @@ int main(int argc, char**argv)
     }
 
 
-
-    //send(new_socket , hello , strlen(hello) , 0 );
-    //printf("Hello message sent\n");
-    //close(new_socket);
-
 	std::cout << "dspcmd: using Hardt " + getversion() << "\n" ;
-    //return 0;
 
 
 
@@ -344,7 +300,6 @@ int main(int argc, char**argv)
 
 
     fprintf(stderr, "This will go to the file /tmp/somefile.txt.\n");
-    //Flush stdout so any buffered messages are delivered
 
 
 	PaError err = Pa_Initialize();
@@ -355,28 +310,18 @@ int main(int argc, char**argv)
 	}
 
 
-    /*fflush(stderr);
-    //Close file and restore standard output to stdout - which should be the terminal
-    dup2(fd, fileno(stderr));
-    close(fd);
-    clearerr(stderr);
-    fsetpos(stderr, &pos);
-    fprintf(stderr, "This will go to the terminal again.\n");
-    fflush(stderr);*/
-
-    // BACK AGAIN
-
 
 
     std::cout << "INIT complete" << std::endl;
 
 
+    volume = atoi(argv[2]);
     int device = atoi(argv[1]);
     std::cout << "Using device " << device << std::endl;
     PaStreamParameters inputParameters;
     inputParameters.device = device;
     inputParameters.channelCount = 1;
-    inputParameters.sampleFormat = paInt16;
+    inputParameters.sampleFormat = SAMPLE_FORMAT;
     inputParameters.suggestedLatency = Pa_GetDeviceInfo(device)->defaultLowInputLatency ;
     inputParameters.hostApiSpecificStreamInfo = NULL; //See you specific host's API docs for info on using this field
 
@@ -384,7 +329,9 @@ int main(int argc, char**argv)
 
 	#define SAMPLE_RATE 48000
 	static USERDATA ud;
-	
+	buffer = new unsigned char[NUMBER_OF_BUFFERS * FRAME_SIZE * SAMPLE_SIZE];
+
+
 	PaStream *stream;
 	PaStreamFlags flags = paNoFlag;
 	err = Pa_OpenStream(&stream, &inputParameters, NULL,
@@ -413,66 +360,27 @@ int main(int argc, char**argv)
 
     std::thread consumer_thread (writeToNw, new_socket);
 
-    // produce 10 items when needed:
-    /*
-    for (int i=0; i<10; ++i) {
-        while (shipment_available()) std::this_thread::yield();
-        std::unique_lock<std::mutex> lck(mtx);
-        cargo = i+1;
-        cv.notify_one();
-    }
-    */
-
-
-    samplefile.open ("samples.raw", std::ios::out | std::ios::binary | std::ios::trunc);
 
     int outerExecs = 0;
     while(1)
     {
-        /*try
-        {
-            //std::cout << "wr\n";
-            writeToNw();
-        }
-        catch( std::exception )
-        {
-            std::cout << "exception\n";
-        }*/
 
-
-        //std::this_thread::yield();
-
-        //while (!shipment_available()) std::this_thread::yield();
-
-        std::cout << "before outer lock" << std::endl;
         std::unique_lock<std::mutex> lck(mtx);
-        std::cout << "before outer wait" << std::endl;
         cv2.wait(lck,is_interrupted);
-        std::cout << "after outer wait" << std::endl;
 
         if (s_interrupted) {
                     std::cout << "Stopping" << std::endl;
-                    //consumer_thread.terminate();
                     break;
                     }
 
         outerExecs++;
-        std::cout << "outer yielding" << std::endl;
         std::this_thread::yield();
-        //std::cout << "spin" << std::endl;
     }
 
     consumer_thread.join();
 
-    samplefile.close();
 
-	/*char ch;
-	do
-	{
-		ch = getchar();
-	}
-	while( ch != 'a' );*/
-
+    delete buffer;
 
     err = Pa_StopStream( stream );
     if( err != paNoError )
@@ -506,13 +414,23 @@ static int callback( const void *inputBuffer, void *outputBuffer,
     //paTestData *data = (paTestData*)userData;
     static unsigned int rotor = 0;
 
-    std::cout << "data" << std::endl;
-    //memcpy((void*) &buffer[wrloc], inputBuffer, framesPerBuffer * sizeof(paInt16));
 
-    samplefile.write(&buffer[wrloc], framesPerBuffer * sizeof(paInt16));
+    int* src = (int*) inputBuffer;
+    int* dest = (int*) &buffer[wrloc];
+
+    //memcpy((void*) dest, (void*) src, framesPerBuffer * SAMPLE_SIZE);
+    for( int a = 0; a < framesPerBuffer; a++ )
+    {
+        int out = *src * volume;
+        *dest = out;
+
+        src++;
+        dest++;
+    }
+
 
     rotor = (rotor + 1) & 0x3;
-    wrloc = FRAME_SIZE * sizeof(paInt16) * rotor;
+    wrloc = FRAME_SIZE * SAMPLE_SIZE * rotor;
     frames_in++;
 
 
@@ -522,9 +440,7 @@ static int callback( const void *inputBuffer, void *outputBuffer,
     }
 
     std::unique_lock<std::mutex> lck(mtx);
-    std::cout << "locked" << std::endl;
     cv.notify_one();
-    std::cout << "cv.notify_one()" << std::endl;
 
     return 0;
 }
@@ -532,35 +448,25 @@ static int callback( const void *inputBuffer, void *outputBuffer,
 
 void writeToNw(int new_socket)
 {
-    std::cout << "writeToNew(" << new_socket << ")" << std::endl;
     while(!s_interrupted){
         static unsigned int rotor = 0;
         static unsigned int latency = 0;
 
-        std::cout << "before lock" << std::endl;
         std::unique_lock<std::mutex> lck(mtx);
-        std::cout << "before wait" << std::endl;
         cv.wait(lck,shipment_available);
-        std::cout << "after wait" << std::endl;
 
-        /*if( s_interrupted ) {
-            std::cout << "IS TERMINATED" << std::endl;
-            //std::terminate();
-
-        }*/
 
         if( wrloc != rdloc )
         {
             // Transfer frames to network
-            //memcpy((void*) &buffer[wrloc], inputBuffer, framesPerBuffer * sizeof(paFloat32));
-            send(new_socket, (void*) &buffer[rdloc], FRAME_SIZE * sizeof(paInt16), 0 );
+            unsigned char* ptr = &buffer[rdloc];
+            send(new_socket, (void*) ptr, FRAME_SIZE * SAMPLE_SIZE, 0 );
 
 
 
-            std::cout << "read " << frames_out << std::endl;
 
             rotor = (rotor + 1) & 0x3;
-            rdloc = FRAME_SIZE * sizeof(paInt16) * rotor;
+            rdloc = FRAME_SIZE * SAMPLE_SIZE * rotor;
 
             frames_out++;
 
@@ -570,16 +476,11 @@ void writeToNw(int new_socket)
                 latencyAvail++;
             else if( latency < latencyAvail )
                 latencyAvail--;
-            //std::cout << latency << std::endl;
             latency = 0;
         }
         else
         {
-            std::cout << "waste" << std::endl;
             latency++;
-            //std::cout << "skip" << std::endl;
         }
     }
-
-    std::cout << "writeToNw GOODBYE" << std::endl;
 }
