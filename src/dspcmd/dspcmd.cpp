@@ -49,9 +49,6 @@ std::condition_variable cv2;
 unsigned char* buffer;
 unsigned int wrloc = 0;
 unsigned int rdloc = 0;
-int frames_in = 0;
-int frames_out = 0;
-long latencyAvail = -1;
 
 static int callback( const void *inputBuffer, void *outputBuffer,
                            unsigned long framesPerBuffer,
@@ -90,7 +87,6 @@ static void s_catch_signals (void)
 }
 
 
-int volume;
 
 int main(int argc, char**argv)
 {
@@ -315,7 +311,7 @@ int main(int argc, char**argv)
     std::cout << "INIT complete" << std::endl;
 
 
-    volume = atoi(argv[2]);
+
     int device = atoi(argv[1]);
     std::cout << "Using device " << device << std::endl;
     PaStreamParameters inputParameters;
@@ -361,7 +357,6 @@ int main(int argc, char**argv)
     std::thread consumer_thread (writeToNw, new_socket);
 
 
-    int outerExecs = 0;
     while(1)
     {
 
@@ -373,7 +368,6 @@ int main(int argc, char**argv)
                     break;
                     }
 
-        outerExecs++;
         std::this_thread::yield();
     }
 
@@ -397,10 +391,6 @@ int main(int argc, char**argv)
 		return 3;
 	}
 
-	std::cout << "Frames read: " << frames_in << std::endl;
-	std::cout << "Frames transmitted: " << frames_out << std::endl;
-	std::cout << "Latency: " << latencyAvail/1000 << std::endl;
-    std::cout << "Outer latency: " << outerExecs << std::endl;
 	return 0;
 }
 
@@ -412,27 +402,29 @@ static int callback( const void *inputBuffer, void *outputBuffer,
 {
     /* Cast data passed through stream to our structure. */
     //paTestData *data = (paTestData*)userData;
-    static unsigned int rotor = 0;
-
+    static unsigned int blockLen = FRAME_SIZE * SAMPLE_SIZE;
+    static unsigned int lastPos = (NUMBER_OF_BUFFERS * FRAME_SIZE * SAMPLE_SIZE) - 1;
+    /*static unsigned int indexes[] = {
+        0,
+        1 * FRAME_SIZE * SAMPLE_SIZE,
+        2 * FRAME_SIZE * SAMPLE_SIZE,
+        3 * FRAME_SIZE * SAMPLE_SIZE
+    };*/
 
     int* src = (int*) inputBuffer;
     int* dest = (int*) &buffer[wrloc];
 
-    //memcpy((void*) dest, (void*) src, framesPerBuffer * SAMPLE_SIZE);
-    for( int a = 0; a < framesPerBuffer; a++ )
-    {
-        int out = *src * volume;
-        *dest = out;
+    memcpy((void*) dest, (void*) src, framesPerBuffer * SAMPLE_SIZE);
 
-        src++;
-        dest++;
+
+    wrloc += blockLen;
+    if(wrloc > lastPos )
+    {
+        wrloc = 0;
     }
 
 
-    rotor = (rotor + 1) & 0x3;
-    wrloc = FRAME_SIZE * SAMPLE_SIZE * rotor;
-    frames_in++;
-
+    //wrloc = indexes[]
 
     if( wrloc == rdloc )
     {
@@ -449,8 +441,8 @@ static int callback( const void *inputBuffer, void *outputBuffer,
 void writeToNw(int new_socket)
 {
     while(!s_interrupted){
-        static unsigned int rotor = 0;
-        static unsigned int latency = 0;
+        static unsigned int blockLen = FRAME_SIZE * SAMPLE_SIZE;
+        static unsigned int lastPos = (NUMBER_OF_BUFFERS * FRAME_SIZE * SAMPLE_SIZE) - 1;
 
         std::unique_lock<std::mutex> lck(mtx);
         cv.wait(lck,shipment_available);
@@ -460,27 +452,25 @@ void writeToNw(int new_socket)
         {
             // Transfer frames to network
             unsigned char* ptr = &buffer[rdloc];
-            send(new_socket, (void*) ptr, FRAME_SIZE * SAMPLE_SIZE, 0 );
+            try
+            {
+                send(new_socket, (void*) ptr, blockLen, 0 );
+            }
+            catch( std::exception )
+            {
+                std::cout << "Caught exception... stopping";
+                s_interrupted = 1;
+                break;
+            }
 
 
 
+            rdloc += blockLen;
+            if( rdloc > lastPos )
+            {
+                rdloc = 0;
+            }
 
-            rotor = (rotor + 1) & 0x3;
-            rdloc = FRAME_SIZE * SAMPLE_SIZE * rotor;
-
-            frames_out++;
-
-            if( latencyAvail == -1 )
-                latencyAvail = latency;
-            else if( latency > latencyAvail )
-                latencyAvail++;
-            else if( latency < latencyAvail )
-                latencyAvail--;
-            latency = 0;
-        }
-        else
-        {
-            latency++;
         }
     }
 }
