@@ -1,8 +1,6 @@
-//#include "dspcmd.h"
 #include <stdio.h>
 #include <iostream>
 #include <string.h>
-#include <signal.h>
 
 #include <cstdlib>
 #include <string>
@@ -13,7 +11,6 @@
 #include <sys/socket.h>
 #include <stdlib.h>
 #include <netinet/in.h>
-#define PORT 8080
 
 // CLIENT
 #include <arpa/inet.h>
@@ -23,46 +20,12 @@
 #include "../hardt/include/hardtapi.h"
 #include "dspcmd.h"
 
-#include "portaudio.h"
-
-// condition_variable::wait (with predicate)
-#include <iostream>           // std::cout
-#include <thread>             // std::thread, std::this_thread::yield
-#include <mutex>              // std::mutex, std::unique_lock
-#include <condition_variable> // std::condition_variable
-
-struct USERDATA
-{
-	int a;
-	int b;
-};
-
-std::mutex mtx;
-std::condition_variable cv;
-std::condition_variable cv2;
-
-#define FRAME_SIZE 1024
-#define NUMBER_OF_BUFFERS 4
-#define SAMPLE_FORMAT paInt32
-#define SAMPLE_SIZE Pa_GetSampleSize(SAMPLE_FORMAT)
-
-unsigned char* buffer;
-unsigned int wrloc = 0;
-unsigned int rdloc = 0;
-
-static int callback( const void *inputBuffer, void *outputBuffer,
-                           unsigned long framesPerBuffer,
-                           const PaStreamCallbackTimeInfo* timeInfo,
-                           PaStreamCallbackFlags statusFlags,
-                           void *userData );
-void writeToNw(int new_socket);
+//#include "portaudio.h"
 
 
 
-bool shipment_available() {return wrloc != rdloc;}
 
-
-static int s_interrupted = 0;
+/*static int s_interrupted = 0;
 static void s_signal_handler (int signal_value)
 {
     s_interrupted = 1;
@@ -84,29 +47,21 @@ static void s_catch_signals (void)
     sigemptyset (&action.sa_mask);
     sigaction (SIGINT, &action, NULL);
     sigaction (SIGTERM, &action, NULL);
-}
+}*/
+
 
 
 
 int main(int argc, char**argv)
 {
-    int server_fd, new_socket, valread;
-    struct sockaddr_in address;
-    int opt = 1;
-    int addrlen = sizeof(address);
 
 
-
-    // CLOSE STDERR
-    fprintf(stderr, "stderr is being redirected to dspcmd.err\n");
-    //Save position of current standard output
-    fpos_t pos;
-    fgetpos(stderr, &pos);
-    int fd = dup(fileno(stderr));
-    freopen("dspcmd.err", "w", stderr);
 
 
     if( argc == 2 && strncmp(argv[1], "d", 1) == 0 ) {
+
+        fprintf(stderr, "stderr is being redirected to dspcmd.err\n");
+        freopen("dspcmd.err", "w", stderr);
 
         PaError err = Pa_Initialize();
     	if( err != paNoError )
@@ -179,7 +134,7 @@ int main(int argc, char**argv)
     }
 
 
-    s_catch_signals();
+
 
     std::cout << argv[1] << std::endl;
     if( argc == 3 && strncmp(argv[1], "c", 1) == 0 ) {
@@ -204,7 +159,7 @@ int main(int argc, char**argv)
         memset(&serv_addr, '0', sizeof(serv_addr));
 
         serv_addr.sin_family = AF_INET;
-        serv_addr.sin_port = htons(PORT);
+        serv_addr.sin_port = htons(8080);
 
         // Convert IPv4 and IPv6 addresses from text to binary form
         if(inet_pton(AF_INET, argv[2], &serv_addr.sin_addr)<=0)
@@ -225,54 +180,18 @@ int main(int argc, char**argv)
 
         do
         {
-            valread = read( sock , buffer, FRAME_SIZE);
+            valread = read( sock , buffer, 1024);
 
             myfile.write(buffer, valread);
         }
-        while( valread > -1 && s_interrupted == 0);
+        while( valread > -1 ); //&& s_interrupted == 0);
         close(sock);
         myfile.close();
 
         return 0;
     }
 
-    // Creating socket file descriptor
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
-    {
-        perror("socket failed");
-        exit(EXIT_FAILURE);
-    }
 
-    // Forcefully attaching socket to the port 8080
-    /*if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
-                                                  &opt, sizeof(opt)))
-    {
-        std::cout << "setsockopt failed" << std::endl;
-        perror("setsockopt");
-        exit(EXIT_FAILURE);
-    }*/
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons( PORT );
-
-    // Forcefully attaching socket to the port 8080
-    if (bind(server_fd, (struct sockaddr *)&address,
-                                 sizeof(address))<0)
-    {
-        perror("bind failed");
-        exit(EXIT_FAILURE);
-    }
-    if (listen(server_fd, 3) < 0)
-    {
-        perror("listen");
-        exit(EXIT_FAILURE);
-    }
-    if ((new_socket = accept(server_fd, (struct sockaddr *)&address,
-                       (socklen_t*)&addrlen))<0)
-    {
-        perror("accept");
-        exit(EXIT_FAILURE);
-    }
 
 
 	std::cout << "dspcmd: using Hardt " + getversion() << "\n" ;
@@ -293,184 +212,21 @@ int main(int argc, char**argv)
 
 
 
-
-
-    fprintf(stderr, "This will go to the file /tmp/somefile.txt.\n");
-
-
-	PaError err = Pa_Initialize();
-	if( err != paNoError )
-	{
-		printf("Initialization error\n");
-		return 1;
-	}
-
-
-
-
     std::cout << "INIT complete" << std::endl;
-
-
-
     int device = atoi(argv[1]);
-    std::cout << "Using device " << device << std::endl;
-    PaStreamParameters inputParameters;
-    inputParameters.device = device;
-    inputParameters.channelCount = 1;
-    inputParameters.sampleFormat = SAMPLE_FORMAT;
-    inputParameters.suggestedLatency = Pa_GetDeviceInfo(device)->defaultLowInputLatency ;
-    inputParameters.hostApiSpecificStreamInfo = NULL; //See you specific host's API docs for info on using this field
 
-
-
-	#define SAMPLE_RATE 48000
-	static USERDATA ud;
-	buffer = new unsigned char[NUMBER_OF_BUFFERS * FRAME_SIZE * SAMPLE_SIZE];
-
-
-	PaStream *stream;
-	PaStreamFlags flags = paNoFlag;
-	err = Pa_OpenStream(&stream, &inputParameters, NULL,
-		SAMPLE_RATE,
-		FRAME_SIZE,   /* Frames pr. buffer */
-		flags,
-		callback,
-		&ud);
-
-	if( err != paNoError )
-	{
-		printf("error setting up sampling");
-		return 4;
-	}
-
-	std::cout << "Sampling :: press ctrl+c to stop" << std::endl;
-
-    err = Pa_StartStream( stream );
-    if( err != paNoError )
+    HSoundcardReader<int> rdr(device, 48000, 1, paInt32, 1024);
+    HNetworkServer<int> srv = HNetworkServer<int>(8080, &rdr);
+    try
     {
-        printf("error starting sampling");
-        Pa_Terminate();
-        return 5;
+        srv.Run();
     }
-
-
-    std::thread consumer_thread (writeToNw, new_socket);
-
-
-    while(1)
+    catch( ... )
     {
-
-        std::unique_lock<std::mutex> lck(mtx);
-        cv2.wait(lck,is_interrupted);
-
-        if (s_interrupted) {
-                    std::cout << "Stopping" << std::endl;
-                    break;
-                    }
-
-        std::this_thread::yield();
+        std::cout << "OUTER EXCEPTION" << std::endl;
     }
-
-    consumer_thread.join();
-
-
-    delete buffer;
-
-    err = Pa_StopStream( stream );
-    if( err != paNoError )
-    {
-        printf("error stopping sampling");
-        Pa_Terminate();
-        return 6;
-    }
-
-	err = Pa_Terminate();
-	if ( err != paNoError )
-	{
-		printf("Termination error\n");
-		return 3;
-	}
+    std::cout << "GOODBYE" << std::endl;
 
 	return 0;
 }
 
-static int callback( const void *inputBuffer, void *outputBuffer,
-                           unsigned long framesPerBuffer,
-                           const PaStreamCallbackTimeInfo* timeInfo,
-                           PaStreamCallbackFlags statusFlags,
-                           void *userData )
-{
-    /* Cast data passed through stream to our structure. */
-    //paTestData *data = (paTestData*)userData;
-    static unsigned int blockLen = FRAME_SIZE * SAMPLE_SIZE;
-    static unsigned int lastPos = (NUMBER_OF_BUFFERS * FRAME_SIZE * SAMPLE_SIZE) - 1;
-    /*static unsigned int indexes[] = {
-        0,
-        1 * FRAME_SIZE * SAMPLE_SIZE,
-        2 * FRAME_SIZE * SAMPLE_SIZE,
-        3 * FRAME_SIZE * SAMPLE_SIZE
-    };*/
-
-    int* src = (int*) inputBuffer;
-    int* dest = (int*) &buffer[wrloc];
-
-    memcpy((void*) dest, (void*) src, framesPerBuffer * SAMPLE_SIZE);
-
-
-    wrloc += blockLen;
-    if(wrloc > lastPos )
-    {
-        wrloc = 0;
-    }
-
-
-    //wrloc = indexes[]
-
-    if( wrloc == rdloc )
-    {
-        std::cout << "Dropped frame!" << std::endl;
-    }
-
-    std::unique_lock<std::mutex> lck(mtx);
-    cv.notify_one();
-
-    return 0;
-}
-
-
-void writeToNw(int new_socket)
-{
-    while(!s_interrupted){
-        static unsigned int blockLen = FRAME_SIZE * SAMPLE_SIZE;
-        static unsigned int lastPos = (NUMBER_OF_BUFFERS * FRAME_SIZE * SAMPLE_SIZE) - 1;
-
-        std::unique_lock<std::mutex> lck(mtx);
-        cv.wait(lck,shipment_available);
-
-
-        if( wrloc != rdloc )
-        {
-            // Transfer frames to network
-            unsigned char* ptr = &buffer[rdloc];
-            try
-            {
-                send(new_socket, (void*) ptr, blockLen, 0 );
-            }
-            catch( std::exception )
-            {
-                std::cout << "Caught exception... stopping";
-                s_interrupted = 1;
-                break;
-            }
-
-
-
-            rdloc += blockLen;
-            if( rdloc > lastPos )
-            {
-                rdloc = 0;
-            }
-
-        }
-    }
-}
