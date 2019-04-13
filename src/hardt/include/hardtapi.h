@@ -2,6 +2,12 @@
 #define __HARDTAPI_H
 
 /********************************************************************
+Logging, implemented in hardt.cpp
+********************************************************************/
+
+#include "hardt.h"
+
+/********************************************************************
 Abstract base classes with no, or little implementation - so they
 exists here since they form the base of the entire toolkit.
 ********************************************************************/
@@ -29,7 +35,6 @@ Include api function declarations
 ********************************************************************/
 
 #include <portaudio.h>
-#include "hardt.h"
 #include "hnetworkserver.h"
 #include "hsoundcardreader.h"
 
@@ -47,19 +52,6 @@ Network classes
     public:
 
         int Read(void* dest, int size);
-};*/
-
-
-/********************************************************************
-Generic highlevel sample reader
-********************************************************************/
-/*template <class T>
-class HSampleReader
-{
-    public:
-
-            HSampleReader(HReader* reader);
-            int Read(T* dest, int size);
 };*/
 
 #endif

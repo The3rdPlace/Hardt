@@ -7,7 +7,17 @@
 
 #include <stdio.h>
 #include <sstream>
+#include <fstream>
 
 std::string getversion();
+
+extern std::ofstream HLogStream;
+extern std::ofstream HErrorStream;
+
+void writeLogMessage(std::string message);
+void writeErrorMessage(std::string file, std::string line, std::string message);
+
+#define HLog(msg) writeLogMessage(msg)
+#define HError(msg) writeErrorMessage(std::string(__FILE__), std::to_string(__LINE__), msg)
 
 #endif
