@@ -15,7 +15,7 @@
 // CLIENT
 #include <arpa/inet.h>
 
-#include <fstream>
+//#include <fstream>
 
 #include "../hardt/include/hardtapi.h"
 #include "dspcmd.h"
@@ -55,13 +55,12 @@ static void s_catch_signals (void)
 int main(int argc, char**argv)
 {
 
+    HInit(std::string("dspcmd"));
 
 
 
     if( argc == 2 && strncmp(argv[1], "d", 1) == 0 ) {
 
-        fprintf(stderr, "stderr is being redirected to dspcmd.err\n");
-        freopen("dspcmd.err", "w", stderr);
 
         PaError err = Pa_Initialize();
     	if( err != paNoError )

@@ -18,7 +18,7 @@ Logging
 std::ofstream HLogStream;
 std::ofstream HErrorStream;
 
-void writeLogMessage(std::string message)
+void HWriteLogMessage(std::string message)
 {
     if( HLogStream.is_open() )
     {
@@ -30,7 +30,7 @@ void writeLogMessage(std::string message)
     }
 }
 
-void writeErrorMessage(std::string file, std::string line, std::string message)
+void HWriteErrorMessage(std::string file, std::string line, std::string message)
 {
     if( HLogStream.is_open() )
     {
@@ -40,4 +40,11 @@ void writeErrorMessage(std::string file, std::string line, std::string message)
     {
         std::cout << "ERROR:" << std::endl << file << "@" << line << std::endl << message << std::endl;
     }
+}
+
+void HInit(std::string logname)
+{
+    HLogStream.open(logname + ".log");
+    HErrorStream.open(logname + ".err");
+    freopen((logname + ".stderr").c_str(), "w", stderr);
 }

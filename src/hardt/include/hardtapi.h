@@ -2,14 +2,14 @@
 #define __HARDTAPI_H
 
 /********************************************************************
-Logging, implemented in hardt.cpp
+Initialization, logging and other basic functions.
+(implemented in hardt.cpp)
 ********************************************************************/
 
 #include "hardt.h"
 
 /********************************************************************
-Abstract base classes with no, or little implementation - so they
-exists here since they form the base of the entire toolkit.
+Abstract base classes with no, or little implementation
 ********************************************************************/
 
 template <class T>
