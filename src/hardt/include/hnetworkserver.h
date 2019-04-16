@@ -19,15 +19,17 @@ class HNetworkServer
         HWriter<T>* _writer;
         HReader<T>* _reader;
         struct sockaddr_in _address;
+        bool* _terminated;
 
         void Init();
 
     public:
 
-        HNetworkServer(int port, HWriter<T>* writer);
-        HNetworkServer(int port, HReader<T>* reader);
+        HNetworkServer(int port, HWriter<T>* writer, bool* terminationToken);
+        HNetworkServer(int port, HReader<T>* reader, bool* terminationToken);
         ~HNetworkServer();
         void Run();
+        void Halt();
 };
 
 /********************************************************************
@@ -35,30 +37,28 @@ Class implementation
 ********************************************************************/
 
 template <class T>
-HNetworkServer<T>::HNetworkServer(int port, HWriter<T>* writer)
+HNetworkServer<T>::HNetworkServer(int port, HWriter<T>* writer, bool* terminationToken) :
+    _port(port),
+    _serverSocket(-1),
+    _clientSocket(-1),
+    _connected(false),
+    _writer(writer),
+    _reader(NULL),
+    _terminated(terminationToken)
 {
-    this->_port = port;
-    this->_serverSocket = -1;
-    this->_clientSocket = -1;
-    this->_connected = false;
-
-    this->_writer = writer;
-    this->_reader = NULL;
-
     Init();
 }
 
 template <class T>
-HNetworkServer<T>::HNetworkServer(int port, HReader<T>* reader)
+HNetworkServer<T>::HNetworkServer(int port, HReader<T>* reader, bool* terminationToken) :
+    _port(port),
+    _serverSocket(-1),
+    _clientSocket(-1),
+    _connected(false),
+    _writer(NULL),
+    _reader(reader),
+    _terminated(terminationToken)
 {
-    this->_port = port;
-    this->_serverSocket = -1;
-    this->_clientSocket = -1;
-    this->_connected = false;
-
-    this->_writer = NULL;
-    this->_reader = reader;
-
     Init();
 }
 
@@ -101,7 +101,7 @@ void HNetworkServer<T>::Init()
     _address.sin_addr.s_addr = INADDR_ANY;
     _address.sin_port = htons( this->_port );
 
-    // Forcefully attaching socket to the port 8080
+    // Forcefully attaching socket to the selected port
     if (bind(_serverSocket, (struct sockaddr *)&_address,
                                  sizeof(_address))<0)
     {
@@ -124,7 +124,9 @@ void HNetworkServer<T>::Run()
         // Allocate local buffer
         buffer = new T[_reader->Blocksize()];
         std::cout << "allocated " << _reader->Blocksize() << " bytes" << std::endl;
-        while(1)
+
+        // Run untill stopped
+        while(!*_terminated)
         {
             std::cout << "LISTENING ON PORT " << _port << std::endl;
 
@@ -145,7 +147,15 @@ void HNetworkServer<T>::Run()
             int len;
             int shipped;
 
-            while(1)
+            // Start the reader - some readers have start/stop handling, others
+            // just ignore this call
+            if( !_reader->Start() )
+            {
+                HError("Failed to Start() reader");
+            }
+
+            // Read from reader and write to network
+            while(!*_terminated)
             {
                 // Transfer frames to network
                 try
@@ -182,12 +192,25 @@ void HNetworkServer<T>::Run()
                         std::cout << "Caught exception... stopping" << std::endl;
                         //s_interrupted = 1;
                         //return;
-                        close(_clientSocket);
+
                         break;
                     }
                 }
             }
 
+            // Stop the reader - some readers have start/stop handling, others
+            // just ignore this call
+            if( !_reader->Stop() )
+            {
+                HError("Failed to Stop() reader");
+            }
+
+            // Close the socket, should it still be open
+            if( _clientSocket > -1 )
+            {
+                close(_clientSocket);
+                _clientSocket = -1;
+            }
             std::cout << "CONNECTION CLOSED" << std::endl;
         }
     }
@@ -195,6 +218,12 @@ void HNetworkServer<T>::Run()
     {
         std::cout << "GLOBAL EXCEPTION" << std::endl;
         std::cout << ex.what() << std::endl;
+        if( _clientSocket > -1 )
+        {
+            close(_clientSocket);
+            _clientSocket = -1;
+        }
+        return;
     }
 }
 

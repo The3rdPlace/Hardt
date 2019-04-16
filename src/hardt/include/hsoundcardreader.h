@@ -75,7 +75,7 @@ HSoundcardReader<T>::HSoundcardReader(int device, int rate, int channels, PaSamp
     }
 
 
-/*
+
     PaError err = Pa_Initialize();
 	if( err != paNoError )
 	{
@@ -110,7 +110,7 @@ HSoundcardReader<T>::HSoundcardReader(int device, int rate, int channels, PaSamp
 
     std::cout << "Sampling :: press ctrl+c to stop" << std::endl;
 
-    */
+
 }
 
 template <class T>

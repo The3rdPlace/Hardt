@@ -29,6 +29,8 @@ This allows us to close down gracefully when the user presses
 ctrl+c
 ********************************************************************/
 
+//HNetworkServer<int> srv
+
 static bool terminated = false;
 static void signalIntTermHandler (int signal_value)
 {
@@ -36,10 +38,10 @@ static void signalIntTermHandler (int signal_value)
     std::cout << "SIGTERM or SITINT" << std::endl;
 }
 
-static void SetupSignalHandling(void)
+static void SetupSignalHandling()
 {
     struct sigaction action;
-    action.sa_handler = signalIntTermHandler;
+    action.sa_handler = [](int) { terminated = true; };
     action.sa_flags = 0;
     sigemptyset (&action.sa_mask);
     sigaction (SIGINT, &action, NULL);
@@ -50,9 +52,6 @@ static void SetupSignalHandling(void)
 
 int main(int argc, char**argv)
 {
-    // Setup signal handling
-    SetupSignalHandling();
-
     // Initialize the Hardt library, giving a name for logfiles, or if
     // the '-v' switch has been given, let Hardt log directly to stdout
     bool verbose = false;
@@ -65,7 +64,8 @@ int main(int argc, char**argv)
     }
     verbose ? HInit() : HInit(std::string("dspcmd"));
 
-
+    // Setup signal handling
+    SetupSignalHandling();
 
     if( argc == 2 && strncmp(argv[1], "d", 1) == 0 ) {
 
@@ -188,10 +188,10 @@ int main(int argc, char**argv)
         do
         {
             valread = read( sock , buffer, 1024);
-
+            std::cout << "valread = " << valread << std::endl;
             myfile.write(buffer, valread);
         }
-        while( valread > -1 ); //&& s_interrupted == 0);
+        while( !terminated && valread > 0 );
         close(sock);
         myfile.close();
 
@@ -225,7 +225,7 @@ int main(int argc, char**argv)
 
 
     HSoundcardReader<int> rdr(device, 48000, 1, paInt32, 1024);
-    HNetworkServer<int> srv = HNetworkServer<int>(8080, &rdr);
+    HNetworkServer<int> srv = HNetworkServer<int>(8080, &rdr, &terminated);
     try
     {
         srv.Run();
