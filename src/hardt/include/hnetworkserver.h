@@ -20,15 +20,13 @@ class HNetworkServer
         HReader<T>* _reader;
         struct sockaddr_in _address;
 
-        void Setup();
-        //void Teardown();
-
-
+        void Init();
 
     public:
 
         HNetworkServer(int port, HWriter<T>* writer);
         HNetworkServer(int port, HReader<T>* reader);
+        ~HNetworkServer();
         void Run();
 };
 
@@ -47,7 +45,7 @@ HNetworkServer<T>::HNetworkServer(int port, HWriter<T>* writer)
     this->_writer = writer;
     this->_reader = NULL;
 
-    Setup();
+    Init();
 }
 
 template <class T>
@@ -61,13 +59,25 @@ HNetworkServer<T>::HNetworkServer(int port, HReader<T>* reader)
     this->_writer = NULL;
     this->_reader = reader;
 
-    Setup();
+    Init();
 }
 
-//#define PORT 8080
+template <class T>
+HNetworkServer<T>::~HNetworkServer()
+{
+    std::cout << "DESTRUCTING HNetworkServer" << std::endl;
+    if( this->_serverSocket > -1 ) {
+        close(this->_serverSocket);
+    }
+    if( this->_clientSocket > -1 ) {
+        close(this->_clientSocket);
+    }
+
+    std::cout << "DONE" << std::endl;
+}
 
 template <class T>
-void HNetworkServer<T>::Setup()
+void HNetworkServer<T>::Init()
 {
     int valread;
     int opt = 0;
@@ -108,84 +118,83 @@ void HNetworkServer<T>::Run()
 {
     try
     {
-    int addrlen = sizeof(_address);
-    T* buffer;
+        int addrlen = sizeof(_address);
+        T* buffer;
 
-    // Allocate local buffer
-    buffer = new T[_reader->Blocksize()];
-
-    while(1)
-    {
-        std::cout << "LISTENING ON PORT " << _port << std::endl;
-
-        if (listen(_serverSocket, 3) < 0)
-        {
-            //perror("listen");
-            std::cout << "Error in listen" << std::endl;
-            //throw new std::exception();
-        }
-        if ((_clientSocket = accept(_serverSocket, (struct sockaddr *)&_address,
-                           (socklen_t*)&addrlen))<0)
-        {
-            //perror("accept");
-            std::cout << "Error in accept" << std::endl;
-            //return;
-        }
-
-
-        std::cout << "CONNECTED" << std::endl;
-        int len;
-        int shipped;
-
+        // Allocate local buffer
+        buffer = new T[_reader->Blocksize()];
+        std::cout << "allocated " << _reader->Blocksize() << " bytes" << std::endl;
         while(1)
         {
-            // Transfer frames to network
-            try
+            std::cout << "LISTENING ON PORT " << _port << std::endl;
+
+            if (listen(_serverSocket, 3) < 0)
             {
-                std::cout << "read" << std::endl;
-                len = _reader->Read(buffer);
-                std::cout << "got " << len << " bytes" << std::endl;
-                if( len <= 0 )
-                {
-                    std::cout << "ZERO READ FROM CLIENT " << len << std::endl;
-                    break;
-                }
+                std::cout << "Error in listen" << std::endl;
+                return;
             }
-            catch( ... )
+            if ((_clientSocket = accept(_serverSocket, (struct sockaddr *)&_address,
+                               (socklen_t*)&addrlen))<0)
             {
-                std::cout << "Exception in Read()" << std::endl;
-                break;
+                std::cout << "Error in accept" << std::endl;
+                return;
             }
-            if( len > 0 )
+
+
+            std::cout << "CONNECTED" << std::endl;
+            int len;
+            int shipped;
+
+            while(1)
             {
+                // Transfer frames to network
                 try
                 {
-                    std::cout << "try send" << std::endl;
-                    shipped = send(_clientSocket, (void*) buffer, len *  sizeof(T), 0 );
-                    std::cout << "shipped " << shipped << std::endl;
-                    if( shipped <= 0 )
+                    std::cout << "read" << std::endl;
+                    len = _reader->Read(buffer);
+                    std::cout << "got " << len << " bytes" << std::endl;
+                    if( len <= 0 )
                     {
-                        std::cout << "ZERO WRITE TO CLIENT " << shipped << std::endl;
+                        std::cout << "ZERO READ FROM CLIENT " << len << std::endl;
                         break;
                     }
                 }
                 catch( ... )
                 {
-                    std::cout << "Caught exception... stopping" << std::endl;
-                    //s_interrupted = 1;
-                    //return;
-                    close(_clientSocket);
+                    std::cout << "Exception in Read()" << std::endl;
                     break;
                 }
+                if( len > 0 )
+                {
+                    try
+                    {
+                        std::cout << "try send" << std::endl;
+                        shipped = send(_clientSocket, (void*) buffer, len *  sizeof(T), 0 );
+                        std::cout << "shipped " << shipped << std::endl;
+                        if( shipped <= 0 )
+                        {
+                            std::cout << "ZERO WRITE TO CLIENT " << shipped << std::endl;
+                            break;
+                        }
+                    }
+                    catch( ... )
+                    {
+                        std::cout << "Caught exception... stopping" << std::endl;
+                        //s_interrupted = 1;
+                        //return;
+                        close(_clientSocket);
+                        break;
+                    }
+                }
             }
-        }
 
-        std::cout << "CONNECTION CLOSED" << std::endl;
+            std::cout << "CONNECTION CLOSED" << std::endl;
+        }
     }
-    }
-    catch( ... )
+    catch( const std::exception& ex )
     {
         std::cout << "GLOBAL EXCEPTION" << std::endl;
+        std::cout << ex.what() << std::endl;
     }
 }
 

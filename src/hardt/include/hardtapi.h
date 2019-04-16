@@ -15,6 +15,11 @@ Abstract base classes with no, or little implementation
 template <class T>
 class HWriter
 {
+    protected:
+
+        virtual bool Start() { return true; }
+        virtual bool Stop() { return true; }
+
     public:
 
         virtual int Write(T* src, int size) = 0;
@@ -24,6 +29,11 @@ class HWriter
 template <class T>
 class HReader
 {
+    protected:
+
+        virtual bool Start() { return true; }
+        virtual bool Stop() { return true; }
+
     public:
 
         virtual int Read(T* dest) = 0;

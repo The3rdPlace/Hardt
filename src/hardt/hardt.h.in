@@ -11,12 +11,13 @@
 
 std::string getversion();
 
-void HWriteLogMessage(std::string message);
+void HWriteLogMessage(std::string file, std::string message);
 void HWriteErrorMessage(std::string file, std::string line, std::string message);
 
-#define HLog(msg) HWriteLogMessage(msg)
+#define HLog(msg) HWriteLogMessage(std::string(__FILE__), msg)
 #define HError(msg) HWriteErrorMessage(std::string(__FILE__), std::to_string(__LINE__), msg)
 
 void HInit(std::string logname);
+void HInit();
 
 #endif

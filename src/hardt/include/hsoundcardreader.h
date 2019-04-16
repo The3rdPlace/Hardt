@@ -14,8 +14,8 @@ class HSoundcardReader : public HReader<T>
 {
     private:
 
-        // Todo, make more usefull object
-        struct UD
+        // Data accessed by the (static) callback function
+        struct CallbackData
         {
             int framesize;
             int wrloc;
@@ -23,12 +23,16 @@ class HSoundcardReader : public HReader<T>
             T* buffer;
             std::mutex mtx;
             std::condition_variable cv;
-        };
+        } _cbd;
 
-        T* _buffer;
-        UD _ud;
+        // The sample stream from the soundcard
+        PaStream *_stream;
 
-        PaStream *stream;
+        // Housekeeping
+        bool _isInitialized;
+
+        bool Start();
+        bool Stop();
 
     public:
 
@@ -52,11 +56,26 @@ Class implementation
 ********************************************************************/
 
 template <class T>
-HSoundcardReader<T>::HSoundcardReader(int device, int rate, int channels, PaSampleFormat format, int framesPerBuffer)
+HSoundcardReader<T>::HSoundcardReader(int device, int rate, int channels, PaSampleFormat format, int framesPerBuffer) :
+    _isInitialized(false)
 {
-    // Allocate buffers for data pushed from the card
-    _buffer = new T[NUMBER_OF_BUFFERS * framesPerBuffer * sizeof(T)];
+    HLog("Initializing");
+    HError("This is an error");
 
+    // Initialize resources used by the callback function
+    _cbd.framesize = framesPerBuffer;
+    _cbd.wrloc = 0;
+    _cbd.rdloc = 0;
+    _cbd.buffer = new T[NUMBER_OF_BUFFERS * framesPerBuffer * sizeof(T)];
+    if( _cbd.buffer == NULL )
+    {
+        std::ostringstream msg;
+        msg << "Unable to allocate 4 buffers for " << framesPerBuffer << " frames á " << sizeof(T) << " bytes";
+        HError(msg.str());
+    }
+
+
+/*
     PaError err = Pa_Initialize();
 	if( err != paNoError )
 	{
@@ -72,19 +91,14 @@ HSoundcardReader<T>::HSoundcardReader(int device, int rate, int channels, PaSamp
     inputParameters.suggestedLatency = Pa_GetDeviceInfo(device)->defaultLowInputLatency ;
     inputParameters.hostApiSpecificStreamInfo = NULL;
 
-    _ud.framesize = framesPerBuffer;
-    _ud.wrloc = 0;
-    _ud.rdloc = 0;
-    _ud.buffer = _buffer;
-
     // Get an input stream
     PaStreamFlags flags = paNoFlag;
-    err = Pa_OpenStream(&stream, &inputParameters, NULL,
+    err = Pa_OpenStream(&_stream, &inputParameters, NULL,
         rate,
-        framesPerBuffer,   /* Frames pr. buffer */
+        framesPerBuffer,
         flags,
         callback,
-        &_ud);
+        &_cbd);
 
     if( err != paNoError )
     {
@@ -92,67 +106,65 @@ HSoundcardReader<T>::HSoundcardReader(int device, int rate, int channels, PaSamp
         throw new std::exception();
     }
 
+    _isInitialized = true;
+
     std::cout << "Sampling :: press ctrl+c to stop" << std::endl;
 
-    err = Pa_StartStream( stream );
-    if( err != paNoError )
-    {
-        printf("error starting sampling");
-        Pa_Terminate();
-        throw new std::exception();
-    }
+    */
 }
 
 template <class T>
 HSoundcardReader<T>::~HSoundcardReader()
 {
     std::cout << "DESTRUCTED" << std::endl;
-    PaError err = Pa_StopStream( stream );
-    if( err != paNoError )
+
+    if( _isInitialized )
     {
-        printf("error stopping sampling");
-        Pa_Terminate();
+        // Make sure the stream is stopped
+        Stop();
+
+        // Terminate PortAudio
+        PaError err = Pa_Terminate();
+        if ( err != paNoError )
+        {
+            HError("Could not terminate PortAudio: " + std::string(Pa_GetErrorText(err)));
+        }
+
+        // Delete shared resources
+        delete _cbd.buffer;
     }
-
-	err = Pa_Terminate();
-	if ( err != paNoError )
-	{
-		printf("Termination error\n");
-	}
-
-    delete _buffer;
 }
 
 template <class T>
 int HSoundcardReader<T>::Blocksize()
 {
-    return _ud.framesize;
+    return _cbd.framesize;
 }
 
 template <class T>
 int HSoundcardReader<T>::Read(T* dest)
 {
-    if( _ud.wrloc == _ud.rdloc )
+    if( _cbd.wrloc == _cbd.rdloc )
     {
-        std::unique_lock<std::mutex> lck(_ud.mtx);
-        _ud.cv.wait(lck);
+        std::unique_lock<std::mutex> lck(_cbd.mtx);
+        _cbd.cv.wait(lck);
     }
 
-    if( _ud.wrloc != _ud.rdloc )
+    if( _cbd.wrloc != _cbd.rdloc )
     {
-        T* ptr = &_buffer[_ud.rdloc];
-        memcpy((void*) dest, (void*) ptr, _ud.framesize * sizeof(T));
+        T* ptr = &_cbd.buffer[_cbd.rdloc];
+        memcpy((void*) dest, (void*) ptr, _cbd.framesize * sizeof(T));
 
-        static unsigned int blockLen = _ud.framesize;
-        static unsigned int lastPos = (NUMBER_OF_BUFFERS * _ud.framesize) - 1;
+        static unsigned int blockLen = _cbd.framesize;
+        static unsigned int lastPos = (NUMBER_OF_BUFFERS * _cbd.framesize) - 1;
 
-        _ud.rdloc += blockLen;
-        if( _ud.rdloc > lastPos )
+        _cbd.rdloc += blockLen;
+        if( _cbd.rdloc > lastPos )
         {
-            _ud.rdloc = 0;
+            _cbd.rdloc = 0;
         }
 
-        return _ud.framesize;
+        return _cbd.framesize;
     }
 
     // No new data available, return zero write
@@ -168,7 +180,7 @@ int HSoundcardReader<T>::callback( const void *inputBuffer, void *outputBuffer,
                            void *userData )
 {
     // Cast data passed through stream to our structure.
-    UD *data = (UD*) userData;
+    CallbackData *data = (CallbackData*) userData;
     static unsigned int blockLen = data->framesize;
     static unsigned int lastPos = (NUMBER_OF_BUFFERS * data->framesize) - 1;
 
@@ -190,6 +202,44 @@ int HSoundcardReader<T>::callback( const void *inputBuffer, void *outputBuffer,
     data->cv.notify_one();
 
     return 0;
+}
+
+template <class T>
+bool HSoundcardReader<T>::Start()
+{
+    if( !_isInitialized )
+    {
+        HLog("Refusing to start a stream when not initialized");
+        return false;
+    }
+
+    HLog("Starting soundcard stream");
+    PaError err = Pa_StartStream( _stream );
+    if( err != paNoError )
+    {
+        HError("Could not start stream: " + std::string(Pa_GetErrorText(err)));
+        return false;
+    }
+    return true;
+}
+
+template <class T>
+bool HSoundcardReader<T>::Stop()
+{
+    if( !_isInitialized )
+    {
+        HLog("Refusing to stop a stream when not initialized");
+        return false;
+    }
+
+    HLog("Stopping soundcard stream");
+    PaError err = Pa_StopStream( _stream );
+    if( err != paNoError )
+    {
+        HError("Could not stop stream: " + std::string(Pa_GetErrorText(err)));
+        return false;
+    }
+    return true;
 }
 
 #endif

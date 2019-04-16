@@ -15,47 +15,55 @@
 // CLIENT
 #include <arpa/inet.h>
 
-//#include <fstream>
 
 #include "../hardt/include/hardtapi.h"
 #include "dspcmd.h"
 
-//#include "portaudio.h"
 
 
 
+/********************************************************************
+Setup signal handling.
 
-/*static int s_interrupted = 0;
-static void s_signal_handler (int signal_value)
+This allows us to close down gracefully when the user presses
+ctrl+c
+********************************************************************/
+
+static bool terminated = false;
+static void signalIntTermHandler (int signal_value)
 {
-    s_interrupted = 1;
-    std::unique_lock<std::mutex> lck(mtx);
-    std::cout << "outer handler locked" << std::endl;
-    cv2.notify_one();
-    std::cout << "outer handler cv2.notify_one()" << std::endl;
+    terminated = true;
+    std::cout << "SIGTERM or SITINT" << std::endl;
 }
 
-bool is_interrupted() {
-    return s_interrupted != 0;
-}
-
-static void s_catch_signals (void)
+static void SetupSignalHandling(void)
 {
     struct sigaction action;
-    action.sa_handler = s_signal_handler;
+    action.sa_handler = signalIntTermHandler;
     action.sa_flags = 0;
     sigemptyset (&action.sa_mask);
     sigaction (SIGINT, &action, NULL);
     sigaction (SIGTERM, &action, NULL);
-}*/
-
+}
 
 
 
 int main(int argc, char**argv)
 {
+    // Setup signal handling
+    SetupSignalHandling();
 
-    HInit(std::string("dspcmd"));
+    // Initialize the Hardt library, giving a name for logfiles, or if
+    // the '-v' switch has been given, let Hardt log directly to stdout
+    bool verbose = false;
+    for (int argNo = 1; argNo < argc; argNo++ )
+    {
+        if( strncmp(argv[argNo], "-v", 2) == 0 )
+        {
+            verbose = true;
+        }
+    }
+    verbose ? HInit() : HInit(std::string("dspcmd"));
 
 
 
@@ -213,6 +221,8 @@ int main(int argc, char**argv)
 
     std::cout << "INIT complete" << std::endl;
     int device = atoi(argv[1]);
+
+
 
     HSoundcardReader<int> rdr(device, 48000, 1, paInt32, 1024);
     HNetworkServer<int> srv = HNetworkServer<int>(8080, &rdr);
