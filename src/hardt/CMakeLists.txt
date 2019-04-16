@@ -3,6 +3,8 @@ set(CMAKE_MACOSX_RPATH 1)
 add_library(hardt SHARED "")
 target_link_libraries(hardt m)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
+
 target_sources(hardt
     PRIVATE
         hardt.cpp

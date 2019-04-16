@@ -5,8 +5,9 @@
 
 #include <stdio.h>
 #include <iostream>
-
-
+#include <mutex>
+#include <condition_variable>
+#include <cstring>
 
 template <class T>
 class HSoundcardReader : public HReader<T>
