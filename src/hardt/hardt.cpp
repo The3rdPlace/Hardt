@@ -1,8 +1,10 @@
 #include "hardtapi.h"
 
 #include <stdio.h>
+#include <cstdio>
 #include <sstream>
 #include <fstream>
+#include <stdarg.h>
 
 std::string getversion()
 {
@@ -43,13 +45,25 @@ std::string getFilenameWithoutPath(std::string pathAndFilename, bool removeExten
     return pathAndFilename;
 }
 
-void writeToStream(std::ofstream stream, std::string msg)
+std::string getFormattedMessage(const char* fmt, ...)
 {
-    stream << msg << std::endl;
+    char output[256];
+
+    va_list args;
+    va_start(args, fmt);
+
+    vsnprintf(output, 256, fmt, args);
+    va_end (args);
+
+    return std::string(output);
 }
 
-void HWriteLogMessage(std::string file, std::string message)
+void HWriteLogMessage(std::string file, const char* fmt, ...)
 {
+    va_list args;
+    va_start(args, fmt);
+    std::string message = getFormattedMessage(fmt, args);
+
     std::string output = getFilenameWithoutPath(file, true) + std::string(": ") + message;
     if( HLogStream.is_open() )
     {
@@ -61,8 +75,12 @@ void HWriteLogMessage(std::string file, std::string message)
     }
 }
 
-void HWriteErrorMessage(std::string file, std::string line, std::string message)
+void HWriteErrorMessage(std::string file, std::string line, const char* fmt, ...)
 {
+    va_list args;
+    va_start(args, fmt);
+    std::string message = getFormattedMessage(fmt, args);
+
     std::string output = "ERROR at " + getFilenameWithoutPath(file, false) + std::string("@") + line + std::string(": ") + message;
     if( HLogStream.is_open() )
     {

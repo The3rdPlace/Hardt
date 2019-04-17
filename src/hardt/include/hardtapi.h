@@ -35,6 +35,50 @@ class HReader
 };
 
 /********************************************************************
+Exceptions
+********************************************************************/
+
+/*
+    Thrown by constructors if the object could not be initialized
+
+    Constructor:
+        HInitializationException(reason)
+*/
+class HInitializationException : public std::exception
+{
+    private:
+
+        const char* _why;
+
+    public:
+
+        HInitializationException(const char* reason): _why(reason) {}
+
+        virtual const char* what() const throw()
+        {
+            return _why;
+        }
+};
+
+/*
+    Thrown by functions if they have not been implemneted
+
+    Constructor:
+        HNotImplementedException()
+*/
+class HNotImplementedException : public std::exception
+{
+    public:
+
+        HNotImplementedException() {}
+
+        virtual const char* what() const throw()
+        {
+            return "Not implemented";
+        }
+};
+
+/********************************************************************
 Include api function declarations
 ********************************************************************/
 

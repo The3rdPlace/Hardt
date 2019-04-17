@@ -29,8 +29,6 @@ This allows us to close down gracefully when the user presses
 ctrl+c
 ********************************************************************/
 
-//HNetworkServer<int> srv
-
 static bool terminated = false;
 static void signalIntTermHandler (int signal_value)
 {
@@ -48,27 +46,115 @@ static void SetupSignalHandling()
     sigaction (SIGTERM, &action, NULL);
 }
 
+/********************************************************************
+Argument parsing and global configuration
+********************************************************************/
 
-
-int main(int argc, char**argv)
+// Settings
+struct DspCmdConfig
 {
-    // Initialize the Hardt library, giving a name for logfiles, or if
-    // the '-v' switch has been given, let Hardt log directly to stdout
-    bool verbose = false;
-    for (int argNo = 1; argNo < argc; argNo++ )
+    bool Verbose = false;
+    bool ShowAudioDevices = false;
+
+    bool IsNetworkReaderClient = false;
+    bool IsNetworkWriterClient = false; // not implemented
+    bool IsNetworkReaderServer = false; // not implemented
+    bool IsNetworkWriterServer = false;
+    int Port = 8080;
+    char *Server = NULL;
+
+    char *InputFile = NULL;
+    char *OutputFile = NULL; // not implemented
+
+    int InputDevice = -1; // not implemented
+    int OutputDevice = -1;
+    int Rate = -1;
+    int Format = -1;
+
+} Config;
+
+bool argBoolCmp(const char* arg, const char* option, bool currentValue)
+{
+    return strncmp(arg, option, strlen(option)) == 0 ? true : currentValue;
+}
+
+char* argCharCmp(const char* arg, const char* option, char* value, char* currentValue)
+{
+    return strncmp(arg, option, strlen(option)) == 0 ? value : currentValue;
+}
+
+int argIntCmp(const char* arg, const char* option, char* value, int currentValue)
+{
+    return strncmp(arg, option, strlen(option)) == 0 ? atoi(value) : currentValue;
+}
+
+void parseArguments(int argc, char** argv)
+{
+    for( int argNo = 1; argNo < argc; argNo++ )
     {
-        if( strncmp(argv[argNo], "-v", 2) == 0 )
+        Config.Verbose = argBoolCmp(argv[argNo], "-v", Config.Verbose);
+        Config.ShowAudioDevices = argBoolCmp(argv[argNo], "-a", Config.ShowAudioDevices);
+
+        Config.IsNetworkWriterServer = argBoolCmp(argv[argNo], "-sw", Config.IsNetworkWriterServer);
+        //Config.IsNetworkReaderServer = argBoolCmp(argv[argNo], "-sr", Config.IsNetworkReaderServer);
+        //Config.IsNetworkWriterClient = argBoolCmp(argv[argNo], "-cw", Config.IsNetworkWriterClient);
+        Config.IsNetworkReaderClient = argBoolCmp(argv[argNo], "-cr", Config.IsNetworkReaderClient);
+
+        if( argNo < argc - 1 )
         {
-            verbose = true;
+            //Config.InputFile = argCharCmp(argv[argNo], "-if", argv[argNo + 1], Config.InputFile);
+            Config.OutputFile = argCharCmp(argv[argNo], "-of", argv[argNo + 1], Config.OutputFile);
+
+            //Config.InputDevice = argIntCmp(argv[argNo], "-id", argv[argNo + 1], Config.InputDevice);
+            Config.OutputDevice = argIntCmp(argv[argNo], "-od", argv[argNo + 1], Config.OutputDevice);
+            Config.Rate = argIntCmp(argv[argNo], "-r", argv[argNo + 1], Config.Rate);
+            Config.Format = argIntCmp(argv[argNo], "-f", argv[argNo + 1], Config.Format);
+
+            Config.Server = argCharCmp(argv[argNo], "-cr", argv[argNo + 1], Config.Server);
+        }
+
+        if( argNo < argc - 2 )
+        {
+            Config.Port = argIntCmp(argv[argNo], "-cr", argv[argNo + 2], Config.Port);
+        }
+
+        if( argBoolCmp(argv[argNo], "-h", false) )
+        {
+            std::cout << "Usage: dspcmd [option [value]]" << std::endl << std::endl;
+            std::cout << "-a                 Show a list of available audio devices" << std::endl;
+            std::cout << "-f                 Sample format (" << H_SAMPLE_FORMAT_INT_8 << "=Int8, " << H_SAMPLE_FORMAT_UINT_8 << "=UInt8, " << H_SAMPLE_FORMAT_INT_16 << "=Int16, " /*<< H_SAMPLE_FORMAT_INT_24 << "=Int24, "*/ << H_SAMPLE_FORMAT_INT_32 << "=Int32)" << std::endl;
+            std::cout << "-id device         Input audio device" << std::endl;
+            //std::cout << "-if name           Name and path of input file" << std::endl;
+            std::cout << "-h                 Show this help" << std::endl;
+            //std::cout << "-od device         Output audio device" << std::endl;
+            std::cout << "-of name           Name and path of output file" << std::endl;
+            std::cout << "-r rate            Sample rate (" << H_SAMPLE_RATE_8K << ", " << H_SAMPLE_RATE_11K << ", " << H_SAMPLE_RATE_22K << ", " << H_SAMPLE_RATE_32K << ", " << H_SAMPLE_RATE_44K1 << ", " << H_SAMPLE_RATE_48K << ", " << H_SAMPLE_RATE_96K << ", " << H_SAMPLE_RATE_192K << ")" << std::endl;
+            std::cout << "-v                 Be verbose, dont write to logfiles but to stdout" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "-cr server port    Run as network client, reading from the network and writing to a local writer" << std::endl;
+            //std::cout << "-cw server port    Run as network client, reading from a local reader and writing to the network" << std::endl;
+            std::cout << "-sw                Run as network server, reading from a local reader and writing to the network" << std::endl;
+            //std::cout << "-sr                Run as network server, reading from the network and writing to a local writer" << std::endl;
         }
     }
-    verbose ? HInit() : HInit(std::string("dspcmd"));
+}
+
+
+int main(int argc, char** argv)
+{
+    // Show application name and parse input arguments
+	std::cout << "dspcmd: using Hardt " + getversion() << std::endl ;
+    parseArguments(argc, argv);
+
+    // Initialize the Hardt library, giving a name for logfiles, or if
+    // the '-v' switch has been given, let Hardt log directly to stdout
+    Config.Verbose ? HInit() : HInit(std::string("dspcmd"));
 
     // Setup signal handling
     SetupSignalHandling();
 
-    if( argc == 2 && strncmp(argv[1], "d", 1) == 0 ) {
-
+    if( Config.ShowAudioDevices ) {
 
         PaError err = Pa_Initialize();
     	if( err != paNoError )
@@ -76,7 +162,6 @@ int main(int argc, char**argv)
     		printf("Initialization error\n");
     		return 1;
     	}
-
 
     	int numDevices;
         numDevices = Pa_GetDeviceCount();
@@ -143,8 +228,7 @@ int main(int argc, char**argv)
 
 
 
-    std::cout << argv[1] << std::endl;
-    if( argc == 3 && strncmp(argv[1], "c", 1) == 0 ) {
+    if( Config.IsNetworkReaderClient ) {
 
 
 
@@ -166,10 +250,10 @@ int main(int argc, char**argv)
         memset(&serv_addr, '0', sizeof(serv_addr));
 
         serv_addr.sin_family = AF_INET;
-        serv_addr.sin_port = htons(8080);
+        serv_addr.sin_port = htons(Config.Port);
 
         // Convert IPv4 and IPv6 addresses from text to binary form
-        if(inet_pton(AF_INET, argv[2], &serv_addr.sin_addr)<=0)
+        if(inet_pton(AF_INET, Config.Server, &serv_addr.sin_addr)<=0)
         {
             printf("\nInvalid address/ Address not supported \n");
             return -1;
@@ -201,7 +285,6 @@ int main(int argc, char**argv)
 
 
 
-	std::cout << "dspcmd: using Hardt " + getversion() << "\n" ;
 
 
 
@@ -218,23 +301,19 @@ int main(int argc, char**argv)
 
 
 
-
-    std::cout << "INIT complete" << std::endl;
-    int device = atoi(argv[1]);
-
-
-
-    HSoundcardReader<int> rdr(device, 48000, 1, paInt32, 1024);
-    HNetworkServer<int> srv = HNetworkServer<int>(8080, &rdr, &terminated);
-    try
+    if( Config.IsNetworkWriterServer)
     {
-        srv.Run();
+        HSoundcardReader<int> rdr(Config.InputDevice, Config.Rate, 1, Config.Format, 1024);
+        HNetworkServer<int> srv = HNetworkServer<int>(Config.Port, &rdr, &terminated);
+        try
+        {
+            srv.Run();
+        }
+        catch( std::exception ex )
+        {
+            std::cout << "Caught exception: " << ex.what() << std::endl;
+        }
     }
-    catch( ... )
-    {
-        std::cout << "OUTER EXCEPTION" << std::endl;
-    }
-    std::cout << "GOODBYE" << std::endl;
 
 	return 0;
 }
