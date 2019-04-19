@@ -17,7 +17,7 @@ class HWriter
 {
     public:
 
-        virtual int Write(T* src, int size) = 0;
+        virtual int Write(T* src) = 0;
         virtual int Blocksize() = 0;
         virtual bool Start() { return true; }
         virtual bool Stop() { return true; }
@@ -61,6 +61,50 @@ class HInitializationException : public std::exception
 };
 
 /*
+    Thrown if a network connection fails
+
+    Constructor:
+        HNetworkException(reason)
+*/
+class HNetworkException : public std::exception
+{
+    private:
+
+        const char* _why;
+
+    public:
+
+        HNetworkException(const char* reason): _why(reason) {}
+
+        virtual const char* what() const throw()
+        {
+            return _why;
+        }
+};
+
+/*
+    Thrown if there is errors during file i/o
+
+    Constructor:
+        HFileIOException(reason)
+*/
+class HFileIOException : public std::exception
+{
+    private:
+
+        const char* _why;
+
+    public:
+
+        HFileIOException(const char* reason): _why(reason) {}
+
+        virtual const char* what() const throw()
+        {
+            return _why;
+        }
+};
+
+/*
     Thrown by functions if they have not been implemneted
 
     Constructor:
@@ -84,7 +128,9 @@ Include api function declarations
 
 #include <portaudio.h>
 #include "hnetworkserver.h"
+#include "hnetworkclient.h"
 #include "hsoundcardreader.h"
+#include "hfilewriter.h"
 
 /********************************************************************
 Network classes

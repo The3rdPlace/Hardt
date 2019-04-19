@@ -61,7 +61,7 @@ struct DspCmdConfig
     bool IsNetworkReaderServer = false; // not implemented
     bool IsNetworkWriterServer = false;
     int Port = 8080;
-    char *Server = NULL;
+    char *Address = NULL;
 
     char *InputFile = NULL;
     char *OutputFile = NULL; // not implemented
@@ -110,7 +110,7 @@ void parseArguments(int argc, char** argv)
             Config.Rate = argIntCmp(argv[argNo], "-r", argv[argNo + 1], Config.Rate);
             Config.Format = argIntCmp(argv[argNo], "-f", argv[argNo + 1], Config.Format);
 
-            Config.Server = argCharCmp(argv[argNo], "-cr", argv[argNo + 1], Config.Server);
+            Config.Address = argCharCmp(argv[argNo], "-cr", argv[argNo + 1], Config.Address);
         }
 
         if( argNo < argc - 2 )
@@ -230,7 +230,7 @@ int main(int argc, char** argv)
 
     if( Config.IsNetworkReaderClient ) {
 
-
+        /*
 
 
         //struct sockaddr_in address;
@@ -278,6 +278,19 @@ int main(int argc, char** argv)
         while( !terminated && valread > 0 );
         close(sock);
         myfile.close();
+        */
+
+
+        HFileWriter<int> wr("tmp.raw");
+        HNetworkClient<int> client = HNetworkClient<int>(Config.Address, Config.Port, &wr, &terminated);
+        try
+        {
+            client.Run();
+        }
+        catch( std::exception ex )
+        {
+            std::cout << "Caught exception: " << ex.what() << std::endl;
+        }
 
         return 0;
     }

@@ -34,7 +34,6 @@ class HNetworkServer
         HNetworkServer(int port, HReader<T>* reader, bool* terminationToken);
         ~HNetworkServer();
         void Run();
-        void Halt();
 };
 
 /********************************************************************
