@@ -11,6 +11,7 @@ std::vector<Test*> tests;
 int main(int argc, char **argv)
 {
     std::cout << "Running unittests: using Hardt " + getversion() << std::endl; ;
+    HInit("hardt_test");
 
     if( Test::execute() )
     {

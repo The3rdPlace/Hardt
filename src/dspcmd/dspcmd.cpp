@@ -105,7 +105,7 @@ void parseArguments(int argc, char** argv)
             //Config.InputFile = argCharCmp(argv[argNo], "-if", argv[argNo + 1], Config.InputFile);
             Config.OutputFile = argCharCmp(argv[argNo], "-of", argv[argNo + 1], Config.OutputFile);
 
-            //Config.InputDevice = argIntCmp(argv[argNo], "-id", argv[argNo + 1], Config.InputDevice);
+            Config.InputDevice = argIntCmp(argv[argNo], "-id", argv[argNo + 1], Config.InputDevice);
             Config.OutputDevice = argIntCmp(argv[argNo], "-od", argv[argNo + 1], Config.OutputDevice);
             Config.Rate = argIntCmp(argv[argNo], "-r", argv[argNo + 1], Config.Rate);
             Config.Format = argIntCmp(argv[argNo], "-f", argv[argNo + 1], Config.Format);

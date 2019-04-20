@@ -26,6 +26,7 @@ class HNetwork
         bool _firstRead;
         bool _firstWrite;
         T* _buffer;
+        int _blocksize;
 
         void InitServer();
         void InitClient();
@@ -61,9 +62,10 @@ HNetwork<T>::HNetwork(const char* address, int port, HWriter<T>* writer, bool* t
     _writer(writer),
     _reader(NULL),
     _terminated(terminationToken),
-    _buffer(NULL)
+    _buffer(NULL),
+    _blocksize(writer->Blocksize())
 {
-    HLog("HNetwork(client)(address=%s, port=%d, writer=*, terminationToken=%d)", address, port, *terminationToken);
+    HLog("HNetwork(client)(address=%s, port=%d, writer=*, terminationToken=%d), blocksize is %d", address, port, *terminationToken, _blocksize);
     InitClient();
 }
 
@@ -77,9 +79,10 @@ HNetwork<T>::HNetwork(const char* address, int port, HReader<T>* reader, bool* t
     _writer(NULL),
     _reader(reader),
     _terminated(terminationToken),
-    _buffer(NULL)
+    _buffer(NULL),
+    _blocksize(reader->Blocksize())
 {
-    HLog("HNetwork(client)(address=%s, port=%d, reader=*, terminationToken=%d)", address, port, *terminationToken);
+    HLog("HNetwork(client)(address=%s, port=%d, reader=*, terminationToken=%d), blocksize is %d", address, port, *terminationToken, _blocksize);
     InitClient();
 }
 
@@ -93,9 +96,10 @@ HNetwork<T>::HNetwork(int port, HWriter<T>* writer, bool* terminationToken):
     _writer(writer),
     _reader(NULL),
     _terminated(terminationToken),
-    _buffer(NULL)
+    _buffer(NULL),
+    _blocksize(writer->Blocksize())
 {
-    HLog("HNetwork(server)(port=%d, writer=*, terminationToken=%d)", port, *terminationToken);
+    HLog("HNetwork(server)(port=%d, writer=*, terminationToken=%d), blocksize is %d", port, *terminationToken, _blocksize);
     InitServer();
 }
 
@@ -109,9 +113,10 @@ HNetwork<T>::HNetwork(int port, HReader<T>* reader, bool* terminationToken):
     _writer(NULL),
     _reader(reader),
     _terminated(terminationToken),
-    _buffer(NULL)
+    _buffer(NULL),
+    _blocksize(reader->Blocksize())
 {
-    HLog("HNetwork(server)(port=%d, reader=*, terminationToken=%d)", port, *terminationToken);
+    HLog("HNetwork(server)(port=%d, reader=*, terminationToken=%d), blocksize is %d", port, *terminationToken,_blocksize);
     InitServer();
 }
 
@@ -170,8 +175,8 @@ void HNetwork<T>::InitServer()
     HLog("SIGPIPE disabled");
 
     // Allocate local buffer
-    _buffer = new T[_reader->Blocksize()];
-    HLog("Allocated buffer for %d frames = %d bytes", _reader->Blocksize(), _reader->Blocksize() * sizeof(T));
+    _buffer = new T[_blocksize];
+    HLog("Allocated buffer for %d frames = %d bytes", _blocksize, _blocksize * sizeof(T));
 }
 
 template <class T>
@@ -197,15 +202,19 @@ void HNetwork<T>::InitClient()
     }
 
     // Connect
+    HLog("Trying to connect");
     if (connect(_clientSocket, (struct sockaddr *)&_address, sizeof(_address)) < 0)
     {
         HError("Failed to connect to server %s", _server);
         throw new HNetworkException("Failed to connect to server");
     }
+    HLog("Connected");
 
     // Allocate local buffer
-    _buffer = new T[_reader->Blocksize()];
-    HLog("Allocated buffer for %d frames = %d bytes", _reader->Blocksize(), _reader->Blocksize() * sizeof(T));
+    HLog("Allocate");
+    HLog("Allocate %d", _blocksize);
+    _buffer = new T[_blocksize];
+    HLog("Allocated buffer for %d frames = %d bytes", _blocksize, _blocksize * sizeof(T));
 }
 
 template <class T>
@@ -401,7 +410,7 @@ void HNetwork<T>::RunWriter(T* buffer)
         int received;
         try
         {
-            received = read( _clientSocket , buffer, _writer->Blocksize() * sizeof(T));
+            received = read( _clientSocket , buffer, _blocksize * sizeof(T));
             if( received <= 0 )
             {
                 HLog("Zero read from the server, possibly closed socket");
