@@ -132,6 +132,7 @@ HNetwork<T>::~HNetwork()
         HLog("Closing server socket");
         close(this->_serverSocket);
     }
+    HLog("Done");
     if( _buffer != NULL )
     {
         delete _buffer;
