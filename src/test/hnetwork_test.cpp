@@ -13,7 +13,7 @@ class HNetwork_Test: public Test
 
         void run()
         {
-            test_1();
+            test_reading_server_to_writing_client();
         }
 
         const char* name()
@@ -87,7 +87,7 @@ class HNetwork_Test: public Test
             client->Run();
         }
 
-        void test_1()
+        void test_reading_server_to_writing_client()
         {
             bool terminated = false;
             int expected[] = {1, 3, 2, 4, 3, 5, 4, 6, 5, 7, 6, 8, 7, 9};
