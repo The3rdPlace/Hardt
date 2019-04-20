@@ -7,6 +7,7 @@
 #include <netinet/in.h>
 #include <signal.h>
 #include <arpa/inet.h>
+#include <unistd.h>
 
 template <class T>
 class HNetworkServer

@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <iostream>
 
+#include "test.h"
+
 class HFileWriter_Test: public Test
 {
     public:
@@ -9,6 +11,11 @@ class HFileWriter_Test: public Test
         {
             test_char();
             test_int();
+        }
+
+        const char* name()
+        {
+            return "HFileWriter";
         }
 
     private:
@@ -44,7 +51,6 @@ class HFileWriter_Test: public Test
         {
             int data[] = {1, 3, 2, 4, 3, 5, 4, 6, 5, 7, 6, 8, 7, 9};
             int datalen = sizeof(data) / sizeof(int);
-            std::cout << "size " << datalen;
             HFileWriter<int> *wr = new HFileWriter<int>("/tmp/hfilewriter_int_data.txt", datalen);
             ASSERT_IS_EQUAL(wr->Write(data), datalen);
             delete wr;
@@ -52,7 +58,7 @@ class HFileWriter_Test: public Test
             /* Do note, that the above integer array is stored lsb first on pc/linux systems. If
                you wish to exchange data with systems using another endianness, you must convert the
                byte order as appropriate */
-               
+
             std::ifstream resultfile("/tmp/hfilewriter_int_data.txt", std::ios::in | std::ios::binary | std::ios::ate);
             if (resultfile.is_open())
             {

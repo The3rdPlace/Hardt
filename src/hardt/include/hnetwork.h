@@ -1,6 +1,14 @@
 #ifndef __HNETWORK_H
 #define __HNETWORK_H
 
+#include <iostream>
+#include <sys/socket.h>
+#include <stdlib.h>
+#include <netinet/in.h>
+#include <signal.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+
 template <class T>
 class HNetwork
 {

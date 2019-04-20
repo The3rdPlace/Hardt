@@ -45,16 +45,11 @@ std::string getFilenameWithoutPath(std::string pathAndFilename, bool removeExten
     return pathAndFilename;
 }
 
-std::string getFormattedMessage(const char* fmt, ...)
+std::string getFormattedMessage(const char* fmt, va_list args)
 {
     char output[256];
 
-    va_list args;
-    va_start(args, fmt);
-
     vsnprintf(output, 256, fmt, args);
-    va_end (args);
-
     return std::string(output);
 }
 
@@ -63,6 +58,7 @@ void HWriteLogMessage(std::string file, const char* fmt, ...)
     va_list args;
     va_start(args, fmt);
     std::string message = getFormattedMessage(fmt, args);
+    va_end(args);
 
     std::string output = getFilenameWithoutPath(file, true) + std::string(": ") + message;
     if( HLogStream.is_open() )
@@ -80,6 +76,7 @@ void HWriteErrorMessage(std::string file, std::string line, const char* fmt, ...
     va_list args;
     va_start(args, fmt);
     std::string message = getFormattedMessage(fmt, args);
+    va_end(args);
 
     std::string output = "ERROR at " + getFilenameWithoutPath(file, false) + std::string("@") + line + std::string(": ") + message;
     if( HLogStream.is_open() )
