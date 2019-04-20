@@ -21,9 +21,7 @@ class HNetwork_Test: public Test
             return "HNetwork(Reader|Writer)";
         }
 
-    public:
-
-        int received[14];
+    private:
 
         class TestReader : public HReader<int>
         {
