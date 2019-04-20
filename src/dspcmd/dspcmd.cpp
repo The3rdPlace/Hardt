@@ -95,26 +95,31 @@ void parseArguments(int argc, char** argv)
         Config.Verbose = argBoolCmp(argv[argNo], "-v", Config.Verbose);
         Config.ShowAudioDevices = argBoolCmp(argv[argNo], "-a", Config.ShowAudioDevices);
 
-        Config.IsNetworkWriterServer = argBoolCmp(argv[argNo], "-sw", Config.IsNetworkWriterServer);
-        //Config.IsNetworkReaderServer = argBoolCmp(argv[argNo], "-sr", Config.IsNetworkReaderServer);
-        //Config.IsNetworkWriterClient = argBoolCmp(argv[argNo], "-cw", Config.IsNetworkWriterClient);
-        Config.IsNetworkReaderClient = argBoolCmp(argv[argNo], "-cr", Config.IsNetworkReaderClient);
-
         if( argNo < argc - 1 )
         {
             //Config.InputFile = argCharCmp(argv[argNo], "-if", argv[argNo + 1], Config.InputFile);
             Config.OutputFile = argCharCmp(argv[argNo], "-of", argv[argNo + 1], Config.OutputFile);
 
             Config.InputDevice = argIntCmp(argv[argNo], "-id", argv[argNo + 1], Config.InputDevice);
-            Config.OutputDevice = argIntCmp(argv[argNo], "-od", argv[argNo + 1], Config.OutputDevice);
+            //Config.OutputDevice = argIntCmp(argv[argNo], "-od", argv[argNo + 1], Config.OutputDevice);
             Config.Rate = argIntCmp(argv[argNo], "-r", argv[argNo + 1], Config.Rate);
             Config.Format = argIntCmp(argv[argNo], "-f", argv[argNo + 1], Config.Format);
 
-            Config.Address = argCharCmp(argv[argNo], "-cr", argv[argNo + 1], Config.Address);
+            Config.IsNetworkWriterServer = argBoolCmp(argv[argNo], "-sw", Config.IsNetworkWriterServer);
+            Config.Port = argIntCmp(argv[argNo], "-sw", argv[argNo + 1], Config.Port);
+
+            //Config.IsNetworkReaderServer = argBoolCmp(argv[argNo], "-sr", Config.IsNetworkReaderServer);
+            //Config.Port = argIntCmp(argv[argNo], "-sr", argv[argNo + 1], Config.Port);
         }
 
         if( argNo < argc - 2 )
         {
+            //Config.IsNetworkWriterClient = argBoolCmp(argv[argNo], "-cw", Config.IsNetworkWriterClient);
+            //Config.Server = argIntCmp(argv[argNo], "-cw", argv[argNo + 1], Config.Server);
+            //Config.Port = argIntCmp(argv[argNo], "-cw", argv[argNo + 2], Config.Port);
+
+            Config.IsNetworkReaderClient = argBoolCmp(argv[argNo], "-cr", Config.IsNetworkReaderClient);
+            Config.Address = argCharCmp(argv[argNo], "-cr", argv[argNo + 1], Config.Address);
             Config.Port = argIntCmp(argv[argNo], "-cr", argv[argNo + 2], Config.Port);
         }
 
@@ -134,8 +139,8 @@ void parseArguments(int argc, char** argv)
 
             std::cout << "-cr server port    Run as network client, reading from the network and writing to a local writer" << std::endl;
             //std::cout << "-cw server port    Run as network client, reading from a local reader and writing to the network" << std::endl;
-            std::cout << "-sw                Run as network server, reading from a local reader and writing to the network" << std::endl;
-            //std::cout << "-sr                Run as network server, reading from the network and writing to a local writer" << std::endl;
+            std::cout << "-sw port           Run as network server, reading from a local reader and writing to the network" << std::endl;
+            //std::cout << "-sr port           Run as network server, reading from the network and writing to a local writer" << std::endl;
         }
     }
 }
@@ -154,6 +159,7 @@ int main(int argc, char** argv)
     // Setup signal handling
     SetupSignalHandling();
 
+    /* Todo: Move this to a component */
     if( Config.ShowAudioDevices ) {
 
         PaError err = Pa_Initialize();
@@ -225,62 +231,7 @@ int main(int argc, char** argv)
 
     }
 
-
-
-
     if( Config.IsNetworkReaderClient ) {
-
-        /*
-
-
-        //struct sockaddr_in address;
-        int sock = 0, valread;
-        struct sockaddr_in serv_addr;
-        //char *hello = "Hello from client";
-        char buffer[1024] = {0};
-        std::cout << "client" << std::endl;
-
-
-        if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-        {
-            printf("\n Socket creation error \n");
-            return -1;
-        }
-
-        memset(&serv_addr, '0', sizeof(serv_addr));
-
-        serv_addr.sin_family = AF_INET;
-        serv_addr.sin_port = htons(Config.Port);
-
-        // Convert IPv4 and IPv6 addresses from text to binary form
-        if(inet_pton(AF_INET, Config.Server, &serv_addr.sin_addr)<=0)
-        {
-            printf("\nInvalid address/ Address not supported \n");
-            return -1;
-        }
-
-        if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
-        {
-            printf("\nConnection Failed \n");
-            return -1;
-        }
-
-
-        std::ofstream myfile;
-        myfile.open ("data.raw", std::ios::out | std::ios::binary | std::ios::trunc);
-
-        do
-        {
-            valread = read( sock , buffer, 1024);
-            std::cout << "valread = " << valread << std::endl;
-            myfile.write(buffer, valread);
-        }
-        while( !terminated && valread > 0 );
-        close(sock);
-        myfile.close();
-        */
-
-
         HFileWriter<int> wr("tmp.raw");
         HNetworkClient<int> client = HNetworkClient<int>(Config.Address, Config.Port, &wr, &terminated);
         try
@@ -291,28 +242,7 @@ int main(int argc, char** argv)
         {
             std::cout << "Caught exception: " << ex.what() << std::endl;
         }
-
-        return 0;
     }
-
-
-
-
-
-
-
-
-    /*Generator* g = new Generator();
-
-    int freqs[1];
-    freqs[0] = 25;
-    std::complex<double>* samples = g->GetSamples(1000, 1, 1, freqs, 1);
-    //print_array< std::complex<double> >(samples, 1000);
-
-    delete g;*/
-
-
-
 
     if( Config.IsNetworkWriterServer)
     {
@@ -327,6 +257,14 @@ int main(int argc, char** argv)
             std::cout << "Caught exception: " << ex.what() << std::endl;
         }
     }
+
+    /* Todo: Move this to a component
+    Generator* g = new Generator();
+    int freqs[1];
+    freqs[0] = 25;
+    std::complex<double>* samples = g->GetSamples(1000, 1, 1, freqs, 1);
+    //print_array< std::complex<double> >(samples, 1000);
+    delete g;*/
 
 	return 0;
 }
