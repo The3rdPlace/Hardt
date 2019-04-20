@@ -39,11 +39,19 @@ class Test
         {
             if( a != b )
             {
-                std::cout << "====================================================================\n";
-                std::cout << "assertIsEqual(" << a << ", " << b << "): is not equal!\n";
-                std::cout << "in " << file << "@" << line << "\n";
+                std::cout << "====================================================================" << std::endl;
+                std::cout << "assertIsEqual(" << a << ", " << b << "): is not equal!" << std::endl;
+                std::cout << "in " << file << "@" << line << std::endl;
                 throw new std::exception();
             }
+        }
+
+        void assertFail(std::string file, int line, std::string reason)
+        {
+            std::cout << "====================================================================" << std::endl;
+            std::cout << "assertFail: " << reason << std::endl;
+            std::cout << "in " << file << "@" << line << "\n";
+            throw new std::exception();
         }
 
     public:
@@ -54,6 +62,7 @@ class Test
 std::vector<Test*> Test::tests;
 
 #define ASSERT_IS_EQUAL(a, b) assertIsEqual(__FILE__,__LINE__, a, b)
+#define ASSERT_FAIL(reason) assertFail(__FILE__,__LINE__, reason)
 
 #include "test.h"
 

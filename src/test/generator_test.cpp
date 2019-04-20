@@ -16,4 +16,4 @@ class Generator_Test: public Test
         {
             ASSERT_IS_EQUAL(1,1);
         }
-} test;
+} generator_test;
