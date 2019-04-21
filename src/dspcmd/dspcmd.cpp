@@ -71,6 +71,8 @@ struct DspCmdConfig
     int Rate = -1;
     int Format = -1;
 
+    int Blocksize = 1024;
+
 } Config;
 
 bool argBoolCmp(const char* arg, const char* option, bool currentValue)
@@ -100,6 +102,8 @@ void parseArguments(int argc, char** argv)
             //Config.InputFile = argCharCmp(argv[argNo], "-if", argv[argNo + 1], Config.InputFile);
             Config.OutputFile = argCharCmp(argv[argNo], "-of", argv[argNo + 1], Config.OutputFile);
 
+            Config.Blocksize = argIntCmp(argv[argNo], "-bs", argv[argNo + 1], Config.Blocksize);
+
             Config.InputDevice = argIntCmp(argv[argNo], "-id", argv[argNo + 1], Config.InputDevice);
             //Config.OutputDevice = argIntCmp(argv[argNo], "-od", argv[argNo + 1], Config.OutputDevice);
             Config.Rate = argIntCmp(argv[argNo], "-r", argv[argNo + 1], Config.Rate);
@@ -127,6 +131,7 @@ void parseArguments(int argc, char** argv)
         {
             std::cout << "Usage: dspcmd [option [value]]" << std::endl << std::endl;
             std::cout << "-a                 Show a list of available audio devices" << std::endl;
+            std::cout << "-bs blocksize      Blocksize used by readers and writers (default = 1024)" << std::endl;
             std::cout << "-f                 Sample format (" << H_SAMPLE_FORMAT_INT_8 << "=Int8, " << H_SAMPLE_FORMAT_UINT_8 << "=UInt8, " << H_SAMPLE_FORMAT_INT_16 << "=Int16, " /*<< H_SAMPLE_FORMAT_INT_24 << "=Int24, "*/ << H_SAMPLE_FORMAT_INT_32 << "=Int32)" << std::endl;
             std::cout << "-id device         Input audio device" << std::endl;
             //std::cout << "-if name           Name and path of input file" << std::endl;
@@ -233,7 +238,8 @@ int main(int argc, char** argv)
 
     if( Config.IsNetworkReaderClient ) {
         HFileWriter<int> wr("tmp.raw");
-        HNetworkClient<int> client = HNetworkClient<int>(Config.Address, Config.Port, &wr, &terminated);
+        HNetworkReader<int> nwRdr;
+        HNetworkClient<int> client = HNetworkClient<int>(Config.Address, Config.Port, &wr, Config.Blocksize, &nwRdr, &terminated);
         try
         {
             client.Run();
@@ -246,8 +252,9 @@ int main(int argc, char** argv)
 
     if( Config.IsNetworkWriterServer)
     {
-        HSoundcardReader<int> rdr(Config.InputDevice, Config.Rate, 1, Config.Format, 1024);
-        HNetworkServer<int> srv = HNetworkServer<int>(Config.Port, &rdr, &terminated);
+        HSoundcardReader<int> rdr(Config.InputDevice, Config.Rate, 1, Config.Format, Config.Blocksize);
+        HNetworkWriter<int> nwWr;
+        HNetworkServer<int> srv = HNetworkServer<int>(Config.Port, &rdr, Config.Blocksize, &nwWr, &terminated);
         try
         {
             srv.Run();

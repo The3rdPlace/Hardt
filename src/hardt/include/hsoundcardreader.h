@@ -49,10 +49,13 @@ class HSoundcardReader : public HReader<T>
 
         // The sample stream from the soundcard
         PaStream *_stream;
+        bool _isStarted;
 
         // Housekeeping
         bool _isInitialized;
 
+        // Implement Start() and Stop() so that we can start sampling whe
+        // data is needed, and stop again when the reader is no longer active
         bool Start(void* unused);
         bool Stop();
 
@@ -60,8 +63,7 @@ class HSoundcardReader : public HReader<T>
 
         HSoundcardReader(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer = DEFAULT_FRAMESIZE);
         ~HSoundcardReader();
-        int Read(T* dest);
-        int Blocksize();
+        int Read(T* dest, size_t blocksize);
 
         static int callback( const void *inputBuffer, void *outputBuffer,
                                    unsigned long framesPerBuffer,
@@ -76,7 +78,8 @@ Class implementation
 
 template <class T>
 HSoundcardReader<T>::HSoundcardReader(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer):
-    _isInitialized(false)
+    _isInitialized(false),
+    _isStarted(false)
 {
     HLog("HSoundCardReader(device=%d, rate=%d, channels=%d, format=%d, framesPerBuffer=%d)", device, rate, channels, format, framesPerBuffer);
 
@@ -159,14 +162,23 @@ HSoundcardReader<T>::~HSoundcardReader()
 }
 
 template <class T>
-int HSoundcardReader<T>::Blocksize()
+int HSoundcardReader<T>::Read(T* dest, size_t blocksize)
 {
-    return _cbd.framesize;
-}
+    // Requested blocksize can not be larger than the device blocksize
+    // (actively preventing large reads that would inhibit performance and
+    // responsiveness when working with a synchroneous device such as a soundcard)
+    if( blocksize > _cbd.framesize )
+    {
+        Stop();
+        throw new HAudioIOException("It is not allowed to read  more data than what the card ships per synchroneous callback");
+    }
 
-template <class T>
-int HSoundcardReader<T>::Read(T* dest)
-{
+    // Make sure we are running
+    if( !_isStarted )
+    {
+        throw new HAudioIOException("Stream is not started, no data to read");
+    }
+
     // If read and write position is the same (same buffer), then wait for new samples
     if( _cbd.wrloc == _cbd.rdloc )
     {
@@ -188,7 +200,7 @@ int HSoundcardReader<T>::Read(T* dest)
             _cbd.rdloc = 0;
         }
 
-        // We always reads the entire buffer
+        // We always reads the entire buffer as given
         return _cbd.framesize;
     }
 
@@ -258,6 +270,7 @@ bool HSoundcardReader<T>::Start(void* unused)
         HError("Could not start input stream: %s", Pa_GetErrorText(err));
         return false;
     }
+    _isStarted = true;
     HLog("Input stream started");
     return true;
 }
@@ -278,6 +291,7 @@ bool HSoundcardReader<T>::Stop()
         HError("Could not stop input stream: %s", Pa_GetErrorText(err));
         return false;
     }
+    _isStarted = false;
     HLog("Input stream stopped");
     return true;
 }

@@ -17,8 +17,8 @@ class HWriter
 {
     public:
 
-        virtual int Write(T* src) = 0;
-        virtual int Blocksize() = 0;
+        virtual int Write(T* src, size_t blocksize) = 0;
+
         virtual bool Start(void* data) { return true; }
         virtual bool Stop() { return true; }
 };
@@ -28,8 +28,8 @@ class HReader
 {
     public:
 
-        virtual int Read(T* dest) = 0;
-        virtual int Blocksize() = 0;
+        virtual int Read(T* dest, size_t blocksize) = 0;
+
         virtual bool Start(void* data) { return true; }
         virtual bool Stop() { return true; }
 };
@@ -105,6 +105,28 @@ class HFileIOException : public std::exception
 };
 
 /*
+    Thrown if there is errors during audio i/o
+
+    Constructor:
+        HAudioIOException(reason)
+*/
+class HAudioIOException : public std::exception
+{
+    private:
+
+        const char* _why;
+
+    public:
+
+        HAudioIOException(const char* reason): _why(reason) {}
+
+        virtual const char* what() const throw()
+        {
+            return _why;
+        }
+};
+
+/*
     Thrown by functions if they have not been implemneted
 
     Constructor:
@@ -127,25 +149,12 @@ Include api function declarations
 ********************************************************************/
 
 #include <portaudio.h>
-#include "hnetworkserver.h"
-#include "hnetworkclient.h"
 #include "hsoundcardreader.h"
 #include "hfilewriter.h"
-
-/********************************************************************
-Network classes
-********************************************************************/
-
-/*class HNetworkClient : public HReader
-{
-    private:
-
-        int _socket;
-        bool _connected;
-
-    public:
-
-        int Read(void* dest, int size);
-};*/
+#include "hnetworkwriter.h"
+#include "hnetworkreader.h"
+#include "hnetwork.h"
+#include "hnetworkserver.h"
+#include "hnetworkclient.h"
 
 #endif

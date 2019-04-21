@@ -23,8 +23,8 @@ class HFileWriter_Test: public Test
         void test_char()
         {
             char data[] = "123...abc...789...xyz";
-            HFileWriter<char> *wr = new HFileWriter<char>("/tmp/hfilewriter_char_data.txt", strlen(data));
-            ASSERT_IS_EQUAL(wr->Write(data), (int) strlen(data));
+            HFileWriter<char> *wr = new HFileWriter<char>("/tmp/hfilewriter_char_data.txt");
+            ASSERT_IS_EQUAL(wr->Write(data, (size_t) strlen(data)), (int) strlen(data));
             delete wr;
 
             std::ifstream resultfile("/tmp/hfilewriter_char_data.txt", std::ios::in | std::ios::binary | std::ios::ate);
@@ -51,8 +51,8 @@ class HFileWriter_Test: public Test
         {
             int data[] = {1, 3, 2, 4, 3, 5, 4, 6, 5, 7, 6, 8, 7, 9};
             int datalen = sizeof(data) / sizeof(int);
-            HFileWriter<int> *wr = new HFileWriter<int>("/tmp/hfilewriter_int_data.txt", datalen);
-            ASSERT_IS_EQUAL(wr->Write(data), datalen);
+            HFileWriter<int> *wr = new HFileWriter<int>("/tmp/hfilewriter_int_data.txt");
+            ASSERT_IS_EQUAL(wr->Write(data, datalen), datalen);
             delete wr;
 
             /* Do note, that the above integer array is stored lsb first on pc/linux systems. If

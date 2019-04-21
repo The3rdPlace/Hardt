@@ -7,15 +7,13 @@ class HFileWriter : public HWriter<T>
     private:
 
         std::ofstream _stream;
-        int _blocksize;
         const char* _filename;
 
     public:
 
-        HFileWriter(const char* filename, int blocksize = 1024);
+        HFileWriter(const char* filename);
         ~HFileWriter();
-        int Write(T* dest);
-        int Blocksize();
+        int Write(T* dest, size_t blocksize);
 };
 
 /********************************************************************
@@ -23,8 +21,7 @@ Class implementation
 ********************************************************************/
 
 template <class T>
-HFileWriter<T>::HFileWriter(const char* filename, int blocksize):
-    _blocksize(blocksize),
+HFileWriter<T>::HFileWriter(const char* filename):
     _filename(filename)
 {
     _stream.open(filename, std::ios::out | std::ios::binary | std::ios::trunc);
@@ -42,16 +39,10 @@ HFileWriter<T>::~HFileWriter()
 }
 
 template <class T>
-int HFileWriter<T>::Write(T* src)
+int HFileWriter<T>::Write(T* src, size_t blocksize)
 {
-    _stream.write((char*) src, _blocksize * sizeof(T));
-    return _blocksize;
-}
-
-template <class T>
-int HFileWriter<T>::Blocksize()
-{
-    return _blocksize;
+    _stream.write((char*) src, blocksize * sizeof(T));
+    return blocksize;
 }
 
 #endif

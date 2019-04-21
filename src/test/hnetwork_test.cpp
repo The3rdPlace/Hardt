@@ -29,25 +29,19 @@ class HNetwork_Test: public Test
             private:
 
                 int* _data;
-                int _blocksize;
 
             public:
 
                 TestReader(int* data, int blocksize):
-                    _data(data),
-                    _blocksize(blocksize)
+                    _data(data)
                 {}
 
-                int Read(int* dest)
+                int Read(int* dest, size_t blocksize)
                 {
-                    memcpy(dest, _data, _blocksize);
-                    return _blocksize;
+                    memcpy(dest, _data, blocksize);
+                    return blocksize;
                 }
 
-                int Blocksize()
-                {
-                    return _blocksize;
-                }
         };
 
         class TestWriter : public HWriter<int>
@@ -55,24 +49,17 @@ class HNetwork_Test: public Test
             private:
 
                 int* _received;
-                int _blocksize;
 
             public:
 
                 TestWriter(int* received, int blocksize):
-                    _received(received),
-                     _blocksize(blocksize)
+                    _received(received)
                 {}
 
-                int Write(int* src)
+                int Write(int* src, size_t blocksize)
                 {
-                    memcpy(_received, src, _blocksize);
+                    memcpy(_received, src, blocksize);
                     return 0;
-                }
-
-                int Blocksize()
-                {
-                    return _blocksize;
                 }
         };
 
@@ -94,11 +81,11 @@ class HNetwork_Test: public Test
             memset(received, 0, 14);
 
             TestReader rdr(expected, 14);
-            server = new HNetworkServer<int>(1234, &rdr, &terminated);
+            server = new HNetworkServer<int>(1234, &rdr, 14, &terminated);
             std::thread serverThread(runServer);
 
             TestWriter wr(received, 14);
-            client = new HNetworkClient<int>("127.0.0.1", 1234, &wr, &terminated);
+            client = new HNetworkClient<int>("127.0.0.1", 1234, &wr, 14, &terminated);
             std::thread clientThread(runClient);
 
             clientThread.join();
@@ -117,11 +104,11 @@ class HNetwork_Test: public Test
             memset(received, 0, 14);
 
             TestWriter wr(received, 14);
-            server = new HNetworkServer<int>(1234, &wr, &terminated);
+            server = new HNetworkServer<int>(1234, &wr, 14, &terminated);
             std::thread serverThread(runServer);
 
             TestReader rdr(expected, 14);
-            client = new HNetworkClient<int>("127.0.0.1", 1234, &rdr, &terminated);
+            client = new HNetworkClient<int>("127.0.0.1", 1234, &rdr, 14, &terminated);
             std::thread clientThread(runClient);
 
             clientThread.join();
