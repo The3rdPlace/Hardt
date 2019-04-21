@@ -1,7 +1,7 @@
 set(CMAKE_MACOSX_RPATH 1)
 
 add_library(hardt SHARED "")
-target_link_libraries(hardt m)
+target_link_libraries(hardt m portaudio)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
 
@@ -9,6 +9,7 @@ target_sources(hardt
     PRIVATE
         hardt.cpp
         generator.cpp
+        hsoundcard.cpp
 )
 
 include_directories("${PROJECT_BINARY_DIR}/src/hardt/")

@@ -148,7 +148,7 @@ class HNotImplementedException : public std::exception
 Include api function declarations
 ********************************************************************/
 
-#include <portaudio.h>
+#include "hsoundcard.h"
 #include "hsoundcardreader.h"
 #include "hfilewriter.h"
 #include "hnetworkwriter.h"
