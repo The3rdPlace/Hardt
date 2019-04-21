@@ -19,7 +19,7 @@ class HWriter
 
         virtual int Write(T* src) = 0;
         virtual int Blocksize() = 0;
-        virtual bool Start() { return true; }
+        virtual bool Start(void* data) { return true; }
         virtual bool Stop() { return true; }
 };
 
@@ -30,7 +30,7 @@ class HReader
 
         virtual int Read(T* dest) = 0;
         virtual int Blocksize() = 0;
-        virtual bool Start() { return true; }
+        virtual bool Start(void* data) { return true; }
         virtual bool Stop() { return true; }
 };
 

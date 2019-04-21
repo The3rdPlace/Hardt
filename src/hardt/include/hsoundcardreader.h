@@ -53,7 +53,7 @@ class HSoundcardReader : public HReader<T>
         // Housekeeping
         bool _isInitialized;
 
-        bool Start();
+        bool Start(void* unused);
         bool Stop();
 
     public:
@@ -242,7 +242,7 @@ int HSoundcardReader<T>::callback( const void *inputBuffer, void *outputBuffer,
 }
 
 template <class T>
-bool HSoundcardReader<T>::Start()
+bool HSoundcardReader<T>::Start(void* unused)
 {
     if( !_isInitialized )
     {

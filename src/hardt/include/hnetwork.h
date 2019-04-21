@@ -318,7 +318,7 @@ void HNetwork<T>::RunReader(T* buffer)
 
     // Start the reader - some readers have start/stop handling, others
     // just ignore this call
-    if( !_reader->Start() )
+    if( !_reader->Start(NULL) )
     {
         HError("Failed to Start() reader");
         return;
@@ -397,7 +397,7 @@ void HNetwork<T>::RunWriter(T* buffer)
 
     // Start the writer - some writer have start/stop handling, others
     // just ignore this call
-    if( !_writer->Start() )
+    if( !_writer->Start(NULL) )
     {
         HError("Failed to Start() writer");
         return;
