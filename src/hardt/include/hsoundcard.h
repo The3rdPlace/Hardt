@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <vector>
+#include <map>
 
 #include <portaudio.h>
 
@@ -29,7 +31,17 @@ class HSoundcard
 {
     public:
 
-        static void GetDeviceInformation();
+        struct DeviceInformation
+        {
+            int Device;
+            std::string Name;
+            int Inputs;
+            int Outputs;
+            bool IsDefaultDevice;
+        };
+
+        static std::vector<DeviceInformation> GetDeviceInformation();
+        static int GetDefaultDevice();
 };
 
 #endif

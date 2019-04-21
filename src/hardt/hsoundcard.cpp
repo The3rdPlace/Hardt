@@ -1,68 +1,64 @@
-#include "hsoundcard.h"
+#include "hardtapi.h"
 
-void HSoundcard::GetDeviceInformation()
+std::vector<HSoundcard::DeviceInformation> HSoundcard::GetDeviceInformation()
 {
+    std::vector<HSoundcard::DeviceInformation> results;
+
     PaError err = Pa_Initialize();
     if( err != paNoError )
     {
-        printf("Initialization error\n");
-        return;
+        throw new HInitializationException("Initialization error");
     }
 
+    // Get number of devices
     int numDevices;
     numDevices = Pa_GetDeviceCount();
     if( numDevices < 0 )
     {
-        printf("No devices\n");
-        return;
+        // No devices, thus an empty list of deviceinfo
+        return results;
     }
-    printf("Number of devices: %d\n", numDevices);
 
-    PaDeviceIndex x = Pa_GetDefaultInputDevice ();
-    std::cout << "Default device is: " << x << std::endl;
+    // Get default device
+    PaDeviceIndex defaultDevice = Pa_GetDefaultInputDevice ();
 
-
+    // Run through all sound devices available on this system
     const   PaDeviceInfo *deviceInfo;
     for( int i=0; i<numDevices; i++ )
     {
+        // Insert new info object
+        results.push_back(HSoundcard::DeviceInformation());
+
+        // Get basic info for this device
         deviceInfo = Pa_GetDeviceInfo(i);
-        double desiredSampleRate;
-        PaStreamParameters testParameters;
-        testParameters.device = i;
-        testParameters.channelCount = 1;
-        testParameters.sampleFormat = paInt16;
-        testParameters.suggestedLatency = Pa_GetDeviceInfo(i)->defaultLowInputLatency ;
-        testParameters.hostApiSpecificStreamInfo = NULL; //See you specific host's API docs for info on using this field
-
-        std::cout << "==========================================" << std::endl;
-        std::cout << "Device: " << i << " = " << deviceInfo->name << std::endl;
-        std::cout << "Input: " << deviceInfo->maxInputChannels << " channels" << std::endl;
-        std::cout << "Output: " << deviceInfo->maxOutputChannels << " channels" << std::endl;
-
-        int rates[] = { 8000, 11025, 22050, 32000, 44100, 48000 };
-        bool gotOne = false;
-        for( int j = 0; j < 6; j++)
-        {
-            PaError err;
-            err = Pa_IsFormatSupported( &testParameters, NULL, rates[j] );
-            if( err == paFormatIsSupported )
-            {
-               std::cout << (j > 0 ? ", " : "") << rates[j];
-               gotOne = true;
-            }
-        }
-        if( !gotOne )
-        {
-            std::cout << "(no supported rates)";
-        }
-        std::cout << std::endl;
+        results[i].Device = i;
+        results[i].Name = deviceInfo->name;
+        results[i].Inputs = deviceInfo->maxInputChannels;
+        results[i].Outputs = deviceInfo->maxOutputChannels;
+        results[i].IsDefaultDevice = i == defaultDevice;
     }
 
+    // Done, terminate portaudio, ignore errors
+    Pa_Terminate();
 
-    err = Pa_Terminate();
-    if ( err != paNoError )
+    // Return the list of information
+    return results;
+}
+
+int HSoundcard::GetDefaultDevice()
+{
+    PaError err = Pa_Initialize();
+    if( err != paNoError )
     {
-        printf("Termination error\n");
-        return;
+        throw new HInitializationException("Initialization error");
     }
+
+    // Get default device
+    PaDeviceIndex defaultDevice = Pa_GetDefaultInputDevice ();
+
+    // Done, terminate portaudio, ignore errors
+    Pa_Terminate();
+
+    // Return the device info
+    return defaultDevice;
 }

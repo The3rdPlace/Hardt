@@ -166,7 +166,19 @@ int main(int argc, char** argv)
 
     // Show audio device information
     if( Config.ShowAudioDevices ) {
-        HSoundcard::GetDeviceInformation();
+        std::cout << "Default device is: " << HSoundcard::GetDefaultDevice() << std::endl;
+        std::cout << std::endl;
+        
+        std::vector<HSoundcard::DeviceInformation> info = HSoundcard::GetDeviceInformation();
+        for( std::vector<HSoundcard::DeviceInformation>::iterator it = info.begin(); it != info.end(); it++)
+        {
+            std::cout << "Device: " << (*it).Device << std::endl;
+            std::cout << "Device: " << (*it).Name << std::endl;
+            std::cout << "Inputs: " << (*it).Inputs << std::endl;
+            std::cout << "Outputs: " << (*it).Outputs << std::endl;
+            std::cout << "Is default device: " << ((*it).IsDefaultDevice ? "yes" : "no") << std::endl;
+            std::cout << std::endl;
+        }
         return 0;
     }
 
