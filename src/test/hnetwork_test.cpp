@@ -4,8 +4,8 @@
 #include "test.h"
 #include <thread>
 
-HNetworkServer<int> *server;
-HNetworkClient<int> *client;
+HNetworkProcessor<int> *server;
+HNetworkProcessor<int> *client;
 
 class HNetwork_Test: public Test
 {
@@ -19,7 +19,7 @@ class HNetwork_Test: public Test
 
         const char* name()
         {
-            return "HNetwork(Reader|Writer)";
+            return "HNetworkProcessor(Reader|Writer)";
         }
 
     private:
@@ -81,11 +81,11 @@ class HNetwork_Test: public Test
             memset(received, 0, 14);
 
             TestReader rdr(expected, 14);
-            server = new HNetworkServer<int>(1234, &rdr, 14, &terminated);
+            server = new HNetworkProcessor<int>(1234, &rdr, 14, &terminated);
             std::thread serverThread(runServer);
 
             TestWriter wr(received, 14);
-            client = new HNetworkClient<int>("127.0.0.1", 1234, &wr, 14, &terminated);
+            client = new HNetworkProcessor<int>("127.0.0.1", 1234, &wr, 14, &terminated);
             std::thread clientThread(runClient);
 
             clientThread.join();
@@ -104,11 +104,11 @@ class HNetwork_Test: public Test
             memset(received, 0, 14);
 
             TestWriter wr(received, 14);
-            server = new HNetworkServer<int>(1234, &wr, 14, &terminated);
+            server = new HNetworkProcessor<int>(1234, &wr, 14, &terminated);
             std::thread serverThread(runServer);
 
             TestReader rdr(expected, 14);
-            client = new HNetworkClient<int>("127.0.0.1", 1234, &rdr, 14, &terminated);
+            client = new HNetworkProcessor<int>("127.0.0.1", 1234, &rdr, 14, &terminated);
             std::thread clientThread(runClient);
 
             clientThread.join();

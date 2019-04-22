@@ -34,6 +34,60 @@ class HReader
         virtual bool Stop() { return true; }
 };
 
+template <class T>
+class HProcessor
+{
+    protected:
+
+        HWriter<T>* _writer;
+        HReader<T>* _reader;
+
+    public:
+
+        HProcessor(HWriter<T>* writer, HReader<T>* reader):
+            _writer(writer),
+            _reader(reader)
+        {}
+
+        int Read(T* dest, int blocksize)
+        {
+            try
+            {
+                return _reader->Read(dest, blocksize);
+            }
+            catch(std::exception e)
+            {
+                HError("Exception in Write(): %s", e.what());
+                return 0;
+            }
+        }
+
+        int Write(T* src, int blocksize)
+        {
+            try
+            {
+                return _writer->Write(src, blocksize);
+            }
+            catch(std::exception e)
+            {
+                HError("Exception in Read(): %s", e.what());
+                return 0;
+            }
+        }
+
+        bool Start(void* data)
+        {
+            return _writer->Start(data) && _reader->Start(data);
+        }
+
+        bool Stop()
+        {
+            return _writer->Stop() && _reader->Stop();
+        }
+
+        virtual void Run() = 0;
+};
+
 /********************************************************************
 Exceptions
 ********************************************************************/
@@ -153,8 +207,6 @@ Include api function declarations
 #include "hfilewriter.h"
 #include "hnetworkwriter.h"
 #include "hnetworkreader.h"
-#include "hnetwork.h"
-#include "hnetworkserver.h"
-#include "hnetworkclient.h"
+#include "hnetworkprocessor.h"
 
 #endif

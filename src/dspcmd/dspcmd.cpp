@@ -168,7 +168,7 @@ int main(int argc, char** argv)
     if( Config.ShowAudioDevices ) {
         std::cout << "Default device is: " << HSoundcard::GetDefaultDevice() << std::endl;
         std::cout << std::endl;
-        
+
         std::vector<HSoundcard::DeviceInformation> info = HSoundcard::GetDeviceInformation();
         for( std::vector<HSoundcard::DeviceInformation>::iterator it = info.begin(); it != info.end(); it++)
         {
@@ -185,8 +185,7 @@ int main(int argc, char** argv)
     // Read from network and write to local file
     if( Config.IsNetworkReaderClient ) {
         HFileWriter<int> wr("tmp.raw");
-        HNetworkReader<int> nwRdr;
-        HNetworkClient<int> client = HNetworkClient<int>(Config.Address, Config.Port, &wr, Config.Blocksize, &nwRdr, &terminated);
+        HNetworkProcessor<int> client = HNetworkProcessor<int>(Config.Address, Config.Port, &wr, Config.Blocksize, &terminated);
         try
         {
             client.Run();
@@ -201,8 +200,7 @@ int main(int argc, char** argv)
     if( Config.IsNetworkWriterServer)
     {
         HSoundcardReader<int> rdr(Config.InputDevice, Config.Rate, 1, Config.Format, Config.Blocksize);
-        HNetworkWriter<int> nwWr;
-        HNetworkServer<int> srv = HNetworkServer<int>(Config.Port, &rdr, Config.Blocksize, &nwWr, &terminated);
+        HNetworkProcessor<int> srv = HNetworkProcessor<int>(Config.Port, &rdr, Config.Blocksize, &terminated);
         try
         {
             srv.Run();
