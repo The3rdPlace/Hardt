@@ -23,7 +23,12 @@ Class implementation
 template <class T>
 int HNetworkReader<T>::Read(T* dest, size_t blocksize)
 {
-    return read( _socket, dest, blocksize * sizeof(T));
+    int in = read( _socket, (void*) dest, blocksize * sizeof(T));
+    if( in >= 0 )
+    {
+        return in / sizeof(T);
+    }
+    return in;
 }
 
 template <class T>

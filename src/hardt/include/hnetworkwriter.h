@@ -23,7 +23,12 @@ Class implementation
 template <class T>
 int HNetworkWriter<T>::Write(T* src, size_t blocksize)
 {
-    return send(_socket, src, blocksize *  sizeof(T), 0 );
+    int out = send(_socket, (void*) src, blocksize *  sizeof(T), 0 );
+    if( out >= 0 )
+    {
+        return out / sizeof(T);
+    }
+    return out;
 }
 
 template <class T>
