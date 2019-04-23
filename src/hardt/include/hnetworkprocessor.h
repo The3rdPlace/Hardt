@@ -242,13 +242,14 @@ void HNetworkProcessor<T>::RunServer()
             }
 
             // Accept new connection
-            HLog("Accepting new connection from %s", inet_ntoa(((struct sockaddr_in *) &_address)->sin_addr));
+            HLog("Waiting for connection");
             if ((_clientSocket = accept(_serverSocket, (struct sockaddr *)&_address, (socklen_t*)&addrlen))<0)
             {
                 HError("Error in accept, socket may have been closed");
                 HLog("Exit from Run() due to error");
                 return;
             }
+            HLog("Accepting new connection from %s", inet_ntoa(((struct sockaddr_in *) &_address)->sin_addr));
 
             // Handle readers or writers
             RunProcessor();
@@ -307,12 +308,6 @@ void HNetworkProcessor<T>::RunProcessor()
                 HLog("Zero read from the reader, stopping");
                 break;
             }
-
-            // Log only a few frames to verify that the function gets called
-            if( frames % 10000 )
-            {
-                HLog("Read %d frames from the reader", frames);
-            }
         }
         catch( std::exception ex )
         {
@@ -321,30 +316,34 @@ void HNetworkProcessor<T>::RunProcessor()
         }
 
         // Send the data to the connected client
-        if( len > 0 )
+        int shipped;
+        try
         {
-            int shipped;
-            try
+            shipped = HProcessor<T>::Write(_buffer, len);
+            if( shipped <= 0 )
             {
-                shipped = HProcessor<T>::Write(_buffer, len);
-                if( shipped <= 0 )
-                {
-                    HLog("Zero write to the writer, stopping");
-                    break;
-                }
-
-                // Log only a few frames to verify that the function writes to the network client
-                if( (frames++) % 10000 )
-                {
-                    HLog("Wrote %d bytes to the server", frames);
-                }
-            }
-            catch( std::exception ex )
-            {
-                HError("Caught exception: %s", ex.what());
+                HLog("Zero write to the writer, stopping");
                 break;
             }
+            if( shipped != len )
+            {
+                HLog("Not all data was written, %d of %d ", shipped, len);
+            }
+
+            // Log only a few frames to verify that the function writes to the network client
+            if( frames % 100 == 0)
+            {
+                HLog("Wrote %d frames", frames);
+            }
         }
+        catch( std::exception ex )
+        {
+            HError("Caught exception: %s", ex.what());
+            break;
+        }
+
+        // Frame processed
+        frames++;
     }
 
     // Stop the reader - some readers have start/stop handling
