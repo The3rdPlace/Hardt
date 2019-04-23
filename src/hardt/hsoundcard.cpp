@@ -62,3 +62,21 @@ int HSoundcard::GetDefaultDevice()
     // Return the device info
     return defaultDevice;
 }
+
+int HSoundcard::AvailableDevices()
+{
+    PaError err = Pa_Initialize();
+    if( err != paNoError )
+    {
+        throw new HInitializationException("Initialization error");
+    }
+
+    int numDevices;
+    numDevices = Pa_GetDeviceCount();
+
+    // Done, terminate portaudio, ignore errors
+    Pa_Terminate();
+
+    // Return the device info
+    return numDevices;
+}

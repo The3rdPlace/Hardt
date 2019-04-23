@@ -40,6 +40,7 @@ class HSoundcard
             bool IsDefaultDevice;
         };
 
+        static int AvailableDevices();
         static std::vector<DeviceInformation> GetDeviceInformation();
         static int GetDefaultDevice();
 };

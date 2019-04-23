@@ -166,6 +166,13 @@ int main(int argc, char** argv)
 
     // Show audio device information
     if( Config.ShowAudioDevices ) {
+
+        if( HSoundcard::AvailableDevices() == 0 )
+        {
+            std::cout << "There is no soundcards available on this system" << std::endl;
+            return 0;
+        }
+
         std::cout << "Default device is: " << HSoundcard::GetDefaultDevice() << std::endl;
         std::cout << std::endl;
 
