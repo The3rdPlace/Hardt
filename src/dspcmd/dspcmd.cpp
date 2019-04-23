@@ -32,8 +32,8 @@ ctrl+c
 static bool terminated = false;
 static void signalIntTermHandler (int signal_value)
 {
+    HLog("Caught SIGTERM or SIGINT");
     terminated = true;
-    std::cout << "SIGTERM or SITINT" << std::endl;
 }
 
 static void SetupSignalHandling()
