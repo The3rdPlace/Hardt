@@ -85,6 +85,16 @@ class HProcessor
             return _writer->Stop() && _reader->Stop();
         }
 
+        void SetReader(HReader<T>* reader)
+        {
+            _reader = reader;
+        }
+
+        void SetWriter(HWriter<T>* writer)
+        {
+            _writer = writer;
+        }
+
         virtual void Run() = 0;
 };
 
