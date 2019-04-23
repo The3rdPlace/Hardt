@@ -206,7 +206,7 @@ int HSoundcardReader<T>::callback( const void *inputBuffer, void *outputBuffer,
     // gets called, so we log the very first call after starting the stream
     if( data->firstCall )
     {
-        HLog("Received %ul frames from the soundcard", framesPerBuffer);
+        HLog("Received %u frames from the soundcard", framesPerBuffer);
         data->firstCall = false;
     }
 
