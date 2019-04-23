@@ -1,6 +1,6 @@
 # add the executable
 add_executable (hardt_test test.cpp)
-target_link_libraries (hardt_test hardt)
+target_link_libraries (hardt_test hardt pthread)
 
 target_sources(hardt_test
     PRIVATE
