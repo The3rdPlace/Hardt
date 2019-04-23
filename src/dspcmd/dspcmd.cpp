@@ -90,14 +90,14 @@ int argIntCmp(const char* arg, const char* option, char* value, int currentValue
     return strncmp(arg, option, strlen(option)) == 0 ? atoi(value) : currentValue;
 }
 
-void parseArguments(int argc, char** argv)
+bool parseArguments(int argc, char** argv)
 {
     for( int argNo = 1; argNo < argc; argNo++ )
     {
         Config.Verbose = argBoolCmp(argv[argNo], "-v", Config.Verbose);
         Config.ShowAudioDevices = argBoolCmp(argv[argNo], "-a", Config.ShowAudioDevices);
 
-        if( argNo < argc - 1 )
+        if( argNo < argc - 1)
         {
             //Config.InputFile = argCharCmp(argv[argNo], "-if", argv[argNo + 1], Config.InputFile);
             Config.OutputFile = argCharCmp(argv[argNo], "-of", argv[argNo + 1], Config.OutputFile);
@@ -146,16 +146,40 @@ void parseArguments(int argc, char** argv)
             //std::cout << "-cw server port    Run as network client, reading from a local reader and writing to the network" << std::endl;
             std::cout << "-sw port           Run as network server, reading from a local reader and writing to the network" << std::endl;
             //std::cout << "-sr port           Run as network server, reading from the network and writing to a local writer" << std::endl;
+
+            // Force exit
+            return true;
         }
     }
-}
 
+    // Arguments read, go ahead
+    return false;
+}
+template <typename T>
+int RunNetworkWriterServer(DspCmdConfig config)
+{
+    HSoundcardReader<T> rdr(config.InputDevice, config.Rate, 1, config.Format, config.Blocksize);
+    HNetworkProcessor<T> srv(config.Port, &rdr, config.Blocksize, &terminated);
+    try
+    {
+        srv.Run();
+    }
+    catch( std::exception ex )
+    {
+        std::cout << "Caught exception: " << ex.what() << std::endl;
+        return 1;
+    }
+    return 0;
+}
 
 int main(int argc, char** argv)
 {
     // Show application name and parse input arguments
 	std::cout << "dspcmd: using Hardt " + getversion() << std::endl ;
-    parseArguments(argc, argv);
+    if( parseArguments(argc, argv) )
+    {
+        return 0;
+    }
 
     // Initialize the Hardt library, giving a name for logfiles, or if
     // the '-v' switch has been given, let Hardt log directly to stdout
@@ -190,8 +214,16 @@ int main(int argc, char** argv)
     }
 
     // Read from network and write to local file
-    if( Config.IsNetworkReaderClient ) {
-        HFileWriter<int> wr("tmp.raw");
+    if( Config.IsNetworkReaderClient )
+    {
+        // Verify configuration
+        if( Config.Address == NULL )
+        {
+            std::cout << "No output filename (-of)" << std::endl;
+            return 1;
+        }
+
+        HFileWriter<int> wr(Config.OutputFile);
         HNetworkProcessor<int> client = HNetworkProcessor<int>(Config.Address, Config.Port, &wr, Config.Blocksize, &terminated);
         try
         {
@@ -200,22 +232,55 @@ int main(int argc, char** argv)
         catch( std::exception ex )
         {
             std::cout << "Caught exception: " << ex.what() << std::endl;
+            return 1;
         }
+        return 0;
     }
 
     // Read from soundcard and write to network
     if( Config.IsNetworkWriterServer)
     {
-        HSoundcardReader<int> rdr(Config.InputDevice, Config.Rate, 1, Config.Format, Config.Blocksize);
-        HNetworkProcessor<int> srv = HNetworkProcessor<int>(Config.Port, &rdr, Config.Blocksize, &terminated);
-        try
+        // Verify configuration
+        if( Config.InputDevice == -1 )
         {
-            srv.Run();
+            std::cout << "No inputdevice (-id)" << std::endl;
+            return 1;
         }
-        catch( std::exception ex )
+        if( Config.Rate == -1 )
         {
-            std::cout << "Caught exception: " << ex.what() << std::endl;
+            std::cout << "No rate (-r)" << std::endl;
+            return 1;
         }
+        if( Config.Format == -1 )
+        {
+            std::cout << "No format (-f)" << std::endl;
+            return 1;
+        }
+
+        // Select datatype that matches the specified sample format
+        int rc;
+        switch(Config.Format)
+        {
+            case H_SAMPLE_FORMAT_INT_8:
+                rc = RunNetworkWriterServer<int8_t>(Config);
+                break;
+            case H_SAMPLE_FORMAT_UINT_8:
+                rc = RunNetworkWriterServer<uint8_t>(Config);
+                break;
+            case H_SAMPLE_FORMAT_INT_16:
+                rc = RunNetworkWriterServer<int16_t>(Config);
+                break;
+            /*case H_SAMPLE_FORMAT_INT_24:
+                rc = RunNetworkWriterServer<???>(Config);
+                break;*/
+            case H_SAMPLE_FORMAT_INT_32:
+                rc = RunNetworkWriterServer<int32_t>(Config);
+                break;
+            default:
+                std::cout << "Unknown sample format " << Config.Format << std::endl;
+                return -1;
+        }
+        return rc;
     }
 
     /* Todo: Move this to a component
@@ -229,4 +294,3 @@ int main(int argc, char** argv)
     std::cout << "Sorry, no operation specified";
 	return 1;
 }
-
