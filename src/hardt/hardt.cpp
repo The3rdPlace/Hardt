@@ -17,8 +17,8 @@ std::string getversion()
 Logging
 ********************************************************************/
 
-std::ofstream HLogStream;
-std::ofstream HErrorStream;
+std::string LogStreamName = "";
+std::string ErrorStreamName = "";
 
 std::string getFilenameWithoutPath(std::string pathAndFilename, bool removeExtension)
 {
@@ -53,6 +53,22 @@ std::string getFormattedMessage(const char* fmt, va_list args)
     return std::string(output);
 }
 
+void WriteToStream(std::string streamName, std::string output)
+{
+    if( streamName != "" )
+    {
+        std::ofstream stream;
+        stream.open(streamName, std::ios::out | std::ios::app);
+        stream << output << std::endl;
+        stream.close();
+    }
+    else
+    {
+        std::cout << output << std::endl;
+    }
+
+}
+
 void HWriteLogMessage(std::string file, const char* fmt, ...)
 {
     va_list args;
@@ -61,14 +77,7 @@ void HWriteLogMessage(std::string file, const char* fmt, ...)
     va_end(args);
 
     std::string output = getFilenameWithoutPath(file, true) + std::string(": ") + message;
-    if( HLogStream.is_open() )
-    {
-        HLogStream << output << std::endl;
-    }
-    else
-    {
-        std::cout << output << std::endl;
-    }
+    WriteToStream(LogStreamName, output);
 }
 
 void HWriteErrorMessage(std::string file, std::string line, const char* fmt, ...)
@@ -79,21 +88,14 @@ void HWriteErrorMessage(std::string file, std::string line, const char* fmt, ...
     va_end(args);
 
     std::string output = "ERROR at " + getFilenameWithoutPath(file, false) + std::string("@") + line + std::string(": ") + message;
-    if( HLogStream.is_open() )
-    {
-        HErrorStream << output << std::endl;
-    }
-    else
-    {
-        std::cerr << output << std::endl;
-    }
+    WriteToStream(ErrorStreamName, output);
 }
 
 void HInit(std::string logname)
 {
-    // Open standard log- and errorfiles
-    HLogStream.open(logname + ".log");
-    HErrorStream.open(logname + ".err");
+    // Set names for log- and error files
+    LogStreamName = logname + ".log";
+    ErrorStreamName = logname + ".err";
 
     // Redirect stderr to a logfile
     freopen((logname + ".stderr").c_str(), "w", stderr);
