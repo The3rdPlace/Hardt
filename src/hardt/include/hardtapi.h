@@ -218,5 +218,8 @@ Include api function declarations
 #include "hnetworkwriter.h"
 #include "hnetworkreader.h"
 #include "hnetworkprocessor.h"
+#include "hwav.h"
+#include "hwavwriter.h"
+#include "hwavreader.h"
 
 #endif
