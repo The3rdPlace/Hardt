@@ -52,6 +52,12 @@ class Test
             throw new std::exception();
         }
 
+        void assertIgnore(std::string file, int line, std::string reason)
+        {
+            std::cout << "Ignoring testcase: " << reason << std::endl;
+            std::cout << "in " << file << "@" << line << "\n";
+        }
+
     public:
 
         virtual void run() = 0;
@@ -60,3 +66,4 @@ class Test
 
 #define ASSERT_IS_EQUAL(a, b) assertIsEqual(__FILE__,__LINE__, a, b)
 #define ASSERT_FAIL(reason) assertFail(__FILE__,__LINE__, reason)
+#define ASSERT_IGNORE(a) { assertIgnore(__FILE__, __LINE__, a); return; }
