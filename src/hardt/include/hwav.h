@@ -85,55 +85,26 @@ class HWav
             int32_t SubChunk_2_size;
         } _header;
 
-        HWav(HWav const& wav)
-        {
-            _header = wav._header;
-            _filename = wav._filename;
-        }
+        HWav(HWav const& wav):
+            _header(wav._header),
+            _filename(wav._filename)
+        {}
 
-        HWav(const char* filename, H_SAMPLE_FORMAT format, int channels, H_SAMPLE_RATE rate, size_t size)
-        {
-            // Copy the header initializer data into the header member
-            memcpy((void*) &_header, (void*) emptyHeader, sizeof(WavHeader));
-
-            // Initialize header
-            // Todo: Set all fields that differs according to format and rate
-
-            // Keep filename
-            _filename = filename;
-        }
+        HWav(const char* filename, H_SAMPLE_FORMAT format, int channels, H_SAMPLE_RATE rate, size_t size);
 
     public:
 
-        H_SAMPLE_FORMAT GetFormat()
-        {
-            return H_SAMPLE_FORMAT_INT_32;
-        }
+        H_SAMPLE_FORMAT GetFormat();
 
-        int GetChannels()
-        {
-            return 1;
-        }
+        int GetChannels();
 
-        H_SAMPLE_RATE GetRate()
-        {
-            return H_SAMPLE_RATE_48K;
-        }
+        H_SAMPLE_RATE GetRate();
 
-        size_t GetSize()
-        {
-            return 0;
-        }
+        size_t GetSize();
 
-        const char* GetFilename()
-        {
-            return _filename;
-        }
+        const char* GetFilename();
 
-        HWav(const char* filename)
-        {
-            _filename = filename;
-        }
+        HWav(const char* filename);
 };
 
 #endif

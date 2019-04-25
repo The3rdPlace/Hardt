@@ -116,7 +116,9 @@ class HWavWriter_Test: public Test
 
             // Create writer and write the wav file
             HWavWriter<uint8_t>* wr = new HWavWriter<uint8_t>("/tmp/hwavwriter_uint8_data.txt", H_SAMPLE_FORMAT_UINT_8, 1, H_SAMPLE_RATE_8K, 2048);
+            wr->Start(NULL);
             wr->Write((uint8_t*) _data, 2048 / sizeof(uint8_t));
+            wr->Stop();
             delete wr;
 
             CheckResult("/tmp/hwavwriter_uint8_data.txt", (char*) expected, 44 + 2048);
@@ -180,7 +182,9 @@ class HWavWriter_Test: public Test
 
             // Create writer and write the wav file
             HWavWriter<uint16_t>* wr = new HWavWriter<uint16_t>("/tmp/hwavwriter_uint16_data.txt", H_SAMPLE_FORMAT_INT_16, 2, H_SAMPLE_RATE_22K, 2048);
+            wr->Start(NULL);
             wr->Write((uint16_t*) _data, 2048 / sizeof(uint16_t));
+            wr->Stop();
             delete wr;
 
             CheckResult("/tmp/hwavwriter_uint16_data.txt", (char*) expected, 44 + 2048);

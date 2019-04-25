@@ -10,6 +10,7 @@ target_sources(hardt
         hardt.cpp
         generator.cpp
         hsoundcard.cpp
+        hwav.cpp
 )
 
 include_directories("${PROJECT_BINARY_DIR}/src/hardt/")

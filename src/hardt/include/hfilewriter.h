@@ -13,7 +13,7 @@ class HFileWriter : public HWriter<T>
 
         HFileWriter(const char* filename);
         ~HFileWriter();
-        int Write(T* dest, size_t blocksize);
+        virtual int Write(T* dest, size_t blocksize);
 };
 
 /********************************************************************
