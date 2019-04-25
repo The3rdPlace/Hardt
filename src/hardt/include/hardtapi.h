@@ -7,6 +7,9 @@ Initialization, logging and other basic functions.
 ********************************************************************/
 
 #include "hardt.h"
+#include "hexceptions.h"
+#include "hsoundcard.h"
+#include "hwav.h"
 
 /********************************************************************
 Abstract base classes with no, or little implementation
@@ -99,126 +102,16 @@ class HProcessor
 };
 
 /********************************************************************
-Exceptions
-********************************************************************/
-
-/*
-    Thrown by constructors if the object could not be initialized
-
-    Constructor:
-        HInitializationException(reason)
-*/
-class HInitializationException : public std::exception
-{
-    private:
-
-        const char* _why;
-
-    public:
-
-        HInitializationException(const char* reason): _why(reason) {}
-
-        virtual const char* what() const throw()
-        {
-            return _why;
-        }
-};
-
-/*
-    Thrown if a network connection fails
-
-    Constructor:
-        HNetworkException(reason)
-*/
-class HNetworkException : public std::exception
-{
-    private:
-
-        const char* _why;
-
-    public:
-
-        HNetworkException(const char* reason): _why(reason) {}
-
-        virtual const char* what() const throw()
-        {
-            return _why;
-        }
-};
-
-/*
-    Thrown if there is errors during file i/o
-
-    Constructor:
-        HFileIOException(reason)
-*/
-class HFileIOException : public std::exception
-{
-    private:
-
-        const char* _why;
-
-    public:
-
-        HFileIOException(const char* reason): _why(reason) {}
-
-        virtual const char* what() const throw()
-        {
-            return _why;
-        }
-};
-
-/*
-    Thrown if there is errors during audio i/o
-
-    Constructor:
-        HAudioIOException(reason)
-*/
-class HAudioIOException : public std::exception
-{
-    private:
-
-        const char* _why;
-
-    public:
-
-        HAudioIOException(const char* reason): _why(reason) {}
-
-        virtual const char* what() const throw()
-        {
-            return _why;
-        }
-};
-
-/*
-    Thrown by functions if they have not been implemneted
-
-    Constructor:
-        HNotImplementedException()
-*/
-class HNotImplementedException : public std::exception
-{
-    public:
-
-        HNotImplementedException() {}
-
-        virtual const char* what() const throw()
-        {
-            return "Not implemented";
-        }
-};
-
-/********************************************************************
 Include api function declarations
 ********************************************************************/
 
-#include "hsoundcard.h"
+//#include "hsoundcard.h"
 #include "hsoundcardreader.h"
 #include "hfilewriter.h"
 #include "hnetworkwriter.h"
 #include "hnetworkreader.h"
 #include "hnetworkprocessor.h"
-#include "hwav.h"
+//#include "hwav.h"
 #include "hwavwriter.h"
 #include "hwavreader.h"
 

@@ -59,8 +59,6 @@ class HWavWriter_Test: public Test
 
         void test_uint8_1_channel()
         {
-            ASSERT_IGNORE("Test is incomplete");
-
             uint8_t header[] = {
                 0x52, // 'R'
                 0x49, // 'I'
@@ -115,7 +113,7 @@ class HWavWriter_Test: public Test
             memcpy((void*) &expected[44], (void*) _data, 2048);
 
             // Create writer and write the wav file
-            HWavWriter<uint8_t>* wr = new HWavWriter<uint8_t>("/tmp/hwavwriter_uint8_data.txt", H_SAMPLE_FORMAT_UINT_8, 1, H_SAMPLE_RATE_8K, 2048);
+            HWavWriter<uint8_t>* wr = new HWavWriter<uint8_t>("/tmp/hwavwriter_uint8_data.txt", H_SAMPLE_FORMAT_UINT_8, 1, H_SAMPLE_RATE_8K);
             wr->Start(NULL);
             wr->Write((uint8_t*) _data, 2048 / sizeof(uint8_t));
             wr->Stop();
@@ -181,7 +179,7 @@ class HWavWriter_Test: public Test
             memcpy((void*) &expected[44], (void*) _data, 2048);
 
             // Create writer and write the wav file
-            HWavWriter<uint16_t>* wr = new HWavWriter<uint16_t>("/tmp/hwavwriter_uint16_data.txt", H_SAMPLE_FORMAT_INT_16, 2, H_SAMPLE_RATE_22K, 2048);
+            HWavWriter<uint16_t>* wr = new HWavWriter<uint16_t>("/tmp/hwavwriter_uint16_data.txt", H_SAMPLE_FORMAT_INT_16, 2, H_SAMPLE_RATE_22K);
             wr->Start(NULL);
             wr->Write((uint16_t*) _data, 2048 / sizeof(uint16_t));
             wr->Stop();

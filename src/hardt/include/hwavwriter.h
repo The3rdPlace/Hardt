@@ -10,8 +10,8 @@ class HWavWriter : public HWav, public HFileWriter<T>
 
     public:
 
-        HWavWriter(const char* filename, H_SAMPLE_FORMAT format, int channels, H_SAMPLE_RATE rate, size_t size):
-            HWav(filename, format, channels, rate, size),
+        HWavWriter(const char* filename, H_SAMPLE_FORMAT format, int channels, H_SAMPLE_RATE rate):
+            HWav(filename, format, channels, rate),
             HFileWriter<T>(filename),
             _size(0)
         {}
@@ -32,7 +32,7 @@ bool HWavWriter<T>::Start(void* unused)
 {
     // We know that the header is _always_ 44 bytes long for any wav
     // file, regardless of format, rate and number of channels. So we
-    // can safely divide 44 by the size of the datatype (1, 2, 4) to get
+    // can safely divide 44 by the size of the datatype (1, 2) to get
     // the correct number of bytes to write
     HLog("Writing header");
     return HFileWriter<T>::Write((T*) &_header, 44 / sizeof(T)) == 44 / sizeof(T);
@@ -41,11 +41,17 @@ bool HWavWriter<T>::Start(void* unused)
 template <class T>
 bool HWavWriter<T>::Stop()
 {
-    // Rewind and update size fields
+    // Calculate size fields
     HLog("Calculate final size, %d blocks has been written", _size);
-    // Todo: Update header
+    uint32_t finalSize = _size * sizeof(T);
+    _header.SubChunk_2_Size = (uint32_t) finalSize;
+    _header.ChunkSize += _header.SubChunk_2_Size;
+    HLog("Final size set to %d", finalSize);
+
+    // Update header
+    HFileWriter<T>::Seek(0);
     HLog("Updating header");
-    return true;
+    return HFileWriter<T>::Write((T*) &_header, 44 / sizeof(T)) == 44 / sizeof(T);
 }
 
 template <class T>

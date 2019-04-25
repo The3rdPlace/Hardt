@@ -222,9 +222,9 @@ int main(int argc, char** argv)
             std::cout << "No output filename (-of)" << std::endl;
             return 1;
         }
-
-        HFileWriter<int> wr(Config.OutputFile);
-        HNetworkProcessor<int> client = HNetworkProcessor<int>(Config.Address, Config.Port, &wr, Config.Blocksize, &terminated);
+        HWavWriter<int16_t> wr(Config.OutputFile, H_SAMPLE_FORMAT_INT_16, 1, H_SAMPLE_RATE_48K);
+        //HFileWriter<int> wr(Config.OutputFile);
+        HNetworkProcessor<int16_t> client = HNetworkProcessor<int16_t>(Config.Address, Config.Port, &wr, Config.Blocksize, &terminated);
         try
         {
             client.Run();

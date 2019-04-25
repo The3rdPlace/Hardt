@@ -14,6 +14,8 @@ class HFileWriter : public HWriter<T>
         HFileWriter(const char* filename);
         ~HFileWriter();
         virtual int Write(T* dest, size_t blocksize);
+
+        void Seek(int bytes);
 };
 
 /********************************************************************
@@ -43,6 +45,12 @@ int HFileWriter<T>::Write(T* src, size_t blocksize)
 {
     _stream.write((char*) src, blocksize * sizeof(T));
     return blocksize;
+}
+
+template <class T>
+void HFileWriter<T>::Seek(int bytes)
+{
+    _stream.seekp(bytes, std::ios::beg);
 }
 
 #endif
