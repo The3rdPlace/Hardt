@@ -142,6 +142,8 @@ int RunNetworkWriterServer(DspCmdConfig config)
     try
     {
         srv.Run();
+        std::cout << rdr.GetMetrics("HSoundcardReader");
+        std::cout << srv.GetMetrics("HNetworkProcessor");
     }
     catch( std::exception ex )
     {
@@ -207,6 +209,8 @@ int main(int argc, char** argv)
         try
         {
             client.Run();
+            std::cout << wr.GetMetrics("HWavWriter");
+            std::cout << client.GetMetrics("HNetworkProcessor");
         }
         catch( std::exception ex )
         {
@@ -241,18 +245,22 @@ int main(int argc, char** argv)
         switch(Config.Format)
         {
             case H_SAMPLE_FORMAT_INT_8:
+                std::cout << "Using format int8_t" << std::endl;;
                 rc = RunNetworkWriterServer<int8_t>(Config);
                 break;
             case H_SAMPLE_FORMAT_UINT_8:
+                std::cout << "Using format uint8_t" << std::endl;;
                 rc = RunNetworkWriterServer<uint8_t>(Config);
                 break;
             case H_SAMPLE_FORMAT_INT_16:
+                std::cout << "Using format int16_t" << std::endl;;
                 rc = RunNetworkWriterServer<int16_t>(Config);
                 break;
             /*case H_SAMPLE_FORMAT_INT_24:
                 rc = RunNetworkWriterServer<???>(Config);
                 break;*/
             case H_SAMPLE_FORMAT_INT_32:
+                std::cout << "Using format int32_t" << std::endl;;
                 rc = RunNetworkWriterServer<int32_t>(Config);
                 break;
             default:
