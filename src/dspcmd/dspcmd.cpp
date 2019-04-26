@@ -1,26 +1,5 @@
-#include <stdio.h>
-#include <iostream>
-#include <string.h>
-
-#include <cstdlib>
-#include <string>
-#include <unistd.h>
-
-
-// SERVER
-#include <sys/socket.h>
-#include <stdlib.h>
-#include <netinet/in.h>
-
-// CLIENT
-#include <arpa/inet.h>
-
-
 #include "../hardt/include/hardtapi.h"
 #include "dspcmd.h"
-
-
-
 
 /********************************************************************
 Setup signal handling.
