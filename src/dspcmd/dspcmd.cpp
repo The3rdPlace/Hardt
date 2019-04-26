@@ -214,7 +214,7 @@ int main(int argc, char** argv)
 
     // Initialize the Hardt library, giving a name for logfiles, or if
     // the '-v' switch has been given, let Hardt log directly to stdout
-    Config.Verbose ? HInit() : HInit(std::string("dspcmd"));
+    HInit(std::string("dspcmd"), Config.Verbose);
 
     // Setup signal handling
     SetupSignalHandling();

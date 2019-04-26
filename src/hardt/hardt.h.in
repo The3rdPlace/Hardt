@@ -17,7 +17,6 @@ void HWriteErrorMessage(std::string file, std::string line, const char* fmt, ...
 #define HLog(fmt, ...) HWriteLogMessage(std::string(__FILE__), fmt,  ##__VA_ARGS__)
 #define HError(fmt, ...) HWriteErrorMessage(std::string(__FILE__), std::to_string(__LINE__), fmt,  ##__VA_ARGS__)
 
-void HInit(std::string logname);
-void HInit();
+void HInit(std::string logname, bool verbose = true);
 
 #endif

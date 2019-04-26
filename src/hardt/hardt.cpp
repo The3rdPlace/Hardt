@@ -91,20 +91,15 @@ void HWriteErrorMessage(std::string file, std::string line, const char* fmt, ...
     WriteToStream(ErrorStreamName, output);
 }
 
-void HInit(std::string logname)
+void HInit(std::string logname, bool verbose)
 {
-    // Set names for log- and error files
-    LogStreamName = logname + ".log";
-    ErrorStreamName = logname + ".err";
+    if( !verbose )
+    {
+        // Set names for log- and error files
+        LogStreamName = logname + ".log";
+        ErrorStreamName = logname + ".err";
+    }
 
     // Redirect stderr to a logfile
     freopen((logname + ".stderr").c_str(), "w", stderr);
-
-    // Remaining initialization
-    HInit();
-}
-
-void HInit()
-{
-    // No further initialization at the moment
 }
