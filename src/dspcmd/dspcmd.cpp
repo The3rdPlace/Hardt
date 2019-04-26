@@ -43,7 +43,8 @@ struct DspCmdConfig
     char *Address = NULL;
 
     char *InputFile = NULL;
-    char *OutputFile = NULL; // not implemented
+    char *OutputFile = NULL;
+    char* FileFormat = NULL;
 
     int InputDevice = -1; // not implemented
     int OutputDevice = -1;
@@ -93,6 +94,8 @@ bool parseArguments(int argc, char** argv)
 
             //Config.IsNetworkReaderServer = argBoolCmp(argv[argNo], "-sr", Config.IsNetworkReaderServer);
             //Config.Port = argIntCmp(argv[argNo], "-sr", argv[argNo + 1], Config.Port);
+
+            Config.FileFormat = argCharCmp(argv[argNo], "-ff", argv[argNo + 1], Config.FileFormat);
         }
 
         if( argNo < argc - 2 )
@@ -112,6 +115,7 @@ bool parseArguments(int argc, char** argv)
             std::cout << "-a                 Show a list of available audio devices" << std::endl;
             std::cout << "-bs blocksize      Blocksize used by readers and writers (default = 1024)" << std::endl;
             std::cout << "-f                 Sample format (" << H_SAMPLE_FORMAT_INT_8 << "=Int8, " << H_SAMPLE_FORMAT_UINT_8 << "=UInt8, " << H_SAMPLE_FORMAT_INT_16 << "=Int16, " /*<< H_SAMPLE_FORMAT_INT_24 << "=Int24, "*/ << H_SAMPLE_FORMAT_INT_32 << "=Int32)" << std::endl;
+            std::cout << "-ff file|wav       Type of filereader/filewriterwriter" << std::endl;
             std::cout << "-id device         Input audio device" << std::endl;
             //std::cout << "-if name           Name and path of input file" << std::endl;
             std::cout << "-h                 Show this help" << std::endl;
@@ -203,6 +207,8 @@ int main(int argc, char** argv)
             std::cout << "No output filename (-of)" << std::endl;
             return 1;
         }
+        HWriter* wr;
+        if( Config.FileFormat )
         HWavWriter<int16_t> wr(Config.OutputFile, H_SAMPLE_FORMAT_INT_16, 1, H_SAMPLE_RATE_48K);
         //HFileWriter<int> wr(Config.OutputFile);
         HNetworkProcessor<int16_t> client = HNetworkProcessor<int16_t>(Config.Address, Config.Port, &wr, Config.Blocksize, &terminated);
