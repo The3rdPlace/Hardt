@@ -24,8 +24,12 @@ template <class T>
 int HNetworkReader<T>::Read(T* dest, size_t blocksize)
 {
     int in = read( _socket, (void*) dest, blocksize * sizeof(T));
+    this->Metrics.Reads++;
     if( in >= 0 )
     {
+        this->Metrics.BlocksIn += in / sizeof(T);
+        this->Metrics.BytesIn += in;
+
         return in / sizeof(T);
     }
     return in;

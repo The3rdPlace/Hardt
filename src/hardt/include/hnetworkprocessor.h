@@ -283,9 +283,6 @@ void HNetworkProcessor<T>::RunServer()
 template <class T>
 void HNetworkProcessor<T>::RunProcessor()
 {
-    HLog("Processing");
-    static int frames = 0;
-
     // Start reader and writer - some readers/writers have start/stop handling
     HLog("Starting reader and writer, data is a socket");
     if( !HProcessor<T>::Start(&_clientSocket) )
@@ -296,18 +293,22 @@ void HNetworkProcessor<T>::RunProcessor()
     HLog("Reader and writer Start()'ed");
 
     // Read from reader and write to network
+    HLog("Processing");
     while(!*_terminated)
     {
         // Read data from the reader
         int len;
         try
         {
+            this->Metrics.Reads++;
             len = HProcessor<T>::Read(_buffer, _blocksize);
             if( len <= 0 )
             {
                 HLog("Zero read from the reader, stopping");
                 break;
             }
+            this->Metrics.BlocksIn += len;
+            this->Metrics.BytesIn += len * sizeof(T);
         }
         catch( std::exception ex )
         {
@@ -319,6 +320,7 @@ void HNetworkProcessor<T>::RunProcessor()
         int shipped;
         try
         {
+            this->Metrics.Writes++;
             shipped = HProcessor<T>::Write(_buffer, len);
             if( shipped <= 0 )
             {
@@ -329,21 +331,14 @@ void HNetworkProcessor<T>::RunProcessor()
             {
                 HLog("Not all data was written, %d of %d ", shipped, len);
             }
-
-            // Log only a few frames to verify that the function writes to the network client
-            if( frames % 100 == 0)
-            {
-                HLog("Wrote %d frames", frames);
-            }
+            this->Metrics.BlocksOut += shipped;
+            this->Metrics.BytesIn += shipped * sizeof(T);
         }
         catch( std::exception ex )
         {
             HError("Caught exception: %s", ex.what());
             break;
         }
-
-        // Frame processed
-        frames++;
     }
 
     // Stop the reader - some readers have start/stop handling

@@ -10,13 +10,15 @@ Initialization, logging and other basic functions.
 #include "hexceptions.h"
 #include "hsoundcard.h"
 #include "hwav.h"
+#include "hmetrics.h"
+#include "hobject.h"
 
 /********************************************************************
 Abstract base classes with no, or little implementation
 ********************************************************************/
 
 template <class T>
-class HWriter
+class HWriter : public HObject
 {
     public:
 
@@ -27,7 +29,7 @@ class HWriter
 };
 
 template <class T>
-class HReader
+class HReader : public HObject
 {
     public:
 
@@ -38,7 +40,7 @@ class HReader
 };
 
 template <class T>
-class HProcessor
+class HProcessor : public HObject
 {
     protected:
 
