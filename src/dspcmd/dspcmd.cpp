@@ -57,17 +57,17 @@ struct DspCmdConfig
 
 bool argBoolCmp(const char* arg, const char* option, bool currentValue)
 {
-    return strncmp(arg, option, strlen(option)) == 0 ? true : currentValue;
+    return strcmp(arg, option) == 0 ? true : currentValue;
 }
 
 char* argCharCmp(const char* arg, const char* option, char* value, char* currentValue)
 {
-    return strncmp(arg, option, strlen(option)) == 0 ? value : currentValue;
+    return strcmp(arg, option) == 0 ? value : currentValue;
 }
 
 int argIntCmp(const char* arg, const char* option, char* value, int currentValue)
 {
-    return strncmp(arg, option, strlen(option)) == 0 ? atoi(value) : currentValue;
+    return strcmp(arg, option) == 0 ? atoi(value) : currentValue;
 }
 
 bool parseArguments(int argc, char** argv)
@@ -138,6 +138,7 @@ bool parseArguments(int argc, char** argv)
     // Arguments read, go ahead
     return false;
 }
+
 template <typename T>
 int RunNetworkWriterServer(DspCmdConfig config)
 {
@@ -153,6 +154,51 @@ int RunNetworkWriterServer(DspCmdConfig config)
     {
         std::cout << "Caught exception: " << ex.what() << std::endl;
         return 1;
+    }
+    return 0;
+}
+
+template <typename T>
+int RunNetworkReaderClient(DspCmdConfig config)
+{
+    // Create requested writer
+    HWriter<T>* wr;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+    }
+    else if( strcmp(Config.FileFormat, "file") == 0 )
+    {
+        wr = new HFileWriter<T>(Config.OutputFile);
+    }
+    else
+    {
+        std::cout << "Unknown file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+    // Create a network processor and run the client
+    HNetworkProcessor<T> client(Config.Address, Config.Port, wr, Config.Blocksize, &terminated);
+    try
+    {
+        client.Run();
+        std::cout << wr->GetMetrics("H(wav|file)Writer");
+        std::cout << client.GetMetrics("HNetworkProcessor");
+    }
+    catch( std::exception ex )
+    {
+        std::cout << "Caught exception: " << ex.what() << std::endl;
+        return 1;
+    }
+
+    // Delete writer
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        delete (HWavWriter<T>*) wr;
+    }
+    else if( strcmp(Config.FileFormat, "file") == 0 )
+    {
+        delete (HFileWriter<T>*) wr;
     }
     return 0;
 }
@@ -207,23 +253,55 @@ int main(int argc, char** argv)
             std::cout << "No output filename (-of)" << std::endl;
             return 1;
         }
-        HWriter* wr;
-        if( Config.FileFormat )
-        HWavWriter<int16_t> wr(Config.OutputFile, H_SAMPLE_FORMAT_INT_16, 1, H_SAMPLE_RATE_48K);
-        //HFileWriter<int> wr(Config.OutputFile);
-        HNetworkProcessor<int16_t> client = HNetworkProcessor<int16_t>(Config.Address, Config.Port, &wr, Config.Blocksize, &terminated);
-        try
+        if( Config.Rate == -1 )
         {
-            client.Run();
-            std::cout << wr.GetMetrics("HWavWriter");
-            std::cout << client.GetMetrics("HNetworkProcessor");
-        }
-        catch( std::exception ex )
-        {
-            std::cout << "Caught exception: " << ex.what() << std::endl;
+            std::cout << "No rate (-r)" << std::endl;
             return 1;
         }
-        return 0;
+        if( Config.Format == -1 )
+        {
+            std::cout << "No format (-f)" << std::endl;
+            return 1;
+        }
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output filename (-f)" << std::endl;
+            return 1;
+        }
+        if( Config.FileFormat == NULL )
+        {
+            std::cout << "No output file format (-ff)" << std::endl;
+            return 1;
+        }
+
+        // Select datatype that matches the specified sample format
+        int rc;
+        switch(Config.Format)
+        {
+            case H_SAMPLE_FORMAT_INT_8:
+                std::cout << "Using format int8_t" << std::endl;;
+                rc = RunNetworkReaderClient<int8_t>(Config);
+                break;
+            case H_SAMPLE_FORMAT_UINT_8:
+                std::cout << "Using format uint8_t" << std::endl;;
+                rc = RunNetworkReaderClient<uint8_t>(Config);
+                break;
+            case H_SAMPLE_FORMAT_INT_16:
+                std::cout << "Using format int16_t" << std::endl;;
+                rc = RunNetworkReaderClient<int16_t>(Config);
+                break;
+            /*case H_SAMPLE_FORMAT_INT_24:
+                rc = RunNetworkReaderClient<???>(Config);
+                break;*/
+            case H_SAMPLE_FORMAT_INT_32:
+                std::cout << "Using format int32_t" << std::endl;;
+                rc = RunNetworkReaderClient<int32_t>(Config);
+                break;
+            default:
+                std::cout << "Unknown sample format " << Config.Format << std::endl;
+                return -1;
+        }
+        return rc;
     }
 
     // Read from soundcard and write to network

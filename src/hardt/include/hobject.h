@@ -13,6 +13,7 @@ class HObject
         HObject();
 
         std::string GetMetrics(std::string id);
+        void ResetMetrics();
 };
 
 #endif

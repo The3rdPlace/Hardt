@@ -262,6 +262,8 @@ void HNetworkProcessor<T>::RunServer()
                 _clientSocket = -1;
             }
             HLog("Connection closed");
+            HLog(HProcessor<T>::_writer->GetMetrics("HNetworkProcessor::HProcessor::_writer").c_str());
+            HProcessor<T>::_writer->ResetMetrics();
         }
     }
     catch( const std::exception& ex )
@@ -332,7 +334,7 @@ void HNetworkProcessor<T>::RunProcessor()
                 HLog("Not all data was written, %d of %d ", shipped, len);
             }
             this->Metrics.BlocksOut += shipped;
-            this->Metrics.BytesIn += shipped * sizeof(T);
+            this->Metrics.BytesOut += shipped * sizeof(T);
         }
         catch( std::exception ex )
         {
