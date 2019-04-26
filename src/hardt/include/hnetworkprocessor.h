@@ -302,13 +302,12 @@ void HNetworkProcessor<T>::RunProcessor()
         int len;
         try
         {
-            this->Metrics.Reads++;
             len = HProcessor<T>::Read(_buffer, _blocksize);
-            if( len <= 0 )
+            if( len == 0 )
             {
-                HLog("Zero read from the reader, stopping");
-                break;
+                continue;
             }
+            this->Metrics.Reads++;
             this->Metrics.BlocksIn += len;
             this->Metrics.BytesIn += len * sizeof(T);
         }
