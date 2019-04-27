@@ -37,8 +37,6 @@ class HNetworkProcessor : public HProcessor<T>
 
     public:
 
-        HFileWriter<T>* _extra;
-
         HNetworkProcessor(const char* address, int port, HWriter<T>* writer, int blocksize, bool* terminationToken);
         HNetworkProcessor(const char* address, int port, HReader<T>* reader, int blocksize, bool* terminationToken);
         HNetworkProcessor(int port, HWriter<T>* writer, int blocksize, bool* terminationToken);
@@ -304,7 +302,6 @@ void HNetworkProcessor<T>::RunProcessor()
         HError("Failed to Start() reader or writer");
         return;
     }
-    _extra->Start(NULL);
     HLog("Reader and writer Start()'ed");
 
     // Read from reader and write to network
@@ -347,8 +344,6 @@ void HNetworkProcessor<T>::RunProcessor()
             }
             this->Metrics.BlocksOut += shipped;
             this->Metrics.BytesOut += shipped * sizeof(T);
-
-            _extra->Write(_buffer, len);
         }
         catch( std::exception ex )
         {
@@ -363,7 +358,6 @@ void HNetworkProcessor<T>::RunProcessor()
     {
         HError("Failed to Stop() reader or writer");
     }
-    _extra->Stop();
     HLog("Reader and writer Stop()'ed");
 }
 

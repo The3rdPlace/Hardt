@@ -13,8 +13,22 @@ int main(int argc, char **argv)
     std::cout << "Running unittests: using Hardt " + getversion() << std::endl; ;
     HInit("hardt_test", false);
 
-    if( Test::execute() )
+    try
     {
-        std::cout << "One or more tests failed!!" << std::endl;
+        if( Test::execute() )
+        {
+            std::cout << "One or more tests failed!!" << std::endl;
+            return 1;
+        }
+    }
+    catch( std::exception e )
+    {
+        std::cout << "Caught exception: " << e.what() << std::endl;
+        return 2;
+    }
+    catch( ... )
+    {
+        std::cout << "Caught unexpected exception of unknown type!" << std::endl;
+        return 3;
     }
 }
