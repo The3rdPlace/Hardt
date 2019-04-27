@@ -260,14 +260,21 @@ bool HSoundcardReader<T>::Stop()
     }
 
     HLog("Stopping input stream");
-    PaError err = Pa_StopStream( _stream );
-    if( err != paNoError )
+    if( !Pa_IsStreamStopped( _stream ) )
     {
-        HError("Could not stop input stream: %s", Pa_GetErrorText(err));
-        return false;
+        PaError err = Pa_StopStream( _stream );
+        if( err != paNoError )
+        {
+            HError("Could not stop input stream: %s", Pa_GetErrorText(err));
+            return false;
+        }
+        _isStarted = false;
+        HLog("Input stream stopped");
     }
-    _isStarted = false;
-    HLog("Input stream stopped");
+    else
+    {
+        HLog("Stream is already stopped");
+    }
     return true;
 }
 
