@@ -186,8 +186,6 @@ int RunNetworkReaderClient(DspCmdConfig config)
         client._extra = new HFileWriter<T>("reader.pcm");
         client.Run();
         delete client._extra;
-        std::cout << wr->GetMetrics("H(wav|file)Writer");
-        std::cout << client.GetMetrics("HNetworkProcessor");
     }
     catch( std::exception ex )
     {

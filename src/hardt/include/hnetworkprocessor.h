@@ -221,7 +221,8 @@ void HNetworkProcessor<T>::InitClient()
 template <class T>
 void HNetworkProcessor<T>::Run()
 {
-    _server != NULL ? RunProcessor() : RunServer();
+    _server != NULL ? RunClient() : RunServer();
+    HLog(this->GetMetrics("HNetworkProcessor").c_str());
 }
 
 template <class T>
@@ -265,6 +266,7 @@ void HNetworkProcessor<T>::RunServer()
             }
             HLog("Connection closed");
             HLog(HProcessor<T>::_writer->GetMetrics("HNetworkProcessor::HProcessor::_writer").c_str());
+            HLog(HProcessor<T>::_reader->GetMetrics("HNetworkProcessor::HProcessor::_reader").c_str());
             HProcessor<T>::_writer->ResetMetrics();
         }
     }
@@ -282,6 +284,14 @@ void HNetworkProcessor<T>::RunServer()
     }
     HLog("Exit from Run()");
 
+}
+
+template <class T>
+void HNetworkProcessor<T>::RunClient()
+{
+    RunProcessor();
+    HLog(HProcessor<T>::_writer->GetMetrics("HNetworkProcessor::HProcessor::_writer").c_str());
+    HLog(HProcessor<T>::_reader->GetMetrics("HNetworkProcessor::HProcessor::_reader").c_str());
 }
 
 template <class T>

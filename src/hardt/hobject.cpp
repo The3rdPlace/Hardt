@@ -12,7 +12,7 @@ std::string HObject::GetMetrics(std::string id)
     output += "  BlocksOut=" + std::to_string(Metrics.BlocksOut) + "\n";
     output += "  BlocksIn=" + std::to_string(Metrics.BlocksIn) + "\n";
     output += "  Writes=" + std::to_string(Metrics.Writes) + "\n";
-    output += "  Reads=" + std::to_string(Metrics.Reads) + "\n";
+    output += "  Reads=" + std::to_string(Metrics.Reads);
     return output;
 }
 
