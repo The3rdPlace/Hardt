@@ -207,22 +207,9 @@ int RunNetworkReaderClient(DspCmdConfig config)
     return 0;
 }
 
-int main(int argc, char** argv)
+template <typename T>
+int RunOperation(DspCmdConfig config)
 {
-    // Show application name and parse input arguments
-	std::cout << "dspcmd: using Hardt " + getversion() << std::endl ;
-    if( parseArguments(argc, argv) )
-    {
-        return 0;
-    }
-
-    // Initialize the Hardt library, giving a name for logfiles, or if
-    // the '-v' switch has been given, let Hardt log directly to stdout
-    HInit(std::string("dspcmd"), Config.Verbose);
-
-    // Setup signal handling
-    SetupSignalHandling();
-
     // Show audio device information
     if( Config.ShowAudioDevices ) {
 
@@ -278,34 +265,7 @@ int main(int argc, char** argv)
             return 1;
         }
 
-        // Select datatype that matches the specified sample format
-        int rc;
-        switch(Config.Format)
-        {
-            case H_SAMPLE_FORMAT_INT_8:
-                std::cout << "Using format int8_t" << std::endl;;
-                rc = RunNetworkReaderClient<int8_t>(Config);
-                break;
-            case H_SAMPLE_FORMAT_UINT_8:
-                std::cout << "Using format uint8_t" << std::endl;;
-                rc = RunNetworkReaderClient<uint8_t>(Config);
-                break;
-            case H_SAMPLE_FORMAT_INT_16:
-                std::cout << "Using format int16_t" << std::endl;;
-                rc = RunNetworkReaderClient<int16_t>(Config);
-                break;
-            /*case H_SAMPLE_FORMAT_INT_24:
-                rc = RunNetworkReaderClient<???>(Config);
-                break;*/
-            case H_SAMPLE_FORMAT_INT_32:
-                std::cout << "Using format int32_t" << std::endl;;
-                rc = RunNetworkReaderClient<int32_t>(Config);
-                break;
-            default:
-                std::cout << "Unknown sample format " << Config.Format << std::endl;
-                return -1;
-        }
-        return rc;
+        return RunNetworkReaderClient<T>(Config);
     }
 
     // Read from soundcard and write to network
@@ -328,44 +288,53 @@ int main(int argc, char** argv)
             return 1;
         }
 
-        // Select datatype that matches the specified sample format
-        int rc;
-        switch(Config.Format)
-        {
-            case H_SAMPLE_FORMAT_INT_8:
-                std::cout << "Using format int8_t" << std::endl;;
-                rc = RunNetworkWriterServer<int8_t>(Config);
-                break;
-            case H_SAMPLE_FORMAT_UINT_8:
-                std::cout << "Using format uint8_t" << std::endl;;
-                rc = RunNetworkWriterServer<uint8_t>(Config);
-                break;
-            case H_SAMPLE_FORMAT_INT_16:
-                std::cout << "Using format int16_t" << std::endl;;
-                rc = RunNetworkWriterServer<int16_t>(Config);
-                break;
-            /*case H_SAMPLE_FORMAT_INT_24:
-                rc = RunNetworkWriterServer<???>(Config);
-                break;*/
-            case H_SAMPLE_FORMAT_INT_32:
-                std::cout << "Using format int32_t" << std::endl;;
-                rc = RunNetworkWriterServer<int32_t>(Config);
-                break;
-            default:
-                std::cout << "Unknown sample format " << Config.Format << std::endl;
-                return -1;
-        }
-        return rc;
+        return RunNetworkWriterServer<T>(Config);
     }
 
-    /* Todo: Move this to a component
-    Generator* g = new Generator();
-    int freqs[1];
-    freqs[0] = 25;
-    std::complex<double>* samples = g->GetSamples(1000, 1, 1, freqs, 1);
-    //print_array< std::complex<double> >(samples, 1000);
-    delete g;*/
-
-    std::cout << "Sorry, no operation specified";
+    // No known operation could be determined from the input arguments
+    std::cout << "Sorry, operation could not be determined from input arguments" << std::endl;
+    std::cout << "Try 'dspcmd -h'" << std::endl;
 	return 1;
+
+}
+
+int main(int argc, char** argv)
+{
+    // Show application name and parse input arguments
+	std::cout << "dspcmd: using Hardt " + getversion() << std::endl ;
+    if( parseArguments(argc, argv) )
+    {
+        return 0;
+    }
+
+    // Initialize the Hardt library, giving a name for logfiles, or if
+    // the '-v' switch has been given, let Hardt log directly to stdout
+    HInit(std::string("dspcmd"), Config.Verbose);
+
+    // Setup signal handling
+    SetupSignalHandling();
+
+    // Two stage operation calling, first find out which datatype is needed
+    int rc;
+    switch(Config.Format)
+    {
+        case H_SAMPLE_FORMAT_INT_8:
+            HLog("Base datatype is int8_t");
+            return RunOperation<int8_t>(Config);
+        case H_SAMPLE_FORMAT_UINT_8:
+            HLog("Base datatype is uint8_t");
+            return RunOperation<uint8_t>(Config);
+        case H_SAMPLE_FORMAT_INT_16:
+            HLog("Base datatype is int16_t");
+            return RunOperation<int16_t>(Config);
+        /*case H_SAMPLE_FORMAT_INT_24:
+            HLog("Base datatype is int24_t");
+            return RunOperation<int8_t>(Config);*/
+        case H_SAMPLE_FORMAT_INT_32:
+            HLog("Base datatype is int32_t");
+            return RunOperation<int32_t>(Config);
+        default:
+            std::cout << "Unknown sample format " << Config.Format << std::endl;
+            return -1;
+    }
 }

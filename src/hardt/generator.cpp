@@ -23,3 +23,12 @@ std::complex<double>* Generator::GetSamples(int sampleFreq, int duration, int am
     }
     return data;
 }
+
+/* Usage
+Generator* g = new Generator();
+int freqs[1];
+freqs[0] = 25;
+std::complex<double>* samples = g->GetSamples(1000, 1, 1, freqs, 1);
+//print_array< std::complex<double> >(samples, 1000);
+delete g;*/
+
