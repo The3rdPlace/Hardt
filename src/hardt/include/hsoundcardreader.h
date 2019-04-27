@@ -23,7 +23,6 @@ class HSoundcardReader : public HReader<T>
             int wrloc;
             int rdloc;
             T* buffer;
-            bool firstCall;
             std::mutex mtx;
             std::condition_variable lock;
         } _cbd;
@@ -69,7 +68,6 @@ HSoundcardReader<T>::HSoundcardReader(int device, H_SAMPLE_RATE rate, int channe
     _cbd.framesize = framesPerBuffer;
     _cbd.wrloc = 0;
     _cbd.rdloc = 0;
-    _cbd.firstCall = true;
     _cbd.buffer = new T[NUMBER_OF_BUFFERS * framesPerBuffer * sizeof(T)];
     if( _cbd.buffer == NULL )
     {
@@ -207,15 +205,6 @@ int HSoundcardReader<T>::callback( const void *inputBuffer, void *outputBuffer,
     // Cast data passed through stream to our structure.
     CallbackData *data = (CallbackData*) userData;
 
-    // Usually, you do not want any logging from this function!!
-    // however - it could be usefull to be notified that the function
-    // gets called, so we log the very first call after starting the stream
-    if( data->firstCall )
-    {
-        HLog("Received %u frames from the soundcard", framesPerBuffer);
-        data->firstCall = false;
-    }
-
     // Cast input- and outputbuffers to our specific data type
     T* src = (T*) inputBuffer;
     T* dest = (T*) &data->buffer[data->wrloc];
@@ -250,7 +239,6 @@ bool HSoundcardReader<T>::Start(void* unused)
     }
 
     HLog("Starting input stream");
-    _cbd.firstCall = true;
     PaError err = Pa_StartStream( _stream );
     if( err != paNoError )
     {
