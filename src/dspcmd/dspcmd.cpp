@@ -146,9 +146,11 @@ int RunNetworkWriterServer(DspCmdConfig config)
     HNetworkProcessor<T> srv(config.Port, &rdr, config.Blocksize, &terminated);
     try
     {
+        srv._extra = new HFileWriter<T>("writer.pcm");
         srv.Run();
         std::cout << rdr.GetMetrics("HSoundcardReader");
         std::cout << srv.GetMetrics("HNetworkProcessor");
+        delete srv._extra;
     }
     catch( std::exception ex )
     {
@@ -181,7 +183,9 @@ int RunNetworkReaderClient(DspCmdConfig config)
     HNetworkProcessor<T> client(Config.Address, Config.Port, wr, Config.Blocksize, &terminated);
     try
     {
+        client._extra = new HFileWriter<T>("reader.pcm");
         client.Run();
+        delete client._extra;
         std::cout << wr->GetMetrics("H(wav|file)Writer");
         std::cout << client.GetMetrics("HNetworkProcessor");
     }
