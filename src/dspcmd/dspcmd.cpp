@@ -315,26 +315,46 @@ int main(int argc, char** argv)
     SetupSignalHandling();
 
     // Two stage operation calling, first find out which datatype is needed
-    int rc;
-    switch(Config.Format)
+    try
     {
-        case H_SAMPLE_FORMAT_INT_8:
-            HLog("Base datatype is int8_t");
-            return RunOperation<int8_t>(Config);
-        case H_SAMPLE_FORMAT_UINT_8:
-            HLog("Base datatype is uint8_t");
-            return RunOperation<uint8_t>(Config);
-        case H_SAMPLE_FORMAT_INT_16:
-            HLog("Base datatype is int16_t");
-            return RunOperation<int16_t>(Config);
-        /*case H_SAMPLE_FORMAT_INT_24:
-            HLog("Base datatype is int24_t");
-            return RunOperation<int8_t>(Config);*/
-        case H_SAMPLE_FORMAT_INT_32:
-            HLog("Base datatype is int32_t");
-            return RunOperation<int32_t>(Config);
-        default:
-            std::cout << "Unknown sample format " << Config.Format << std::endl;
-            return -1;
+        int rc;
+        switch(Config.Format)
+        {
+            case H_SAMPLE_FORMAT_INT_8:
+                HLog("Base datatype is int8_t");
+                return RunOperation<int8_t>(Config);
+            case H_SAMPLE_FORMAT_UINT_8:
+                HLog("Base datatype is uint8_t");
+                return RunOperation<uint8_t>(Config);
+            case H_SAMPLE_FORMAT_INT_16:
+                HLog("Base datatype is int16_t");
+                return RunOperation<int16_t>(Config);
+            /*case H_SAMPLE_FORMAT_INT_24:
+                HLog("Base datatype is int24_t");
+                return RunOperation<int8_t>(Config);*/
+            case H_SAMPLE_FORMAT_INT_32:
+                HLog("Base datatype is int32_t");
+                return RunOperation<int32_t>(Config);
+            default:
+                std::cout << "Unknown sample format " << Config.Format << std::endl;
+                return -1;
+        }
+    }
+    catch( HException* hex )
+    {
+        std::cout << "Caught exception:" << std::endl;
+        std::cout << "  " << hex->what() << std::endl;
+        return 1;
+    }
+    catch( std::exception* ex )
+    {
+        std::cout << "Caught external exception:" << std::endl;
+        std::cout << "  " << ex->what() << std::endl;
+        return 2;
+    }
+    catch( ... )
+    {
+        std::cout << "Unexpected exception, no further information" << std::endl;
+        return 3;
     }
 }
