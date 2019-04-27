@@ -21,9 +21,9 @@ int main(int argc, char **argv)
             return 1;
         }
     }
-    catch( std::exception e )
+    catch( std::exception* e )
     {
-        std::cout << "Caught exception: " << e.what() << std::endl;
+        std::cout << "Caught exception: " << e->what() << std::endl;
         return 2;
     }
     catch( ... )
