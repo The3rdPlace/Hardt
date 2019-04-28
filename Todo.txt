@@ -1,0 +1,4 @@
+Specialized PCM writer than can handle endianness
+
+put data on the network in network-byte-order, and read this way then convert to system-endianness
+
