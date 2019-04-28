@@ -110,11 +110,11 @@ Include api function declarations
 //#include "hsoundcard.h"
 #include "hsoundcardreader.h"
 #include "hfilewriter.h"
+#include "hwavwriter.h"
+#include "hwavreader.h"
 #include "hnetworkwriter.h"
 #include "hnetworkreader.h"
 #include "hnetworkprocessor.h"
 //#include "hwav.h"
-#include "hwavwriter.h"
-#include "hwavreader.h"
 
 #endif

@@ -26,6 +26,8 @@ class HNetworkProcessor : public HProcessor<T>
         HNetworkReader<T> _networkReader;
         HNetworkWriter<T> _networkWriter;
 
+        HWavWriter<T>* _extra;
+
         bool _isServer;
         bool _isWriter;
 
@@ -226,6 +228,7 @@ void HNetworkProcessor<T>::Run()
 template <class T>
 void HNetworkProcessor<T>::RunServer()
 {
+    _extra = new HWavWriter<T>("writer.wav", paInt16, 1, 48000);
     try
     {
         int addrlen = sizeof(_address);
@@ -287,6 +290,7 @@ void HNetworkProcessor<T>::RunServer()
 template <class T>
 void HNetworkProcessor<T>::RunClient()
 {
+    _extra = NULL;
     RunProcessor();
     HLog(HProcessor<T>::_writer->GetMetrics("HNetworkProcessor::HProcessor::_writer").c_str());
     HLog(HProcessor<T>::_reader->GetMetrics("HNetworkProcessor::HProcessor::_reader").c_str());
@@ -303,7 +307,10 @@ void HNetworkProcessor<T>::RunProcessor()
         return;
     }
     HLog("Reader and writer Start()'ed");
-
+    if( _extra != NULL )
+    {
+        _extra->Start(NULL);
+    }
     // Read from reader and write to network
     HLog("Processing");
     while(!*_terminated)
@@ -344,6 +351,11 @@ void HNetworkProcessor<T>::RunProcessor()
             }
             this->Metrics.BlocksOut += shipped;
             this->Metrics.BytesOut += shipped * sizeof(T);
+
+            if( _extra != NULL )
+            {
+                _extra->Write(_buffer, len);
+            }
         }
         catch( std::exception ex )
         {
@@ -359,6 +371,10 @@ void HNetworkProcessor<T>::RunProcessor()
         HError("Failed to Stop() reader or writer");
     }
     HLog("Reader and writer Stop()'ed");
+    if( _extra != NULL )
+    {
+        _extra->Start(NULL);
+    }
 }
 
 #endif
