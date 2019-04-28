@@ -373,7 +373,7 @@ void HNetworkProcessor<T>::RunProcessor()
     HLog("Reader and writer Stop()'ed");
     if( _extra != NULL )
     {
-        _extra->Start(NULL);
+        _extra->Stop();
     }
 }
 

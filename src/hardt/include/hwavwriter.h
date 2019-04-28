@@ -30,6 +30,14 @@ Class implementation
 template <class T>
 bool HWavWriter<T>::Start(void* unused)
 {
+    // Call parent Start()
+    HLog("Starting underlying HFileWriter");
+    if( !HFileWriter<T>::Start(unused) )
+    {
+        HError("Failed to start underlying HFileWriter");
+        return false;
+    }
+
     // We know that the header is _always_ 44 bytes long for any wav
     // file, regardless of format, rate and number of channels. So we
     // can safely divide 44 by the size of the datatype (1, 2) to get
@@ -51,7 +59,11 @@ bool HWavWriter<T>::Stop()
     // Update header
     HFileWriter<T>::Seek(0);
     HLog("Updating header");
-    return HFileWriter<T>::Write((T*) &_header, 44 / sizeof(T)) == 44 / sizeof(T);
+    HFileWriter<T>::Write((T*) &_header, 44 / sizeof(T));
+
+    // Call parent Stop()
+    HLog("Stopping underlying HFileWriter");
+    return HFileWriter<T>::Stop();
 }
 
 template <class T>
