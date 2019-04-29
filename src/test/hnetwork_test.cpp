@@ -119,11 +119,11 @@ class HNetwork_Test: public Test
             memset(received, 0, 14 * sizeof(int));
 
             TestWriter wr(received, 14);
-            server = new HNetworkProcessor<int>(1234, &wr, 14, &terminated);
+            server = new HNetworkProcessor<int>(1235, &wr, 14, &terminated);
             std::thread serverThread(runServer);
 
             TestReader rdr(expected, 14);
-            client = new HNetworkProcessor<int>("127.0.0.1", 1234, &rdr, 14, &terminated);
+            client = new HNetworkProcessor<int>("127.0.0.1", 1235, &rdr, 14, &terminated);
             std::thread clientThread(runClient);
 
             clientThread.join();
