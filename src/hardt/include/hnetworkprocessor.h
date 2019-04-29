@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <sys/socket.h>
+#include <sys/time.h>
+#include <sys/types.h>
 #include <stdlib.h>
 #include <netinet/in.h>
 #include <signal.h>
@@ -22,7 +24,6 @@ class HNetworkProcessor : public HProcessor<T>
         bool* _terminated;
         T* _buffer;
         int _blocksize;
-
         HNetworkReader<T> _networkReader;
         HNetworkWriter<T> _networkWriter;
 
@@ -45,6 +46,7 @@ class HNetworkProcessor : public HProcessor<T>
         ~HNetworkProcessor();
 
         void Run();
+        void Halt();
 };
 
 /********************************************************************
@@ -226,6 +228,14 @@ void HNetworkProcessor<T>::Run()
 template <class T>
 void HNetworkProcessor<T>::RunServer()
 {
+    // Prepare select()
+    int activity;
+    fd_set rfds;
+    struct timeval tv;
+    FD_ZERO(&rfds);
+    FD_SET(_serverSocket, &rfds);
+
+    // Run server untill terminated
     try
     {
         int addrlen = sizeof(_address);
@@ -242,8 +252,38 @@ void HNetworkProcessor<T>::RunServer()
                 return;
             }
 
+            //wait for an activity on one of the sockets
+            while( !*_terminated )
+            {
+                // Wait for activity on the serversocket.
+                // This is not the optimal way to check for exit, but it will suffice
+                // for the types of scenarios that we will encounter, running on small
+                // isolated boxes (raspberry's etc.) or just handling a very limited number
+                // of connections. Some days we'll make this beautifull though.
+                tv.tv_sec = 3;
+                tv.tv_usec = 0;
+                activity = select( _serverSocket + 1 , &rfds , &rfds , NULL , &tv);
+                if ( activity < 0)
+                {
+                    HLog("Error when waiting for connections");
+                    return;
+                }
+                else if( activity > 0 )
+                {
+                    // Someone is trying to connect
+                    break;
+                }
+            }
+
+            // Check for termination
+            if( *_terminated )
+            {
+                HLog("Termination token set to true, halting");
+                break;
+            }
+
             // Accept new connection
-            HLog("Waiting for connection");
+            HLog("Accepting connection");
             if ((_clientSocket = accept(_serverSocket, (struct sockaddr *)&_address, (socklen_t*)&addrlen))<0)
             {
                 HError("Error in accept, socket may have been closed");
@@ -281,13 +321,18 @@ void HNetworkProcessor<T>::RunServer()
         return;
     }
     HLog("Exit from Run()");
-
 }
 
 template <class T>
 void HNetworkProcessor<T>::RunClient()
 {
     RunProcessor();
+    if( _clientSocket > -1 )
+    {
+        HLog("Closing connection to the client");
+        close(_clientSocket);
+        _clientSocket = -1;
+    }
     HLog(HProcessor<T>::_writer->GetMetrics("HNetworkProcessor::HProcessor::_writer").c_str());
     HLog(HProcessor<T>::_reader->GetMetrics("HNetworkProcessor::HProcessor::_reader").c_str());
 }
@@ -315,7 +360,8 @@ void HNetworkProcessor<T>::RunProcessor()
             len = HProcessor<T>::Read(_buffer, _blocksize);
             if( len == 0 )
             {
-                continue;
+                HLog("%s Zero read from the reader, stopping", _isServer ? "(server)" : "(client)");
+                break;
             }
             this->Metrics.Reads++;
             this->Metrics.BlocksIn += len;
@@ -323,7 +369,7 @@ void HNetworkProcessor<T>::RunProcessor()
         }
         catch( std::exception ex )
         {
-            HError("Caught exception: %s", ex.what());
+            HError("%s Caught exception: %s", _isServer ? "(server)" : "(client)", ex.what());
             break;
         }
 
@@ -335,7 +381,7 @@ void HNetworkProcessor<T>::RunProcessor()
             shipped = HProcessor<T>::Write(_buffer, len);
             if( shipped <= 0 )
             {
-                HLog("Zero write to the writer, stopping");
+                HLog("%s Zero write to the writer, stopping", _isServer ? "(server)" : "(client)");
                 break;
             }
             if( shipped != len )
@@ -347,7 +393,7 @@ void HNetworkProcessor<T>::RunProcessor()
         }
         catch( std::exception ex )
         {
-            HError("Caught exception: %s", ex.what());
+            HError("%s Caught exception: %s", _isServer ? "(server)" : "(client)", ex.what());
             break;
         }
     }
@@ -361,4 +407,20 @@ void HNetworkProcessor<T>::RunProcessor()
     HLog("Reader and writer Stop()'ed");
 }
 
+template <class T>
+void HNetworkProcessor<T>::Halt()
+{
+    HLog("Halting processor");
+    if( _clientSocket > -1 ) {
+        HLog("Closing client socket");
+        close(_clientSocket);
+        _clientSocket = -1;
+    }
+    if( _serverSocket > -1 ) {
+        HLog("Closing server socket");
+        close(_serverSocket);
+        _serverSocket = -1;
+    }
+    *_terminated = true;
+}
 #endif
