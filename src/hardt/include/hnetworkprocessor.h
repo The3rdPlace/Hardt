@@ -232,8 +232,6 @@ void HNetworkProcessor<T>::RunServer()
     int activity;
     fd_set rfds;
     struct timeval tv;
-    FD_ZERO(&rfds);
-    FD_SET(_serverSocket, &rfds);
 
     // Run server untill terminated
     try
@@ -252,7 +250,7 @@ void HNetworkProcessor<T>::RunServer()
                 return;
             }
 
-            //wait for an activity on one of the sockets
+            //wait for activity (connect)
             while( !*_terminated )
             {
                 // Wait for activity on the serversocket.
@@ -262,6 +260,8 @@ void HNetworkProcessor<T>::RunServer()
                 // of connections. Some days we'll make this beautifull though.
                 tv.tv_sec = 3;
                 tv.tv_usec = 0;
+                FD_ZERO(&rfds);
+                FD_SET(_serverSocket, &rfds);
                 activity = select( _serverSocket + 1 , &rfds , &rfds , NULL , &tv);
                 if ( activity < 0)
                 {
