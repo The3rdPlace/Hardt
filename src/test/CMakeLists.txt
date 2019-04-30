@@ -4,9 +4,9 @@ target_link_libraries (hardt_test hardt pthread)
 
 target_sources(hardt_test
     PRIVATE
-        hfilewriter_test.cpp
-	    hnetwork_test.cpp
-	    hwavwriter_test.cpp
+        //hfilewriter_test.cpp
+	    //hnetwork_test.cpp
+	    //hwavwriter_test.cpp
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")

@@ -4,12 +4,13 @@
 #include <exception>
 
 
-#include "test.h"
+//#include "test.h"
 
-std::vector<Test*> tests;
+//std::vector<Test*> tests;
 
 int main(int argc, char **argv)
 {
+/*
     std::cout << "Running unittests: using Hardt " + getversion() << std::endl; ;
     HInit("hardt_test", false);
 
@@ -31,4 +32,5 @@ int main(int argc, char **argv)
         std::cout << "Caught unexpected exception of unknown type!" << std::endl;
         return 3;
     }
+    */
 }

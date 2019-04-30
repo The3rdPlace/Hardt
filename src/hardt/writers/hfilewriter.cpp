@@ -66,4 +66,6 @@ bool HFileWriter<T>::Stop()
     return true;
 }
 
+template class HFileWriter<int>;
+
 #endif

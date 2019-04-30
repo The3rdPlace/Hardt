@@ -1,4 +1,4 @@
-#include "hardtapi.h"
+#include "hardtlib.h"
 
 std::vector<HSoundcard::DeviceInformation> HSoundcard::GetDeviceInformation()
 {

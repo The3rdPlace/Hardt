@@ -1,4 +1,5 @@
 #include "../hardt/include/hardtapi.h"
+#ifdef NOT
 #include "dspcmd.h"
 
 /********************************************************************
@@ -351,4 +352,11 @@ int main(int argc, char** argv)
         std::cout << "Unexpected exception, no further information" << std::endl;
         return 3;
     }
+}
+
+#endif
+
+int main()
+{
+    HFileWriter<int> wr("Somewhere.txt");
 }
