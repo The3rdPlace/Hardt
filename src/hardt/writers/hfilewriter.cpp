@@ -1,23 +1,7 @@
-#ifndef __HFILEWRITER_H
-#define __HFILEWRITER_H
+#ifndef __HFILEWRITER_CPP
+#define __HFILEWRITER_CPP
 
-template <class T>
-class HFileWriter : public HWriter<T>
-{
-    private:
-
-        std::ofstream _stream;
-        const char* _filename;
-
-    public:
-
-        HFileWriter(const char* filename);
-        virtual int Write(T* dest, size_t blocksize);
-        bool Start(void* data);
-        bool Stop();
-
-        void Seek(int bytes);
-};
+#include "hfilewriter.h"
 
 /********************************************************************
 Class implementation
@@ -66,6 +50,72 @@ bool HFileWriter<T>::Stop()
     return true;
 }
 
-template class HFileWriter<int>;
+/********************************************************************
+Explicit instantiation
+********************************************************************/
+
+// HFileWriter()
+template
+HFileWriter<char>::HFileWriter(const char* path);
+
+template
+HFileWriter<unsigned char>::HFileWriter(const char* path);
+
+template
+HFileWriter<int>::HFileWriter(const char* path);
+
+template
+HFileWriter<int8_t>::HFileWriter(const char* path);
+
+template
+HFileWriter<int16_t>::HFileWriter(const char* path);
+
+// Start()
+template
+bool HFileWriter<char>::Start(void* data);
+
+template
+bool HFileWriter<unsigned char>::Start(void* data);
+
+template
+bool HFileWriter<int>::Start(void* data);
+
+template
+bool HFileWriter<int8_t>::Start(void* data);
+
+template
+bool HFileWriter<int16_t>::Start(void* data);
+
+// Stop()
+template
+bool HFileWriter<char>::Stop();
+
+template
+bool HFileWriter<unsigned char>::Stop();
+
+template
+bool HFileWriter<int>::Stop();
+
+template
+bool HFileWriter<int8_t>::Stop();
+
+template
+bool HFileWriter<int16_t>::Stop();
+
+// Write()
+template
+int HFileWriter<char>::Write(char* dest, size_t blocksize);
+
+template
+int HFileWriter<unsigned char>::Write(unsigned char* dest, size_t blocksize);
+
+template
+int HFileWriter<int>::Write(int* dest, size_t blocksize);
+
+template
+int HFileWriter<int8_t>::Write(int8_t* dest, size_t blocksize);
+
+template
+int HFileWriter<int16_t>::Write(int16_t* dest, size_t blocksize);
 
 #endif

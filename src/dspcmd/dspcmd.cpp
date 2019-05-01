@@ -1,6 +1,7 @@
 #include "../hardt/include/hardtapi.h"
-#ifdef NOT
 #include "dspcmd.h"
+
+#include "signal.h"
 
 /********************************************************************
 Setup signal handling.
@@ -352,11 +353,4 @@ int main(int argc, char** argv)
         std::cout << "Unexpected exception, no further information" << std::endl;
         return 3;
     }
-}
-
-#endif
-
-int main()
-{
-    HFileWriter<int> wr("Somewhere.txt");
 }
