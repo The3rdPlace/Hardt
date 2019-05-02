@@ -240,13 +240,43 @@ bool HSoundcardReader<T>::Stop()
 Explicit instantiation
 ********************************************************************/
 
+// HSoundcardReader()
 template
-HSoundcardReader<int>::HSoundcardReader(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer = DEFAULT_FRAMESIZE);
+HSoundcardReader<int8_t>::HSoundcardReader(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer = DEFAULT_FRAMESIZE);
 
 template
-HSoundcardReader<int>::~HSoundcardReader();
+HSoundcardReader<uint8_t>::HSoundcardReader(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer = DEFAULT_FRAMESIZE);
 
 template
-int HSoundcardReader<int>::Read(int* dest, size_t blocksize);
+HSoundcardReader<int16_t>::HSoundcardReader(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer = DEFAULT_FRAMESIZE);
+
+template
+HSoundcardReader<int32_t>::HSoundcardReader(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer = DEFAULT_FRAMESIZE);
+
+// ~HSoundcardReader()
+template
+HSoundcardReader<int8_t>::~HSoundcardReader();
+
+template
+HSoundcardReader<uint8_t>::~HSoundcardReader();
+
+template
+HSoundcardReader<int16_t>::~HSoundcardReader();
+
+template
+HSoundcardReader<int32_t>::~HSoundcardReader();
+
+// Read()
+template
+int HSoundcardReader<int8_t>::Read(int8_t* dest, size_t blocksize);
+
+template
+int HSoundcardReader<uint8_t>::Read(uint8_t* dest, size_t blocksize);
+
+template
+int HSoundcardReader<int16_t>::Read(int16_t* dest, size_t blocksize);
+
+template
+int HSoundcardReader<int32_t>::Read(int32_t* dest, size_t blocksize);
 
 #endif

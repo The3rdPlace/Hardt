@@ -56,66 +56,54 @@ Explicit instantiation
 
 // HFileWriter()
 template
-HFileWriter<char>::HFileWriter(const char* path);
-
-template
-HFileWriter<unsigned char>::HFileWriter(const char* path);
-
-template
-HFileWriter<int>::HFileWriter(const char* path);
-
-template
 HFileWriter<int8_t>::HFileWriter(const char* path);
+
+template
+HFileWriter<uint8_t>::HFileWriter(const char* path);
 
 template
 HFileWriter<int16_t>::HFileWriter(const char* path);
 
+template
+HFileWriter<int32_t>::HFileWriter(const char* path);
+
 // Start()
-template
-bool HFileWriter<char>::Start(void* data);
-
-template
-bool HFileWriter<unsigned char>::Start(void* data);
-
-template
-bool HFileWriter<int>::Start(void* data);
-
 template
 bool HFileWriter<int8_t>::Start(void* data);
 
 template
+bool HFileWriter<uint8_t>::Start(void* data);
+
+template
 bool HFileWriter<int16_t>::Start(void* data);
 
+template
+bool HFileWriter<int32_t>::Start(void* data);
+
 // Stop()
-template
-bool HFileWriter<char>::Stop();
-
-template
-bool HFileWriter<unsigned char>::Stop();
-
-template
-bool HFileWriter<int>::Stop();
-
 template
 bool HFileWriter<int8_t>::Stop();
 
 template
+bool HFileWriter<uint8_t>::Stop();
+
+template
 bool HFileWriter<int16_t>::Stop();
 
+template
+bool HFileWriter<int32_t>::Stop();
+
 // Write()
-template
-int HFileWriter<char>::Write(char* dest, size_t blocksize);
-
-template
-int HFileWriter<unsigned char>::Write(unsigned char* dest, size_t blocksize);
-
-template
-int HFileWriter<int>::Write(int* dest, size_t blocksize);
-
 template
 int HFileWriter<int8_t>::Write(int8_t* dest, size_t blocksize);
 
 template
+int HFileWriter<uint8_t>::Write(uint8_t* dest, size_t blocksize);
+
+template
 int HFileWriter<int16_t>::Write(int16_t* dest, size_t blocksize);
+
+template
+int HFileWriter<int32_t>::Write(int32_t* dest, size_t blocksize);
 
 #endif

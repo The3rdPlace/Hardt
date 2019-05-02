@@ -67,22 +67,67 @@ Explicit instantiation
 
 // HProcessor()
 template
-HProcessor<int>::HProcessor(HWriter<int>* writer, HReader<int>* reader);
+HProcessor<int8_t>::HProcessor(HWriter<int8_t>* writer, HReader<int8_t>* reader);
+
+template
+HProcessor<uint8_t>::HProcessor(HWriter<uint8_t>* writer, HReader<uint8_t>* reader);
+
+template
+HProcessor<int16_t>::HProcessor(HWriter<int16_t>* writer, HReader<int16_t>* reader);
+
+template
+HProcessor<int32_t>::HProcessor(HWriter<int32_t>* writer, HReader<int32_t>* reader);
 
 // Read()
 template
-int HProcessor<int>::Read(int* dest, int blocksize);
+int HProcessor<int8_t>::Read(int8_t* dest, int blocksize);
+
+template
+int HProcessor<uint8_t>::Read(uint8_t* dest, int blocksize);
+
+template
+int HProcessor<int16_t>::Read(int16_t* dest, int blocksize);
+
+template
+int HProcessor<int32_t>::Read(int32_t* dest, int blocksize);
 
 // Write()
 template
-int HProcessor<int>::Write(int* src, int blocksize);
+int HProcessor<int8_t>::Write(int8_t* src, int blocksize);
+
+template
+int HProcessor<uint8_t>::Write(uint8_t* src, int blocksize);
+
+template
+int HProcessor<int16_t>::Write(int16_t* src, int blocksize);
+
+template
+int HProcessor<int32_t>::Write(int32_t* src, int blocksize);
 
 // Start()
 template
-bool HProcessor<int>::Start(void* data);
+bool HProcessor<int8_t>::Start(void* data);
+
+template
+bool HProcessor<uint8_t>::Start(void* data);
+
+template
+bool HProcessor<int16_t>::Start(void* data);
+
+template
+bool HProcessor<int32_t>::Start(void* data);
 
 // Stop()
 template
-bool HProcessor<int>::Stop();
+bool HProcessor<int8_t>::Stop();
+
+template
+bool HProcessor<uint8_t>::Stop();
+
+template
+bool HProcessor<int16_t>::Stop();
+
+template
+bool HProcessor<int32_t>::Stop();
 
 #endif

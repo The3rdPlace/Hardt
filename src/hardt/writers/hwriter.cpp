@@ -21,10 +21,28 @@ Explicit instantiation
 
 // Start()
 template
-bool HWriter<int>::Start(void* data);
+bool HWriter<int8_t>::Start(void* data);
+
+template
+bool HWriter<uint8_t>::Start(void* data);
+
+template
+bool HWriter<int16_t>::Start(void* data);
+
+template
+bool HWriter<int32_t>::Start(void* data);
 
 // Stop()
 template
-bool HWriter<int>::Stop();
+bool HWriter<int8_t>::Stop();
+
+template
+bool HWriter<uint8_t>::Stop();
+
+template
+bool HWriter<int16_t>::Stop();
+
+template
+bool HWriter<int32_t>::Stop();
 
 #endif

@@ -55,4 +55,61 @@ int HWavWriter<T>::Write(T* dest, size_t blocksize)
     return HFileWriter<T>::Write(dest, blocksize);
 }
 
+
+/********************************************************************
+Explicit instantiation
+********************************************************************/
+
+// HWavWriter()
+template
+HWavWriter<int8_t>::HWavWriter(const char* filename, H_SAMPLE_FORMAT format, int channels, H_SAMPLE_RATE rate);
+
+template
+HWavWriter<uint8_t>::HWavWriter(const char* filename, H_SAMPLE_FORMAT format, int channels, H_SAMPLE_RATE rate);
+
+template
+HWavWriter<int16_t>::HWavWriter(const char* filename, H_SAMPLE_FORMAT format, int channels, H_SAMPLE_RATE rate);
+
+template
+HWavWriter<int32_t>::HWavWriter(const char* filename, H_SAMPLE_FORMAT format, int channels, H_SAMPLE_RATE rate);
+
+// Start()
+template
+bool HWavWriter<int8_t>::Start(void* unused);
+
+template
+bool HWavWriter<uint8_t>::Start(void* unused);
+
+template
+bool HWavWriter<int16_t>::Start(void* unused);
+
+template
+bool HWavWriter<int32_t>::Start(void* unused);
+
+// Stop()
+template
+bool HWavWriter<int8_t>::Stop();
+
+template
+bool HWavWriter<uint8_t>::Stop();
+
+template
+bool HWavWriter<int16_t>::Stop();
+
+template
+bool HWavWriter<int32_t>::Stop();
+
+// Write()
+template
+int HWavWriter<int8_t>::Write(int8_t* dest, size_t blocksize);
+
+template
+int HWavWriter<uint8_t>::Write(uint8_t* dest, size_t blocksize);
+
+template
+int HWavWriter<int16_t>::Write(int16_t* dest, size_t blocksize);
+
+template
+int HWavWriter<int32_t>::Write(int32_t* dest, size_t blocksize);
+
 #endif

@@ -179,9 +179,9 @@ class HWavWriter_Test: public Test
             memcpy((void*) &expected[44], (void*) _data, 2048);
 
             // Create writer and write the wav file
-            HWavWriter<uint16_t>* wr = new HWavWriter<uint16_t>("/tmp/hwavwriter_uint16_data.txt", H_SAMPLE_FORMAT_INT_16, 2, H_SAMPLE_RATE_22K);
+            HWavWriter<int16_t>* wr = new HWavWriter<int16_t>("/tmp/hwavwriter_uint16_data.txt", H_SAMPLE_FORMAT_INT_16, 2, H_SAMPLE_RATE_22K);
             wr->Start(NULL);
-            wr->Write((uint16_t*) _data, 2048 / sizeof(uint16_t));
+            wr->Write((int16_t*) _data, 2048 / sizeof(int16_t));
             wr->Stop();
             delete wr;
 

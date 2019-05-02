@@ -35,10 +35,28 @@ Explicit instantiation
 
 // Write()
 template
-int HNetworkWriter<int>::Write(int* src, size_t blocksize);
+int HNetworkWriter<int8_t>::Write(int8_t* src, size_t blocksize);
+
+template
+int HNetworkWriter<uint8_t>::Write(uint8_t* src, size_t blocksize);
+
+template
+int HNetworkWriter<int16_t>::Write(int16_t* src, size_t blocksize);
+
+template
+int HNetworkWriter<int32_t>::Write(int32_t* src, size_t blocksize);
 
 // Start()
 template
-bool HNetworkWriter<int>::Start(void* socket);
+bool HNetworkWriter<int8_t>::Start(void* socket);
+
+template
+bool HNetworkWriter<uint8_t>::Start(void* socket);
+
+template
+bool HNetworkWriter<int16_t>::Start(void* socket);
+
+template
+bool HNetworkWriter<int32_t>::Start(void* socket);
 
 #endif

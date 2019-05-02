@@ -38,10 +38,28 @@ Explicit instantiation
 
 // Read()
 template
-int HNetworkReader<int>::Read(int* dest, size_t blocksize);
+int HNetworkReader<int8_t>::Read(int8_t* dest, size_t blocksize);
+
+template
+int HNetworkReader<uint8_t>::Read(uint8_t* dest, size_t blocksize);
+
+template
+int HNetworkReader<int16_t>::Read(int16_t* dest, size_t blocksize);
+
+template
+int HNetworkReader<int32_t>::Read(int32_t* dest, size_t blocksize);
 
 // Start()
 template
-bool HNetworkReader<int>::Start(void* socket);
+bool HNetworkReader<int8_t>::Start(void* socket);
+
+template
+bool HNetworkReader<uint8_t>::Start(void* socket);
+
+template
+bool HNetworkReader<int16_t>::Start(void* socket);
+
+template
+bool HNetworkReader<int32_t>::Start(void* socket);
 
 #endif
