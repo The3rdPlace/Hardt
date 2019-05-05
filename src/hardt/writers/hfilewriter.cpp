@@ -95,15 +95,15 @@ bool HFileWriter<int32_t>::Stop();
 
 // Write()
 template
-int HFileWriter<int8_t>::Write(int8_t* dest, size_t blocksize);
+int HFileWriter<int8_t>::Write(int8_t* src, size_t blocksize);
 
 template
-int HFileWriter<uint8_t>::Write(uint8_t* dest, size_t blocksize);
+int HFileWriter<uint8_t>::Write(uint8_t* src, size_t blocksize);
 
 template
-int HFileWriter<int16_t>::Write(int16_t* dest, size_t blocksize);
+int HFileWriter<int16_t>::Write(int16_t* src, size_t blocksize);
 
 template
-int HFileWriter<int32_t>::Write(int32_t* dest, size_t blocksize);
+int HFileWriter<int32_t>::Write(int32_t* src, size_t blocksize);
 
 #endif

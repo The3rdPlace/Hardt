@@ -13,6 +13,7 @@
 #include "hprocessor.h"
 
 #include "hfilewriter.h"
+#include "hfilereader.h"
 #include "hwavwriter.h"
 #include "hnetworkwriter.h"
 #include "hnetworkreader.h"
@@ -105,6 +106,62 @@ int HFileWriter<int16_t>::Write(int16_t* dest, size_t blocksize);
 
 extern template
 int HFileWriter<int32_t>::Write(int32_t* dest, size_t blocksize);
+
+/********************************************************************
+HFileReader
+********************************************************************/
+
+// HFileReader()
+extern template
+HFileReader<int8_t>::HFileReader(const char* path);
+
+extern template
+HFileReader<uint8_t>::HFileReader(const char* path);
+
+extern template
+HFileReader<int16_t>::HFileReader(const char* path);
+
+extern template
+HFileReader<int32_t>::HFileReader(const char* path);
+
+// Start()
+extern template
+bool HFileReader<int8_t>::Start(void* data);
+
+extern template
+bool HFileReader<uint8_t>::Start(void* data);
+
+extern template
+bool HFileReader<int16_t>::Start(void* data);
+
+extern template
+bool HFileReader<int32_t>::Start(void* data);
+
+// Stop()
+extern template
+bool HFileReader<int8_t>::Stop();
+
+extern template
+bool HFileReader<uint8_t>::Stop();
+
+extern template
+bool HFileReader<int16_t>::Stop();
+
+extern template
+bool HFileReader<int32_t>::Stop();
+
+// Read()
+extern template
+int HFileReader<int8_t>::Read(int8_t* dest, size_t blocksize);
+
+extern template
+int HFileReader<uint8_t>::Read(uint8_t* dest, size_t blocksize);
+
+extern template
+int HFileReader<int16_t>::Read(int16_t* dest, size_t blocksize);
+
+extern template
+int HFileReader<int32_t>::Read(int32_t* dest, size_t blocksize);
 
 /********************************************************************
 HWavWriter

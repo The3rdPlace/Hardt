@@ -18,7 +18,7 @@ Abstract base classes with no, or little implementation
 ********************************************************************/
 
 #include "hwriter.cpp"
-#include "hreader.h"
+#include "hreader.cpp"
 #include "hprocessor.cpp"
 
 /********************************************************************
@@ -27,6 +27,7 @@ Include api function declarations
 
 #include "hsoundcardreader.cpp"
 #include "hfilewriter.cpp"
+#include "hfilereader.cpp"
 #include "hwavwriter.cpp"
 #include "hwavreader.h"
 #include "hnetworkwriter.cpp"
