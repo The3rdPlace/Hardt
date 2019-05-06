@@ -7,6 +7,7 @@
 #include "test.h"
 
 std::vector<Test*> tests;
+int Test::failed;
 
 int main(int argc, char **argv)
 {

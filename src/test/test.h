@@ -6,26 +6,30 @@ extern std::vector<Test*> tests;
 
 class Test
 {
+    private:
+
+        static int failed;
+
     public:
 
         Test() { tests.push_back(this); }
 
         static int execute()
         {
-            int failed = 0;
+            //int failed = 0;
             for( std::vector<Test*>::iterator it = tests.begin(); it < tests.end(); it++ )
             {
                 std::cout << "====================================================================" << std::endl;
                 try
                 {
                     std::cout << "Test: " << (*it)->name() << std::endl;
+                    failed = 0;
                     (*it)->run();
-                    std::cout << "OK" << std::endl;
+                    std::cout << (failed == 0 ? "OK" : "FAILED") << std::endl;
                 }
-                catch(std::exception*)
+                catch(std::exception* e)
                 {
-                    failed++;
-                    std::cout << "FAILED" << std::endl;
+                    std::cout << "EXCEPTION: " << e->what() << std::endl;
                 }
             }
             std::cout << "====================================================================" << std::endl;
@@ -39,17 +43,17 @@ class Test
         {
             if( a != b )
             {
-                std::cout << "assertIsEqual(" << a << ", " << b << "): is not equal!" << std::endl;
-                std::cout << "in " << file << "@" << line << std::endl;
-                throw new std::exception();
+                std::cout << "- assertIsEqual(" << a << ", " << b << "): is not equal!" << std::endl;
+                std::cout << "  in " << file << "@" << line << std::endl;
+                Test::failed++;
             }
         }
 
         void assertFail(std::string file, int line, std::string reason)
         {
-            std::cout << "assertFail: " << reason << std::endl;
-            std::cout << "in " << file << "@" << line << "\n";
-            throw new std::exception();
+            std::cout << "- assertFail: " << reason << std::endl;
+            std::cout << "  in " << file << "@" << line << "\n";
+            Test::failed++;
         }
 
         void assertIgnore(std::string file, int line, std::string reason)
@@ -63,6 +67,8 @@ class Test
         virtual void run() = 0;
         virtual const char* name() = 0;
 };
+
+#define UNITTEST(a) std::cout << "* Running test: " << #a << std::endl; a();
 
 #define ASSERT_IS_EQUAL(a, b) assertIsEqual(__FILE__,__LINE__, a, b)
 #define ASSERT_FAIL(reason) assertFail(__FILE__,__LINE__, reason)

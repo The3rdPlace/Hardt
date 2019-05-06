@@ -23,8 +23,8 @@ class HWavWriter_Test: public Test
 
         void run()
         {
-            test_uint8_1_channel();
-            test_int16_2_channels();
+            UNITTEST(test_uint8_1_channel);
+            UNITTEST(test_int16_2_channels);
         }
 
         const char* name()

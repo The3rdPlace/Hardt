@@ -9,9 +9,9 @@ class HFileWriter_Test: public Test
 
         void run()
         {
-            test_int8();
-            test_uint8();
-            test_int16();
+            UNITTEST(test_int8);
+            UNITTEST(test_uint8);
+            UNITTEST(test_int16);
         }
 
         const char* name()

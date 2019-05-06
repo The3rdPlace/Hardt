@@ -7,7 +7,7 @@ class Generator_Test: public Test
 
         void run()
         {
-            test_1();
+            UNITTEST(test_1);
         }
 
     private:
