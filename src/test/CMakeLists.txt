@@ -8,6 +8,7 @@ target_sources(hardt_test
 	    hnetwork_test.cpp
 	    hwavwriter_test.cpp
 	    hfilereader_test.cpp
+	    hwavreader_test.cpp
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")

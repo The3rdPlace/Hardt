@@ -49,6 +49,16 @@ class Test
             }
         }
 
+        void assertIsTrue(std::string file, int line, bool a)
+        {
+            if( a != true )
+            {
+                std::cout << "- assertIsTrue(" << a << "): is not true!" << std::endl;
+                std::cout << "  in " << file << "@" << line << std::endl;
+                Test::failed++;
+            }
+        }
+
         void assertFail(std::string file, int line, std::string reason)
         {
             std::cout << "- assertFail: " << reason << std::endl;
@@ -71,5 +81,6 @@ class Test
 #define UNITTEST(a) std::cout << "* Running test: " << #a << std::endl; a();
 
 #define ASSERT_IS_EQUAL(a, b) assertIsEqual(__FILE__,__LINE__, a, b)
+#define ASSERT_IS_TRUE(a) assertIsTrue(__FILE__,__LINE__, (bool) a)
 #define ASSERT_FAIL(reason) assertFail(__FILE__,__LINE__, reason)
 #define ASSERT_IGNORE(a) { assertIgnore(__FILE__, __LINE__, a); return; }
