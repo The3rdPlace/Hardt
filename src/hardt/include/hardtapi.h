@@ -15,6 +15,7 @@
 #include "hfilewriter.h"
 #include "hfilereader.h"
 #include "hwavwriter.h"
+#include "hwavreader.h"
 #include "hnetworkwriter.h"
 #include "hnetworkreader.h"
 #include "hnetworkprocessor.h"
@@ -218,6 +219,36 @@ int HWavWriter<int16_t>::Write(int16_t* dest, size_t blocksize);
 
 extern template
 int HWavWriter<int32_t>::Write(int32_t* dest, size_t blocksize);
+
+/********************************************************************
+HWavReader
+********************************************************************/
+
+// HWavReader()
+extern template
+HWavReader<int8_t>::HWavReader(const char* filename);
+
+extern template
+HWavReader<uint8_t>::HWavReader(const char* filename);
+
+extern template
+HWavReader<int16_t>::HWavReader(const char* filename);
+
+extern template
+HWavReader<int32_t>::HWavReader(const char* filename);
+
+// Start()
+extern template
+bool HWavReader<int8_t>::Start(void* unused);
+
+extern template
+bool HWavReader<uint8_t>::Start(void* unused);
+
+extern template
+bool HWavReader<int16_t>::Start(void* unused);
+
+extern template
+bool HWavReader<int32_t>::Start(void* unused);
 
 /********************************************************************
 HNetworkWriter

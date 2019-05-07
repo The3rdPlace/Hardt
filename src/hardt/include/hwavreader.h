@@ -2,26 +2,13 @@
 #define __HWAVREADER_H
 
 template <class T>
-class HWavReader : public HWav, HReader<T>
+class HWavReader : public HWav, public HFileReader<T>
 {
     public:
 
-        HWavReader(HWav wav):
-            HWav(wav)
-        {
-            throw new HNotImplementedException();
-        }
+        HWavReader(const char* filename);
 
-        HWavReader(const char* filename):
-            HWav(filename)
-        {
-            throw new HNotImplementedException();
-        }
-
-        int Read(T* dest, size_t blocksize)
-        {
-            throw new HNotImplementedException();
-        }
+        bool Start(void* unused);
 };
 
 #endif

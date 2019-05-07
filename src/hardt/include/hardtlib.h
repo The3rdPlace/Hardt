@@ -29,7 +29,7 @@ Include api function declarations
 #include "hfilewriter.cpp"
 #include "hfilereader.cpp"
 #include "hwavwriter.cpp"
-#include "hwavreader.h"
+#include "hwavreader.cpp"
 #include "hnetworkwriter.cpp"
 #include "hnetworkreader.cpp"
 #include "hnetworkprocessor.cpp"

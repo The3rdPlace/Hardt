@@ -76,7 +76,8 @@ HWav::HWav(const char* filename, H_SAMPLE_FORMAT format, int channels, H_SAMPLE_
 HWav::HWav(const char* filename):
     _filename(filename)
 {
-    // Todo: Read header from the named file
+    // Copy the header initializer data into the header member
+    memcpy((void*) &_header, (void*) emptyHeader, sizeof(WavHeader));
 }
 
 H_SAMPLE_FORMAT HWav::GetFormat()
