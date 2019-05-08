@@ -22,8 +22,9 @@ class HWavReader_Test: public Test
 
         void test_int16_1_channel()
         {
-            // Todo: use relative path, possibly by injecting root or resource directory from cmake
-            HWavReader<int16_t>* rd = new HWavReader<int16_t>("/Users/henrik/Git/Hardt/src/test/resources/16bit_48k_mono.wav");
+            std::string SourceDir(Test::sourceDir);
+            std::string TestInput = SourceDir + "/resources/16bit_48k_mono.wav";
+            HWavReader<int16_t>* rd = new HWavReader<int16_t>(TestInput.c_str());
             ASSERT_IS_TRUE(rd->Start(NULL));
             ASSERT_IS_EQUAL(rd->GetFormat(), H_SAMPLE_FORMAT_INT_16);
             ASSERT_IS_EQUAL(rd->GetRate(), 48000);

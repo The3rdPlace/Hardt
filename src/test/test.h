@@ -12,6 +12,10 @@ class Test
 
     public:
 
+        static char* sourceDir;
+
+    public:
+
         Test() { tests.push_back(this); }
 
         static int execute()
