@@ -7,6 +7,7 @@
 #include "hwav.h"
 #include "hsoundcard.h"
 #include "hexceptions.h"
+#include "hgenerator.h"
 
 #include "hwriter.h"
 #include "hreader.h"
@@ -513,5 +514,48 @@ void HNetworkProcessor<int16_t>::Halt();
 
 extern template
 void HNetworkProcessor<int32_t>::Halt();
+
+/********************************************************************
+HGenerator
+********************************************************************/
+
+// HGenerator
+extern template
+HGenerator<int8_t>::HGenerator(H_SAMPLE_RATE rate, size_t blocksize, int frequency, int numberOfFrequencies, int phase);
+
+extern template
+HGenerator<uint8_t>::HGenerator(H_SAMPLE_RATE rate, size_t blocksize, int frequency, int numberOfFrequencies, int phase);
+
+extern template
+HGenerator<int16_t>::HGenerator(H_SAMPLE_RATE rate, size_t blocksize, int frequency, int numberOfFrequencies, int phase);
+
+extern template
+HGenerator<int32_t>::HGenerator(H_SAMPLE_RATE rate, size_t blocksize, int frequency, int numberOfFrequencies, int phase);
+
+// ~HGenerator
+extern template
+HGenerator<int8_t>::~HGenerator();
+
+extern template
+HGenerator<uint8_t>::~HGenerator();
+
+extern template
+HGenerator<int16_t>::~HGenerator();
+
+extern template
+HGenerator<int32_t>::~HGenerator();
+
+// GetSamples
+extern template
+void HGenerator<int8_t>::GetSamples(int8_t* dest, size_t blocksize);
+
+extern template
+void HGenerator<uint8_t>::GetSamples(uint8_t* dest, size_t blocksize);
+
+extern template
+void HGenerator<int16_t>::GetSamples(int16_t* dest, size_t blocksize);
+
+extern template
+void HGenerator<int32_t>::GetSamples(int32_t* dest, size_t blocksize);
 
 #endif
