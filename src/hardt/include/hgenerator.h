@@ -1,7 +1,9 @@
 #ifndef __HGENERATOR_H
 #define __HGENERATOR_H
 
+#include "hardt.h"
 #include "hsoundcard.h"
+#include <math.h>
 
 template <class T>
 class HGenerator
@@ -9,8 +11,8 @@ class HGenerator
     private:
 
         T* _lot;
-        int _length;
-        int next;
+        int _q1, _q2, _q3, _q4;
+        int _it;
 
     protected:
 
@@ -18,7 +20,7 @@ class HGenerator
 
     public:
 
-        HGenerator(H_SAMPLE_RATE rate, size_t blocksize, int frequency, int numberOfFrequencies, int phase);
+        HGenerator(H_SAMPLE_RATE rate, int frequency, int phase);
         ~HGenerator();
 };
 
