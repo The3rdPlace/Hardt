@@ -25,7 +25,7 @@ class HGenerator_Test: public Test
             public:
 
                 test_generator(int rate, int frequency, float phase = 0):
-                    HGenerator<int8_t>((H_SAMPLE_RATE) rate, frequency, phase)
+                    HGenerator<int8_t>((H_SAMPLE_RATE) rate, frequency, 127, phase)
                 {
                 }
 
