@@ -5,7 +5,7 @@
 //#include <cstring>
 
 template <class T>
-HGenerator<T>::HGenerator(H_SAMPLE_RATE rate, int frequency, int phase)
+HGenerator<T>::HGenerator(H_SAMPLE_RATE rate, int frequency, float phase)
 {
 
     // Calculate the amount of samples that we need. And then divide by 4
@@ -26,7 +26,8 @@ HGenerator<T>::HGenerator(H_SAMPLE_RATE rate, int frequency, int phase)
     T amplitude = 127;
     for( int i = 0; i < lotSize; i++ )
     {
-        _lot[i] = amplitude * sin(((2 * M_PI * frequency) / rate) * i);
+        _lot[i] = amplitude * sin((((2 * M_PI * frequency) / rate) * i) + phase);
+        HLog("lot[%d] = %d", i, _lot[i]);
     }
 
     // Calculate quadrant markers
@@ -90,16 +91,16 @@ Explicit instantiation
 
 // HGenerator
 template
-HGenerator<int8_t>::HGenerator(H_SAMPLE_RATE rate, int frequency, int phase);
+HGenerator<int8_t>::HGenerator(H_SAMPLE_RATE rate, int frequency, float phase);
 
 template
-HGenerator<uint8_t>::HGenerator(H_SAMPLE_RATE rate, int frequency, int phase);
+HGenerator<uint8_t>::HGenerator(H_SAMPLE_RATE rate, int frequency, float phase);
 
 template
-HGenerator<int16_t>::HGenerator(H_SAMPLE_RATE rate, int frequency, int phase);
+HGenerator<int16_t>::HGenerator(H_SAMPLE_RATE rate, int frequency, float phase);
 
 template
-HGenerator<int32_t>::HGenerator(H_SAMPLE_RATE rate, int frequency, int phase);
+HGenerator<int32_t>::HGenerator(H_SAMPLE_RATE rate, int frequency, float phase);
 
 // ~HGenerator
 template

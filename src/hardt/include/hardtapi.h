@@ -521,16 +521,16 @@ HGenerator
 
 // HGenerator
 extern template
-HGenerator<int8_t>::HGenerator(H_SAMPLE_RATE rate, int frequency, int phase);
+HGenerator<int8_t>::HGenerator(H_SAMPLE_RATE rate, int frequency, float phase);
 
 extern template
-HGenerator<uint8_t>::HGenerator(H_SAMPLE_RATE rate, int frequency, int phase);
+HGenerator<uint8_t>::HGenerator(H_SAMPLE_RATE rate, int frequency, float phase);
 
 extern template
-HGenerator<int16_t>::HGenerator(H_SAMPLE_RATE rate, int frequency, int phase);
+HGenerator<int16_t>::HGenerator(H_SAMPLE_RATE rate, int frequency, float phase);
 
 extern template
-HGenerator<int32_t>::HGenerator(H_SAMPLE_RATE rate, int frequency, int phase);
+HGenerator<int32_t>::HGenerator(H_SAMPLE_RATE rate, int frequency, float phase);
 
 // ~HGenerator
 extern template

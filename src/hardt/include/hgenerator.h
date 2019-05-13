@@ -20,7 +20,7 @@ class HGenerator
 
     public:
 
-        HGenerator(H_SAMPLE_RATE rate, int frequency, int phase);
+        HGenerator(H_SAMPLE_RATE rate, int frequency, float phase = 0);
         ~HGenerator();
 };
 
