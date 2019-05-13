@@ -2,7 +2,7 @@
 #define __HGENERATOR_CPP
 
 #include "hgenerator.h"
-#include <cstring>
+//#include <cstring>
 
 template <class T>
 HGenerator<T>::HGenerator(H_SAMPLE_RATE rate, int frequency, int phase)
@@ -13,38 +13,37 @@ HGenerator<T>::HGenerator(H_SAMPLE_RATE rate, int frequency, int phase)
     // Please note that for frequencies that produce decimal values when divided up into
     // the samplerate, we can only approximate the frequency - this is accepted for all
     // purposes for which this lib. is intended
-    HLog("Frequency = %d", frequency);
-    HLog("Sample rate = %d", rate);
+    HLog("HGenerator(rate = %d, frequency = %d, phase = %f)", rate, frequency, phase);
 
-    int numSamples = (int) rate;
-    HLog("numSamples = %d", numSamples);
+    //int numSamples = (int) rate;
+    //HLog("numSamples = %d", numSamples);
 
-    int lotSize = numSamples / 4;
-    HLog("lotSize = %d", lotSize);
+    int lotSize = rate / 4;
+    HLog("Creating lookup table of size %d (%d bytes)", lotSize, lotSize * sizeof(T));
+    _lot = new T[lotSize];
 
     // Calculate lookup table
     T amplitude = 127;
-    _lot = new T[lotSize];
     for( int i = 0; i < lotSize; i++ )
     {
         _lot[i] = amplitude * sin(((2 * M_PI * frequency) / rate) * i);
-        HLog("t[%d] = %d", i, _lot[i]);
     }
 
     // Calculate quadrant markers
-    _q1 = numSamples / 4;
-    _q2 = (numSamples / 4) * 2;
-    _q3 = (numSamples / 4) * 3;
-    _q4 = (numSamples / 4) * 4;
-    HLog("q1 = %d, q2 = %d, q3 = %d, q4 = %d", _q1, _q2, _q3, _q4);
+    _q1 = rate / 4;
+    _q2 = (rate / 4) * 2;
+    _q3 = (rate / 4) * 3;
+    _q4 = (rate / 4) * 4;
+    HLog("Quadrant markers (1., 2., 3., 4.) = %d, %d, %d, %d", _q1, _q2, _q3, _q4);
 
+    // Initial sample position
     _it = 0;
-
 }
 
 template <class T>
 HGenerator<T>::~HGenerator()
 {
+    HLog("~HGenerator()");
     delete _lot;
 }
 
@@ -53,32 +52,31 @@ void HGenerator<T>::GetSamples(T* dest, size_t blocksize)
 {
     for( int i = 0; i < blocksize; i++ )
     {
+        // Select quadrant, then copy and possibly alter the value
         if( _it < _q1 )
         {
             dest[i] = _lot[_it];
-            HLog("1 %d _lot[%d] = %d", _it, _it, dest[i]);
         }
         else if( _it < _q2 )
         {
             int index = (-1 * _it) + _q2;
             dest[i] = _lot[index];
-            HLog("2 %d _lot[%d] = %d", _it, index, dest[i]);
         }
         else if( _it < _q3 )
         {
             int index = _it - _q2;
             dest[i] = -1 * _lot[index];
-            HLog("3 %d _lot[%d] = %d", _it, index, dest[i]);
         }
         else
         {
             int index = _q1 - _it + _q3;
             dest[i] = -1 * _lot[index];
-            HLog("4 %d _lot[%d] = %d", _it, index, dest[i]);
         }
 
+        // Next sample
         _it++;
 
+        // Roll over to first sample in LOT
         if( _it >= _q4 )
         {
             _it = 0;

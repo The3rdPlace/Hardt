@@ -4,11 +4,11 @@ target_link_libraries (hardt_test hardt pthread)
 
 target_sources(hardt_test
     PRIVATE
-        #hfilewriter_test.cpp
-	    #hnetwork_test.cpp
-	    #hwavwriter_test.cpp
-	    #hfilereader_test.cpp
-	    #hwavreader_test.cpp
+        hfilewriter_test.cpp
+	    hnetwork_test.cpp
+	    hwavwriter_test.cpp
+	    hfilereader_test.cpp
+	    hwavreader_test.cpp
 	    hgenerator_test.cpp
 )
 
