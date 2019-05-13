@@ -10,6 +10,8 @@ target_sources(hardt_test
 	    hfilereader_test.cpp
 	    hwavreader_test.cpp
 	    hgenerator_test.cpp
+	    hsinegenerator_test.cpp
+	    hcosinegenerator_test.cpp
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")

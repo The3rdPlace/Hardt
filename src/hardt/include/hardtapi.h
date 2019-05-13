@@ -21,6 +21,8 @@
 #include "hnetworkreader.h"
 #include "hnetworkprocessor.h"
 #include "hsoundcardreader.h"
+#include "hsinegenerator.h"
+#include "hcosinegenerator.h"
 
 /********************************************************************
 HWriter
@@ -557,5 +559,65 @@ void HGenerator<int16_t>::GetSamples(int16_t* dest, size_t blocksize);
 
 extern template
 void HGenerator<int32_t>::GetSamples(int32_t* dest, size_t blocksize);
+
+/********************************************************************
+HSineGenerator
+********************************************************************/
+
+// HSineGenerator
+extern template
+HSineGenerator<int8_t>::HSineGenerator(H_SAMPLE_RATE rate, int frequency, int8_t amplitude);
+
+extern template
+HSineGenerator<uint8_t>::HSineGenerator(H_SAMPLE_RATE rate, int frequency, uint8_t amplitude);
+
+extern template
+HSineGenerator<int16_t>::HSineGenerator(H_SAMPLE_RATE rate, int frequency, int16_t amplitude);
+
+extern template
+HSineGenerator<int32_t>::HSineGenerator(H_SAMPLE_RATE rate, int frequency, int32_t amplitude);
+
+// Read
+extern template
+int HSineGenerator<int8_t>::Read(int8_t* dest, size_t blocksize);
+
+extern template
+int HSineGenerator<uint8_t>::Read(uint8_t* dest, size_t blocksize);
+
+extern template
+int HSineGenerator<int16_t>::Read(int16_t* dest, size_t blocksize);
+
+extern template
+int HSineGenerator<int32_t>::Read(int32_t* dest, size_t blocksize);
+
+/********************************************************************
+HCosineGenerator
+********************************************************************/
+
+// HCosineGenerator
+extern template
+HCosineGenerator<int8_t>::HCosineGenerator(H_SAMPLE_RATE rate, int frequency, int8_t amplitude);
+
+extern template
+HCosineGenerator<uint8_t>::HCosineGenerator(H_SAMPLE_RATE rate, int frequency, uint8_t amplitude);
+
+extern template
+HCosineGenerator<int16_t>::HCosineGenerator(H_SAMPLE_RATE rate, int frequency, int16_t amplitude);
+
+extern template
+HCosineGenerator<int32_t>::HCosineGenerator(H_SAMPLE_RATE rate, int frequency, int32_t amplitude);
+
+// Read
+extern template
+int HCosineGenerator<int8_t>::Read(int8_t* dest, size_t blocksize);
+
+extern template
+int HCosineGenerator<uint8_t>::Read(uint8_t* dest, size_t blocksize);
+
+extern template
+int HCosineGenerator<int16_t>::Read(int16_t* dest, size_t blocksize);
+
+extern template
+int HCosineGenerator<int32_t>::Read(int32_t* dest, size_t blocksize);
 
 #endif
