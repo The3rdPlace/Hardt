@@ -5,7 +5,8 @@
 //#include <cstring>
 
 template <class T>
-HGenerator<T>::HGenerator(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase)
+HGenerator<T>::HGenerator(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase):
+    _lot(NULL)
 {
 
     // Calculate the amount of samples that we need. And then divide by 4
@@ -14,29 +15,7 @@ HGenerator<T>::HGenerator(H_SAMPLE_RATE rate, int frequency, T amplitude, float 
     // the samplerate, we can only approximate the frequency - this is accepted for all
     // purposes for which this lib. is intended
     HLog("HGenerator(rate = %d, frequency = %d, phase = %f)", rate, frequency, phase);
-
-    //int numSamples = (int) rate;
-    //HLog("numSamples = %d", numSamples);
-
-    int lotSize = rate / 4;
-    HLog("Creating lookup table of size %d (%d bytes)", lotSize, lotSize * sizeof(T));
-    _lot = new T[lotSize];
-
-    // Calculate lookup table
-    for( int i = 0; i < lotSize; i++ )
-    {
-        _lot[i] = amplitude * sin((((2 * M_PI * frequency) / rate) * i) + phase);
-    }
-
-    // Calculate quadrant markers
-    _q1 = rate / 4;
-    _q2 = (rate / 4) * 2;
-    _q3 = (rate / 4) * 3;
-    _q4 = (rate / 4) * 4;
-    HLog("Quadrant markers (1., 2., 3., 4.) = %d, %d, %d, %d", _q1, _q2, _q3, _q4);
-
-    // Initial sample position
-    _it = 0;
+    Calculate(rate, frequency, amplitude, phase);
 }
 
 template <class T>
@@ -81,6 +60,38 @@ void HGenerator<T>::GetSamples(T* dest, size_t blocksize)
             _it = 0;
         }
     }
+}
+
+template <class T>
+void HGenerator<T>::Calculate(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase)
+{
+    // Release previous lookup table ?
+    if( _lot != NULL )
+    {
+        HLog("Releasing previous lookup table");
+        delete _lot;
+    }
+
+    // Create lookup table
+    int lotSize = rate / 4;
+    HLog("Creating lookup table of size %d (%d bytes)", lotSize, lotSize * sizeof(T));
+    _lot = new T[lotSize];
+
+    // Calculate lookup table
+    for( int i = 0; i < lotSize; i++ )
+    {
+        _lot[i] = amplitude * sin((((2 * M_PI * frequency) / rate) * i) + phase);
+    }
+
+    // Calculate quadrant markers
+    _q1 = rate / 4;
+    _q2 = (rate / 4) * 2;
+    _q3 = (rate / 4) * 3;
+    _q4 = (rate / 4) * 4;
+    HLog("Quadrant markers (1., 2., 3., 4.) = %d, %d, %d, %d", _q1, _q2, _q3, _q4);
+
+    // Initial sample position
+    _it = 0;
 }
 
 /********************************************************************

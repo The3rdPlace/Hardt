@@ -17,6 +17,7 @@ class HGenerator
     protected:
 
         void GetSamples(T* dest, size_t blocksize);
+        void Calculate(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase);
 
     public:
 
