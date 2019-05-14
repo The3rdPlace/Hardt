@@ -82,6 +82,7 @@ void HGenerator<T>::Calculate(H_SAMPLE_RATE rate, int frequency, T amplitude, fl
     for( int i = 0; i < lotSize; i++ )
     {
         _lot[i] = amplitude * sin((((2 * M_PI * frequency) / rate) * i) + phase);
+        HLog("lot[%d] = %d", i, _lot[i]);
     }
 
     // Calculate quadrant markers
