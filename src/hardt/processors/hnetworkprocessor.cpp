@@ -19,69 +19,61 @@ Class implementation
 
 template <class T>
 HNetworkProcessor<T>::HNetworkProcessor(const char* address, int port, HWriter<T>* writer, int blocksize, bool* terminationToken):
-    HProcessor<T>(writer, &_networkReader),
+    HProcessor<T>(writer, &_networkReader, blocksize, terminationToken),
     _isServer(false),
     _isWriter(true),
     _port(port),
     _server(address),
     _clientSocket(-1),
     _serverSocket(-1),
-    _terminated(terminationToken),
-    _buffer(NULL),
-    _blocksize(blocksize)
+    _terminated(terminationToken)
 {
-    HLog("HNetworkProcessor(client)(address=%s, port=%d, writer=*, terminationToken=%d), blocksize is %d", address, port, *terminationToken, _blocksize);
+    HLog("HNetworkProcessor(client)(address=%s, port=%d, writer=*, terminationToken=%d), blocksize is %d", address, port, *terminationToken, blocksize);
     InitClient();
 }
 
 template <class T>
 HNetworkProcessor<T>::HNetworkProcessor(const char* address, int port, HReader<T>* reader, int blocksize, bool* terminationToken):
-    HProcessor<T>(&_networkWriter, reader),
+    HProcessor<T>(&_networkWriter, reader, blocksize, terminationToken),
     _isServer(false),
     _isWriter(false),
     _port(port),
     _server(address),
     _clientSocket(-1),
     _serverSocket(-1),
-    _terminated(terminationToken),
-    _buffer(NULL),
-    _blocksize(blocksize)
+    _terminated(terminationToken)
 {
-    HLog("HNetworkProcessor(client)(address=%s, port=%d, reader=*, terminationToken=%d), blocksize is %d", address, port, *terminationToken, _blocksize);
+    HLog("HNetworkProcessor(client)(address=%s, port=%d, reader=*, terminationToken=%d), blocksize is %d", address, port, *terminationToken, blocksize);
     InitClient();
 }
 
 template <class T>
 HNetworkProcessor<T>::HNetworkProcessor(int port, HWriter<T>* writer, int blocksize, bool* terminationToken):
-    HProcessor<T>(writer, &_networkReader),
+    HProcessor<T>(writer, &_networkReader, blocksize, terminationToken),
     _isServer(true),
     _isWriter(true),
     _port(port),
     _server(NULL),
     _clientSocket(-1),
     _serverSocket(-1),
-    _terminated(terminationToken),
-    _buffer(NULL),
-    _blocksize(blocksize)
+    _terminated(terminationToken)
 {
-    HLog("HNetworkProcessor(server)(port=%d, writer=*, terminationToken=%d), blocksize is %d", port, *terminationToken, _blocksize);
+    HLog("HNetworkProcessor(server)(port=%d, writer=*, terminationToken=%d), blocksize is %d", port, *terminationToken, blocksize);
     InitServer();
 }
 
 template <class T>
 HNetworkProcessor<T>::HNetworkProcessor(int port, HReader<T>* reader, int blocksize, bool* terminationToken):
-    HProcessor<T>(&_networkWriter, reader),
+    HProcessor<T>(&_networkWriter, reader, blocksize, terminationToken),
     _isServer(true),
     _isWriter(false),
     _port(port),
     _server(NULL),
     _clientSocket(-1),
     _serverSocket(-1),
-    _terminated(terminationToken),
-    _buffer(NULL),
-    _blocksize(blocksize)
+    _terminated(terminationToken)
 {
-    HLog("HNetworkProcessor(server)(port=%d, reader=*, terminationToken=%d), blocksize is %d", port, *terminationToken,_blocksize);
+    HLog("HNetworkProcessor(server)(port=%d, reader=*, terminationToken=%d), blocksize is %d", port, *terminationToken, blocksize);
     InitServer();
 }
 
@@ -96,11 +88,6 @@ HNetworkProcessor<T>::~HNetworkProcessor()
     if( this->_serverSocket > -1 ) {
         HLog("Closing server socket");
         close(this->_serverSocket);
-    }
-    if( _buffer != NULL )
-    {
-        HLog("Releasing local buffer");
-        delete _buffer;
     }
     HLog("Done");
 
@@ -140,10 +127,6 @@ void HNetworkProcessor<T>::InitServer()
     // Ignore the SIGPIPE signal since it occurres when ever a client closes the connection
     sigignore(SIGPIPE);
     HLog("SIGPIPE disabled");
-
-    // Allocate local buffer
-    _buffer = new T[_blocksize];
-    HLog("Allocated buffer for %d frames = %d bytes", _blocksize, _blocksize * sizeof(T));
 }
 
 template <class T>
@@ -176,10 +159,6 @@ void HNetworkProcessor<T>::InitClient()
         throw new HNetworkException("Failed to connect to server");
     }
     HLog("Connected");
-
-    // Allocate local buffer
-    _buffer = new T[_blocksize];
-    HLog("Allocated buffer for %d frames = %d bytes", _blocksize, _blocksize * sizeof(T));
 }
 
 template <class T>
@@ -267,9 +246,9 @@ void HNetworkProcessor<T>::RunServer()
                 _clientSocket = -1;
             }
             HLog("Connection closed");
-            HLog(HProcessor<T>::_writer->GetMetrics("HNetworkProcessor::HProcessor::_writer").c_str());
-            HLog(HProcessor<T>::_reader->GetMetrics("HNetworkProcessor::HProcessor::_reader").c_str());
-            HProcessor<T>::_writer->ResetMetrics();
+            HLog(HProcessor<T>::GetWriter()->GetMetrics("HNetworkProcessor::HProcessor::_writer").c_str());
+            HLog(HProcessor<T>::GetReader()->GetMetrics("HNetworkProcessor::HProcessor::_reader").c_str());
+            HProcessor<T>::GetWriter()->ResetMetrics();
         }
     }
     catch( const std::exception& ex )
@@ -297,78 +276,14 @@ void HNetworkProcessor<T>::RunClient()
         close(_clientSocket);
         _clientSocket = -1;
     }
-    HLog(HProcessor<T>::_writer->GetMetrics("HNetworkProcessor::HProcessor::_writer").c_str());
-    HLog(HProcessor<T>::_reader->GetMetrics("HNetworkProcessor::HProcessor::_reader").c_str());
+    HLog(HProcessor<T>::GetWriter()->GetMetrics("HNetworkProcessor::HProcessor::_writer").c_str());
+    HLog(HProcessor<T>::GetReader()->GetMetrics("HNetworkProcessor::HProcessor::_reader").c_str());
 }
 
 template <class T>
 void HNetworkProcessor<T>::RunProcessor()
 {
-    // Start reader and writer - some readers/writers have start/stop handling
-    HLog("Starting reader and writer, data is a socket");
-    if( !HProcessor<T>::Start(&_clientSocket) )
-    {
-        HError("Failed to Start() reader or writer");
-        return;
-    }
-    HLog("Reader and writer Start()'ed");
-
-    // Read from reader and write to network
-    HLog("Processing");
-    while(!*_terminated)
-    {
-        // Read data from the reader
-        int len;
-        try
-        {
-            len = HProcessor<T>::Read(_buffer, _blocksize);
-            if( len == 0 )
-            {
-                HLog("%s Zero read from the reader, stopping", _isServer ? "(server)" : "(client)");
-                break;
-            }
-            this->Metrics.Reads++;
-            this->Metrics.BlocksIn += len;
-            this->Metrics.BytesIn += len * sizeof(T);
-        }
-        catch( std::exception ex )
-        {
-            HError("%s Caught exception: %s", _isServer ? "(server)" : "(client)", ex.what());
-            break;
-        }
-
-        // Send the data to the connected client
-        int shipped;
-        try
-        {
-            this->Metrics.Writes++;
-            shipped = HProcessor<T>::Write(_buffer, len);
-            if( shipped <= 0 )
-            {
-                HLog("%s Zero write to the writer, stopping", _isServer ? "(server)" : "(client)");
-                break;
-            }
-            if( shipped != len )
-            {
-                HLog("Not all data was written, %d of %d ", shipped, len);
-            }
-            this->Metrics.BlocksOut += shipped;
-            this->Metrics.BytesOut += shipped * sizeof(T);
-        }
-        catch( std::exception ex )
-        {
-            HError("%s Caught exception: %s", _isServer ? "(server)" : "(client)", ex.what());
-            break;
-        }
-    }
-
-    // Stop the reader - some readers have start/stop handling
-    HLog("Stopping reader and writer");
-    if( HProcessor<T>::Stop() == false )
-    {
-        HError("Failed to Stop() reader or writer");
-    }
-    HLog("Reader and writer Stop()'ed");
+    HProcessor<T>::Run(&_clientSocket);
 }
 
 template <class T>
@@ -385,7 +300,7 @@ void HNetworkProcessor<T>::Halt()
         close(_serverSocket);
         _serverSocket = -1;
     }
-    *_terminated = true;
+    HProcessor<T>::Halt();
 }
 
 /********************************************************************

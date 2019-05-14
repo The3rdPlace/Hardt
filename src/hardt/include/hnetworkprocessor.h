@@ -16,11 +16,9 @@ class HNetworkProcessor : public HProcessor<T>
         int _clientSocket;
         struct sockaddr_in _address;
         const char* _server;
-        bool* _terminated;
-        T* _buffer;
-        int _blocksize;
         HNetworkReader<T> _networkReader;
         HNetworkWriter<T> _networkWriter;
+        bool* _terminated;
 
         bool _isServer;
         bool _isWriter;

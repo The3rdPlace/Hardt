@@ -7,28 +7,43 @@
 template <class T>
 class HProcessor : public HObject
 {
-    protected:
+    private:
 
         HWriter<T>* _writer;
         HReader<T>* _reader;
+        T* _buffer;
+        int _blocksize;
+        bool* _terminated;
 
-    public:
-
-        HProcessor(HWriter<T>* writer, HReader<T>* reader);
-
-        int Read(T* dest, int blocksize);
-
-        int Write(T* src, int blocksize);
+    private:
 
         bool Start(void* data);
 
         bool Stop();
 
+    protected:
+
+        HProcessor(HWriter<T>* writer, HReader<T>* reader, size_t blocksize, bool* terminationToken);
+
+        ~HProcessor();
+
+    public:
+
+        int Read(T* dest, int blocksize);
+
+        int Write(T* src, int blocksize);
+
         void SetReader(HReader<T>* reader);
 
         void SetWriter(HWriter<T>* writer);
 
-        virtual void Run() = 0;
+        HReader<T>* GetReader();
+
+        HWriter<T>* GetWriter();
+
+        virtual void Run(void* startData);
+
+        virtual void Halt();
 };
 
 #endif

@@ -363,16 +363,29 @@ HProcessor
 
 // HProcessor()
 extern template
-HProcessor<int8_t>::HProcessor(HWriter<int8_t>* writer, HReader<int8_t>* reader);
+HProcessor<int8_t>::HProcessor(HWriter<int8_t>* writer, HReader<int8_t>* reader, size_t blocksize, bool* terminationToken);
 
 extern template
-HProcessor<uint8_t>::HProcessor(HWriter<uint8_t>* writer, HReader<uint8_t>* reader);
+HProcessor<uint8_t>::HProcessor(HWriter<uint8_t>* writer, HReader<uint8_t>* reader, size_t blocksize, bool* terminationToken);
 
 extern template
-HProcessor<int16_t>::HProcessor(HWriter<int16_t>* writer, HReader<int16_t>* reader);
+HProcessor<int16_t>::HProcessor(HWriter<int16_t>* writer, HReader<int16_t>* reader, size_t blocksize, bool* terminationToken);
 
 extern template
-HProcessor<int32_t>::HProcessor(HWriter<int32_t>* writer, HReader<int32_t>* reader);
+HProcessor<int32_t>::HProcessor(HWriter<int32_t>* writer, HReader<int32_t>* reader, size_t blocksize, bool* terminationToken);
+
+// ~HProcessor
+extern template
+HProcessor<int8_t>::~HProcessor();
+
+extern template
+HProcessor<uint8_t>::~HProcessor();
+
+extern template
+HProcessor<int16_t>::~HProcessor();
+
+extern template
+HProcessor<int32_t>::~HProcessor();
 
 // Read()
 extern template
@@ -425,6 +438,58 @@ bool HProcessor<int16_t>::Stop();
 
 extern template
 bool HProcessor<int32_t>::Stop();
+
+// Run()
+extern template
+void HProcessor<int8_t>::Run(void* startData);
+
+extern template
+void HProcessor<uint8_t>::Run(void* startData);
+
+extern template
+void HProcessor<int16_t>::Run(void* startData);
+
+extern template
+void HProcessor<int32_t>::Run(void* startData);
+
+// Halt()
+extern template
+void HProcessor<int8_t>::Halt();
+
+extern template
+void HProcessor<uint8_t>::Halt();
+
+extern template
+void HProcessor<int16_t>::Halt();
+
+extern template
+void HProcessor<int32_t>::Halt();
+
+// GetReader()
+extern template
+HReader<int8_t>* HProcessor<int8_t>::GetReader();
+
+extern template
+HReader<uint8_t>* HProcessor<uint8_t>::GetReader();
+
+extern template
+HReader<int16_t>* HProcessor<int16_t>::GetReader();
+
+extern template
+HReader<int32_t>* HProcessor<int32_t>::GetReader();
+
+// GetWriter()
+extern template
+HWriter<int8_t>* HProcessor<int8_t>::GetWriter();
+
+extern template
+HWriter<uint8_t>* HProcessor<uint8_t>::GetWriter();
+
+extern template
+HWriter<int16_t>* HProcessor<int16_t>::GetWriter();
+
+extern template
+HWriter<int32_t>* HProcessor<int32_t>::GetWriter();
 
 /********************************************************************
 HNetworkProcessor
@@ -642,19 +707,6 @@ HStreamProcessor<int16_t>::HStreamProcessor(HWriter<int16_t>* writer, HReader<in
 extern template
 HStreamProcessor<int32_t>::HStreamProcessor(HWriter<int32_t>* writer, HReader<int32_t>* reader, int blocksize, bool* terminationToken);
 
-// ~HStreamProcessor
-extern template
-HStreamProcessor<int8_t>::~HStreamProcessor();
-
-extern template
-HStreamProcessor<uint8_t>::~HStreamProcessor();
-
-extern template
-HStreamProcessor<int16_t>::~HStreamProcessor();
-
-extern template
-HStreamProcessor<int32_t>::~HStreamProcessor();
-
 // Run()
 extern template
 void HStreamProcessor<int8_t>::Run();
@@ -667,18 +719,5 @@ void HStreamProcessor<int16_t>::Run();
 
 extern template
 void HStreamProcessor<int32_t>::Run();
-
-// Halt()
-extern template
-void HStreamProcessor<int8_t>::Halt();
-
-extern template
-void HStreamProcessor<uint8_t>::Halt();
-
-extern template
-void HStreamProcessor<int16_t>::Halt();
-
-extern template
-void HStreamProcessor<int32_t>::Halt();
 
 #endif
