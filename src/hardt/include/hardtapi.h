@@ -24,6 +24,7 @@
 #include "hsinegenerator.h"
 #include "hcosinegenerator.h"
 #include "hvfo.h"
+#include "hstreamprocessor.h"
 
 /********************************************************************
 HWriter
@@ -623,5 +624,61 @@ void HVfo<int16_t>::SetFrequency(int frequency, float phase);
 
 extern template
 void HVfo<int32_t>::SetFrequency(int frequency, float phase);
+
+/********************************************************************
+HStreamProcessor
+********************************************************************/
+
+// HStreamProcessor()
+extern template
+HStreamProcessor<int8_t>::HStreamProcessor(HWriter<int8_t>* writer, HReader<int8_t>* reader, int blocksize, bool* terminationToken);
+
+extern template
+HStreamProcessor<uint8_t>::HStreamProcessor(HWriter<uint8_t>* writer, HReader<uint8_t>* reader, int blocksize, bool* terminationToken);
+
+extern template
+HStreamProcessor<int16_t>::HStreamProcessor(HWriter<int16_t>* writer, HReader<int16_t>* reader, int blocksize, bool* terminationToken);
+
+extern template
+HStreamProcessor<int32_t>::HStreamProcessor(HWriter<int32_t>* writer, HReader<int32_t>* reader, int blocksize, bool* terminationToken);
+
+// ~HStreamProcessor
+extern template
+HStreamProcessor<int8_t>::~HStreamProcessor();
+
+extern template
+HStreamProcessor<uint8_t>::~HStreamProcessor();
+
+extern template
+HStreamProcessor<int16_t>::~HStreamProcessor();
+
+extern template
+HStreamProcessor<int32_t>::~HStreamProcessor();
+
+// Run()
+extern template
+void HStreamProcessor<int8_t>::Run();
+
+extern template
+void HStreamProcessor<uint8_t>::Run();
+
+extern template
+void HStreamProcessor<int16_t>::Run();
+
+extern template
+void HStreamProcessor<int32_t>::Run();
+
+// Halt()
+extern template
+void HStreamProcessor<int8_t>::Halt();
+
+extern template
+void HStreamProcessor<uint8_t>::Halt();
+
+extern template
+void HStreamProcessor<int16_t>::Halt();
+
+extern template
+void HStreamProcessor<int32_t>::Halt();
 
 #endif

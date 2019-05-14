@@ -20,7 +20,6 @@ class Test
 
         static int execute()
         {
-            //int failed = 0;
             for( std::vector<Test*>::iterator it = tests.begin(); it < tests.end(); it++ )
             {
                 std::cout << "====================================================================" << std::endl;

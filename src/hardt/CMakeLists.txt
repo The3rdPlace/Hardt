@@ -8,7 +8,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
 target_sources(hardt
     PRIVATE
         hardt.cpp
-        generator.cpp
         hsoundcard.cpp
         hwav.cpp
         hexceptions.cpp

@@ -1,0 +1,78 @@
+#include <stdio.h>
+#include <iostream>
+
+#include "test.h"
+
+class HStreamProcessor_Test: public Test
+{
+    public:
+
+        void run()
+        {
+            UNITTEST(test_read_write);
+        }
+
+        const char* name()
+        {
+            return "HStreamProcessor";
+        }
+
+    private:
+
+        class TestReader : public HReader<int8_t>
+        {
+            private:
+
+                int* _data;
+
+            public:
+
+                TestReader(int* data):
+                    _data(data)
+                {}
+
+                int Read(int8_t* dest, size_t blocksize)
+                {
+                    memcpy(dest, _data, blocksize * sizeof(int));
+                    return blocksize;
+                }
+        };
+
+        class TestWriter : public HWriter<int8_t>
+        {
+            private:
+
+                int* _received;
+                bool* _terminated;
+
+            public:
+
+                TestWriter(int* received, bool* terminationToken):
+                    _received(received),
+                    _terminated(terminationToken)
+                {}
+
+                int Write(int8_t* src, size_t blocksize)
+                {
+                    memcpy(_received, src, blocksize * sizeof(int));
+                    *_terminated = true;
+                    return blocksize;
+                }
+        };
+
+        void test_read_write()
+        {
+            bool terminated = false;
+            int expected[] = {1, 3, 2, 4, 3, 5, 4, 6, 5, 7, 6, 8, 7, 9};
+            int received[14];
+            memset(received, 0, 14 * sizeof(int));
+
+            TestReader rdr(expected);
+            TestWriter wr(received, &terminated);
+            HStreamProcessor<int8_t> proc(&wr, &rdr, 14, &terminated);
+
+            proc.Run();
+
+            ASSERT_IS_EQUAL(memcmp(received, expected, 14 * sizeof(int)), 0);
+        }
+} hstreamprocessor_test;

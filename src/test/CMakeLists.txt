@@ -13,6 +13,7 @@ target_sources(hardt_test
 	    hsinegenerator_test.cpp
 	    hcosinegenerator_test.cpp
 	    hvfo_test.cpp
+	    hstreamprocessor_test.cpp
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")

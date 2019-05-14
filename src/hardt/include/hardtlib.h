@@ -37,5 +37,6 @@ Include api function declarations
 #include "hsinegenerator.cpp"
 #include "hcosinegenerator.cpp"
 #include "hvfo.cpp"
+#include "hstreamprocessor.cpp"
 
 #endif
