@@ -3,10 +3,12 @@
 
 #include "hardt.h"
 #include "hsoundcard.h"
+#include "hobject.h"
+#include "hreader.h"
 #include <math.h>
 
 template <class T>
-class HGenerator
+class HGenerator : public HReader<T>
 {
     private:
 
@@ -16,13 +18,14 @@ class HGenerator
 
     protected:
 
-        void GetSamples(T* dest, size_t blocksize);
-        void Calculate(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase);
+        HGenerator(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase = 0);
+        ~HGenerator();
 
     public:
 
-        HGenerator(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase = 0);
-        ~HGenerator();
+        int Read(T* dest, size_t blocksize);
+        void Calculate(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase);
+
 };
 
 #endif

@@ -7,11 +7,11 @@
 #include "hwav.h"
 #include "hsoundcard.h"
 #include "hexceptions.h"
-#include "hgenerator.h"
 
 #include "hwriter.h"
 #include "hreader.h"
 #include "hprocessor.h"
+#include "hgenerator.h"
 
 #include "hfilewriter.h"
 #include "hfilereader.h"
@@ -23,6 +23,7 @@
 #include "hsoundcardreader.h"
 #include "hsinegenerator.h"
 #include "hcosinegenerator.h"
+#include "hvfo.h"
 
 /********************************************************************
 HWriter
@@ -40,7 +41,6 @@ bool HWriter<int16_t>::Start(void* data);
 
 extern template
 bool HWriter<int32_t>::Start(void* data);
-
 
 // Stop()
 extern template
@@ -547,18 +547,18 @@ HGenerator<int16_t>::~HGenerator();
 extern template
 HGenerator<int32_t>::~HGenerator();
 
-// GetSamples
+// Read
 extern template
-void HGenerator<int8_t>::GetSamples(int8_t* dest, size_t blocksize);
+int HGenerator<int8_t>::Read(int8_t* dest, size_t blocksize);
 
 extern template
-void HGenerator<uint8_t>::GetSamples(uint8_t* dest, size_t blocksize);
+int HGenerator<uint8_t>::Read(uint8_t* dest, size_t blocksize);
 
 extern template
-void HGenerator<int16_t>::GetSamples(int16_t* dest, size_t blocksize);
+int HGenerator<int16_t>::Read(int16_t* dest, size_t blocksize);
 
 extern template
-void HGenerator<int32_t>::GetSamples(int32_t* dest, size_t blocksize);
+int HGenerator<int32_t>::Read(int32_t* dest, size_t blocksize);
 
 /********************************************************************
 HSineGenerator
@@ -577,19 +577,6 @@ HSineGenerator<int16_t>::HSineGenerator(H_SAMPLE_RATE rate, int frequency, int16
 extern template
 HSineGenerator<int32_t>::HSineGenerator(H_SAMPLE_RATE rate, int frequency, int32_t amplitude);
 
-// Read
-extern template
-int HSineGenerator<int8_t>::Read(int8_t* dest, size_t blocksize);
-
-extern template
-int HSineGenerator<uint8_t>::Read(uint8_t* dest, size_t blocksize);
-
-extern template
-int HSineGenerator<int16_t>::Read(int16_t* dest, size_t blocksize);
-
-extern template
-int HSineGenerator<int32_t>::Read(int32_t* dest, size_t blocksize);
-
 /********************************************************************
 HCosineGenerator
 ********************************************************************/
@@ -607,17 +594,34 @@ HCosineGenerator<int16_t>::HCosineGenerator(H_SAMPLE_RATE rate, int frequency, i
 extern template
 HCosineGenerator<int32_t>::HCosineGenerator(H_SAMPLE_RATE rate, int frequency, int32_t amplitude);
 
-// Read
+/********************************************************************
+HVfo
+********************************************************************/
+
+// HVfo
 extern template
-int HCosineGenerator<int8_t>::Read(int8_t* dest, size_t blocksize);
+HVfo<int8_t>::HVfo(H_SAMPLE_RATE rate, int frequency, int8_t amplitude, float phase);
 
 extern template
-int HCosineGenerator<uint8_t>::Read(uint8_t* dest, size_t blocksize);
+HVfo<uint8_t>::HVfo(H_SAMPLE_RATE rate, int frequency, uint8_t amplitude, float phase);
 
 extern template
-int HCosineGenerator<int16_t>::Read(int16_t* dest, size_t blocksize);
+HVfo<int16_t>::HVfo(H_SAMPLE_RATE rate, int frequency, int16_t amplitude, float phase);
 
 extern template
-int HCosineGenerator<int32_t>::Read(int32_t* dest, size_t blocksize);
+HVfo<int32_t>::HVfo(H_SAMPLE_RATE rate, int frequency, int32_t amplitude, float phase);
+
+// SetFrequency
+extern template
+void HVfo<int8_t>::SetFrequency(int frequency, float phase);
+
+extern template
+void HVfo<uint8_t>::SetFrequency(int frequency, float phase);
+
+extern template
+void HVfo<int16_t>::SetFrequency(int frequency, float phase);
+
+extern template
+void HVfo<int32_t>::SetFrequency(int frequency, float phase);
 
 #endif

@@ -26,14 +26,7 @@ class HGenerator_Test: public Test
 
                 test_generator(int rate, int frequency, float phase = 0):
                     HGenerator<int8_t>((H_SAMPLE_RATE) rate, frequency, 127, phase)
-                {
-                }
-
-                bool read(int8_t* dest, size_t size)
-                {
-                    GetSamples(dest, size);
-                    return true;
-                }
+                {}
         };
 
         void test_sine_10_100()
@@ -44,7 +37,7 @@ class HGenerator_Test: public Test
             test_generator tg(rate, frequency);
 
             int8_t buffer[11];
-            tg.read(buffer, 11);
+            tg.Read(buffer, 11);
 
             ASSERT_IS_EQUAL((int) buffer[0], 0);
             ASSERT_IS_EQUAL((int) buffer[1], 74);
@@ -67,7 +60,7 @@ class HGenerator_Test: public Test
             test_generator tg(rate, frequency, phase);
 
             int8_t buffer[11];
-            tg.read(buffer, 11);
+            tg.Read(buffer, 11);
 
             ASSERT_IS_EQUAL((int) buffer[0], 126);
             ASSERT_IS_EQUAL((int) buffer[1], 102);

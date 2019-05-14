@@ -2,7 +2,6 @@
 #define __HGENERATOR_CPP
 
 #include "hgenerator.h"
-//#include <cstring>
 
 template <class T>
 HGenerator<T>::HGenerator(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase):
@@ -26,7 +25,7 @@ HGenerator<T>::~HGenerator()
 }
 
 template <class T>
-void HGenerator<T>::GetSamples(T* dest, size_t blocksize)
+int HGenerator<T>::Read(T* dest, size_t blocksize)
 {
     for( int i = 0; i < blocksize; i++ )
     {
@@ -60,6 +59,8 @@ void HGenerator<T>::GetSamples(T* dest, size_t blocksize)
             _it = 0;
         }
     }
+
+    return blocksize;
 }
 
 template <class T>
@@ -124,17 +125,17 @@ HGenerator<int16_t>::~HGenerator();
 template
 HGenerator<int32_t>::~HGenerator();
 
-// GetSamples
+// Read
 template
-void HGenerator<int8_t>::GetSamples(int8_t* dest, size_t blocksize);
+int HGenerator<int8_t>::Read(int8_t* dest, size_t blocksize);
 
 template
-void HGenerator<uint8_t>::GetSamples(uint8_t* dest, size_t blocksize);
+int HGenerator<uint8_t>::Read(uint8_t* dest, size_t blocksize);
 
 template
-void HGenerator<int16_t>::GetSamples(int16_t* dest, size_t blocksize);
+int HGenerator<int16_t>::Read(int16_t* dest, size_t blocksize);
 
 template
-void HGenerator<int32_t>::GetSamples(int32_t* dest, size_t blocksize);
+int HGenerator<int32_t>::Read(int32_t* dest, size_t blocksize);
 
 #endif

@@ -12,7 +12,6 @@ Initialization, logging and other basic functions.
 #include "hwav.h"
 #include "hmetrics.h"
 #include "hobject.h"
-#include "hgenerator.h"
 
 /********************************************************************
 Abstract base classes with no, or little implementation
@@ -21,6 +20,7 @@ Abstract base classes with no, or little implementation
 #include "hwriter.cpp"
 #include "hreader.cpp"
 #include "hprocessor.cpp"
+#include "hgenerator.h"
 
 /********************************************************************
 Include api function declarations
@@ -36,5 +36,6 @@ Include api function declarations
 #include "hnetworkprocessor.cpp"
 #include "hsinegenerator.cpp"
 #include "hcosinegenerator.cpp"
+#include "hvfo.cpp"
 
 #endif
