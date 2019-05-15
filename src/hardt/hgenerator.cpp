@@ -24,7 +24,7 @@ int HGenerator<T>::Read(T* dest, size_t blocksize)
     for( int i = 0; i < blocksize; i++ )
     {
         dest[i] = _lot[_it++];
-        if( _it >= 16 )
+        if( _it >= _samplesPerCycle )
         {
             _it = 0;
         }
@@ -44,14 +44,14 @@ void HGenerator<T>::Calculate(H_SAMPLE_RATE rate, int frequency, T amplitude, fl
     }
 
     // How many distinct samples can we have per cycle
-    int samplesPerCycle = rate / frequency;
+    _samplesPerCycle = rate / frequency;
 
     // Create lookup table
-    HLog("Creating lookup table of size %d (%d bytes)", samplesPerCycle, samplesPerCycle * sizeof(T));
-    _lot = new T[samplesPerCycle];
+    HLog("Creating lookup table of size %d (%d bytes)", _samplesPerCycle, _samplesPerCycle * sizeof(T));
+    _lot = new T[_samplesPerCycle];
 
     // Calculate lookup table
-    for( int i = 0; i < samplesPerCycle; i++ )
+    for( int i = 0; i < _samplesPerCycle; i++ )
     {
         _lot[i] = amplitude * sin((((2 * M_PI * frequency) / rate) * i) + phase);
         HLog("lot[%d] = %d", i, _lot[i]);

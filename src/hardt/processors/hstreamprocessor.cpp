@@ -15,9 +15,9 @@ HStreamProcessor<T>::HStreamProcessor(HWriter<T>* writer, HReader<T>* reader, in
 }
 
 template <class T>
-void HStreamProcessor<T>::Run()
+void HStreamProcessor<T>::Run(long unsigned int blocks)
 {
-    HProcessor<T>::Run(NULL);
+    HProcessor<T>::Run(NULL, blocks);
 
     // Dump in- and output metrics to the log
     HLog(this->GetMetrics("HStreamProcessor").c_str());
@@ -42,15 +42,15 @@ HStreamProcessor<int32_t>::HStreamProcessor(HWriter<int32_t>* writer, HReader<in
 
 // Run()
 template
-void HStreamProcessor<int8_t>::Run();
+void HStreamProcessor<int8_t>::Run(long unsigned int blocks);
 
 template
-void HStreamProcessor<uint8_t>::Run();
+void HStreamProcessor<uint8_t>::Run(long unsigned int blocks);
 
 template
-void HStreamProcessor<int16_t>::Run();
+void HStreamProcessor<int16_t>::Run(long unsigned int blocks);
 
 template
-void HStreamProcessor<int32_t>::Run();
+void HStreamProcessor<int32_t>::Run(long unsigned int blocks);
 
 #endif

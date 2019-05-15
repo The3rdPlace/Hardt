@@ -441,16 +441,16 @@ bool HProcessor<int32_t>::Stop();
 
 // Run()
 extern template
-void HProcessor<int8_t>::Run(void* startData);
+void HProcessor<int8_t>::Run(void* startData, long unsigned int blocks);
 
 extern template
-void HProcessor<uint8_t>::Run(void* startData);
+void HProcessor<uint8_t>::Run(void* startData, long unsigned int blocks);
 
 extern template
-void HProcessor<int16_t>::Run(void* startData);
+void HProcessor<int16_t>::Run(void* startData, long unsigned int blocks);
 
 extern template
-void HProcessor<int32_t>::Run(void* startData);
+void HProcessor<int32_t>::Run(void* startData, long unsigned int blocks);
 
 // Halt()
 extern template
@@ -709,15 +709,15 @@ HStreamProcessor<int32_t>::HStreamProcessor(HWriter<int32_t>* writer, HReader<in
 
 // Run()
 extern template
-void HStreamProcessor<int8_t>::Run();
+void HStreamProcessor<int8_t>::Run(long unsigned int blocks);
 
 extern template
-void HStreamProcessor<uint8_t>::Run();
+void HStreamProcessor<uint8_t>::Run(long unsigned int blocks);
 
 extern template
-void HStreamProcessor<int16_t>::Run();
+void HStreamProcessor<int16_t>::Run(long unsigned int blocks);
 
 extern template
-void HStreamProcessor<int32_t>::Run();
+void HStreamProcessor<int32_t>::Run(long unsigned int blocks);
 
 #endif

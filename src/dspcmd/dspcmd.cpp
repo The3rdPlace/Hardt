@@ -236,10 +236,13 @@ int RunSignalGenerator(DspCmdConfig config)
         return -1;
     }
 
+    // Calculate how many blocks fit into 10 seconds
+    unsigned long int blocks = (10 * Config.Rate) / Config.Blocksize;
+
     // Create and run the signalgenerator
     HVfo<T> sg(Config.Rate, Config.Frequency, (T) 15000, Config.Phase);
     HStreamProcessor<T> proc(wr, &sg, Config.Blocksize, &terminated);
-    proc.Run();
+    proc.Run(blocks);
 
     // Delete writer
     if( strcmp(Config.FileFormat, "wav") == 0 )

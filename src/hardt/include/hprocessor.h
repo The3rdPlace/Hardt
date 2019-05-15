@@ -41,7 +41,7 @@ class HProcessor : public HObject
 
         HWriter<T>* GetWriter();
 
-        virtual void Run(void* startData);
+        virtual void Run(void* startData, long unsigned int blocks = 0);
 
         virtual void Halt();
 };

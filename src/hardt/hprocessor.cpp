@@ -82,7 +82,7 @@ void HProcessor<T>::SetWriter(HWriter<T>* writer)
 }
 
 template <class T>
-void HProcessor<T>::Run(void* startData)
+void HProcessor<T>::Run(void* startData, long unsigned int blocks)
 {
     // Start reader and writer - some readers/writers have start/stop handling
     HLog("Starting reader and writer");
@@ -108,7 +108,7 @@ void HProcessor<T>::Run(void* startData)
                 break;
             }
             this->Metrics.Reads++;
-            this->Metrics.BlocksIn += len;
+            this->Metrics.BlocksIn++;
             this->Metrics.BytesIn += len * sizeof(T);
         }
         catch( std::exception ex )
@@ -132,8 +132,15 @@ void HProcessor<T>::Run(void* startData)
             {
                 HLog("Not all data was written, %d of %d ", shipped, len);
             }
-            this->Metrics.BlocksOut += shipped;
+            this->Metrics.BlocksOut++;
             this->Metrics.BytesOut += shipped * sizeof(T);
+
+            if( blocks > 0 && this->Metrics.BlocksOut >= blocks )
+            {
+                HLog("Reached requested number of blocks (%lu / %lu), stopping", this->Metrics.BlocksOut, blocks);
+                *_terminated = true;
+                break;
+            }
         }
         catch( std::exception ex )
         {
@@ -254,16 +261,16 @@ bool HProcessor<int32_t>::Stop();
 
 // Run()
 template
-void HProcessor<int8_t>::Run(void* startData);
+void HProcessor<int8_t>::Run(void* startData, long unsigned int blocks);
 
 template
-void HProcessor<uint8_t>::Run(void* startData);
+void HProcessor<uint8_t>::Run(void* startData, long unsigned int blocks);
 
 template
-void HProcessor<int16_t>::Run(void* startData);
+void HProcessor<int16_t>::Run(void* startData, long unsigned int blocks);
 
 template
-void HProcessor<int32_t>::Run(void* startData);
+void HProcessor<int32_t>::Run(void* startData, long unsigned int blocks);
 
 // Halt()
 template
