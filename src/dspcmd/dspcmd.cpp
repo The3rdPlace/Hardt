@@ -1,7 +1,8 @@
 #include "../hardt/include/hardtapi.h"
 #include "dspcmd.h"
 
-#include "signal.h"
+#include <signal.h>
+#include <math.h>
 
 /********************************************************************
 Setup signal handling.
@@ -41,6 +42,8 @@ struct DspCmdConfig
     bool IsNetworkWriterClient = false; // not implemented
     bool IsNetworkReaderServer = false; // not implemented
     bool IsNetworkWriterServer = false;
+    bool IsSignalGenerator = false;
+
     int Port = 8080;
     char *Address = NULL;
 
@@ -55,6 +58,8 @@ struct DspCmdConfig
 
     int Blocksize = 1024;
 
+    int Frequency;
+    float Phase;
 } Config;
 
 bool argBoolCmp(const char* arg, const char* option, bool currentValue)
@@ -74,6 +79,8 @@ int argIntCmp(const char* arg, const char* option, char* value, int currentValue
 
 bool parseArguments(int argc, char** argv)
 {
+    int PhaseIntValue = 0;
+
     for( int argNo = 1; argNo < argc; argNo++ )
     {
         Config.Verbose = argBoolCmp(argv[argNo], "-v", Config.Verbose);
@@ -109,29 +116,34 @@ bool parseArguments(int argc, char** argv)
             Config.IsNetworkReaderClient = argBoolCmp(argv[argNo], "-cr", Config.IsNetworkReaderClient);
             Config.Address = argCharCmp(argv[argNo], "-cr", argv[argNo + 1], Config.Address);
             Config.Port = argIntCmp(argv[argNo], "-cr", argv[argNo + 2], Config.Port);
+
+            Config.IsSignalGenerator = argBoolCmp(argv[argNo], "-sg", Config.IsSignalGenerator);
+            Config.Frequency = argIntCmp(argv[argNo], "-sg", argv[argNo + 1], Config.Frequency);
+            PhaseIntValue = argIntCmp(argv[argNo], "-sg", argv[argNo + 2], PhaseIntValue);
+            Config.Phase = ((float) PhaseIntValue / 360) * 2 * M_PI;
         }
 
         if( argBoolCmp(argv[argNo], "-h", false) )
         {
             std::cout << "Usage: dspcmd [option [value]]" << std::endl << std::endl;
-            std::cout << "-a                 Show a list of available audio devices" << std::endl;
-            std::cout << "-bs blocksize      Blocksize used by readers and writers (default = 1024)" << std::endl;
-            std::cout << "-f                 Sample format (" << H_SAMPLE_FORMAT_INT_8 << "=Int8, " << H_SAMPLE_FORMAT_UINT_8 << "=UInt8, " << H_SAMPLE_FORMAT_INT_16 << "=Int16, " /*<< H_SAMPLE_FORMAT_INT_24 << "=Int24, "*/ << H_SAMPLE_FORMAT_INT_32 << "=Int32)" << std::endl;
-            std::cout << "-ff file|wav       Type of filereader/filewriterwriter" << std::endl;
-            std::cout << "-id device         Input audio device" << std::endl;
+            std::cout << "-a                   Show a list of available audio devices" << std::endl;
+            std::cout << "-bs blocksize        Blocksize used by readers and writers (default = 1024)" << std::endl;
+            std::cout << "-f                   Sample format (" << H_SAMPLE_FORMAT_INT_8 << "=Int8, " << H_SAMPLE_FORMAT_UINT_8 << "=UInt8, " << H_SAMPLE_FORMAT_INT_16 << "=Int16, " /*<< H_SAMPLE_FORMAT_INT_24 << "=Int24, "*/ << H_SAMPLE_FORMAT_INT_32 << "=Int32)" << std::endl;
+            std::cout << "-ff file|wav         Type of filereader/filewriterwriter" << std::endl;
+            std::cout << "-id device           Input audio device" << std::endl;
             //std::cout << "-if name           Name and path of input file" << std::endl;
-            std::cout << "-h                 Show this help" << std::endl;
+            std::cout << "-h                   Show this help" << std::endl;
             //std::cout << "-od device         Output audio device" << std::endl;
-            std::cout << "-of name           Name and path of output file" << std::endl;
-            std::cout << "-r rate            Sample rate (" << H_SAMPLE_RATE_8K << ", " << H_SAMPLE_RATE_11K << ", " << H_SAMPLE_RATE_22K << ", " << H_SAMPLE_RATE_32K << ", " << H_SAMPLE_RATE_44K1 << ", " << H_SAMPLE_RATE_48K << ", " << H_SAMPLE_RATE_96K << ", " << H_SAMPLE_RATE_192K << ")" << std::endl;
-            std::cout << "-v                 Be verbose, dont write to logfiles but to stdout" << std::endl;
+            std::cout << "-of name             Name and path of output file" << std::endl;
+            std::cout << "-r rate              Sample rate (" << H_SAMPLE_RATE_8K << ", " << H_SAMPLE_RATE_11K << ", " << H_SAMPLE_RATE_22K << ", " << H_SAMPLE_RATE_32K << ", " << H_SAMPLE_RATE_44K1 << ", " << H_SAMPLE_RATE_48K << ", " << H_SAMPLE_RATE_96K << ", " << H_SAMPLE_RATE_192K << ")" << std::endl;
+            std::cout << "-v                   Be verbose, dont write to logfiles but to stdout" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-cr server port    Run as network client, reading from the network and writing to a local writer" << std::endl;
+            std::cout << "-cr server port      Run as network client, reading from the network and writing to a local writer" << std::endl;
             //std::cout << "-cw server port    Run as network client, reading from a local reader and writing to the network" << std::endl;
-            std::cout << "-sw port           Run as network server, reading from a local reader and writing to the network" << std::endl;
+            std::cout << "-sw port             Run as network server, reading from a local reader and writing to the network" << std::endl;
             //std::cout << "-sr port           Run as network server, reading from the network and writing to a local writer" << std::endl;
-
+            std::cout << "-sg frequency phase  Run as signalgenerator" << std::endl;
             // Force exit
             return true;
         }
@@ -190,6 +202,44 @@ int RunNetworkReaderClient(DspCmdConfig config)
         std::cout << "Caught exception: " << ex.what() << std::endl;
         return 1;
     }
+
+    // Delete writer
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        delete (HWavWriter<T>*) wr;
+    }
+    else if( strcmp(Config.FileFormat, "file") == 0 )
+    {
+        delete (HFileWriter<T>*) wr;
+    }
+    return 0;
+}
+
+template <typename T>
+int RunSignalGenerator(DspCmdConfig config)
+{
+    std::cout << "GENERATOR" << std::endl;
+
+    // Create requested writer
+    HWriter<T>* wr;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+    }
+    else if( strcmp(Config.FileFormat, "file") == 0 )
+    {
+        wr = new HFileWriter<T>(Config.OutputFile);
+    }
+    else
+    {
+        std::cout << "Unknown file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+    // Create and run the signalgenerator
+    HVfo<T> sg(Config.Rate, Config.Frequency, (T) 15000, Config.Phase);
+    HStreamProcessor<T> proc(wr, &sg, Config.Blocksize, &terminated);
+    proc.Run();
 
     // Delete writer
     if( strcmp(Config.FileFormat, "wav") == 0 )
@@ -285,6 +335,39 @@ int RunOperation(DspCmdConfig config)
         }
 
         return RunNetworkWriterServer<T>(Config);
+    }
+
+    // Generator a single tone
+    if( Config.IsSignalGenerator )
+    {
+        // Verify configuration
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file format (-ff)" << std::endl;
+            return 1;
+        }
+        if( Config.Frequency == 0 )
+        {
+            std::cout << "Frequency is 0, not possible" << std::endl;
+            return 1;
+        }
+        if( Config.Rate == -1 )
+        {
+            std::cout << "No rate (-r)" << std::endl;
+            return 1;
+        }
+        if( Config.Format == -1 )
+        {
+            std::cout << "No format (-f)" << std::endl;
+            return 1;
+        }
+        if( Config.FileFormat == NULL )
+        {
+            std::cout << "No output file format (-ff)" << std::endl;
+            return 1;
+        }
+
+        return RunSignalGenerator<T>(Config);
     }
 
     // No known operation could be determined from the input arguments
