@@ -13,7 +13,6 @@ class HGenerator : public HReader<T>
     private:
 
         T* _lot;
-        int _q1, _q2, _q3, _q4;
         int _it;
 
     protected:

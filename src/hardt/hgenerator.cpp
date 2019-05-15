@@ -7,12 +7,6 @@ template <class T>
 HGenerator<T>::HGenerator(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase):
     _lot(NULL)
 {
-
-    // Calculate the amount of samples that we need. And then divide by 4
-    // since we only need 1/4 of the sine, the rest can be constructed by changing sign.
-    // Please note that for frequencies that produce decimal values when divided up into
-    // the samplerate, we can only approximate the frequency - this is accepted for all
-    // purposes for which this lib. is intended
     HLog("HGenerator(rate = %d, frequency = %d, phase = %f)", rate, frequency, phase);
     Calculate(rate, frequency, amplitude, phase);
 }
@@ -29,32 +23,8 @@ int HGenerator<T>::Read(T* dest, size_t blocksize)
 {
     for( int i = 0; i < blocksize; i++ )
     {
-        // Select quadrant, then copy and possibly alter the value
-        if( _it < _q1 )
-        {
-            dest[i] = _lot[_it];
-        }
-        else if( _it < _q2 )
-        {
-            int index = (-1 * _it) + _q2;
-            dest[i] = _lot[index];
-        }
-        else if( _it < _q3 )
-        {
-            int index = _it - _q2;
-            dest[i] = -1 * _lot[index];
-        }
-        else
-        {
-            int index = _q1 - _it + _q3;
-            dest[i] = -1 * _lot[index];
-        }
-
-        // Next sample
-        _it++;
-
-        // Roll over to first sample in LOT
-        if( _it >= _q4 )
+        dest[i] = _lot[_it++];
+        if( _it >= 16 )
         {
             _it = 0;
         }
@@ -73,24 +43,19 @@ void HGenerator<T>::Calculate(H_SAMPLE_RATE rate, int frequency, T amplitude, fl
         delete _lot;
     }
 
+    // How many distinct samples can we have per cycle
+    int samplesPerCycle = rate / frequency;
+
     // Create lookup table
-    int lotSize = rate / 4;
-    HLog("Creating lookup table of size %d (%d bytes)", lotSize, lotSize * sizeof(T));
-    _lot = new T[lotSize];
+    HLog("Creating lookup table of size %d (%d bytes)", samplesPerCycle, samplesPerCycle * sizeof(T));
+    _lot = new T[samplesPerCycle];
 
     // Calculate lookup table
-    for( int i = 0; i < lotSize; i++ )
+    for( int i = 0; i < samplesPerCycle; i++ )
     {
         _lot[i] = amplitude * sin((((2 * M_PI * frequency) / rate) * i) + phase);
         HLog("lot[%d] = %d", i, _lot[i]);
     }
-
-    // Calculate quadrant markers
-    _q1 = rate / 4;
-    _q2 = (rate / 4) * 2;
-    _q3 = (rate / 4) * 3;
-    _q4 = (rate / 4) * 4;
-    HLog("Quadrant markers (1., 2., 3., 4.) = %d, %d, %d, %d", _q1, _q2, _q3, _q4);
 
     // Initial sample position
     _it = 0;
