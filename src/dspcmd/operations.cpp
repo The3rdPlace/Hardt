@@ -5,13 +5,15 @@
 #include <iostream>
 
 #include "operations.h"
+#include "signalhandling.h"
+#include "config.h"
 #include "hardtapi.h"
 
 template <typename T>
-int RunNetworkWriterServer(DspCmdConfig config)
+int RunNetworkWriterServer()
 {
-    HSoundcardReader<T> rdr(config.InputDevice, config.Rate, 1, config.Format, config.Blocksize);
-    HNetworkProcessor<T> srv(config.Port, &rdr, config.Blocksize, &terminated);
+    HSoundcardReader<T> rdr(Config.InputDevice, Config.Rate, 1, Config.Format, Config.Blocksize);
+    HNetworkProcessor<T> srv(Config.Port, &rdr, Config.Blocksize, &terminated);
     try
     {
         srv.Run();
@@ -27,7 +29,7 @@ int RunNetworkWriterServer(DspCmdConfig config)
 }
 
 template <typename T>
-int RunNetworkReaderClient(DspCmdConfig config)
+int RunNetworkReaderClient()
 {
     // Create requested writer
     HWriter<T>* wr;
@@ -70,10 +72,8 @@ int RunNetworkReaderClient(DspCmdConfig config)
 }
 
 template <typename T>
-int RunSignalGenerator(DspCmdConfig config)
+int RunSignalGenerator()
 {
-    std::cout << "GENERATOR" << std::endl;
-
     // Create requested writer
     HWriter<T>* wr;
     if( strcmp(Config.FileFormat, "wav") == 0 )
@@ -111,7 +111,7 @@ int RunSignalGenerator(DspCmdConfig config)
 }
 
 template <typename T>
-int RunOperation(DspCmdConfig config)
+int RunOperation()
 {
     // Show audio device information
     if( Config.ShowAudioDevices ) {
@@ -168,7 +168,7 @@ int RunOperation(DspCmdConfig config)
             return 1;
         }
 
-        return RunNetworkReaderClient<T>(Config);
+        return RunNetworkReaderClient<T>();
     }
 
     // Read from soundcard and write to network
@@ -191,7 +191,7 @@ int RunOperation(DspCmdConfig config)
             return 1;
         }
 
-        return RunNetworkWriterServer<T>(Config);
+        return RunNetworkWriterServer<T>();
     }
 
     // Generator a single tone
@@ -224,7 +224,7 @@ int RunOperation(DspCmdConfig config)
             return 1;
         }
 
-        return RunSignalGenerator<T>(Config);
+        return RunSignalGenerator<T>();
     }
 
     // No known operation could be determined from the input arguments
@@ -233,7 +233,49 @@ int RunOperation(DspCmdConfig config)
 	return 1;
 }
 
-int RunOperation(DspCmdConfig config)
+int RunOperation()
 {
-return 0;
+    // Two stage operation calling, first find out which datatype is needed
+    try
+    {
+        int rc;
+        switch(Config.Format)
+        {
+            case H_SAMPLE_FORMAT_INT_8:
+                HLog("Base datatype is int8_t");
+                return RunOperation<int8_t>();
+            case H_SAMPLE_FORMAT_UINT_8:
+                HLog("Base datatype is uint8_t");
+                return RunOperation<uint8_t>();
+            case H_SAMPLE_FORMAT_INT_16:
+                HLog("Base datatype is int16_t");
+                return RunOperation<int16_t>();
+            /*case H_SAMPLE_FORMAT_INT_24:
+                HLog("Base datatype is int24_t");
+                return RunOperation<int8_t>();*/
+            case H_SAMPLE_FORMAT_INT_32:
+                HLog("Base datatype is int32_t");
+                return RunOperation<int32_t>();
+            default:
+                std::cout << "Unknown sample format " << Config.Format << std::endl;
+                return -1;
+        }
+    }
+    catch( HException* hex )
+    {
+        std::cout << "Caught exception:" << std::endl;
+        std::cout << "  " << hex->what() << std::endl;
+        return 1;
+    }
+    catch( std::exception* ex )
+    {
+        std::cout << "Caught external exception:" << std::endl;
+        std::cout << "  " << ex->what() << std::endl;
+        return 2;
+    }
+    catch( ... )
+    {
+        std::cout << "Unexpected exception, no further information" << std::endl;
+        return 3;
+    }
 }

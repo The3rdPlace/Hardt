@@ -1,8 +1,6 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
-extern bool terminated;
-
 // Settings
 struct DspCmdConfig
 {
@@ -36,5 +34,7 @@ struct DspCmdConfig
 extern DspCmdConfig Config;
 
 bool parseArguments(int argc, char** argv);
+
+bool VerifyConfig();
 
 #endif

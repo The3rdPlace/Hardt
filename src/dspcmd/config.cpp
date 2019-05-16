@@ -100,3 +100,7 @@ bool parseArguments(int argc, char** argv)
     return false;
 }
 
+bool VerifyConfig()
+{
+    return false;
+}

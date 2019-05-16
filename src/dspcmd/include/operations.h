@@ -1,9 +1,9 @@
-#ifndef __NETWORKOPERATIONS_H
-#define __NETWORKOPERATIONS_H
+#ifndef __OPERATIONS_H
+#define __OPERATIONS_H
 
 #include "config.h"
 
-int RunOperation(DspCmdConfig config);
+int RunOperation();
 
 #endif
 

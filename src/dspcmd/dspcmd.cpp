@@ -1,38 +1,8 @@
-static bool terminated = false;
-
-#include "../hardt/include/hardtapi.h"
+#include "hardtapi.h"
 #include "dspcmd.h"
+#include "signalhandling.h"
 #include "config.h"
 #include "operations.h"
-
-#include <signal.h>
-#include <math.h>
-
-/********************************************************************
-Setup signal handling.
-
-This allows us to close down gracefully when the user presses
-ctrl+c
-********************************************************************/
-
-static void signalIntTermHandler (int signal_value)
-{
-    HLog("Caught SIGTERM or SIGINT");
-    terminated = true;
-}
-
-static void SetupSignalHandling()
-{
-    struct sigaction action;
-    action.sa_handler = [](int) { terminated = true; };
-    action.sa_flags = 0;
-    sigemptyset (&action.sa_mask);
-    sigaction (SIGINT, &action, NULL);
-    sigaction (SIGTERM, &action, NULL);
-}
-
-
-
 
 int main(int argc, char** argv)
 {
@@ -43,6 +13,12 @@ int main(int argc, char** argv)
         return 0;
     }
 
+    // Make sure the configuration is sane
+    if( VerifyConfig() )
+    {
+        return 1;
+    }
+
     // Initialize the Hardt library, giving a name for logfiles, or if
     // the '-v' switch has been given, let Hardt log directly to stdout
     HInit(std::string("dspcmd"), Config.Verbose);
@@ -51,5 +27,5 @@ int main(int argc, char** argv)
     SetupSignalHandling();
 
     // Run selected operation
-    RunOperation(Config);
+    return RunOperation();
 }

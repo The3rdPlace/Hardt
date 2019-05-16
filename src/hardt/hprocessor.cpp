@@ -95,7 +95,7 @@ void HProcessor<T>::Run(void* startData, long unsigned int blocks)
 
     // Read from reader and write to network
     HLog("Processing");
-    while(!*_terminated)
+    while( !*_terminated )
     {
         // Read data from the reader
         int len;
