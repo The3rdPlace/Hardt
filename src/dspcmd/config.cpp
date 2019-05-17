@@ -35,31 +35,24 @@ bool parseArguments(int argc, char** argv)
 
         if( argNo < argc - 1)
         {
-            //Config.InputFile = argCharCmp(argv[argNo], "-if", argv[argNo + 1], Config.InputFile);
+            Config.InputFile = argCharCmp(argv[argNo], "-if", argv[argNo + 1], Config.InputFile);
             Config.OutputFile = argCharCmp(argv[argNo], "-of", argv[argNo + 1], Config.OutputFile);
 
             Config.Blocksize = argIntCmp(argv[argNo], "-bs", argv[argNo + 1], Config.Blocksize);
 
             Config.InputDevice = argIntCmp(argv[argNo], "-id", argv[argNo + 1], Config.InputDevice);
-            //Config.OutputDevice = argIntCmp(argv[argNo], "-od", argv[argNo + 1], Config.OutputDevice);
+            Config.OutputDevice = argIntCmp(argv[argNo], "-od", argv[argNo + 1], Config.OutputDevice);
             Config.Rate = argIntCmp(argv[argNo], "-r", argv[argNo + 1], Config.Rate);
             Config.Format = argIntCmp(argv[argNo], "-f", argv[argNo + 1], Config.Format);
 
             Config.IsNetworkWriterServer = argBoolCmp(argv[argNo], "-sw", Config.IsNetworkWriterServer);
             Config.Port = argIntCmp(argv[argNo], "-ns", argv[argNo + 1], Config.Port);
 
-            //Config.IsNetworkReaderServer = argBoolCmp(argv[argNo], "-sr", Config.IsNetworkReaderServer);
-            //Config.Port = argIntCmp(argv[argNo], "-sr", argv[argNo + 1], Config.Port);
-
             Config.FileFormat = argCharCmp(argv[argNo], "-ff", argv[argNo + 1], Config.FileFormat);
         }
 
         if( argNo < argc - 2 )
         {
-            //Config.IsNetworkWriterClient = argBoolCmp(argv[argNo], "-cw", Config.IsNetworkWriterClient);
-            //Config.Server = argIntCmp(argv[argNo], "-cw", argv[argNo + 1], Config.Server);
-            //Config.Port = argIntCmp(argv[argNo], "-cw", argv[argNo + 2], Config.Port);
-
             Config.IsNetworkReaderClient = argBoolCmp(argv[argNo], "-cr", Config.IsNetworkReaderClient);
             Config.Address = argCharCmp(argv[argNo], "-nc", argv[argNo + 1], Config.Address);
             Config.Port = argIntCmp(argv[argNo], "-nc", argv[argNo + 2], Config.Port);
