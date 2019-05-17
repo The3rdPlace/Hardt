@@ -46,7 +46,7 @@ bool parseArguments(int argc, char** argv)
             Config.Format = argIntCmp(argv[argNo], "-f", argv[argNo + 1], Config.Format);
 
             Config.IsNetworkWriterServer = argBoolCmp(argv[argNo], "-sw", Config.IsNetworkWriterServer);
-            Config.Port = argIntCmp(argv[argNo], "-sw", argv[argNo + 1], Config.Port);
+            Config.Port = argIntCmp(argv[argNo], "-ns", argv[argNo + 1], Config.Port);
 
             //Config.IsNetworkReaderServer = argBoolCmp(argv[argNo], "-sr", Config.IsNetworkReaderServer);
             //Config.Port = argIntCmp(argv[argNo], "-sr", argv[argNo + 1], Config.Port);
@@ -61,8 +61,8 @@ bool parseArguments(int argc, char** argv)
             //Config.Port = argIntCmp(argv[argNo], "-cw", argv[argNo + 2], Config.Port);
 
             Config.IsNetworkReaderClient = argBoolCmp(argv[argNo], "-cr", Config.IsNetworkReaderClient);
-            Config.Address = argCharCmp(argv[argNo], "-cr", argv[argNo + 1], Config.Address);
-            Config.Port = argIntCmp(argv[argNo], "-cr", argv[argNo + 2], Config.Port);
+            Config.Address = argCharCmp(argv[argNo], "-nc", argv[argNo + 1], Config.Address);
+            Config.Port = argIntCmp(argv[argNo], "-nc", argv[argNo + 2], Config.Port);
 
             Config.IsSignalGenerator = argBoolCmp(argv[argNo], "-sg", Config.IsSignalGenerator);
             Config.Frequency = argIntCmp(argv[argNo], "-sg", argv[argNo + 1], Config.Frequency);
@@ -74,23 +74,24 @@ bool parseArguments(int argc, char** argv)
         {
             std::cout << "Usage: dspcmd [option [value]]" << std::endl << std::endl;
             std::cout << "-a                   Show a list of available audio devices" << std::endl;
+            std::cout << "-h                   Show this help" << std::endl;
+            std::cout << "-v                   Be verbose, dont write to logfiles but to stdout" << std::endl;
+            std::cout << std::endl;
+
             std::cout << "-bs blocksize        Blocksize used by readers and writers (default = 1024)" << std::endl;
             std::cout << "-f                   Sample format (" << H_SAMPLE_FORMAT_INT_8 << "=Int8, " << H_SAMPLE_FORMAT_UINT_8 << "=UInt8, " << H_SAMPLE_FORMAT_INT_16 << "=Int16, " /*<< H_SAMPLE_FORMAT_INT_24 << "=Int24, "*/ << H_SAMPLE_FORMAT_INT_32 << "=Int32)" << std::endl;
             std::cout << "-ff file|wav         Type of filereader/filewriterwriter" << std::endl;
             std::cout << "-id device           Input audio device" << std::endl;
-            //std::cout << "-if name           Name and path of input file" << std::endl;
-            std::cout << "-h                   Show this help" << std::endl;
-            //std::cout << "-od device         Output audio device" << std::endl;
+            std::cout << "-if name             Name and path of input file" << std::endl;
+            std::cout << "-od device           Output audio device" << std::endl;
             std::cout << "-of name             Name and path of output file" << std::endl;
             std::cout << "-r rate              Sample rate (" << H_SAMPLE_RATE_8K << ", " << H_SAMPLE_RATE_11K << ", " << H_SAMPLE_RATE_22K << ", " << H_SAMPLE_RATE_32K << ", " << H_SAMPLE_RATE_44K1 << ", " << H_SAMPLE_RATE_48K << ", " << H_SAMPLE_RATE_96K << ", " << H_SAMPLE_RATE_192K << ")" << std::endl;
-            std::cout << "-v                   Be verbose, dont write to logfiles but to stdout" << std::endl;
+            std::cout << "-sg frequency phase  Run as signalgenerator" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-cr server port      Run as network client, reading from the network and writing to a local writer" << std::endl;
-            //std::cout << "-cw server port    Run as network client, reading from a local reader and writing to the network" << std::endl;
-            std::cout << "-sw port             Run as network server, reading from a local reader and writing to the network" << std::endl;
-            //std::cout << "-sr port           Run as network server, reading from the network and writing to a local writer" << std::endl;
-            std::cout << "-sg frequency phase  Run as signalgenerator" << std::endl;
+            std::cout << "-nc server port      Run as network client, reading from the network and writing to a local writer" << std::endl;
+            std::cout << "-ns port             Run as network server, reading from a local reader and writing to the network" << std::endl;
+
             // Force exit
             return true;
         }
@@ -102,5 +103,29 @@ bool parseArguments(int argc, char** argv)
 
 bool VerifyConfig()
 {
+    // We always needs a samplerate and a sample format
+    if( Config.Rate == -1 )
+    {
+        std::cout << "No rate (-r)" << std::endl;
+        return true;
+    }
+    if( Config.Format == -1 )
+    {
+        std::cout << "No format (-f)" << std::endl;
+        return true;
+    }
+
+    // We need either an output file or device
+    if( Config.OutputFile == NULL && Config.OutputDevice == -1 )
+    {
+        std::cout << "No output file or file (-of|-od)" << std::endl;
+        return true;
+    }
+    if( Config.OutputFile != NULL && Config.FileFormat == NULL )
+    {
+        std::cout << "No output file format (-ff)" << std::endl;
+        return true;
+    }
+
     return false;
 }

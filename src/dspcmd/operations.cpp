@@ -144,27 +144,12 @@ int RunOperation()
         // Verify configuration
         if( Config.Address == NULL )
         {
-            std::cout << "No output filename (-of)" << std::endl;
+            std::cout << "No Server address (-nr server port)" << std::endl;
             return 1;
         }
-        if( Config.Rate == -1 )
+        if( Config.Port == -1 )
         {
-            std::cout << "No rate (-r)" << std::endl;
-            return 1;
-        }
-        if( Config.Format == -1 )
-        {
-            std::cout << "No format (-f)" << std::endl;
-            return 1;
-        }
-        if( Config.OutputFile == NULL )
-        {
-            std::cout << "No output filename (-f)" << std::endl;
-            return 1;
-        }
-        if( Config.FileFormat == NULL )
-        {
-            std::cout << "No output file format (-ff)" << std::endl;
+            std::cout << "No Server port (-nr server port)" << std::endl;
             return 1;
         }
 
@@ -180,14 +165,9 @@ int RunOperation()
             std::cout << "No inputdevice (-id)" << std::endl;
             return 1;
         }
-        if( Config.Rate == -1 )
+        if( Config.Port == -1 )
         {
-            std::cout << "No rate (-r)" << std::endl;
-            return 1;
-        }
-        if( Config.Format == -1 )
-        {
-            std::cout << "No format (-f)" << std::endl;
+            std::cout << "No Server port (-ns port)" << std::endl;
             return 1;
         }
 
@@ -198,29 +178,9 @@ int RunOperation()
     if( Config.IsSignalGenerator )
     {
         // Verify configuration
-        if( Config.OutputFile == NULL )
-        {
-            std::cout << "No output file format (-ff)" << std::endl;
-            return 1;
-        }
         if( Config.Frequency == 0 )
         {
             std::cout << "Frequency is 0, not possible" << std::endl;
-            return 1;
-        }
-        if( Config.Rate == -1 )
-        {
-            std::cout << "No rate (-r)" << std::endl;
-            return 1;
-        }
-        if( Config.Format == -1 )
-        {
-            std::cout << "No format (-f)" << std::endl;
-            return 1;
-        }
-        if( Config.FileFormat == NULL )
-        {
-            std::cout << "No output file format (-ff)" << std::endl;
             return 1;
         }
 
