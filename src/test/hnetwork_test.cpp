@@ -84,7 +84,7 @@ class HNetwork_Test: public Test
         static void runClient()
         {
             client->Run();
-            sleep(1);
+            //sleep(1);
         }
 
         void test_reading_server_to_writing_client()
@@ -97,7 +97,7 @@ class HNetwork_Test: public Test
             TestReader rdr(expected, 14);
             server = new HNetworkProcessor<int16_t>(1234, &rdr, 14, &terminated);
             std::thread serverThread(runServer);
-            sleep(5);
+            //sleep(1);
             TestWriter wr(received, 14);
             client = new HNetworkProcessor<int16_t>("127.0.0.1", 1234, &wr, 14, &terminated);
             std::thread clientThread(runClient);
@@ -121,7 +121,7 @@ class HNetwork_Test: public Test
             TestWriter wr(received, 14);
             server = new HNetworkProcessor<int16_t>(1235, &wr, 14, &terminated);
             std::thread serverThread(runServer);
-            sleep(5);
+            //sleep(1);
             TestReader rdr(expected, 14);
             client = new HNetworkProcessor<int16_t>("127.0.0.1", 1235, &rdr, 14, &terminated);
             std::thread clientThread(runClient);
