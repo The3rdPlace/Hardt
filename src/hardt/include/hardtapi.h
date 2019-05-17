@@ -25,6 +25,7 @@
 #include "hcosinegenerator.h"
 #include "hvfo.h"
 #include "hstreamprocessor.h"
+#include "hsoundcardwriter.h"
 
 /********************************************************************
 HWriter
@@ -719,5 +720,48 @@ void HStreamProcessor<int16_t>::Run(long unsigned int blocks);
 
 extern template
 void HStreamProcessor<int32_t>::Run(long unsigned int blocks);
+
+/********************************************************************
+HSoundcardWriter
+********************************************************************/
+
+// HSoundcardWriter()
+extern template
+HSoundcardWriter<int8_t>::HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer = DEFAULT_FRAMESIZE);
+
+extern template
+HSoundcardWriter<uint8_t>::HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer = DEFAULT_FRAMESIZE);
+
+extern template
+HSoundcardWriter<int16_t>::HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer = DEFAULT_FRAMESIZE);
+
+extern template
+HSoundcardWriter<int32_t>::HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer = DEFAULT_FRAMESIZE);
+
+// ~HSoundcardWriter()
+extern template
+HSoundcardWriter<int8_t>::~HSoundcardWriter();
+
+extern template
+HSoundcardWriter<uint8_t>::~HSoundcardWriter();
+
+extern template
+HSoundcardWriter<int16_t>::~HSoundcardWriter();
+
+extern template
+HSoundcardWriter<int32_t>::~HSoundcardWriter();
+
+// Read()
+extern template
+int HSoundcardWriter<int8_t>::Write(int8_t* dest, size_t blocksize);
+
+extern template
+int HSoundcardWriter<uint8_t>::Write(uint8_t* dest, size_t blocksize);
+
+extern template
+int HSoundcardWriter<int16_t>::Write(int16_t* dest, size_t blocksize);
+
+extern template
+int HSoundcardWriter<int32_t>::Write(int32_t* dest, size_t blocksize);
 
 #endif

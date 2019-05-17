@@ -38,5 +38,6 @@ Include api function declarations
 #include "hcosinegenerator.cpp"
 #include "hvfo.cpp"
 #include "hstreamprocessor.cpp"
+#include "hsoundcardwriter.cpp"
 
 #endif
