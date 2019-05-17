@@ -1,7 +1,7 @@
 #include <signal.h>
 #include "hardtapi.h"
 
-static bool terminated = false;
+bool terminated = false;
 
 static void signalIntTermHandler (int signal_value)
 {
