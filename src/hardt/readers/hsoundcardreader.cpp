@@ -131,7 +131,7 @@ int HSoundcardReader<T>::Read(T* dest, size_t blocksize)
         T* ptr = &_cbd.buffer[_cbd.rdloc];
         memcpy((void*) dest, (void*) ptr, _cbd.framesize * sizeof(T));
 
-        this->Metrics.BlocksIn += _cbd.framesize;
+        this->Metrics.BlocksIn++;
         this->Metrics.BytesIn += _cbd.framesize * sizeof(T);
 
         // Advance read position to next buffer, if we have read the last buffer,

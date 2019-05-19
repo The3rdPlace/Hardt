@@ -40,7 +40,7 @@ class HSoundcardWriter : public HWriter<T>
 
         HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer = DEFAULT_FRAMESIZE);
         ~HSoundcardWriter();
-        int Write(T* dest, size_t blocksize);
+        int Write(T* src, size_t blocksize);
 
         static int callback( const void *inputBuffer, void *outputBuffer,
                                    unsigned long framesPerBuffer,

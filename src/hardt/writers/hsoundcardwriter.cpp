@@ -42,16 +42,16 @@ HSoundcardWriter<T>::HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channe
     HLog("PortAudio initialized");
 
     // Setup input parameters
-    PaStreamParameters inputParameters;
-    inputParameters.device = device;
-    inputParameters.channelCount = channels;
-    inputParameters.sampleFormat = format;
-    inputParameters.suggestedLatency = Pa_GetDeviceInfo(device)->defaultLowInputLatency ;
-    inputParameters.hostApiSpecificStreamInfo = NULL;
+    PaStreamParameters outputParameters;
+    outputParameters.device = device;
+    outputParameters.channelCount = channels;
+    outputParameters.sampleFormat = format;
+    outputParameters.suggestedLatency = Pa_GetDeviceInfo(device)->defaultLowInputLatency ;
+    outputParameters.hostApiSpecificStreamInfo = NULL;
 
     // Get an input stream
     PaStreamFlags flags = paNoFlag;
-    err = Pa_OpenStream(&_stream, &inputParameters, NULL,
+    err = Pa_OpenStream(&_stream, NULL, &outputParameters,
         rate,
         framesPerBuffer,
         flags,
@@ -63,7 +63,7 @@ HSoundcardWriter<T>::HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channe
         HError("Pa_OpenStream() error: %s", Pa_GetErrorText(err));
     	throw new HInitializationException(Pa_GetErrorText(err));
     }
-    HLog("Got input stream");
+    HLog("Got output stream");
 
     // Ready
     _isInitialized = true;
@@ -98,10 +98,10 @@ HSoundcardWriter<T>::~HSoundcardWriter()
 }
 
 template <class T>
-int HSoundcardWriter<T>::Write(T* dest, size_t blocksize)
+int HSoundcardWriter<T>::Write(T* src, size_t blocksize)
 {
     // Requested blocksize can not be larger than the device blocksize
-    // (actively preventing large reads that would inhibit performance and
+    // (actively preventing large writes that would inhibit performance and
     // responsiveness when working with a synchroneous device such as a soundcard)
     if( blocksize > _cbd.framesize )
     {
@@ -116,40 +116,25 @@ int HSoundcardWriter<T>::Write(T* dest, size_t blocksize)
     }
 
     // Update metrics
-    this->Metrics.Reads++;
+    this->Metrics.Writes++;
 
-    // If read and write position is the same (same buffer), then wait for new samples
-    if( _cbd.wrloc == _cbd.rdloc )
+    // Copy bytes to the next output buffer
+    T* ptr = &_cbd.buffer[_cbd.wrloc];
+    memcpy((void*) ptr, (void*) src, _cbd.framesize * sizeof(T));
+
+    this->Metrics.BlocksOut++;
+    this->Metrics.BytesOut += _cbd.framesize * sizeof(T);
+
+    // Advance write position to next buffer, if we have written the last buffer,
+    // then wrap around to the first buffer.
+    _cbd.wrloc += _cbd.framesize;
+    if( _cbd.wrloc >= (NUMBER_OF_BUFFERS * _cbd.framesize) )
     {
-        std::unique_lock<std::mutex> lck(_cbd.mtx);
-        _cbd.lock.wait(lck);
+        _cbd.wrloc = 0;
     }
 
-    // If we have samples available, then read the next buffer
-    if( _cbd.wrloc != _cbd.rdloc )
-    {
-        T* ptr = &_cbd.buffer[_cbd.rdloc];
-        memcpy((void*) dest, (void*) ptr, _cbd.framesize * sizeof(T));
-
-        this->Metrics.BlocksIn += _cbd.framesize;
-        this->Metrics.BytesIn += _cbd.framesize * sizeof(T);
-
-        // Advance read position to next buffer, if we have read the last buffer,
-        // then wrap around to the first buffer.
-        _cbd.rdloc += _cbd.framesize;
-        if( _cbd.rdloc >= (NUMBER_OF_BUFFERS * _cbd.framesize) )
-        {
-            _cbd.rdloc = 0;
-        }
-
-        // We always reads the entire buffer as given
-        return _cbd.framesize;
-    }
-
-    // No new data available, return zero write.
-    // Most likely, this indicates that we are shutting down (unclean termination)
-    HLog("No data available for read()");
-    return 0;
+    // We always writes the entire buffer as given
+    return _cbd.framesize;
 }
 
 template <class T>
@@ -162,25 +147,33 @@ int HSoundcardWriter<T>::callback( const void *inputBuffer, void *outputBuffer,
     // Cast data passed through stream to our structure.
     CallbackData *data = (CallbackData*) userData;
 
-    // Cast input- and outputbuffers to our specific data type
-    T* src = (T*) inputBuffer;
-    T* dest = (T*) &data->buffer[data->wrloc];
+    // Cast the outputbuffer to our specific data type
+    T* dest = (T*) outputBuffer;
 
-    // Copy new data from the soundcard to the buffer
-    memcpy((void*) dest, (void*) src, framesPerBuffer * sizeof(T));
-
-    // Advance write position to next buffer, if we have written the last buffer,
-    // then wrap around to the first buffer.
-    data->wrloc += data->framesize;
-    if( data->wrloc >= (NUMBER_OF_BUFFERS * data->framesize) )
+    // If read and write position is the same (same buffer), then no new data is
+    // available for the card. There are more than one way to deal with that but the least
+    // obstructive seems to be passing silence to the card
+    T* src;
+    if( data->wrloc == data->rdloc )
     {
-        data->wrloc = 0;
+        memset((void*) dest, 0, framesPerBuffer * sizeof(T));
     }
+    else
+    {
+        // Cast the inputbuffer to our specific data type
+        src = (T*) &data->buffer[data->rdloc];
 
-    // We might have a waiting reader, signal that data is available
-    // Since we are not waiting on the mutext, using it here should be fine.
-    std::unique_lock<std::mutex> lck(data->mtx);
-    data->lock.notify_one();
+        // Copy new data from the buffer to the soundcard
+        memcpy((void*) dest, (void*) src, framesPerBuffer * sizeof(T));
+
+        // Advance write position to next buffer, if we have read the last buffer,
+        // then wrap around to the first buffer.
+        data->rdloc += data->framesize;
+        if( data->rdloc >= (NUMBER_OF_BUFFERS * data->framesize) )
+        {
+            data->rdloc = 0;
+        }
+    }
 
     // Done, continue sampling
     return paContinue;
@@ -195,7 +188,7 @@ bool HSoundcardWriter<T>::Start(void* unused)
         return false;
     }
 
-    HLog("Starting input stream");
+    HLog("Starting output stream");
     PaError err = Pa_StartStream( _stream );
     if( err != paNoError )
     {
@@ -203,7 +196,7 @@ bool HSoundcardWriter<T>::Start(void* unused)
         return false;
     }
     _isStarted = true;
-    HLog("Input stream started");
+    HLog("Output stream started");
     return true;
 }
 
@@ -222,11 +215,11 @@ bool HSoundcardWriter<T>::Stop()
         PaError err = Pa_StopStream( _stream );
         if( err != paNoError )
         {
-            HError("Could not stop input stream: %s", Pa_GetErrorText(err));
+            HError("Could not stop output stream: %s", Pa_GetErrorText(err));
             return false;
         }
         _isStarted = false;
-        HLog("Input stream stopped");
+        HLog("Output stream stopped");
     }
     else
     {
