@@ -1,6 +1,8 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
+#include "hsoundcard.h"
+
 // Settings
 struct DspCmdConfig
 {
@@ -22,8 +24,8 @@ struct DspCmdConfig
 
     int InputDevice = -1; // not implemented
     int OutputDevice = -1;
-    int Rate = -1;
-    int Format = -1;
+    int Rate = H_SAMPLE_RATE_48K;
+    int Format = H_SAMPLE_FORMAT_INT_16;
 
     int Blocksize = 1024;
 

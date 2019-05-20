@@ -79,6 +79,7 @@ bool parseArguments(int argc, char** argv)
             std::cout << "-od device           Output audio device" << std::endl;
             std::cout << "-of name             Name and path of output file" << std::endl;
             std::cout << "-r rate              Sample rate (" << H_SAMPLE_RATE_8K << ", " << H_SAMPLE_RATE_11K << ", " << H_SAMPLE_RATE_22K << ", " << H_SAMPLE_RATE_32K << ", " << H_SAMPLE_RATE_44K1 << ", " << H_SAMPLE_RATE_48K << ", " << H_SAMPLE_RATE_96K << ", " << H_SAMPLE_RATE_192K << ")" << std::endl;
+            std::cout << std::endl;
             std::cout << "-sg frequency phase  Run as signalgenerator" << std::endl;
             std::cout << std::endl;
 
@@ -108,16 +109,19 @@ bool VerifyConfig()
         return true;
     }
 
-    // We need either an output file or device
-    if( Config.OutputFile == NULL && Config.OutputDevice == -1 )
+    // We need either an output file or device, unless the mode is '-a'
+    if( !Config.ShowAudioDevices )
     {
-        std::cout << "No output file or file (-of|-od)" << std::endl;
-        return true;
-    }
-    if( Config.OutputFile != NULL && Config.FileFormat == NULL )
-    {
-        std::cout << "No output file format (-ff)" << std::endl;
-        return true;
+        if( Config.OutputFile == NULL && Config.OutputDevice == -1 )
+        {
+            std::cout << "No output file or file (-of|-od)" << std::endl;
+            return true;
+        }
+        if( Config.OutputFile != NULL && Config.FileFormat == NULL )
+        {
+            std::cout << "No output file format (-ff)" << std::endl;
+            return true;
+        }
     }
 
     return false;
