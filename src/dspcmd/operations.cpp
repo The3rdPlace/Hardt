@@ -76,17 +76,29 @@ int RunSignalGenerator()
 {
     // Create requested writer
     HWriter<T>* wr;
-    if( strcmp(Config.FileFormat, "wav") == 0 )
+    if( Config.OutputDevice != -1 )
     {
-        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+        wr = new HSoundcardWriter<T>(Config.OutputDevice, Config.Rate, 1, Config.Format, Config.Blocksize);
     }
-    else if( strcmp(Config.FileFormat, "file") == 0 )
+    else if ( Config.OutputFile != NULL )
     {
-        wr = new HFileWriter<T>(Config.OutputFile);
+        if( strcmp(Config.FileFormat, "wav") == 0 )
+        {
+            wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+        }
+        else if( strcmp(Config.FileFormat, "file") == 0 )
+        {
+            wr = new HFileWriter<T>(Config.OutputFile);
+        }
+        else
+        {
+            std::cout << "Unknown file format " << Config.FileFormat << std::endl;
+            return -1;
+        }
     }
     else
     {
-        std::cout << "Unknown file format " << Config.FileFormat << std::endl;
+        std::cout << "No output file or device " << std::endl;
         return -1;
     }
 
@@ -99,14 +111,22 @@ int RunSignalGenerator()
     proc.Run(blocks);
 
     // Delete writer
-    if( strcmp(Config.FileFormat, "wav") == 0 )
+    if( Config.OutputDevice != -1 )
     {
-        delete (HWavWriter<T>*) wr;
+        delete (HSoundcardWriter<T>*) wr;
     }
-    else if( strcmp(Config.FileFormat, "file") == 0 )
+    else
     {
-        delete (HFileWriter<T>*) wr;
+        if( strcmp(Config.FileFormat, "wav") == 0 )
+        {
+            delete (HWavWriter<T>*) wr;
+        }
+        else if( strcmp(Config.FileFormat, "file") == 0 )
+        {
+            delete (HFileWriter<T>*) wr;
+        }
     }
+
     return 0;
 }
 
