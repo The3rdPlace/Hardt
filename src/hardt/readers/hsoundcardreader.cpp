@@ -178,7 +178,7 @@ int HSoundcardReader<T>::callback( const void *inputBuffer, void *outputBuffer,
     }
 
     // We might have a waiting reader, signal that data is available
-    // Since we are not waiting on the mutext, using it here should be fine.
+    // Since we are not waiting on the mutex, using it here should be fine.
     std::unique_lock<std::mutex> lck(data->mtx);
     data->lock.notify_one();
 

@@ -118,6 +118,13 @@ int HSoundcardWriter<T>::Write(T* src, size_t blocksize)
     // Update metrics
     this->Metrics.Writes++;
 
+    // If read and write position is the same (same buffer), then wait untill a sample has been taken by the soundcard
+    if( _cbd.wrloc == _cbd.rdloc )
+    {
+        std::unique_lock<std::mutex> lck(_cbd.mtx);
+        _cbd.lock.wait(lck);
+    }
+
     // Copy bytes to the next output buffer
     T* ptr = &_cbd.buffer[_cbd.wrloc];
     memcpy((void*) ptr, (void*) src, _cbd.framesize * sizeof(T));
@@ -147,33 +154,25 @@ int HSoundcardWriter<T>::callback( const void *inputBuffer, void *outputBuffer,
     // Cast data passed through stream to our structure.
     CallbackData *data = (CallbackData*) userData;
 
-    // Cast the outputbuffer to our specific data type
+    // Cast input- and outputbuffers to our specific data type
+    T* src = (T*) &data->buffer[data->rdloc];
     T* dest = (T*) outputBuffer;
 
-    // If read and write position is the same (same buffer), then no new data is
-    // available for the card. There are more than one way to deal with that but the least
-    // obstructive seems to be passing silence to the card
-    T* src;
-    if( data->wrloc == data->rdloc )
-    {
-        memset((void*) dest, 0, framesPerBuffer * sizeof(T));
-    }
-    else
-    {
-        // Cast the inputbuffer to our specific data type
-        src = (T*) &data->buffer[data->rdloc];
+    // Copy new data from the buffer to the soundcard
+    memcpy((void*) dest, (void*) src, framesPerBuffer * sizeof(T));
 
-        // Copy new data from the buffer to the soundcard
-        memcpy((void*) dest, (void*) src, framesPerBuffer * sizeof(T));
-
-        // Advance write position to next buffer, if we have read the last buffer,
-        // then wrap around to the first buffer.
-        data->rdloc += data->framesize;
-        if( data->rdloc >= (NUMBER_OF_BUFFERS * data->framesize) )
-        {
-            data->rdloc = 0;
-        }
+    // Advance write position to next buffer, if we have read the last buffer,
+    // then wrap around to the first buffer.
+    data->rdloc += data->framesize;
+    if( data->rdloc >= (NUMBER_OF_BUFFERS * data->framesize) )
+    {
+        data->rdloc = 0;
     }
+
+    // We might have a waiting writer, signal that data is available
+    // Since we are not waiting on the mutex, using it here should be fine.
+    std::unique_lock<std::mutex> lck(data->mtx);
+    data->lock.notify_one();
 
     // Done, continue sampling
     return paContinue;
