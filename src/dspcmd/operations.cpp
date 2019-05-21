@@ -131,6 +131,46 @@ int RunSignalGenerator()
 }
 
 template <typename T>
+int RunFileRecorder()
+{
+    // Create reader
+    HSoundcardReader<T> rd(Config.InputDevice, Config.Rate, 1, Config.Format, Config.Blocksize);
+
+    // Create writer
+    HWriter<T>* wr;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+    }
+    else if( strcmp(Config.FileFormat, "file") == 0 )
+    {
+        wr = new HFileWriter<T>(Config.OutputFile);
+    }
+    else
+    {
+        std::cout << "Unknown file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+
+    // Create processor
+    HStreamProcessor<T> proc(wr, &rd, Config.Blocksize, &terminated);
+    proc.Run();
+
+    // Delete writer
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        delete (HWavWriter<T>*) wr;
+    }
+    else if( strcmp(Config.FileFormat, "file") == 0 )
+    {
+        delete (HFileWriter<T>*) wr;
+    }
+
+    return 0;
+}
+
+template <typename T>
 int RunFilePlayer()
 {
     // Create reader
@@ -244,6 +284,29 @@ int RunOperation()
         }
 
         return RunSignalGenerator<T>();
+    }
+
+    // Record to a local file
+    if( Config.IsFileRecorder )
+    {
+        // Verify configuration
+        if( Config.InputDevice == -1 )
+        {
+            std::cout << "No input device (-id)" << std::endl;
+            return -1;
+        }
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file (-of)" << std::endl;
+            return -1;
+        }
+        if( Config.FileFormat == NULL )
+        {
+            std::cout << "No output file format (-ff)" << std::endl;
+            return -1;
+        }
+
+        return RunFileRecorder<T>();
     }
 
     // Play a local file

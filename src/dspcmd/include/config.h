@@ -13,6 +13,7 @@ struct DspCmdConfig
     bool IsNetworkWriterServer = false;
     bool IsSignalGenerator = false;
     bool IsFilePlayer = false;
+    bool IsFileRecorder = false;
 
     int Port = 8080;
     char *Address = NULL;

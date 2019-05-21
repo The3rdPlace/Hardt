@@ -33,6 +33,7 @@ bool parseArguments(int argc, char** argv)
         Config.Verbose = argBoolCmp(argv[argNo], "-v", Config.Verbose);
         Config.ShowAudioDevices = argBoolCmp(argv[argNo], "-a", Config.ShowAudioDevices);
 
+        Config.IsFileRecorder = argBoolCmp(argv[argNo], "-rf", Config.IsFileRecorder);
         Config.IsFilePlayer = argBoolCmp(argv[argNo], "-pf", Config.IsFilePlayer);
 
         if( argNo < argc - 1)
@@ -93,6 +94,7 @@ bool parseArguments(int argc, char** argv)
             std::cout << "-ns port             Run as network server, reading from a local reader and writing to the network" << std::endl;
             std::cout << std::endl;
 
+            std::cout << "-rf                  Record file" << std::endl;
             std::cout << "-pf                  Play file" << std::endl;
 
             // Force exit
