@@ -87,7 +87,7 @@ bool parseArguments(int argc, char** argv)
             std::cout << "-of name             Name and path of output file" << std::endl;
             std::cout << "-r rate              Sample rate (" << H_SAMPLE_RATE_8K << ", " << H_SAMPLE_RATE_11K << ", " << H_SAMPLE_RATE_22K << ", " << H_SAMPLE_RATE_32K << ", " << H_SAMPLE_RATE_44K1 << ", " << H_SAMPLE_RATE_48K << ", " << H_SAMPLE_RATE_96K << ", " << H_SAMPLE_RATE_192K << ")" << std::endl;
             std::cout << std::endl;
-            std::cout << "-sg frequency phase(0-360) duration(sec.)  Run as signalgenerator" << std::endl;
+            std::cout << "-sg freq phase sec   Run as signalgenerator" << std::endl;
             std::cout << std::endl;
 
             std::cout << "-nc server port      Run as network client, reading from the network and writing to a local writer" << std::endl;
