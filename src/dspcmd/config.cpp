@@ -56,11 +56,15 @@ bool parseArguments(int argc, char** argv)
             Config.IsNetworkReaderClient = argBoolCmp(argv[argNo], "-cr", Config.IsNetworkReaderClient);
             Config.Address = argCharCmp(argv[argNo], "-nc", argv[argNo + 1], Config.Address);
             Config.Port = argIntCmp(argv[argNo], "-nc", argv[argNo + 2], Config.Port);
+        }
 
+        if( argNo < argc - 3 )
+        {
             Config.IsSignalGenerator = argBoolCmp(argv[argNo], "-sg", Config.IsSignalGenerator);
             Config.Frequency = argIntCmp(argv[argNo], "-sg", argv[argNo + 1], Config.Frequency);
             PhaseIntValue = argIntCmp(argv[argNo], "-sg", argv[argNo + 2], PhaseIntValue);
             Config.Phase = ((float) PhaseIntValue / 360) * 2 * M_PI;
+            Config.Duration = argIntCmp(argv[argNo], "-sg", argv[argNo + 3], Config.Duration);
         }
 
         if( argBoolCmp(argv[argNo], "-h", false) )
@@ -80,11 +84,14 @@ bool parseArguments(int argc, char** argv)
             std::cout << "-of name             Name and path of output file" << std::endl;
             std::cout << "-r rate              Sample rate (" << H_SAMPLE_RATE_8K << ", " << H_SAMPLE_RATE_11K << ", " << H_SAMPLE_RATE_22K << ", " << H_SAMPLE_RATE_32K << ", " << H_SAMPLE_RATE_44K1 << ", " << H_SAMPLE_RATE_48K << ", " << H_SAMPLE_RATE_96K << ", " << H_SAMPLE_RATE_192K << ")" << std::endl;
             std::cout << std::endl;
-            std::cout << "-sg frequency phase  Run as signalgenerator" << std::endl;
+            std::cout << "-sg frequency phase(0-360) duration(sec.)  Run as signalgenerator" << std::endl;
             std::cout << std::endl;
 
             std::cout << "-nc server port      Run as network client, reading from the network and writing to a local writer" << std::endl;
             std::cout << "-ns port             Run as network server, reading from a local reader and writing to the network" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "-pf                  Play file" << std::endl;
 
             // Force exit
             return true;
@@ -114,7 +121,7 @@ bool VerifyConfig()
     {
         if( Config.OutputFile == NULL && Config.OutputDevice == -1 )
         {
-            std::cout << "No output file or file (-of|-od)" << std::endl;
+            std::cout << "No output file or device (-of|-od)" << std::endl;
             return true;
         }
         if( Config.OutputFile != NULL && Config.FileFormat == NULL )

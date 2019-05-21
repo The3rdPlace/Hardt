@@ -10,10 +10,9 @@ struct DspCmdConfig
     bool ShowAudioDevices = false;
 
     bool IsNetworkReaderClient = false;
-    bool IsNetworkWriterClient = false; // not implemented
-    bool IsNetworkReaderServer = false; // not implemented
     bool IsNetworkWriterServer = false;
     bool IsSignalGenerator = false;
+    bool IsFilePlayer = false;
 
     int Port = 8080;
     char *Address = NULL;
@@ -29,8 +28,9 @@ struct DspCmdConfig
 
     int Blocksize = 1024;
 
-    int Frequency;
-    float Phase;
+    int Frequency = 1000;
+    float Phase = 0;
+    int Duration = 10;
 };
 
 extern DspCmdConfig Config;

@@ -98,12 +98,12 @@ int RunSignalGenerator()
     }
     else
     {
-        std::cout << "No output file or device " << std::endl;
+        std::cout << "No output file or device" << std::endl;
         return -1;
     }
 
     // Calculate how many blocks fit into 10 seconds
-    unsigned long int blocks = (10 * Config.Rate) / Config.Blocksize;
+    unsigned long int blocks = (Config.Duration * Config.Rate) / Config.Blocksize;
 
     // Create and run the signalgenerator
     HVfo<T> sg(Config.Rate, Config.Frequency, (T) 15000, Config.Phase);
@@ -125,6 +125,47 @@ int RunSignalGenerator()
         {
             delete (HFileWriter<T>*) wr;
         }
+    }
+
+    return 0;
+}
+
+template <typename T>
+int RunFilePlayer()
+{
+    // We need an output device and an input file
+
+    // Create reader
+    HReader<T>* rd;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        rd = new HWavReader<T>(Config.InputFile);
+    }
+    else if( strcmp(Config.FileFormat, "file") == 0 )
+    {
+        rd = new HFileReader<T>(Config.InputFile);
+    }
+    else
+    {
+        std::cout << "Unknown file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+    // Create writer
+    HSoundcardWriter<T> wr(Config.OutputDevice, Config.Rate, 1, Config.Format, Config.Blocksize);
+
+    // Create processor
+    HStreamProcessor<T> proc(&wr, rd, Config.Blocksize, &terminated);
+    proc.Run();
+
+    // Delete reader
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        delete (HWavReader<T>*) rd;
+    }
+    else if( strcmp(Config.FileFormat, "file") == 0 )
+    {
+        delete (HFileReader<T>*) rd;
     }
 
     return 0;
@@ -205,6 +246,24 @@ int RunOperation()
         }
 
         return RunSignalGenerator<T>();
+    }
+
+    // Play a local file
+    if( Config.IsFilePlayer )
+    {
+        // Verify configuration
+        if( Config.OutputDevice == -1 )
+        {
+            std::cout << "No output device" << std::endl;
+            return -1;
+        }
+        if( Config.InputFile == NULL )
+        {
+            std::cout << "No input file" << std::endl;
+            return -1;
+        }
+
+        return RunFilePlayer<T>();
     }
 
     // No known operation could be determined from the input arguments
