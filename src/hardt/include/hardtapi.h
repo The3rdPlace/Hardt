@@ -12,6 +12,7 @@
 #include "hreader.h"
 #include "hprocessor.h"
 #include "hgenerator.h"
+#include "hconverter.h"
 
 #include "hfilewriter.h"
 #include "hfilereader.h"
