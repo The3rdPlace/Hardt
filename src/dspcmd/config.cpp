@@ -120,20 +120,5 @@ bool VerifyConfig()
         return true;
     }
 
-    // We need either an output file or device, unless the mode is '-a'
-    if( !Config.ShowAudioDevices )
-    {
-        if( Config.OutputFile == NULL && Config.OutputDevice == -1 )
-        {
-            std::cout << "No output file or device (-of|-od)" << std::endl;
-            return true;
-        }
-        if( Config.OutputFile != NULL && Config.FileFormat == NULL )
-        {
-            std::cout << "No output file format (-ff)" << std::endl;
-            return true;
-        }
-    }
-
     return false;
 }

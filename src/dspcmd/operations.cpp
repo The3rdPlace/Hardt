@@ -251,6 +251,16 @@ int RunOperation()
             std::cout << "No Server port (-nr server port)" << std::endl;
             return 1;
         }
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file (-of)" << std::endl;
+            return true;
+        }
+        if( Config.FileFormat == NULL )
+        {
+            std::cout << "No output file format (-ff)" << std::endl;
+            return true;
+        }
 
         return RunNetworkReaderClient<T>();
     }
@@ -281,6 +291,16 @@ int RunOperation()
         {
             std::cout << "Frequency is 0, not possible" << std::endl;
             return 1;
+        }
+        if( Config.OutputFile == NULL && Config.OutputDevice == -1 )
+        {
+            std::cout << "No output file or device (-of|-od)" << std::endl;
+            return true;
+        }
+        if( Config.OutputFile != NULL && Config.FileFormat == NULL )
+        {
+            std::cout << "No output file format (-ff)" << std::endl;
+            return true;
         }
 
         return RunSignalGenerator<T>();
