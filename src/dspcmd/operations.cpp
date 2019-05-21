@@ -133,8 +133,6 @@ int RunSignalGenerator()
 template <typename T>
 int RunFilePlayer()
 {
-    // We need an output device and an input file
-
     // Create reader
     HReader<T>* rd;
     if( strcmp(Config.FileFormat, "wav") == 0 )
@@ -254,12 +252,17 @@ int RunOperation()
         // Verify configuration
         if( Config.OutputDevice == -1 )
         {
-            std::cout << "No output device" << std::endl;
+            std::cout << "No output device (-od)" << std::endl;
             return -1;
         }
         if( Config.InputFile == NULL )
         {
-            std::cout << "No input file" << std::endl;
+            std::cout << "No input file (-if)" << std::endl;
+            return -1;
+        }
+        if( Config.FileFormat == NULL )
+        {
+            std::cout << "No input file format (-ff)" << std::endl;
             return -1;
         }
 

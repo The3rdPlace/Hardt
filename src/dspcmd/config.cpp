@@ -33,6 +33,8 @@ bool parseArguments(int argc, char** argv)
         Config.Verbose = argBoolCmp(argv[argNo], "-v", Config.Verbose);
         Config.ShowAudioDevices = argBoolCmp(argv[argNo], "-a", Config.ShowAudioDevices);
 
+        Config.IsFilePlayer = argBoolCmp(argv[argNo], "-pf", Config.IsFilePlayer);
+
         if( argNo < argc - 1)
         {
             Config.InputFile = argCharCmp(argv[argNo], "-if", argv[argNo + 1], Config.InputFile);
