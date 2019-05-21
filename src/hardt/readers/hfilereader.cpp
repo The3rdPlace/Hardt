@@ -21,7 +21,7 @@ int HFileReader<T>::Read(T* dest, size_t blocksize)
         HLog("At eof. Returning zero read");
         return 0;
     }
-    
+
     // Read next chunk
     this->Metrics.Reads++;
     _stream.read((char*) dest, blocksize * sizeof(T));
