@@ -16,7 +16,7 @@ class HWavWriter : public HWav, public HFileWriter<T>
             _size(0)
         {}
 
-        bool Start(void* unused);
+        bool Start();
 
         bool Stop();
 

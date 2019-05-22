@@ -58,9 +58,9 @@ int HProcessor<T>::Write(T* src, int blocksize)
 }
 
 template <class T>
-bool HProcessor<T>::Start(void* data)
+bool HProcessor<T>::Start()
 {
-    return _writer->Start(data) && _reader->Start(data);
+    return _writer->Start() && _reader->Start();
 }
 
 template <class T>
@@ -82,11 +82,11 @@ void HProcessor<T>::SetWriter(HWriter<T>* writer)
 }
 
 template <class T>
-void HProcessor<T>::Run(void* startData, long unsigned int blocks)
+void HProcessor<T>::Run(long unsigned int blocks)
 {
     // Start reader and writer - some readers/writers have start/stop handling
     HLog("Starting reader and writer");
-    if( !HProcessor<T>::Start(startData) )
+    if( !HProcessor<T>::Start() )
     {
         HError("Failed to Start() reader or writer");
         return;
@@ -235,16 +235,16 @@ int HProcessor<int32_t>::Write(int32_t* src, int blocksize);
 
 // Start()
 template
-bool HProcessor<int8_t>::Start(void* data);
+bool HProcessor<int8_t>::Start();
 
 template
-bool HProcessor<uint8_t>::Start(void* data);
+bool HProcessor<uint8_t>::Start();
 
 template
-bool HProcessor<int16_t>::Start(void* data);
+bool HProcessor<int16_t>::Start();
 
 template
-bool HProcessor<int32_t>::Start(void* data);
+bool HProcessor<int32_t>::Start();
 
 // Stop()
 template
@@ -261,16 +261,16 @@ bool HProcessor<int32_t>::Stop();
 
 // Run()
 template
-void HProcessor<int8_t>::Run(void* startData, long unsigned int blocks);
+void HProcessor<int8_t>::Run(long unsigned int blocks);
 
 template
-void HProcessor<uint8_t>::Run(void* startData, long unsigned int blocks);
+void HProcessor<uint8_t>::Run(long unsigned int blocks);
 
 template
-void HProcessor<int16_t>::Run(void* startData, long unsigned int blocks);
+void HProcessor<int16_t>::Run(long unsigned int blocks);
 
 template
-void HProcessor<int32_t>::Run(void* startData, long unsigned int blocks);
+void HProcessor<int32_t>::Run(long unsigned int blocks);
 
 // Halt()
 template

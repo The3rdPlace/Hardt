@@ -283,7 +283,9 @@ void HNetworkProcessor<T>::RunClient()
 template <class T>
 void HNetworkProcessor<T>::RunProcessor()
 {
-    HProcessor<T>::Run(&_clientSocket);
+    _networkReader.SetSocket(_clientSocket);
+    _networkWriter.SetSocket(_clientSocket);
+    HProcessor<T>::Run();
 }
 
 template <class T>

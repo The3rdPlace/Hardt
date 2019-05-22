@@ -8,7 +8,7 @@ class HWriter : public HObject
 
         virtual int Write(T* src, size_t blocksize) = 0;
 
-        virtual bool Start(void* data);
+        virtual bool Start();
         virtual bool Stop();
 };
 

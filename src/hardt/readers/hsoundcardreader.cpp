@@ -187,7 +187,7 @@ int HSoundcardReader<T>::callback( const void *inputBuffer, void *outputBuffer,
 }
 
 template <class T>
-bool HSoundcardReader<T>::Start(void* unused)
+bool HSoundcardReader<T>::Start()
 {
     if( !_isInitialized )
     {

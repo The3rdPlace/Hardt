@@ -37,7 +37,7 @@ void HFileReader<T>::Seek(int bytes)
 }
 
 template <class T>
-bool HFileReader<T>::Start(void* data)
+bool HFileReader<T>::Start()
 {
     HLog("Trying to open stream for %s", _filename);
     _stream.open(_filename, std::ios::binary);
@@ -77,16 +77,16 @@ HFileReader<int32_t>::HFileReader(const char* path);
 
 // Start()
 template
-bool HFileReader<int8_t>::Start(void* data);
+bool HFileReader<int8_t>::Start();
 
 template
-bool HFileReader<uint8_t>::Start(void* data);
+bool HFileReader<uint8_t>::Start();
 
 template
-bool HFileReader<int16_t>::Start(void* data);
+bool HFileReader<int16_t>::Start();
 
 template
-bool HFileReader<int32_t>::Start(void* data);
+bool HFileReader<int32_t>::Start();
 
 // Stop()
 template

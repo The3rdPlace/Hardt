@@ -17,7 +17,7 @@ class HProcessor : public HObject
 
     private:
 
-        bool Start(void* data);
+        bool Start();
 
         bool Stop();
 
@@ -41,7 +41,7 @@ class HProcessor : public HObject
 
         HWriter<T>* GetWriter();
 
-        virtual void Run(void* startData, long unsigned int blocks = 0);
+        virtual void Run(long unsigned int blocks = 0);
 
         virtual void Halt();
 };

@@ -12,8 +12,12 @@ class HNetworkReader : public HReader<T>
 
     public:
 
+        HNetworkReader();
+        HNetworkReader(int socket);
+
+        void SetSocket(int socket);
+
         int Read(T* dest, size_t blocksize);
-        bool Start(void* socket);
 };
 
 #endif

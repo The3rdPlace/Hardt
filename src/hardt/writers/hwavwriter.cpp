@@ -8,11 +8,11 @@ Class implementation
 ********************************************************************/
 
 template <class T>
-bool HWavWriter<T>::Start(void* unused)
+bool HWavWriter<T>::Start()
 {
     // Call parent Start()
     HLog("Starting underlying HFileWriter");
-    if( !HFileWriter<T>::Start(unused) )
+    if( !HFileWriter<T>::Start() )
     {
         HError("Failed to start underlying HFileWriter");
         return false;
@@ -75,16 +75,16 @@ HWavWriter<int32_t>::HWavWriter(const char* filename, H_SAMPLE_FORMAT format, in
 
 // Start()
 template
-bool HWavWriter<int8_t>::Start(void* unused);
+bool HWavWriter<int8_t>::Start();
 
 template
-bool HWavWriter<uint8_t>::Start(void* unused);
+bool HWavWriter<uint8_t>::Start();
 
 template
-bool HWavWriter<int16_t>::Start(void* unused);
+bool HWavWriter<int16_t>::Start();
 
 template
-bool HWavWriter<int32_t>::Start(void* unused);
+bool HWavWriter<int32_t>::Start();
 
 // Stop()
 template

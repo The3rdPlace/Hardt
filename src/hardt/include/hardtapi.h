@@ -34,16 +34,16 @@ HWriter
 
 // Start()
 extern template
-bool HWriter<int8_t>::Start(void* data);
+bool HWriter<int8_t>::Start();
 
 extern template
-bool HWriter<uint8_t>::Start(void* data);
+bool HWriter<uint8_t>::Start();
 
 extern template
-bool HWriter<int16_t>::Start(void* data);
+bool HWriter<int16_t>::Start();
 
 extern template
-bool HWriter<int32_t>::Start(void* data);
+bool HWriter<int32_t>::Start();
 
 // Stop()
 extern template
@@ -77,16 +77,16 @@ HFileWriter<int32_t>::HFileWriter(const char* path);
 
 // Start()
 extern template
-bool HFileWriter<int8_t>::Start(void* data);
+bool HFileWriter<int8_t>::Start();
 
 extern template
-bool HFileWriter<uint8_t>::Start(void* data);
+bool HFileWriter<uint8_t>::Start();
 
 extern template
-bool HFileWriter<int16_t>::Start(void* data);
+bool HFileWriter<int16_t>::Start();
 
 extern template
-bool HFileWriter<int32_t>::Start(void* data);
+bool HFileWriter<int32_t>::Start();
 
 // Stop()
 extern template
@@ -133,16 +133,16 @@ HFileReader<int32_t>::HFileReader(const char* path);
 
 // Start()
 extern template
-bool HFileReader<int8_t>::Start(void* data);
+bool HFileReader<int8_t>::Start();
 
 extern template
-bool HFileReader<uint8_t>::Start(void* data);
+bool HFileReader<uint8_t>::Start();
 
 extern template
-bool HFileReader<int16_t>::Start(void* data);
+bool HFileReader<int16_t>::Start();
 
 extern template
-bool HFileReader<int32_t>::Start(void* data);
+bool HFileReader<int32_t>::Start();
 
 // Stop()
 extern template
@@ -189,16 +189,16 @@ HWavWriter<int32_t>::HWavWriter(const char* filename, H_SAMPLE_FORMAT format, in
 
 // Start()
 extern template
-bool HWavWriter<int8_t>::Start(void* unused);
+bool HWavWriter<int8_t>::Start();
 
 extern template
-bool HWavWriter<uint8_t>::Start(void* unused);
+bool HWavWriter<uint8_t>::Start();
 
 extern template
-bool HWavWriter<int16_t>::Start(void* unused);
+bool HWavWriter<int16_t>::Start();
 
 extern template
-bool HWavWriter<int32_t>::Start(void* unused);
+bool HWavWriter<int32_t>::Start();
 
 // Stop()
 extern template
@@ -245,20 +245,58 @@ HWavReader<int32_t>::HWavReader(const char* filename);
 
 // Start()
 extern template
-bool HWavReader<int8_t>::Start(void* unused);
+bool HWavReader<int8_t>::Start();
 
 extern template
-bool HWavReader<uint8_t>::Start(void* unused);
+bool HWavReader<uint8_t>::Start();
 
 extern template
-bool HWavReader<int16_t>::Start(void* unused);
+bool HWavReader<int16_t>::Start();
 
 extern template
-bool HWavReader<int32_t>::Start(void* unused);
+bool HWavReader<int32_t>::Start();
 
 /********************************************************************
 HNetworkWriter
 ********************************************************************/
+
+// HNetworkWriter
+extern template
+HNetworkWriter<int8_t>::HNetworkWriter();
+
+extern template
+HNetworkWriter<uint8_t>::HNetworkWriter();
+
+extern template
+HNetworkWriter<int16_t>::HNetworkWriter();
+
+extern template
+HNetworkWriter<int32_t>::HNetworkWriter();
+
+extern template
+HNetworkWriter<int8_t>::HNetworkWriter(int socket);
+
+extern template
+HNetworkWriter<uint8_t>::HNetworkWriter(int socket);
+
+extern template
+HNetworkWriter<int16_t>::HNetworkWriter(int socket);
+
+extern template
+HNetworkWriter<int32_t>::HNetworkWriter(int socket);
+
+// SetSocket()
+extern template
+void HNetworkReader<int8_t>::SetSocket(int socket);
+
+extern template
+void HNetworkReader<uint8_t>::SetSocket(int socket);
+
+extern template
+void HNetworkReader<int16_t>::SetSocket(int socket);
+
+extern template
+void HNetworkReader<int32_t>::SetSocket(int socket);
 
 // Write()
 extern template
@@ -273,22 +311,47 @@ int HNetworkWriter<int16_t>::Write(int16_t* src, size_t blocksize);
 extern template
 int HNetworkWriter<int32_t>::Write(int32_t* src, size_t blocksize);
 
-// Start()
-extern template
-bool HNetworkWriter<int8_t>::Start(void* socket);
-
-extern template
-bool HNetworkWriter<uint8_t>::Start(void* socket);
-
-extern template
-bool HNetworkWriter<int16_t>::Start(void* socket);
-
-extern template
-bool HNetworkWriter<int32_t>::Start(void* socket);
-
 /********************************************************************
 HNetworkReader
 ********************************************************************/
+
+// HNetworkReader
+extern template
+HNetworkReader<int8_t>::HNetworkReader();
+
+extern template
+HNetworkReader<uint8_t>::HNetworkReader();
+
+extern template
+HNetworkReader<int16_t>::HNetworkReader();
+
+extern template
+HNetworkReader<int32_t>::HNetworkReader();
+
+extern template
+HNetworkReader<int8_t>::HNetworkReader(int socket);
+
+extern template
+HNetworkReader<uint8_t>::HNetworkReader(int socket);
+
+extern template
+HNetworkReader<int16_t>::HNetworkReader(int socket);
+
+extern template
+HNetworkReader<int32_t>::HNetworkReader(int socket);
+
+// SetSocket()
+extern template
+void HNetworkReader<int8_t>::SetSocket(int socket);
+
+extern template
+void HNetworkReader<uint8_t>::SetSocket(int socket);
+
+extern template
+void HNetworkReader<int16_t>::SetSocket(int socket);
+
+extern template
+void HNetworkReader<int32_t>::SetSocket(int socket);
 
 // Read()
 extern template
@@ -305,16 +368,16 @@ int HNetworkReader<int32_t>::Read(int32_t* dest, size_t blocksize);
 
 // Start()
 extern template
-bool HNetworkReader<int8_t>::Start(void* socket);
+bool HNetworkReader<int8_t>::Start();
 
 extern template
-bool HNetworkReader<uint8_t>::Start(void* socket);
+bool HNetworkReader<uint8_t>::Start();
 
 extern template
-bool HNetworkReader<int16_t>::Start(void* socket);
+bool HNetworkReader<int16_t>::Start();
 
 extern template
-bool HNetworkReader<int32_t>::Start(void* socket);
+bool HNetworkReader<int32_t>::Start();
 
 /********************************************************************
 HSoundcardReader
@@ -417,16 +480,16 @@ int HProcessor<int32_t>::Write(int32_t* src, int blocksize);
 
 // Start()
 extern template
-bool HProcessor<int8_t>::Start(void* data);
+bool HProcessor<int8_t>::Start();
 
 extern template
-bool HProcessor<uint8_t>::Start(void* data);
+bool HProcessor<uint8_t>::Start();
 
 extern template
-bool HProcessor<int16_t>::Start(void* data);
+bool HProcessor<int16_t>::Start();
 
 extern template
-bool HProcessor<int32_t>::Start(void* data);
+bool HProcessor<int32_t>::Start();
 
 // Stop()
 extern template
@@ -443,16 +506,16 @@ bool HProcessor<int32_t>::Stop();
 
 // Run()
 extern template
-void HProcessor<int8_t>::Run(void* startData, long unsigned int blocks);
+void HProcessor<int8_t>::Run(long unsigned int blocks);
 
 extern template
-void HProcessor<uint8_t>::Run(void* startData, long unsigned int blocks);
+void HProcessor<uint8_t>::Run(long unsigned int blocks);
 
 extern template
-void HProcessor<int16_t>::Run(void* startData, long unsigned int blocks);
+void HProcessor<int16_t>::Run(long unsigned int blocks);
 
 extern template
-void HProcessor<int32_t>::Run(void* startData, long unsigned int blocks);
+void HProcessor<int32_t>::Run(long unsigned int blocks);
 
 // Halt()
 extern template

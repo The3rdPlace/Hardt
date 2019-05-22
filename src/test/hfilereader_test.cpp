@@ -42,7 +42,7 @@ class HFileReader_Test: public Test
 
             int8_t result[datalen];
             HFileReader<int8_t> *rd = new HFileReader<int8_t>("/tmp/hfilereader_int8_data.txt");
-            rd->Start(NULL);
+            rd->Start();
             ASSERT_IS_EQUAL(rd->Read(result, datalen), datalen);
             rd->Stop();
             delete rd;
@@ -71,7 +71,7 @@ class HFileReader_Test: public Test
 
             uint8_t result[datalen];
             HFileReader<uint8_t> *rd = new HFileReader<uint8_t>("/tmp/hfilereader_uint8_data.txt");
-            rd->Start(NULL);
+            rd->Start();
             ASSERT_IS_EQUAL(rd->Read(result, datalen), datalen);
             rd->Stop();
             delete rd;
@@ -99,7 +99,7 @@ class HFileReader_Test: public Test
 
             int16_t result[datalen];
             HFileReader<int16_t> *rd = new HFileReader<int16_t>("/tmp/hfilereader_int16_data.txt");
-            rd->Start(NULL);
+            rd->Start();
             ASSERT_IS_EQUAL(rd->Read(result, datalen), datalen);
             rd->Stop();
             delete rd;

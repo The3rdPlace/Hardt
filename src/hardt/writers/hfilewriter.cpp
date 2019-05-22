@@ -29,7 +29,7 @@ void HFileWriter<T>::Seek(int bytes)
 }
 
 template <class T>
-bool HFileWriter<T>::Start(void* data)
+bool HFileWriter<T>::Start()
 {
     HLog("Trying to open stream for %s", _filename);
     _stream.open(_filename, std::ios::out | std::ios::binary | std::ios::trunc);
@@ -69,16 +69,16 @@ HFileWriter<int32_t>::HFileWriter(const char* path);
 
 // Start()
 template
-bool HFileWriter<int8_t>::Start(void* data);
+bool HFileWriter<int8_t>::Start();
 
 template
-bool HFileWriter<uint8_t>::Start(void* data);
+bool HFileWriter<uint8_t>::Start();
 
 template
-bool HFileWriter<int16_t>::Start(void* data);
+bool HFileWriter<int16_t>::Start();
 
 template
-bool HFileWriter<int32_t>::Start(void* data);
+bool HFileWriter<int32_t>::Start();
 
 // Stop()
 template

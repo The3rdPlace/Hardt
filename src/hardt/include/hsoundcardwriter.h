@@ -33,7 +33,7 @@ class HSoundcardWriter : public HWriter<T>
 
         // Implement Start() and Stop() so that we can start sampling whe
         // data is needed, and stop again when the reader is no longer active
-        bool Start(void* unused);
+        bool Start();
         bool Stop();
 
     public:

@@ -14,8 +14,12 @@ class HNetworkWriter : public HWriter<T>
 
     public:
 
+        HNetworkWriter();
+        HNetworkWriter(int socket);
+
+        void SetSocket(int socket);
+
         int Write(T* src, size_t blocksize);
-        bool Start(void* socket);
 };
 
 #endif

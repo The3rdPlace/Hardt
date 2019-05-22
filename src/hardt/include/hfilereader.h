@@ -13,7 +13,7 @@ class HFileReader : public HReader<T>
 
         HFileReader(const char* filename);
         virtual int Read(T* dest, size_t blocksize);
-        bool Start(void* data);
+        bool Start();
         bool Stop();
 
         void Seek(int bytes);

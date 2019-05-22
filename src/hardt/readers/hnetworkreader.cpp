@@ -8,6 +8,22 @@ Class implementation
 ********************************************************************/
 
 template <class T>
+HNetworkReader<T>::HNetworkReader():
+    _socket(-1)
+{}
+
+template <class T>
+HNetworkReader<T>::HNetworkReader(int socket):
+    _socket(socket)
+{}
+
+template <class T>
+void HNetworkReader<T>::SetSocket(int socket)
+{
+    _socket = socket;
+}
+
+template <class T>
 int HNetworkReader<T>::Read(T* dest, size_t blocksize)
 {
     // Read data
@@ -25,16 +41,47 @@ int HNetworkReader<T>::Read(T* dest, size_t blocksize)
     return in / sizeof(T);
 }
 
-template <class T>
-bool HNetworkReader<T>::Start(void* socket)
-{
-    _socket = *((int*) socket);
-    return true;
-}
-
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+
+// HNetworkReader
+template
+HNetworkReader<int8_t>::HNetworkReader();
+
+template
+HNetworkReader<uint8_t>::HNetworkReader();
+
+template
+HNetworkReader<int16_t>::HNetworkReader();
+
+template
+HNetworkReader<int32_t>::HNetworkReader();
+
+template
+HNetworkReader<int8_t>::HNetworkReader(int socket);
+
+template
+HNetworkReader<uint8_t>::HNetworkReader(int socket);
+
+template
+HNetworkReader<int16_t>::HNetworkReader(int socket);
+
+template
+HNetworkReader<int32_t>::HNetworkReader(int socket);
+
+// SetSocket()
+template
+void HNetworkReader<int8_t>::SetSocket(int socket);
+
+template
+void HNetworkReader<uint8_t>::SetSocket(int socket);
+
+template
+void HNetworkReader<int16_t>::SetSocket(int socket);
+
+template
+void HNetworkReader<int32_t>::SetSocket(int socket);
 
 // Read()
 template
@@ -48,18 +95,5 @@ int HNetworkReader<int16_t>::Read(int16_t* dest, size_t blocksize);
 
 template
 int HNetworkReader<int32_t>::Read(int32_t* dest, size_t blocksize);
-
-// Start()
-template
-bool HNetworkReader<int8_t>::Start(void* socket);
-
-template
-bool HNetworkReader<uint8_t>::Start(void* socket);
-
-template
-bool HNetworkReader<int16_t>::Start(void* socket);
-
-template
-bool HNetworkReader<int32_t>::Start(void* socket);
 
 #endif

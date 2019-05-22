@@ -16,7 +16,7 @@ class HFileWriter : public HWriter<T>
 
         HFileWriter(const char* filename);
         virtual int Write(T* src, size_t blocksize);
-        bool Start(void* data);
+        bool Start();
         bool Stop();
 
         void Seek(int bytes);

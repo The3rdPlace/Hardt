@@ -8,7 +8,7 @@ class HWavReader : public HWav, public HFileReader<T>
 
         HWavReader(const char* filename);
 
-        bool Start(void* unused);
+        bool Start();
 };
 
 #endif

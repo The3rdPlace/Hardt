@@ -4,7 +4,7 @@
 #include "hwriter.h"
 
 template <class T>
-bool HWriter<T>::Start(void* data)
+bool HWriter<T>::Start()
 {
     return true;
 }
@@ -21,16 +21,16 @@ Explicit instantiation
 
 // Start()
 template
-bool HWriter<int8_t>::Start(void* data);
+bool HWriter<int8_t>::Start();
 
 template
-bool HWriter<uint8_t>::Start(void* data);
+bool HWriter<uint8_t>::Start();
 
 template
-bool HWriter<int16_t>::Start(void* data);
+bool HWriter<int16_t>::Start();
 
 template
-bool HWriter<int32_t>::Start(void* data);
+bool HWriter<int32_t>::Start();
 
 // Stop()
 template

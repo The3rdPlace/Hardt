@@ -179,7 +179,7 @@ int HSoundcardWriter<T>::callback( const void *inputBuffer, void *outputBuffer,
 }
 
 template <class T>
-bool HSoundcardWriter<T>::Start(void* unused)
+bool HSoundcardWriter<T>::Start()
 {
     if( !_isInitialized )
     {

@@ -10,9 +10,9 @@ HWavReader<T>::HWavReader(const char* filename):
 {}
 
 template <class T>
-bool HWavReader<T>::Start(void* unused)
+bool HWavReader<T>::Start()
 {
-    return HFileReader<T>::Start(unused) && HFileReader<T>::Read((T*) &_header, 44 / sizeof(T)) == 44 / sizeof(T);
+    return HFileReader<T>::Start() && HFileReader<T>::Read((T*) &_header, 44 / sizeof(T)) == 44 / sizeof(T);
 }
 
 /********************************************************************
@@ -34,15 +34,15 @@ HWavReader<int32_t>::HWavReader(const char* filename);
 
 // Start()
 template
-bool HWavReader<int8_t>::Start(void* unused);
+bool HWavReader<int8_t>::Start();
 
 template
-bool HWavReader<uint8_t>::Start(void* unused);
+bool HWavReader<uint8_t>::Start();
 
 template
-bool HWavReader<int16_t>::Start(void* unused);
+bool HWavReader<int16_t>::Start();
 
 template
-bool HWavReader<int32_t>::Start(void* unused);
+bool HWavReader<int32_t>::Start();
 
 #endif

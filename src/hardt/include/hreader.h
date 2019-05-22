@@ -8,7 +8,7 @@ class HReader : public HObject
 
         virtual int Read(T* dest, size_t blocksize) = 0;
 
-        virtual bool Start(void* data);
+        virtual bool Start();
         virtual bool Stop();
 };
 
