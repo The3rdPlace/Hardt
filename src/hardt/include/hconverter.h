@@ -1,10 +1,10 @@
 #ifndef __HCONVERTER_H
 #define __HCONVERTER_H
 
-template <class InT, class OutT>
-class HConverter : public HWriter<InT>
+template <class T>
+class HConverter : public HWriter<T>
 {
-    virtual int Write(InT* src, size_t blocksize) = 0;
+    int Write(T* src, size_t blocksize);
 };
 
 #endif

@@ -828,4 +828,21 @@ int HSoundcardWriter<int16_t>::Write(int16_t* dest, size_t blocksize);
 extern template
 int HSoundcardWriter<int32_t>::Write(int32_t* dest, size_t blocksize);
 
+/********************************************************************
+HConverter
+********************************************************************/
+
+// Write()
+extern template
+int HConverter<int8_t>::Write(int8_t* src, size_t blocksize);
+
+extern template
+int HConverter<uint8_t>::Write(uint8_t* src, size_t blocksize);
+
+extern template
+int HConverter<int16_t>::Write(int16_t* src, size_t blocksize);
+
+extern template
+int HConverter<int32_t>::Write(int32_t* src, size_t blocksize);
+
 #endif
