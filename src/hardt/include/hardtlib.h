@@ -20,7 +20,7 @@ Abstract base classes with no, or little implementation
 #include "hwriter.cpp"
 #include "hreader.cpp"
 #include "hprocessor.cpp"
-#include "hgenerator.h"
+#include "hgenerator.cpp"
 #include "hconverter.cpp"
 
 /********************************************************************
