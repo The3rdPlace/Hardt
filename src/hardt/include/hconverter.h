@@ -5,6 +5,8 @@ template <class T>
 class HConverter : public HWriter<T>
 {
     int Write(T* src, size_t blocksize);
+
+    virtual int Convert(T* src, size_t blocksize) = 0;
 };
 
 #endif

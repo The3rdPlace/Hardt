@@ -6,8 +6,7 @@
 template <class T>
 int HConverter<T>::Write(T* src, size_t blocksize)
 {
-    // Todo, add call to conversion method
-    return 0;
+    return Convert(src, blocksize);
 }
 
 /********************************************************************
