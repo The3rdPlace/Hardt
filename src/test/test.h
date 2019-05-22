@@ -20,6 +20,7 @@ class Test
 
         static int execute()
         {
+            int partialFailed = 0;
             for( std::vector<Test*>::iterator it = tests.begin(); it < tests.end(); it++ )
             {
                 std::cout << "====================================================================" << std::endl;
@@ -28,6 +29,7 @@ class Test
                     std::cout << "Test: " << (*it)->name() << std::endl;
                     failed = 0;
                     (*it)->run();
+                    partialFailed += failed;
                     std::cout << (failed == 0 ? "OK" : "FAILED") << std::endl;
                 }
                 catch(std::exception* e)
@@ -36,7 +38,7 @@ class Test
                 }
             }
             std::cout << "====================================================================" << std::endl;
-            return failed;
+            return partialFailed;
         }
 
     public:
