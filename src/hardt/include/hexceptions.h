@@ -82,4 +82,17 @@ class HNotImplementedException : public HException
         HNotImplementedException(const char* reason = "Not implemented");
 };
 
+/*
+    Thrown if there is errors during filter i/o
+
+    Constructor:
+        HFilterIOException(reason)
+*/
+class HFilterIOException : public HException
+{
+    public:
+
+        HFilterIOException(const char* reason);
+};
+
 #endif

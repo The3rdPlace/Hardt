@@ -29,3 +29,7 @@ HAudioIOException::HAudioIOException(const char* reason):
 HNotImplementedException::HNotImplementedException(const char* reason):
     HException(reason)
 {}
+
+HFilterIOException::HFilterIOException(const char* reason):
+    HException(reason)
+{}

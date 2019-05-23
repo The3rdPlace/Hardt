@@ -8,7 +8,8 @@
 template <class T>
 HFilter<T>::HFilter(HWriter<T>* writer, size_t blocksize):
     _writer(writer),
-    _reader(NULL)
+    _reader(NULL),
+    _blocksize(blocksize)
 {
     HLog("HFilter(HWriter*)");
 
@@ -19,7 +20,8 @@ HFilter<T>::HFilter(HWriter<T>* writer, size_t blocksize):
 template <class T>
 HFilter<T>::HFilter(HReader<T>* reader, size_t blocksize):
     _writer(NULL),
-    _reader(reader)
+    _reader(reader),
+    _blocksize(blocksize)
 {
     HLog("HFilter(HReader*)");
 
@@ -37,6 +39,12 @@ HFilter<T>::~HFilter()
 template <class T>
 int HFilter<T>::Write(T* src, size_t blocksize)
 {
+    if( blocksize > _blocksize )
+    {
+        HError("Illegal blocksize in Write() to HFilter. Initialized with %d called with %d", _blocksize, blocksize);
+        throw new HFilterIOException("It is not allowed to write more data than the size given at creation of the filter");
+    }
+
     Filter(src, _buffer, blocksize);
     return _writer->Write(_buffer, blocksize);
 }
@@ -44,6 +52,12 @@ int HFilter<T>::Write(T* src, size_t blocksize)
 template <class T>
 int HFilter<T>::Read(T* dest, size_t blocksize)
 {
+    if( blocksize > _blocksize )
+    {
+        HError("Illegal blocksize in Read() to HFilter. Initialized with %d called with %d", _blocksize, blocksize);
+        throw new HFilterIOException("It is not possible to read more data than the size given at creation of the filter");
+    }
+
     int received = _reader->Read(_buffer, blocksize);
     Filter(_buffer, dest, received);
     return received;

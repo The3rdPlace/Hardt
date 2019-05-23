@@ -9,6 +9,7 @@ class HFilter : public HWriter<T>, public HReader<T>
         HWriter<T>* _writer;
         HReader<T>* _reader;
 
+        int _blocksize;
         T* _buffer;
 
     public:
