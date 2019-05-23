@@ -13,6 +13,7 @@
 #include "hprocessor.h"
 #include "hgenerator.h"
 #include "hconverter.h"
+#include "hfilter.h"
 
 #include "hfilewriter.h"
 #include "hfilereader.h"
@@ -27,6 +28,7 @@
 #include "hvfo.h"
 #include "hstreamprocessor.h"
 #include "hsoundcardwriter.h"
+
 
 /********************************************************************
 HWriter
@@ -832,6 +834,19 @@ int HSoundcardWriter<int32_t>::Write(int32_t* dest, size_t blocksize);
 HConverter
 ********************************************************************/
 
+// HConverter
+extern template
+HConverter<int8_t>::HConverter(void (*readyCallback)());
+
+extern template
+HConverter<uint8_t>::HConverter(void (*readyCallback)());
+
+extern template
+HConverter<int16_t>::HConverter(void (*readyCallback)());
+
+extern template
+HConverter<int32_t>::HConverter(void (*readyCallback)());
+
 // Write()
 extern template
 int HConverter<int8_t>::Write(int8_t* src, size_t blocksize);
@@ -844,5 +859,86 @@ int HConverter<int16_t>::Write(int16_t* src, size_t blocksize);
 
 extern template
 int HConverter<int32_t>::Write(int32_t* src, size_t blocksize);
+
+// Ready()
+extern template
+void HConverter<int8_t>::Ready();
+
+extern template
+void HConverter<uint8_t>::Ready();
+
+extern template
+void HConverter<int16_t>::Ready();
+
+extern template
+void HConverter<int32_t>::Ready();
+
+/********************************************************************
+Explicit instantiation
+********************************************************************/
+
+// HFilter
+extern template
+HFilter<int8_t>::HFilter(HWriter<int8_t>* writer, size_t blocksize);
+
+extern template
+HFilter<uint8_t>::HFilter(HWriter<uint8_t>* writer, size_t blocksize);
+
+extern template
+HFilter<int16_t>::HFilter(HWriter<int16_t>* writer, size_t blocksize);
+
+extern template
+HFilter<int32_t>::HFilter(HWriter<int32_t>* writer, size_t blocksize);
+
+extern template
+HFilter<int8_t>::HFilter(HReader<int8_t>* reader, size_t blocksize);
+
+extern template
+HFilter<uint8_t>::HFilter(HReader<uint8_t>* reader, size_t blocksize);
+
+extern template
+HFilter<int16_t>::HFilter(HReader<int16_t>* reader, size_t blocksize);
+
+extern template
+HFilter<int32_t>::HFilter(HReader<int32_t>* reader, size_t blocksize);
+
+// ~HFilter()
+extern template
+HFilter<int8_t>::~HFilter();
+
+extern template
+HFilter<uint8_t>::~HFilter();
+
+extern template
+HFilter<int16_t>::~HFilter();
+
+extern template
+HFilter<int32_t>::~HFilter();
+
+// Write()
+extern template
+int HFilter<int8_t>::Write(int8_t* src, size_t blocksize);
+
+extern template
+int HFilter<uint8_t>::Write(uint8_t* src, size_t blocksize);
+
+extern template
+int HFilter<int16_t>::Write(int16_t* src, size_t blocksize);
+
+extern template
+int HFilter<int32_t>::Write(int32_t* src, size_t blocksize);
+
+// Read()
+extern template
+int HFilter<int8_t>::Read(int8_t* dest, size_t blocksize);
+
+extern template
+int HFilter<uint8_t>::Read(uint8_t* dest, size_t blocksize);
+
+extern template
+int HFilter<int16_t>::Read(int16_t* dest, size_t blocksize);
+
+extern template
+int HFilter<int32_t>::Read(int32_t* dest, size_t blocksize);
 
 #endif

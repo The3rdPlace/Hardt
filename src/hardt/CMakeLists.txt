@@ -19,7 +19,7 @@ include_directories("${PROJECT_BINARY_DIR}/src/hardt/")
 
 set_target_properties(hardt PROPERTIES PUBLIC_HEADER include/hardtapi.h)
 
-target_include_directories(hardt PRIVATE . include writers readers readers/generators processors converters)
+target_include_directories(hardt PRIVATE . include writers readers readers/generators processors converters filters)
 
 include(GNUInstallDirs)
 install(TARGETS hardt

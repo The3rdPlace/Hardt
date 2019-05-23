@@ -22,6 +22,7 @@ Abstract base classes with no, or little implementation
 #include "hprocessor.cpp"
 #include "hgenerator.cpp"
 #include "hconverter.cpp"
+#include "hfilter.cpp"
 
 /********************************************************************
 Include api function declarations
