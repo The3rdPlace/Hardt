@@ -3,8 +3,6 @@
 
 #include "test.h"
 
-void bar() {}
-
 class HFilter_Test: public Test
 {
     public:
