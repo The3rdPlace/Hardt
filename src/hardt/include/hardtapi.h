@@ -834,19 +834,6 @@ int HSoundcardWriter<int32_t>::Write(int32_t* dest, size_t blocksize);
 HConverter
 ********************************************************************/
 
-// HConverter
-extern template
-HConverter<int8_t>::HConverter(void (*readyCallback)());
-
-extern template
-HConverter<uint8_t>::HConverter(void (*readyCallback)());
-
-extern template
-HConverter<int16_t>::HConverter(void (*readyCallback)());
-
-extern template
-HConverter<int32_t>::HConverter(void (*readyCallback)());
-
 // Write()
 extern template
 int HConverter<int8_t>::Write(int8_t* src, size_t blocksize);
@@ -859,19 +846,6 @@ int HConverter<int16_t>::Write(int16_t* src, size_t blocksize);
 
 extern template
 int HConverter<int32_t>::Write(int32_t* src, size_t blocksize);
-
-// Ready()
-extern template
-void HConverter<int8_t>::Ready();
-
-extern template
-void HConverter<uint8_t>::Ready();
-
-extern template
-void HConverter<int16_t>::Ready();
-
-extern template
-void HConverter<int32_t>::Ready();
 
 /********************************************************************
 Explicit instantiation

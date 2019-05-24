@@ -4,17 +4,7 @@
 template <class T>
 class HConverter : public HWriter<T>
 {
-    private:
-
-        void (*_readyCallback)();
-
-    protected:
-
-        void Ready();
-
     public:
-
-        HConverter(void (*readyCallback)());
 
         int Write(T* src, size_t blocksize);
 
