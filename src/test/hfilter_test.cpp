@@ -3,6 +3,8 @@
 
 #include "test.h"
 
+void bar() {}
+
 class HFilter_Test: public Test
 {
     public:
@@ -41,7 +43,7 @@ class HFilter_Test: public Test
         {
             private:
 
-                int8_t output[6] = {1, 2, 4, 8, 16, 32};
+                int8_t output[8] = {1, 2, 4, 8, 16, 32, 0, 0};
 
             public:
 
@@ -81,9 +83,23 @@ class HFilter_Test: public Test
             TestWriter<int8_t> wr;
             TestFilter<int8_t> filter(&wr, 6);
 
-            int8_t input[6] = {1, 2, 4, 8, 16, 32};
+            int8_t input[8] = {1, 2, 4, 8, 16, 32, 0, 0};
             ASSERT_IS_EQUAL(filter.Write(input, 6), 6);
             ASSERT_IS_EQUAL(memcmp((void*) wr.received, (void*) expected, 6 * sizeof(int8_t)), 0);
+
+            ASSERT_IS_EQUAL(filter.Write(input, 2), 2);
+
+            try
+            {
+                filter.Write(input, 8);
+                ASSERT_FAIL("Expected HFilterIOException");
+            }
+            catch(HFilterIOException*)
+            {}
+            catch( ... )
+            {
+                ASSERT_FAIL("Expected HFilterIOException, but got other type");
+            }
         }
 
         void test_filter_as_reader()
@@ -94,5 +110,19 @@ class HFilter_Test: public Test
             int8_t received[6];
             ASSERT_IS_EQUAL(filter.Read(received, 6), 6);
             ASSERT_IS_EQUAL(memcmp((void*) received, (void*) expected, 6 * sizeof(int8_t)), 0);
+
+            ASSERT_IS_EQUAL(filter.Read(received, 2), 2);
+
+            try
+            {
+                filter.Read(received, 8);
+                ASSERT_FAIL("Expected HFilterIOException");
+            }
+            catch(HFilterIOException*)
+            {}
+            catch( ... )
+            {
+                ASSERT_FAIL("Expected HFilterIOException, but got other type");
+            }
         }
 } hfilter_test;
