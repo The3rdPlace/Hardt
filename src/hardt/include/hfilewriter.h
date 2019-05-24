@@ -1,5 +1,5 @@
-#ifndef __HFILEWRITERTMP_H
-#define __HFILEWRITERTMP_H
+#ifndef __HFILEWRITER_H
+#define __HFILEWRITER_H
 
 #include <stdio.h>
 #include <fstream>
