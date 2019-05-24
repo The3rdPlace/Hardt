@@ -15,6 +15,7 @@
 #include "hconverter.h"
 #include "hfilter.h"
 
+#include "hnullwriter.h"
 #include "hfilewriter.h"
 #include "hfilereader.h"
 #include "hwavwriter.h"
@@ -914,5 +915,22 @@ int HFilter<int16_t>::Read(int16_t* dest, size_t blocksize);
 
 extern template
 int HFilter<int32_t>::Read(int32_t* dest, size_t blocksize);
+
+/********************************************************************
+HNullWriter
+********************************************************************/
+
+// Write()
+extern template
+int HNullWriter<int8_t>::Write(int8_t* src, size_t blocksize);
+
+extern template
+int HNullWriter<uint8_t>::Write(uint8_t* src, size_t blocksize);
+
+extern template
+int HNullWriter<int16_t>::Write(int16_t* src, size_t blocksize);
+
+extern template
+int HNullWriter<int32_t>::Write(int32_t* src, size_t blocksize);
 
 #endif

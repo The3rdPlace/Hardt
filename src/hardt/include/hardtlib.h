@@ -28,6 +28,7 @@ Abstract base classes with no, or little implementation
 Include api function declarations
 ********************************************************************/
 
+#include "hnullwriter.cpp"
 #include "hsoundcardreader.cpp"
 #include "hfilewriter.cpp"
 #include "hfilereader.cpp"
