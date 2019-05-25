@@ -834,7 +834,7 @@ int HSoundcardWriter<int32_t>::Write(int32_t* dest, size_t blocksize);
 /********************************************************************
 HConverter
 ********************************************************************/
-
+/*
 // Write()
 extern template
 int HConverter<int8_t>::Write(int8_t* src, size_t blocksize);
@@ -847,7 +847,7 @@ int HConverter<int16_t>::Write(int16_t* src, size_t blocksize);
 
 extern template
 int HConverter<int32_t>::Write(int32_t* src, size_t blocksize);
-
+*/
 /********************************************************************
 Explicit instantiation
 ********************************************************************/

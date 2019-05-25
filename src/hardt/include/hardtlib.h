@@ -21,7 +21,7 @@ Abstract base classes with no, or little implementation
 #include "hreader.cpp"
 #include "hprocessor.cpp"
 #include "hgenerator.cpp"
-#include "hconverter.cpp"
+#include "hconverter.h"
 #include "hfilter.cpp"
 
 /********************************************************************
