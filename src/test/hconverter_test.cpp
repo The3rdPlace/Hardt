@@ -18,6 +18,7 @@ class HConverter_Test: public Test
             UNITTEST(test_converter_ready);
             UNITTEST(test_converter_ready_buffer);
             UNITTEST(test_converter_ready_value);
+            UNITTEST(test_chunked_converter);
         }
 
         const char* name()
@@ -75,6 +76,12 @@ class HConverter_Test: public Test
 
                 TestConverter(std::function<void(int32_t)> ready):
                     HConverter<T, int32_t>(ready),
+                    counter(0),
+                    result(0)
+                {}
+
+                TestConverter(int chunksize):
+                    HConverter<T, int32_t>(2),
                     counter(0),
                     result(0)
                 {}
@@ -222,6 +229,25 @@ class HConverter_Test: public Test
             ASSERT_IS_EQUAL(readyCalled, 0);
             ASSERT_IS_EQUAL(readyBufferCalled, 0);
             ASSERT_IS_EQUAL(readyValueCalled, 1);
+        }
+
+        void test_chunked_converter()
+        {
+            int8_t input[8] = {1, 2, 3, 4, 5, 6};
+
+            TestConverter<int8_t> converter(2);
+            readyCalled = 0;
+            readyBufferCalled = 0;
+            readyValueCalled = 0;
+
+            converter.Write(input, 6);
+
+            ASSERT_IS_EQUAL(converter.result, 21);
+            ASSERT_IS_EQUAL(converter.counter, 3);
+
+            ASSERT_IS_EQUAL(readyCalled, 0);
+            ASSERT_IS_EQUAL(readyBufferCalled, 0);
+            ASSERT_IS_EQUAL(readyValueCalled, 0);
         }
 
 } hconverter_test;

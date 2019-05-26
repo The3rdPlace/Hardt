@@ -4,7 +4,7 @@
 #include <functional>
 
 template <class T, class O>
-class HConverter : public HWriter<T>
+class HConverter : public HChunkWriter<T>
 {
     private:
 
@@ -41,6 +41,7 @@ class HConverter : public HWriter<T>
     public:
 
         HConverter():
+            HChunkWriter<T>(),
             _bufferReady(NULL),
             _valueReady(NULL),
             _ready(NULL)
@@ -48,6 +49,7 @@ class HConverter : public HWriter<T>
         }
 
         HConverter(std::function<void(O*, size_t)> ready):
+            HChunkWriter<T>(),
             _bufferReady(ready),
             _valueReady(NULL),
             _ready(NULL)
@@ -55,6 +57,7 @@ class HConverter : public HWriter<T>
         }
 
         HConverter(std::function<void(O)> ready):
+            HChunkWriter<T>(),
             _bufferReady(NULL),
             _valueReady(ready),
             _ready(NULL)
@@ -62,13 +65,46 @@ class HConverter : public HWriter<T>
         }
 
         HConverter(std::function<void()> ready):
+            HChunkWriter<T>(),
             _bufferReady(NULL),
             _valueReady(NULL),
             _ready(ready)
         {
         }
 
-        int Write(T* src, size_t blocksize)
+        HConverter(int chunksize):
+            HChunkWriter<T>(chunksize),
+            _bufferReady(NULL),
+            _valueReady(NULL),
+            _ready(NULL)
+        {
+        }
+
+        HConverter(std::function<void(O*, size_t)> ready, int chunksize):
+            HChunkWriter<T>(chunksize),
+            _bufferReady(ready),
+            _valueReady(NULL),
+            _ready(NULL)
+        {
+        }
+
+        HConverter(std::function<void(O)> ready, int chunksize):
+            HChunkWriter<T>(chunksize),
+            _bufferReady(NULL),
+            _valueReady(ready),
+            _ready(NULL)
+        {
+        }
+
+        HConverter(std::function<void()> ready, int chunksize):
+            HChunkWriter<T>(chunksize),
+            _bufferReady(NULL),
+            _valueReady(NULL),
+            _ready(ready)
+        {
+        }
+
+        int WriteChunk(T* src, size_t blocksize)
         {
             return Convert(src, blocksize);
         }

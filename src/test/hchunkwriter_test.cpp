@@ -27,7 +27,7 @@ class HNChunkWriter_Test: public Test
                 TestWriter():
                     HChunkWriter()
                 {}
-                
+
                 TestWriter(int chunksize):
                     HChunkWriter(chunksize)
                 {}

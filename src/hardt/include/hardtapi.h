@@ -12,10 +12,10 @@
 #include "hreader.h"
 #include "hprocessor.h"
 #include "hgenerator.h"
-#include "hconverter.h"
 #include "hfilter.h"
 
 #include "hchunkwriter.h"
+#include "hconverter.h"
 #include "hnullwriter.h"
 #include "hfilewriter.h"
 #include "hfilereader.h"
