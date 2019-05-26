@@ -1,6 +1,6 @@
 #include "test.h"
 
-class HNullerWriter_Test: public Test
+class HNullWriter_Test: public Test
 {
     public:
 
