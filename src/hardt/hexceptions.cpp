@@ -30,6 +30,10 @@ HNotImplementedException::HNotImplementedException(const char* reason):
     HException(reason)
 {}
 
+HWriterIOException::HWriterIOException(const char* reason):
+    HException(reason)
+{}
+
 HFilterIOException::HFilterIOException(const char* reason):
     HException(reason)
 {}

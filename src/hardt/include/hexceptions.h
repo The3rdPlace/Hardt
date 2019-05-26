@@ -83,6 +83,19 @@ class HNotImplementedException : public HException
 };
 
 /*
+    Thrown if there is errors during writer i/o
+
+    Constructor:
+        HWriterIOException(reason)
+*/
+class HWriterIOException : public HException
+{
+    public:
+
+        HWriterIOException(const char* reason);
+};
+
+/*
     Thrown if there is errors during filter i/o
 
     Constructor:

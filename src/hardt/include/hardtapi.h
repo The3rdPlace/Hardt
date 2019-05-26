@@ -15,6 +15,7 @@
 #include "hconverter.h"
 #include "hfilter.h"
 
+#include "hchunkwriter.h"
 #include "hnullwriter.h"
 #include "hfilewriter.h"
 #include "hfilereader.h"
@@ -932,5 +933,22 @@ int HNullWriter<int16_t>::Write(int16_t* src, size_t blocksize);
 
 extern template
 int HNullWriter<int32_t>::Write(int32_t* src, size_t blocksize);
+
+/********************************************************************
+HChunkWriter
+********************************************************************/
+
+// WriteChunk()
+extern template
+int HChunkWriter<int8_t>::WriteChunk(int8_t* src, size_t chunkSize);
+
+extern template
+int HChunkWriter<uint8_t>::WriteChunk(uint8_t* src, size_t chunkSize);
+
+extern template
+int HChunkWriter<int16_t>::WriteChunk(int16_t* src, size_t chunkSize);
+
+extern template
+int HChunkWriter<int32_t>::WriteChunk(int32_t* src, size_t chunkSize);
 
 #endif

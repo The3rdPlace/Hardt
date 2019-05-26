@@ -17,6 +17,7 @@ target_sources(hardt_test
 	    hfilter_test.cpp
 	    hconverter_test.cpp
 	    hnullwriter_test.cpp
+	    hchunkwriter_test.cpp
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
