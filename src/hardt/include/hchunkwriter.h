@@ -13,6 +13,10 @@ class HChunkWriter : public HWriter<T>
         int Write(T* src, size_t blocksize);
         virtual int WriteChunk(T* src, size_t chunksize) = 0;
 
+        HChunkWriter():
+            _chunksize(0)
+        {}
+
         HChunkWriter(int chunksize):
             _chunksize(chunksize)
         {}
