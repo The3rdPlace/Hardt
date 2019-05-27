@@ -43,5 +43,6 @@ Include api function declarations
 #include "hvfo.cpp"
 #include "hstreamprocessor.cpp"
 #include "hsoundcardwriter.cpp"
+#include "hfft.cpp"
 
 #endif

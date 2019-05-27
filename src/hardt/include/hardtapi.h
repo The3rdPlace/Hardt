@@ -30,7 +30,7 @@
 #include "hvfo.h"
 #include "hstreamprocessor.h"
 #include "hsoundcardwriter.h"
-
+#include "hfft.h"
 
 /********************************************************************
 HWriter
