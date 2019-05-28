@@ -4,24 +4,32 @@
 #include "hfft.h"
 
 template <class T>
-HFft<T>::HFft(int windowSize, int bins, int average, std::function<void(long int*, size_t)> callback):
+HFft<T>::HFft(int windowSize, int bins, int average, std::function<void(long int*, size_t)> callback, HWindow<T>* window):
     HConverter<T, long int>(windowSize),
     _windowSize(windowSize),
     _bins(bins),
     _average(average),
     _callback(callback),
-    _count(0)
+    _count(0),
+    _window(window)
 {
     HLog("HFft(%d, %d, %d, ...)", windowSize, bins, average);
 
     // Allocate a buffer for the spectrum
     _spectrum = new long int[bins];
+
+    // Allocate a buffer for intermediate results
+    _buffer = new T[bins];
+
+    // Set window size
+    _window->SetSize(windowSize);
 }
 
 template <class T>
 int HFft<T>::Convert(T* src, size_t windowSize)
 {
-    // Todo: Run the input buffer through a window function, if any is given
+    // Run the input buffer through a window function, if any is given
+    _window->Apply(src, _buffer, windowSize);
 
     // Todo: Calculate FFT of the input
 
@@ -44,16 +52,16 @@ Explicit instantiation
 ********************************************************************/
 
 template
-HFft<int8_t>::HFft(int windowSize, int bins, int average, std::function<void(long int*, size_t)> callback);
+HFft<int8_t>::HFft(int windowSize, int bins, int average, std::function<void(long int*, size_t)> callback, HWindow<int8_t>* window);
 
 template
-HFft<uint8_t>::HFft(int windowSize, int bins, int average, std::function<void(long int*, size_t)> callback);
+HFft<uint8_t>::HFft(int windowSize, int bins, int average, std::function<void(long int*, size_t)> callback, HWindow<uint8_t>* window);
 
 template
-HFft<int16_t>::HFft(int windowSize, int bins, int average, std::function<void(long int*, size_t)> callback);
+HFft<int16_t>::HFft(int windowSize, int bins, int average, std::function<void(long int*, size_t)> callback, HWindow<int16_t>* window);
 
 template
-HFft<int32_t>::HFft(int windowSize, int bins, int average, std::function<void(long int*, size_t)> callback);
+HFft<int32_t>::HFft(int windowSize, int bins, int average, std::function<void(long int*, size_t)> callback, HWindow<int32_t>* window);
 
 template
 int HFft<int8_t>::Convert(int8_t* src, size_t windowSize);

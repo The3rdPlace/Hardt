@@ -21,11 +21,6 @@ class HChunkWriter : public HWriter<T>
             _chunksize(chunksize)
         {}
 
-/*        void SetChunksize(int newChunksize)
-        {
-            _chunksize = newChunksize;
-        }
-*/
         int GetChunksize()
         {
             return _chunksize;

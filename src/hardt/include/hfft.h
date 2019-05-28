@@ -15,31 +15,35 @@ class HFft : public HConverter<T, long int>
         int _count;
         std::function<void(long int*, size_t)> _callback;
 
+        HWindow<T>* _window;
+
+        T* _buffer;
+
     public:
 
-        // Todo: Add parameter for specifying a window function (HWindow, aka. specialized filter)
-        HFft(int windowSize, int bins, int average, std::function<void(long int*, size_t)> callback);
+        HFft(int windowSize, int bins, int average, std::function<void(long int*, size_t)> callback, HWindow<T>* window);
 
         ~HFft()
         {
             delete _spectrum;
+            delete _buffer;
         }
 
-        static HFft* Create(int windowSize, int bins, int average, void(*callback)(long int*, size_t length))
+        static HFft* Create(int windowSize, int bins, int average, void(*callback)(long int*, size_t length), HWindow<T>* window)
         {
             std::function<void(long int*, size_t)> func = callback;
 
-            return new HFft<T>(windowSize, bins, average, func);
+            return new HFft<T>(windowSize, bins, average, func, window);
         }
 
         template <typename F>
-        static HFft* Create(int windowSize, int bins, int average, F* callbackObject, void (F::*callback)(long int*, size_t length))
+        static HFft* Create(int windowSize, int bins, int average, F* callbackObject, void (F::*callback)(long int*, size_t length), HWindow<T>* window)
         {
             using std::placeholders::_1;
             using std::placeholders::_2;
             std::function<void(long int*, size_t)> func = std::bind( callback, callbackObject, _1, _2);;
 
-            return new HFft<T>(windowSize, bins, average, func);
+            return new HFft<T>(windowSize, bins, average, func, window);
             return NULL;
         }
 

@@ -43,22 +43,32 @@ class HFft_Test: public Test
             verifyFFT(data,length);
         }
 
+        class TestWindow : public HWindow<int8_t>
+        {
+            public:
+
+                float ValueAt(int N, int n)
+                {
+                    return 1;
+                }
+        };
+
         void test_fft_static_callback()
         {
-            auto fft = HFft<int8_t>(10, 5, 1, staticCallback);
+            auto fft = HFft<int8_t>(10, 5, 1, staticCallback, new TestWindow);
             writeToFFT(&fft);
         }
 
         void test_fft_static_callback_with_factory()
         {
-            auto fft = HFft<int8_t>::Create(10, 5, 1, staticCallback);
+            auto fft = HFft<int8_t>::Create(10, 5, 1, staticCallback, new TestWindow);
             writeToFFT(fft);
             delete fft;
         }
 
         void test_fft_member_callback()
         {
-            auto fft = HFft<int8_t>::Create<HFft_Test>(10, 5, 1, this, &HFft_Test::memberCallback);
+            auto fft = HFft<int8_t>::Create<HFft_Test>(10, 5, 1, this, &HFft_Test::memberCallback, new TestWindow);
             writeToFFT(fft);
             delete fft;
         }
