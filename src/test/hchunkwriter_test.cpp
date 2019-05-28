@@ -1,6 +1,6 @@
 #include "test.h"
 
-class HNChunkWriter_Test: public Test
+class HChunkWriter_Test: public Test
 {
     public:
 
