@@ -17,6 +17,7 @@ HFft<T>::HFft(int windowSize, int bins, int average, std::function<void(long int
 
     // Allocate a buffer for the spectrum
     _spectrum = new long int[bins];
+    _spectrum = 0;
 
     // Allocate a buffer for intermediate results
     _buffer = new T[bins];
@@ -36,11 +37,12 @@ int HFft<T>::Convert(T* src, size_t windowSize)
     // Did we reach averaging target ?
     if( ++_count >= _average )
     {
-        // Todo: Call the callback function with the calculated spectrum
+        // Call the callback function with the calculated spectrum
         _callback(_spectrum, _bins);
 
         // Reset results
         _count = 0;
+        _spectrum = 0;
     }
 
     // We took the entire window
