@@ -18,6 +18,7 @@ target_sources(hardt_test
 	    hconverter_test.cpp
 	    hnullwriter_test.cpp
 	    hchunkwriter_test.cpp
+	    hwindow_test.cpp
 	    hfft_test.cpp
 )
 
