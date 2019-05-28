@@ -4,18 +4,18 @@
 #include "hfft.h"
 
 template <class T>
-HFft<T>::HFft(int windowSize, int N, int average, std::function<void(long int*, size_t)> callback):
+HFft<T>::HFft(int windowSize, int bins, int average, std::function<void(long int*, size_t)> callback):
     HConverter<T, long int>(windowSize),
     _windowSize(windowSize),
-    _n(N),
+    _bins(bins),
     _average(average),
     _callback(callback),
     _count(0)
 {
-    HLog("HFft(%d, %d,%d, ...)", windowSize, N, average);
+    HLog("HFft(%d, %d, %d, ...)", windowSize, bins, average);
 
     // Allocate a buffer for the spectrum
-    _spectrum = new long int[N];
+    _spectrum = new long int[bins];
 }
 
 template <class T>
@@ -29,7 +29,7 @@ int HFft<T>::Convert(T* src, size_t windowSize)
     if( ++_count >= _average )
     {
         // Todo: Call the callback function with the calculated spectrum
-        _callback(_spectrum, _n);
+        _callback(_spectrum, _bins);
 
         // Reset results
         _count = 0;
@@ -44,16 +44,16 @@ Explicit instantiation
 ********************************************************************/
 
 template
-HFft<int8_t>::HFft(int windowSize, int N, int average, std::function<void(long int*, size_t)> callback);
+HFft<int8_t>::HFft(int windowSize, int bins, int average, std::function<void(long int*, size_t)> callback);
 
 template
-HFft<uint8_t>::HFft(int windowSize, int N, int average, std::function<void(long int*, size_t)> callback);
+HFft<uint8_t>::HFft(int windowSize, int bins, int average, std::function<void(long int*, size_t)> callback);
 
 template
-HFft<int16_t>::HFft(int windowSize, int N, int average, std::function<void(long int*, size_t)> callback);
+HFft<int16_t>::HFft(int windowSize, int bins, int average, std::function<void(long int*, size_t)> callback);
 
 template
-HFft<int32_t>::HFft(int windowSize, int N, int average, std::function<void(long int*, size_t)> callback);
+HFft<int32_t>::HFft(int windowSize, int bins, int average, std::function<void(long int*, size_t)> callback);
 
 template
 int HFft<int8_t>::Convert(int8_t* src, size_t windowSize);
