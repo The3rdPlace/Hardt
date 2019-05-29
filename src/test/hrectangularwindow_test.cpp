@@ -1,14 +1,15 @@
 #include "test.h"
 
+#include <string.h>
+
 class HRectangularWindow_Test: public Test
 {
     public:
 
         void run()
         {
-            UNITTEST(test_short_apply);
-            UNITTEST(test_long_apply);
             UNITTEST(test_apply);
+            UNITTEST(test_values);
         }
 
         const char* name()
@@ -36,40 +37,33 @@ class HRectangularWindow_Test: public Test
             ASSERT_IS_EQUAL(output[5], (int8_t) 6);
         }
 
-        void test_short_apply()
+        void test_values_for_size(HWindow<int8_t>* w, int size)
+        {
+            w->SetSize(size);
+
+            int8_t input[size];
+            memset((void*) input, 1, size * sizeof(int8_t));
+
+            int8_t output[size];
+            w->Apply(input, output, size);
+
+            for( int i = 0; i < size; i++)
+            {
+                ASSERT_IS_LESS_THAN_OR_EQUAL((int) output[i], 1);
+                ASSERT_IS_GREATER_THAN_OR_EQUAL(output[i], (int8_t) 0);
+            }
+        }
+
+        void test_values()
         {
             HRectangularWindow<int8_t> w;
 
-            w.SetSize(6);
+            test_values_for_size(&w, 10);
+            test_values_for_size(&w, 128);
+            test_values_for_size(&w, 512);
+            test_values_for_size(&w, 1024);
+            test_values_for_size(&w, 2048);
+            test_values_for_size(&w, 4096);
 
-            int8_t input[4] = {1, 2, 3, 4};
-            int8_t output[4];
-
-            try
-            {
-                w.Apply(input, output, 4);
-                ASSERT_FAIL("Expected exception to be thrown, blocksize < 6");
-            }
-            catch(...)
-            {}
         }
-
-        void test_long_apply()
-        {
-            HRectangularWindow<int8_t> w;
-
-            w.SetSize(6);
-
-            int8_t input[8] = {1, 2, 3, 4, 5, 6, 7, 8};
-            int8_t output[8];
-
-            try
-            {
-                w.Apply(input, output, 8);
-                ASSERT_FAIL("Expected exception to be thrown, blocksize > 6");
-            }
-            catch(...)
-            {}
-        }
-
 } hrectangularwindow_test;
