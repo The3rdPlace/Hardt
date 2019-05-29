@@ -33,5 +33,6 @@
 #include "hwindow.h"
 #include "hfft.h"
 #include "hrectangularwindow.h"
+#include "hhammingwindow.h"
 
 #endif
