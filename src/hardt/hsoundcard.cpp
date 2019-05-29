@@ -1,4 +1,8 @@
-#include "hardtlib.h"
+#include <stdlib.h>
+#include <vector>
+
+#include "hsoundcard.h"
+#include "hexceptions.h"
 
 std::vector<HSoundcard::DeviceInformation> HSoundcard::GetDeviceInformation()
 {

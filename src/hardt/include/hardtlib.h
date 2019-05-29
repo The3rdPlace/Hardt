@@ -45,5 +45,6 @@ Include api function declarations
 #include "hsoundcardwriter.cpp"
 #include "hwindow.cpp"
 #include "hfft.cpp"
+#include "hrectangularwindow.cpp"
 
 #endif
