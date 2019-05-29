@@ -5,6 +5,8 @@
 
 #include <math.h>
 
+// See https://en.wikipedia.org/wiki/Window_function for in-depth information
+
 template <class T>
 float HHammingWindow<T>::ValueAt(int N, int n)
 {
