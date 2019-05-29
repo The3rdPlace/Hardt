@@ -20,6 +20,7 @@ target_sources(hardt_test
 	    hchunkwriter_test.cpp
 	    hwindow_test.cpp
 	    hfft_test.cpp
+	    hrectangularwindow_test.cpp
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
