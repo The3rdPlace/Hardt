@@ -54,6 +54,50 @@ class Test
             }
         }
 
+        template <typename T>
+        void assertIsLessThanOrEqual(std::string file, int line, T a, T b)
+        {
+            if( a > b )
+            {
+                std::cout << "- assertIsLessThanOrEqual(" << a << ", " << b << "): is not less than or equal!" << std::endl;
+                std::cout << "  in " << file << "@" << line << std::endl;
+                Test::failed++;
+            }
+        }
+
+        template <typename T>
+        void assertIsLessThan(std::string file, int line, T a, T b)
+        {
+            if( a >= b )
+            {
+                std::cout << "- assertIsLessThan(" << a << ", " << b << "): is not less than!" << std::endl;
+                std::cout << "  in " << file << "@" << line << std::endl;
+                Test::failed++;
+            }
+        }
+
+        template <typename T>
+        void assertIsGreaterThanOrEqual(std::string file, int line, T a, T b)
+        {
+            if( a < b )
+            {
+                std::cout << "- assertIsGreaterThanOrEqual(" << a << ", " << b << "): is not greater than or equal!" << std::endl;
+                std::cout << "  in " << file << "@" << line << std::endl;
+                Test::failed++;
+            }
+        }
+
+        template <typename T>
+        void assertIsGreaterThan(std::string file, int line, T a, T b)
+        {
+            if( a <= b )
+            {
+                std::cout << "- assertIsGreaterThan(" << a << ", " << b << "): is not greater than!" << std::endl;
+                std::cout << "  in " << file << "@" << line << std::endl;
+                Test::failed++;
+            }
+        }
+
         void assertIsTrue(std::string file, int line, bool a)
         {
             if( a != true )
@@ -86,6 +130,10 @@ class Test
 #define UNITTEST(a) std::cout << "* Running test: " << #a << std::endl; a();
 
 #define ASSERT_IS_EQUAL(a, b) assertIsEqual(__FILE__,__LINE__, a, b)
+#define ASSERT_IS_LESS_THAN_OR_EQUAL(a, b) assertIsLessThanOrEqual(__FILE__,__LINE__, a, b)
+#define ASSERT_IS_LESS_THAN(a, b) assertIsLessThan(__FILE__,__LINE__, a, b)
+#define ASSERT_IS_GREATER_THAN_OR_EQUAL(a, b) assertIsGreaterThanOrEqual(__FILE__,__LINE__, a, b)
+#define ASSERT_IS_GREATER_THAN(a, b) assertIsGreaterThan(__FILE__,__LINE__, a, b)
 #define ASSERT_IS_TRUE(a) assertIsTrue(__FILE__,__LINE__, (bool) a)
 #define ASSERT_FAIL(reason) assertFail(__FILE__,__LINE__, reason)
 #define ASSERT_IGNORE(a) { assertIgnore(__FILE__, __LINE__, a); return; }
