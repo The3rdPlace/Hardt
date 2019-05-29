@@ -47,5 +47,6 @@ Include api function declarations
 #include "hfft.cpp"
 #include "hrectangularwindow.cpp"
 #include "hhammingwindow.cpp"
+#include "hhahnwindow.cpp"
 
 #endif
