@@ -29,11 +29,6 @@ class HHammingWindow_Test: public Test
             int8_t output[6];
 
             w.Apply(input, output, 6);
-            for(int i = 0; i < 6; i++ )
-            {
-                int8_t expected = 1;
-                std::cout << "expected " << (int) expected << ", got " << (int) output[i] << std::endl;
-            }
             ASSERT_IS_EQUAL(output[0], (int8_t) 3);
             ASSERT_IS_EQUAL(output[1], (int8_t) 4);
             ASSERT_IS_EQUAL(output[2], (int8_t) 6);
