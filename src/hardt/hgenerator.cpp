@@ -45,7 +45,7 @@ void HGenerator<T>::Calculate(H_SAMPLE_RATE rate, int frequency, T amplitude, fl
 
     // How many distinct samples can we have per cycle
     _samplesPerCycle = rate / frequency;
-
+_samplesPerCycle *= 10;
     // Create lookup table
     HLog("Creating lookup table of size %d (%d bytes)", _samplesPerCycle, _samplesPerCycle * sizeof(T));
     _lot = new T[_samplesPerCycle];
@@ -54,7 +54,7 @@ void HGenerator<T>::Calculate(H_SAMPLE_RATE rate, int frequency, T amplitude, fl
     for( int i = 0; i < _samplesPerCycle; i++ )
     {
         _lot[i] = amplitude * sin((((2 * M_PI * frequency) / rate) * i) + phase);
-        HLog("lot[%d] = %d", i, _lot[i]);
+        //std::cout << "lot[" << i << "] = " << _lot[i] << std::endl;
     }
 
     // Initial sample position

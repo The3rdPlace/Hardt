@@ -137,3 +137,5 @@ class Test
 #define ASSERT_IS_TRUE(a) assertIsTrue(__FILE__,__LINE__, (bool) a)
 #define ASSERT_FAIL(reason) assertFail(__FILE__,__LINE__, reason)
 #define ASSERT_IGNORE(a) { assertIgnore(__FILE__, __LINE__, a); return; }
+
+#define INFO(a) std::cout << "  " << a << std::endl;
