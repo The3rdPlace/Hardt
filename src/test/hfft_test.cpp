@@ -201,7 +201,8 @@ class HFft_Test: public Test
             // Require measurements to have a better tolerance
             // than 2 percent
             avg = (avg / 12) * 100;
-            ASSERT_IS_LESS_THAN(avg, (float) 2);
+            INFO("Average deviation of measured vs input frequency (percent): " << avg);
+            ASSERT_IS_LESS_THAN(avg, (float) 0.30   );
         }
 
         int test_fft_speed_N(int N, int baseline)

@@ -45,7 +45,17 @@ void HGenerator<T>::Calculate(H_SAMPLE_RATE rate, int frequency, T amplitude, fl
 
     // How many distinct samples can we have per cycle
     _samplesPerCycle = rate / frequency;
-_samplesPerCycle *= 10;
+
+    // Unless we the generator frequency coalesce exact with the sample frequency
+    // (samplerate being a harmonic of the generator frequency), 1 cycle is not
+    // enough as the sample points moves around the sinus curve.
+    // A simple solution - which might need more tweaking - is to calculate a bigger
+    // number of cycles. Experimentation seems to indicate that 100 seems to be the
+    // optimum factor, but still - there's plenty of places where we introduce small
+    // shifts and aliasing by using integer values (which is what the real world
+    // provides when working with basic soundcards)
+    _samplesPerCycle *= 100;
+
     // Create lookup table
     HLog("Creating lookup table of size %d (%d bytes)", _samplesPerCycle, _samplesPerCycle * sizeof(T));
     _lot = new T[_samplesPerCycle];
