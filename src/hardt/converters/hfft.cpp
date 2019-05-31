@@ -26,6 +26,64 @@ HFft<T>::HFft(int windowSize, int bins, int average, std::function<void(long int
     _window->SetSize(windowSize);
 }
 
+
+void runFFT(double* data, unsigned long nn)
+{
+    unsigned long n, mmax, m, j, istep, i;
+    double wtemp, wr, wpr, wpi, wi, theta;
+    double tempr, tempi;
+
+    // reverse-binary reindexing
+    n = nn<<1;
+    j=1;
+    for (i=1; i<n; i+=2) {
+        HLog("--i=%d--j=%d", i, j);
+        if (j>i) {
+            HLog("swap(%d, %d)", j-i, i-1);
+            std::swap(data[j-1], data[i-1]);
+            HLog("swap(%d, %d)", j, i);
+            std::swap(data[j], data[i]);
+        }
+        m = nn;
+        while (m>=2 && j>m) {
+            j -= m;
+            m >>= 1;
+        }
+        j += m;
+    };
+
+    // here begins the Danielson-Lanczos section
+    mmax=2;
+    while (n>mmax) {
+        istep = mmax<<1;
+        theta = -(2*M_PI/mmax);
+        wtemp = sin(0.5*theta);
+        wpr = -2.0*wtemp*wtemp;
+        wpi = sin(theta);
+        wr = 1.0;
+        wi = 0.0;
+        for (m=1; m < mmax; m += 2) {
+            for (i=m; i <= n; i += istep) {
+                j=i+mmax;
+                tempr = wr*data[j-1] - wi*data[j];
+                tempi = wr * data[j] + wi*data[j-1];
+
+                //data[j-1] = data[i-1] - tempr;
+                data[j] = data[i] - tempi;
+                data[i-1] += tempr;
+                data[i] += tempi;
+            }
+            wtemp=wr;
+            wr += wr*wpr - wi*wpi;
+            wi += wi*wpr + wtemp*wpi;
+        }
+        mmax=istep;
+    }
+
+}
+
+
+
 template <class T>
 int HFft<T>::Convert(T* src, size_t windowSize)
 {
@@ -33,6 +91,32 @@ int HFft<T>::Convert(T* src, size_t windowSize)
     _window->Apply(src, _buffer, windowSize);
 
     // Todo: Calculate FFT of the input
+    double input[16];
+    //memcpy((void*) input, (void*) src, windowSize * sizeof(double));
+    //memset((void*) &input[windowSize], 0, windowSize * sizeof(double));
+    input[0] = 1;
+    input[1] = 2;
+    input[2] = 3;
+    input[3] = 4;
+    input[4] = 5;
+    input[5] = 6;
+    input[6] = 7;
+    input[7] = 8;
+    input[8] = 0;
+    input[9] = 0;
+    input[10] = 0;
+    input[11] = 0;
+    input[12] = 0;
+    input[13] = 0;
+    input[14] = 0;
+    input[15] = 0;
+
+    runFFT(input, 8);
+
+    for( int i = 0; i < 16; i++ )
+    {
+        HLog("i=%d  %d", i, (int) input[i]);
+    }
 
     // Did we reach averaging target ?
     if( ++_count >= _average )

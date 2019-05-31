@@ -10,8 +10,8 @@ class HFft_Test: public Test
         void run()
         {
             UNITTEST(test_fft_static_callback);
-            UNITTEST(test_fft_static_callback_with_factory);
-            UNITTEST(test_fft_member_callback);
+            //UNITTEST(test_fft_static_callback_with_factory);
+            //UNITTEST(test_fft_member_callback);
         }
 
         const char* name()
