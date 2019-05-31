@@ -27,7 +27,7 @@ HFft<T>::HFft(int windowSize, int bins, int average, std::function<void(long int
 }
 
 
-void runFFT(double* data, unsigned long nn)
+/*void runFFT(double* data, unsigned long nn)
 {
     unsigned long n, mmax, m, j, istep, i;
     double wtemp, wr, wpr, wpi, wi, theta;
@@ -80,7 +80,7 @@ void runFFT(double* data, unsigned long nn)
         mmax=istep;
     }
 
-}
+}*/
 
 
 
@@ -111,12 +111,6 @@ int HFft<T>::Convert(T* src, size_t windowSize)
     input[14] = 0;
     input[15] = 0;
 
-    runFFT(input, 8);
-
-    for( int i = 0; i < 16; i++ )
-    {
-        HLog("i=%d  %d", i, (int) input[i]);
-    }
 
     // Did we reach averaging target ?
     if( ++_count >= _average )
