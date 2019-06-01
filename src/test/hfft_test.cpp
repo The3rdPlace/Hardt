@@ -16,6 +16,7 @@ class HFft_Test: public Test
             UNITTEST(test_fft);
 
             UNITTEST(test_fft_speed);
+            UNITTEST(test_fft_speed_with_chunking);
         }
 
         const char* name()
@@ -205,21 +206,32 @@ class HFft_Test: public Test
             ASSERT_IS_LESS_THAN(avg, (float) 0.30   );
         }
 
-        int test_fft_speed_N(int N, int baseline)
+        int test_fft_speed_N(int N, int chunks, int baseline)
         {
+            // Get local buffer for the spectrum
+            staticSpectrum = new long int[N / 2];
+
+            // Get a 1KHz sinewave generator at samplerate 48K
+            HSineGenerator<int16_t> g(48000, 1000, 100);
+            int16_t input[N * chunks];
+            g.Read(input, N * chunks);
+
             time_t start;
             time_t end;
+
+            HFft<int16_t> fft(N, 1, staticCallback, new TestWindow);
 
             int ffts = 0;
             time(&start);
             do
             {
-                test_fft_rate_frequency_N(48000, 1000, N);
+                fft.Write(input, N * chunks);
                 ffts++;
+
                 time(&end);
             }
             while( end - start < 3);
-            int fftsPerSecond = ffts / 3;
+            int fftsPerSecond = (ffts / 3) * chunks;
 
             // Calculate how many blocks we need to process per second.
             // Require trice the amount to leave enough processing cycles
@@ -237,13 +249,27 @@ class HFft_Test: public Test
         void test_fft_speed()
         {
             // Baseline values are measured when using a standard
-            // implementation of the DFT
+            // implementation of the DFT on the development machine - they makes no
+            // sense away from the author.
             int avg = 0;
-            avg += test_fft_speed_N(512, 870);
-            avg += test_fft_speed_N(2048, 350);
-            avg += test_fft_speed_N(8092, 100);
+            avg += test_fft_speed_N(512, 1, 1246);
+            avg += test_fft_speed_N(2048, 1, 408);
+            avg += test_fft_speed_N(8092, 1, 120);
 
-            INFO("Average FFT's per second: " << avg / 3 << "  (442)");
+            INFO("Average FFT's per second: " << avg / 3 << "  (784)");
+        }
+
+        void test_fft_speed_with_chunking()
+        {
+            // Baseline values are measured when using a standard
+            // implementation of the DFT on the development machine - they makes no
+            // sense away from the author.
+            int avg = 0;
+            avg += test_fft_speed_N(512, 5, 1770);
+            avg += test_fft_speed_N(2048, 5, 380);
+            avg += test_fft_speed_N(8092, 5, 110);
+
+            INFO("Average FFT's per second with chunking: " << avg / 3 << "  (753)");
         }
 
 } hfft_test;
