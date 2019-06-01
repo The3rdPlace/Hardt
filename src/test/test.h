@@ -139,3 +139,4 @@ class Test
 #define ASSERT_IGNORE(a) { assertIgnore(__FILE__, __LINE__, a); return; }
 
 #define INFO(a) std::cout << "  " << a << std::endl;
+#define WARNING(a) std::cout << "  WARNING: " << a << "!!" << std::endl;
