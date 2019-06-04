@@ -14,11 +14,11 @@ typedef std::complex<double> Complex;
 typedef std::valarray<Complex> CArray;
 
 template <class T>
-HFft<T>::HFft(int size, int average, std::function<void(long int*, size_t)> callback, HWindow<T>* window):
+HFft<T>::HFft(int size, int average, HCustomWriter<long int>* writer, HWindow<T>* window):
     HConverter<T, long int>(size),
     _size(size),
     _average(average),
-    _callback(callback),
+    _writer(writer),
     _count(0),
     _window(window)
 {
@@ -83,7 +83,7 @@ int HFft<T>::Convert(T* src, size_t size)
     if( ++_count >= _average )
     {
         // Call the callback function with the calculated spectrum
-        _callback(_spectrum, N / 2);
+        _writer->Write(_spectrum, N / 2);
 
         // Reset results
         _count = 0;
@@ -99,16 +99,16 @@ Explicit instantiation
 ********************************************************************/
 
 template
-HFft<int8_t>::HFft(int size, int average, std::function<void(long int*, size_t)> callback, HWindow<int8_t>* window);
+HFft<int8_t>::HFft(int size, int average, HCustomWriter<long int>* writer, HWindow<int8_t>* window);
 
 template
-HFft<uint8_t>::HFft(int size, int average, std::function<void(long int*, size_t)> callback, HWindow<uint8_t>* window);
+HFft<uint8_t>::HFft(int size, int average, HCustomWriter<long int>* writer, HWindow<uint8_t>* window);
 
 template
-HFft<int16_t>::HFft(int size, int average, std::function<void(long int*, size_t)> callback, HWindow<int16_t>* window);
+HFft<int16_t>::HFft(int size, int average, HCustomWriter<long int>* writer, HWindow<int16_t>* window);
 
 template
-HFft<int32_t>::HFft(int size, int average, std::function<void(long int*, size_t)> callback, HWindow<int32_t>* window);
+HFft<int32_t>::HFft(int size, int average, HCustomWriter<long int>* writer, HWindow<int32_t>* window);
 
 template
 int HFft<int8_t>::Convert(int8_t* src, size_t size);

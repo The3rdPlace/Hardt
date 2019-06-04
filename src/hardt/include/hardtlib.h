@@ -18,6 +18,7 @@ Abstract base classes with no, or little implementation
 ********************************************************************/
 
 #include "hwriter.cpp"
+#include "hcustomwriter.h"
 #include "hreader.cpp"
 #include "hprocessor.cpp"
 #include "hgenerator.cpp"
@@ -48,6 +49,5 @@ Include api function declarations
 #include "hrectangularwindow.cpp"
 #include "hhammingwindow.cpp"
 #include "hhahnwindow.cpp"
-#include "hcustomwriter.h"
 
 #endif

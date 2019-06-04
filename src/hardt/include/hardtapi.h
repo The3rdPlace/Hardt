@@ -9,6 +9,7 @@
 #include "hexceptions.h"
 
 #include "hwriter.h"
+#include "hcustomwriter.h"
 #include "hreader.h"
 #include "hprocessor.h"
 #include "hgenerator.h"
@@ -35,6 +36,5 @@
 #include "hrectangularwindow.h"
 #include "hhammingwindow.h"
 #include "hhahnwindow.h"
-#include "hcustomwriter.h"
 
 #endif
