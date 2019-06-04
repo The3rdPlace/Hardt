@@ -48,5 +48,6 @@ Include api function declarations
 #include "hrectangularwindow.cpp"
 #include "hhammingwindow.cpp"
 #include "hhahnwindow.cpp"
+#include "hcustomwriter.h"
 
 #endif

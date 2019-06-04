@@ -43,7 +43,6 @@ class HFft : public HConverter<T, long int>
             std::function<void(long int*, size_t)> func = std::bind( callback, callbackObject, _1, _2);;
 
             return new HFft<T>(size, average, func, window);
-            return NULL;
         }
 
         int Convert(T* src, size_t size);
