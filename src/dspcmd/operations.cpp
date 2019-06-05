@@ -217,7 +217,7 @@ void FFTCallback(long int* data, size_t size)
 }
 
 template <typename T>
-int RunFFT()
+int RunFFTMagnitudeFlat()
 {
     // Create reader
     HReader<T>* rd;
@@ -235,12 +235,11 @@ int RunFFT()
         return -1;
     }
 
-    // Create FFT
-    HFft<T> fft(Config.FFTSize, 4, FFTCallback, new HRectangularWindow<T>());
-
     // Create writer
-    fftWriter = new HFileWriter<long int>(Config.OutputFile);
-    fftWriter->Start();
+    HFileWriter<long int> fftWriter(Config.OutputFile);
+
+    // Create FFT
+    HFft<T> fft(Config.FFTSize, 4, &fftWriter, new HRectangularWindow<T>());
 
     // Create processor
     HStreamProcessor<T> proc(&fft, rd, Config.Blocksize, &terminated);
@@ -256,13 +255,12 @@ int RunFFT()
         delete (HFileReader<T>*) rd;
     }
 
-    // Close the writer
-    fftWriter->Stop();
-    delete fftWriter;
+    return 0;
+}
 
-    // Delete the FFT
-    delete fft;
-
+template <typename T>
+int RunFFTMagnitudePlot()
+{
     return 0;
 }
 
@@ -407,6 +405,32 @@ int RunOperation()
         }
 
         return RunFilePlayer<T>();
+    }
+
+    // Run an FFT on a local file and either write or plot the magnitude spectrum
+    if( Config.IsFFTMagnitudeFlat || Config.IsFFTMagnitudePlot )
+    {
+        // Verify configuration
+        if( Config.InputFile == NULL )
+        {
+            std::cout << "No input file (-if)" << std::endl;
+            return -1;
+        }
+        if( Config.FileFormat == NULL )
+        {
+            std::cout << "No input file format (-ff)" << std::endl;
+            return -1;
+        }
+        if( Config.IsFFTMagnitudeFlat )
+        {
+            if( Config.OutputFile == NULL )
+            {
+                std::cout << "No output file (-of)" << std::endl;
+                return -1;
+            }
+        }
+
+        return Config.IsFFTMagnitudeFlat ? RunFFTMagnitudeFlat<T>() : RunFFTMagnitudePlot<T>();
     }
 
     // No known operation could be determined from the input arguments

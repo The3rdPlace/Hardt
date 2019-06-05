@@ -1,6 +1,8 @@
 #ifndef __HCUSTOMWRITER_H
 #define __HCUSTOMWRITER_H
 
+#include <functional>
+
 template <class T>
 class HCustomWriter : public HWriter<T>
 {

@@ -67,6 +67,9 @@ HFileWriter<int16_t>::HFileWriter(const char* path);
 template
 HFileWriter<int32_t>::HFileWriter(const char* path);
 
+template
+HFileWriter<long>::HFileWriter(const char* path);
+
 // Start()
 template
 bool HFileWriter<int8_t>::Start();
@@ -79,6 +82,9 @@ bool HFileWriter<int16_t>::Start();
 
 template
 bool HFileWriter<int32_t>::Start();
+
+template
+bool HFileWriter<long>::Start();
 
 // Stop()
 template
@@ -93,6 +99,9 @@ bool HFileWriter<int16_t>::Stop();
 template
 bool HFileWriter<int32_t>::Stop();
 
+template
+bool HFileWriter<long>::Stop();
+
 // Write()
 template
 int HFileWriter<int8_t>::Write(int8_t* src, size_t blocksize);
@@ -105,5 +114,8 @@ int HFileWriter<int16_t>::Write(int16_t* src, size_t blocksize);
 
 template
 int HFileWriter<int32_t>::Write(int32_t* src, size_t blocksize);
+
+template
+int HFileWriter<long>::Write(long* src, size_t blocksize);
 
 #endif

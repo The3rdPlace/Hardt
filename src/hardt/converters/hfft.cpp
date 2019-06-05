@@ -14,7 +14,7 @@ typedef std::complex<double> Complex;
 typedef std::valarray<Complex> CArray;
 
 template <class T>
-HFft<T>::HFft(int size, int average, HCustomWriter<long int>* writer, HWindow<T>* window):
+HFft<T>::HFft(int size, int average, HWriter<long int>* writer, HWindow<T>* window):
     HConverter<T, long int>(size),
     _size(size),
     _average(average),
@@ -99,16 +99,16 @@ Explicit instantiation
 ********************************************************************/
 
 template
-HFft<int8_t>::HFft(int size, int average, HCustomWriter<long int>* writer, HWindow<int8_t>* window);
+HFft<int8_t>::HFft(int size, int average, HWriter<long int>* writer, HWindow<int8_t>* window);
 
 template
-HFft<uint8_t>::HFft(int size, int average, HCustomWriter<long int>* writer, HWindow<uint8_t>* window);
+HFft<uint8_t>::HFft(int size, int average, HWriter<long int>* writer, HWindow<uint8_t>* window);
 
 template
-HFft<int16_t>::HFft(int size, int average, HCustomWriter<long int>* writer, HWindow<int16_t>* window);
+HFft<int16_t>::HFft(int size, int average, HWriter<long int>* writer, HWindow<int16_t>* window);
 
 template
-HFft<int32_t>::HFft(int size, int average, HCustomWriter<long int>* writer, HWindow<int32_t>* window);
+HFft<int32_t>::HFft(int size, int average, HWriter<long int>* writer, HWindow<int32_t>* window);
 
 template
 int HFft<int8_t>::Convert(int8_t* src, size_t size);
