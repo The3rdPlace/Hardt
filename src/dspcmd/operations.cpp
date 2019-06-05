@@ -209,6 +209,63 @@ int RunFilePlayer()
     return 0;
 }
 
+HFileWriter<long int>* fftWriter;
+void FFTCallback(long int* data, size_t size)
+{
+    fftWriter->Write(data, size);
+
+}
+
+template <typename T>
+int RunFFT()
+{
+    // Create reader
+    HReader<T>* rd;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        rd = new HWavReader<T>(Config.InputFile);
+    }
+    else if( strcmp(Config.FileFormat, "file") == 0 )
+    {
+        rd = new HFileReader<T>(Config.InputFile);
+    }
+    else
+    {
+        std::cout << "Unknown file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+    // Create FFT
+    HFft<T> fft(Config.FFTSize, 4, FFTCallback, new HRectangularWindow<T>());
+
+    // Create writer
+    fftWriter = new HFileWriter<long int>(Config.OutputFile);
+    fftWriter->Start();
+
+    // Create processor
+    HStreamProcessor<T> proc(&fft, rd, Config.Blocksize, &terminated);
+    proc.Run();
+
+    // Delete reader
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        delete (HWavReader<T>*) rd;
+    }
+    else if( strcmp(Config.FileFormat, "file") == 0 )
+    {
+        delete (HFileReader<T>*) rd;
+    }
+
+    // Close the writer
+    fftWriter->Stop();
+    delete fftWriter;
+
+    // Delete the FFT
+    delete fft;
+
+    return 0;
+}
+
 template <typename T>
 int RunOperation()
 {
