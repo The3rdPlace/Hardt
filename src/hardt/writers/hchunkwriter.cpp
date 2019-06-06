@@ -12,6 +12,13 @@ int HChunkWriter<T>::Write(T* src, size_t blocksize)
         return WriteChunk(src, blocksize);
     }
 
+    // Make sure that chunksize is less than the input size
+    if( _chunksize > blocksize )
+    {
+        HError("Request for write with blocksize %d smaller than chunksize %d", blocksize, _chunksize);
+        throw new HWriterIOException("Request for write with too small blocksize");
+    }
+
     // Check if we can split the input into an integer number of chunks
     if( blocksize % _chunksize != 0 )
     {
