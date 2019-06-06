@@ -209,13 +209,6 @@ int RunFilePlayer()
     return 0;
 }
 
-HFileWriter<long int>* fftWriter;
-void FFTCallback(long int* data, size_t size)
-{
-    fftWriter->Write(data, size);
-
-}
-
 template <typename T>
 int RunFFTMagnitudeFlat()
 {
@@ -258,9 +251,150 @@ int RunFFTMagnitudeFlat()
     return 0;
 }
 
+long int *aggregatedSpectrum;
+int numFfts = 0;
+
+int FFTMagnitudePlotWriter(long int* data, size_t size)
+{
+    for( int i = 0; i < size; i++ )
+    {
+        aggregatedSpectrum[i] += data[i];
+    }
+    numFfts++;
+    return size;
+}
+
+void FFTMagnitudeShowPlot()
+{
+    const int spectrumWidth = 80;
+    const int spectrumHeight = 20;
+    const int scaleWidth = 7;
+
+    // Calculate initial averaged values
+    for( int i = 0; i < Config.FFTSize / 2; i++ )
+    {
+        aggregatedSpectrum[i] = aggregatedSpectrum[i] / numFfts;
+    }
+
+    // Calculate how many individual spectrum lines needs to be combined per line in the spectrum graph
+    int binsPerLine = (Config.FFTSize / 2) / spectrumWidth;
+
+    // Calculate the output spectrum
+    long int displayedSpectrum[spectrumWidth];
+    memset((void*) displayedSpectrum, 0, spectrumWidth * sizeof(long int));
+    int lineNo = 0;
+    for( int i = 0; i < spectrumWidth; i++ )
+    {
+        for( int j = 0; j < binsPerLine; j++ )
+        {
+            displayedSpectrum[i] += aggregatedSpectrum[(i * binsPerLine) + j];
+        }
+    }
+
+    // Get maximum fft value for scaling
+    int max = 0;
+    int fdelta = (Config.Rate / 2) / (Config.FFTSize / 2);
+    for( int i = 0; i < spectrumWidth; i++ )
+    {
+        max = displayedSpectrum[i] > max ? displayedSpectrum[i] : max;
+    }
+
+    // Calculate how long the spectrum should be to include enough space for the last frequency label
+    int plotWidth = ((spectrumWidth + scaleWidth) / scaleWidth) * scaleWidth;
+
+    // Upper separator
+    for( int col = 0; col < plotWidth; col++ )
+    {
+        std::cout << "-";
+    }
+
+    // Plot lines
+    int scaleFactor = max / spectrumHeight;
+    std::cout << std::endl;
+    for( int row = 0; row < spectrumHeight; row++ )
+    {
+        for( int col = 0; col < spectrumWidth; col++ )
+        {
+            int value = displayedSpectrum[col];// / scaleFactor;
+            if( value > (spectrumHeight - row - 1) * scaleFactor )
+            {
+                std::cout << "#";
+            }
+            else
+            {
+                std::cout << (col % scaleWidth == 0 ? "." : " ");
+            }
+        }
+        std::cout << std::endl;
+    }
+
+    // Add bottom scale separator
+    for( int col = 0; col < plotWidth; col++ )
+    {
+        std::cout << (col % scaleWidth == 0 ? "|" : "-");
+    }
+    std::cout << std::endl;
+
+    // Add frequency scale
+    int fcoldelta = Config.Rate / spectrumWidth;
+    for( int col = 0; col < spectrumWidth; col++ )
+    {
+        if( col % scaleWidth == 0 )
+        {
+            std::string colName = std::to_string(col * fcoldelta / 2);
+            std::string padding(scaleWidth - colName.length(), ' ');
+            std::cout << colName << padding;
+        }
+    }
+    std::cout << std::endl;
+}
+
 template <typename T>
 int RunFFTMagnitudePlot()
 {
+    // Create reader
+    HReader<T>* rd;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        rd = new HWavReader<T>(Config.InputFile);
+    }
+    else if( strcmp(Config.FileFormat, "file") == 0 )
+    {
+        rd = new HFileReader<T>(Config.InputFile);
+    }
+    else
+    {
+        std::cout << "Unknown file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+    // Create writer
+    HCustomWriter<long int> fftWriter(FFTMagnitudePlotWriter);
+
+    // Create FFT
+    HFft<T> fft(Config.FFTSize, 4, &fftWriter, new HHahnWindow<T>());
+
+    // Buffer for the accumulated spectrum values
+    aggregatedSpectrum = new long int[Config.FFTSize / 2];
+    memset((void*) aggregatedSpectrum, 0, (Config.FFTSize / 2) * sizeof(long int));
+
+    // Create processor
+    HStreamProcessor<T> proc(&fft, rd, Config.Blocksize, &terminated);
+    proc.Run();
+
+    // Delete reader
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        delete (HWavReader<T>*) rd;
+    }
+    else if( strcmp(Config.FileFormat, "file") == 0 )
+    {
+        delete (HFileReader<T>*) rd;
+    }
+
+    // Display the final plot
+    FFTMagnitudeShowPlot();
+
     return 0;
 }
 
