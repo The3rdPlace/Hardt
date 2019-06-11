@@ -58,6 +58,9 @@ bool parseArguments(int argc, char** argv)
 
             Config.IsFFTMagnitudePlot = argBoolCmp(argv[argNo], "-fmp", Config.IsFFTMagnitudePlot);
             Config.FFTSize = argIntCmp(argv[argNo], "-fmp", argv[argNo + 1], Config.FFTSize);
+
+            Config.IsFFTMagnitudeGnuPlot = argBoolCmp(argv[argNo], "-fmgp", Config.IsFFTMagnitudeGnuPlot);
+            Config.FFTSize = argIntCmp(argv[argNo], "-fmgp", argv[argNo + 1], Config.FFTSize);
         }
 
         if( argNo < argc - 2 )
@@ -106,6 +109,7 @@ bool parseArguments(int argc, char** argv)
 
             std::cout << "-fm size             Run FFT on a file and write the magnitude spectrum to a flat file" << std::endl;
             std::cout << "-fmp size            Run FFT on a file and plot the magnitude spectrum on screen" << std::endl;
+            std::cout << "-fmgp size           Run FFT on a file and plot the magnitude spectrum on screen using GnuPlot" << std::endl;
             std::cout << std::endl;
 
             // Force exit

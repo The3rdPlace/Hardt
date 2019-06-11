@@ -16,6 +16,7 @@ struct DspCmdConfig
     bool IsFileRecorder = false;
     bool IsFFTMagnitudeFlat = false;
     bool IsFFTMagnitudePlot = false;
+    bool IsFFTMagnitudeGnuPlot = false;
 
     int Port = 8080;
     char *Address = NULL;

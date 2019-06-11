@@ -291,9 +291,11 @@ void FFTMagnitudeShowPlot()
         }
     }
 
+    // Calculate frequency span per bin
+    int fdelta = (Config.Rate / 2) / (Config.FFTSize / 2);
+
     // Get maximum fft value for scaling
     int max = 0;
-    int fdelta = (Config.Rate / 2) / (Config.FFTSize / 2);
     for( int i = 0; i < spectrumWidth; i++ )
     {
         max = displayedSpectrum[i] > max ? displayedSpectrum[i] : max;
@@ -315,7 +317,7 @@ void FFTMagnitudeShowPlot()
     {
         for( int col = 0; col < spectrumWidth; col++ )
         {
-            int value = displayedSpectrum[col];// / scaleFactor;
+            int value = displayedSpectrum[col];
             if( value > (spectrumHeight - row - 1) * scaleFactor )
             {
                 std::cout << "#";
@@ -347,6 +349,31 @@ void FFTMagnitudeShowPlot()
         }
     }
     std::cout << std::endl;
+}
+
+void FFTMagnitudeShowGnuPlot()
+{
+    // Calculate the output spectrum
+    double displayedSpectrum[Config.FFTSize / 2];
+    for( int i = 0; i < Config.FFTSize / 2; i++ )
+    {
+        displayedSpectrum[i] = (double) aggregatedSpectrum[i] / numFfts;
+    }
+
+    // Calculate frequency span per bin
+    double fdelta = ((double) Config.Rate / 2) / ((double)Config.FFTSize / 2);
+
+    // Plot lines
+    FILE * gnuplotPipe = popen ("gnuplot -persistent", "w");
+
+    fprintf(gnuplotPipe, "set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2 pointtype 7 pointsize 0.5\n");
+    fprintf(gnuplotPipe, "plot '-' with linespoints linestyle 1\n");
+    for( int bin = 0; bin < Config.FFTSize / 2; bin++ )
+    {
+        fprintf(gnuplotPipe, "%lf %lf\n", (double) bin * fdelta, displayedSpectrum[bin]);
+    }
+    fprintf(gnuplotPipe, "e");
+    fclose(gnuplotPipe);
 }
 
 template <typename T>
@@ -393,7 +420,7 @@ int RunFFTMagnitudePlot()
     }
 
     // Display the final plot
-    FFTMagnitudeShowPlot();
+    Config.IsFFTMagnitudePlot ? FFTMagnitudeShowPlot() : FFTMagnitudeShowGnuPlot();
 
     return 0;
 }
@@ -542,7 +569,7 @@ int RunOperation()
     }
 
     // Run an FFT on a local file and either write or plot the magnitude spectrum
-    if( Config.IsFFTMagnitudeFlat || Config.IsFFTMagnitudePlot )
+    if( Config.IsFFTMagnitudeFlat || Config.IsFFTMagnitudePlot || Config.IsFFTMagnitudeGnuPlot )
     {
         // Verify configuration
         if( Config.InputFile == NULL )
