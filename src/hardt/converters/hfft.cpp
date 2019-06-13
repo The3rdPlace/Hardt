@@ -5,9 +5,7 @@
 
 #include <math.h>
 
-// Todo: Which ones can we leave out
 #include <complex>
-#include <iostream>
 #include <valarray>
 
 typedef std::complex<double> Complex;
