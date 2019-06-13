@@ -10,6 +10,7 @@ class HFft : public HConverter<T, long int>
         int _average;
 
         long int* _spectrum;
+        double* _phase;
 
         int _count;
         HWindow<T>* _window;
@@ -23,6 +24,7 @@ class HFft : public HConverter<T, long int>
         ~HFft()
         {
             delete _spectrum;
+            delete _phase;
             delete _buffer;
         }
 

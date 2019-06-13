@@ -21,9 +21,11 @@ HFft<T>::HFft(int size, int average, HWriter<long int>* writer, HWindow<T>* wind
 {
     HLog("HFft(%d, %d, ...)", size, average);
 
-    // Allocate a buffer for the spectrum
+    // Allocate a buffer for the spectrum and phase values
     _spectrum = new long int[size];
     memset((void*) _spectrum, 0, size * sizeof(long int));
+    _phase = new double[size];
+    memset((void*) _phase, 0, size * sizeof(double));
 
     // Allocate a buffer for intermediate results
     _buffer = new T[size];
@@ -73,7 +75,8 @@ int HFft<T>::Convert(T* src, size_t size)
 
     for( int i = 0; i < N; i++ )
     {
-        _spectrum[i] = std::abs(x[i]);
+        _spectrum[i] += std::abs(x[i]) / _average;
+        _phase[i] += std::atan( x[i].imag() / x[i].real() ) / _average;
     }
 
     // Did we reach averaging target ?
@@ -85,6 +88,7 @@ int HFft<T>::Convert(T* src, size_t size)
         // Reset results
         _count = 0;
         memset((void*) _spectrum, 0, size * sizeof(long int));
+        memset((void*) _phase, 0, size * sizeof(double));
     }
 
     // We took the entire window

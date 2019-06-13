@@ -45,13 +45,11 @@ class HConverter : public HChunkWriter<T>
 
         bool Start()
         {
-        std::cout << "START" << std::endl;
             return _writer != NULL ?_writer->Start() : true;
         }
 
         bool Stop()
         {
-            std::cout << "STOP" << std::endl;
             return _writer != NULL ?_writer->Stop() : true;
         }
 
