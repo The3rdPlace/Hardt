@@ -9,21 +9,17 @@ class HFft : public HConverter<T, long int>
         int _size;
         int _average;
 
-        long int* _magnitude;
+        long int* _spectrum;
 
         int _count;
-        HWriter<long int>* _magnitudeWriter;
-        HWriter<int32_t>* _phaseWriter;
+        HWriter<long int>* _writer;
         HWindow<T>* _window;
 
         T* _buffer;
 
     public:
 
-        HFft(int size, int average, HWriter<long int>* magnitudeWriter, HWindow<T>* window);
-        HFft(int size, HWriter<long int>* magnitudeWriter, HWindow<T>* window);
-        HFft(int size, HWriter<long int>* magnitudeWriter, HWriter<int32_t>* phaseWriter, HWindow<T>* window);
-        HFft(int size, HWriter<int32_t>* phaseWriter, HWindow<T>* window);
+        HFft(int size, int average, HWriter<long int>* writer, HWindow<T>* window);
 
         ~HFft()
         {
@@ -43,9 +39,7 @@ class HFft : public HConverter<T, long int>
             return _writer != NULL ?_writer->Stop() : true;
         }
 
-    private:
-
-        HFft(int size, int average, HWriter<long int>* magnitudeWriter, HWriter<int32_t>* phaseWriter, HWindow<T>* window);
+        // Todo: Add convenience getters to return the frequency resolution etc.
 };
 
 #endif

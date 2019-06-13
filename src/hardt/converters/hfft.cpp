@@ -14,22 +14,19 @@ typedef std::complex<double> Complex;
 typedef std::valarray<Complex> CArray;
 
 template <class T>
-HFft<T>::HFft(int size, int average, HWriter<long int>* magnitudeWriter, HWriter<int32_t>* phaseWriter, HWindow<T>* window):
+HFft<T>::HFft(int size, int average, HWriter<long int>* writer, HWindow<T>* window):
     HConverter<T, long int>(size),
     _size(size),
     _average(average),
-    _magnitudeWriter(writer),
-    _phaseWriter(writer),
+    _writer(writer),
     _count(0),
     _window(window)
 {
     HLog("HFft(%d, %d, ...)", size, average);
 
-    // Allocate a buffer for the spectrum and phase results
-    _magnitude = new long int[size];
-    _phase = new int32_t[size];
-    memset((void*) _magnitude, 0, size * sizeof(long int));
-    memset((void*) _phase, 0, size * sizeof(int32_t));
+    // Allocate a buffer for the spectrum
+    _spectrum = new long int[size];
+    memset((void*) _spectrum, 0, size * sizeof(long int));
 
     // Allocate a buffer for intermediate results
     _buffer = new T[size];
@@ -37,17 +34,6 @@ HFft<T>::HFft(int size, int average, HWriter<long int>* magnitudeWriter, HWriter
     // Set window size
     _window->SetSize(size);
 }
-
-template <class T>
-HFft(int size, HWriter<long int>* magnitudeWriter, HWindow<T>* window);
-
-template <class T>
-HFft(int size, HWriter<long int>* magnitudeWriter, HWriter<int32_t>* phaseWriter, HWindow<T>* window);
-
-template <class T>
-HFft(int size, HWriter<int32_t>* phaseWriter, HWindow<T>* window);
-
-
 
 void fft(CArray& x)
 {
