@@ -11,6 +11,7 @@ class HConverter : public HChunkWriter<T>
         std::function<void(O*, size_t)> _bufferReady;
         std::function<void(O)> _valueReady;
         std::function<void()> _ready;
+        HWriter<O>* _writer;
 
     public:
 
@@ -19,6 +20,10 @@ class HConverter : public HChunkWriter<T>
             if( _bufferReady != NULL )
             {
                 _bufferReady(buffer, blocksize);
+            }
+            if( _writer != NULL )
+            {
+                _writer->Write(buffer, blocksize);
             }
         }
 
@@ -44,7 +49,8 @@ class HConverter : public HChunkWriter<T>
             HChunkWriter<T>(),
             _bufferReady(NULL),
             _valueReady(NULL),
-            _ready(NULL)
+            _ready(NULL),
+            _writer(NULL)
         {
         }
 
@@ -52,7 +58,8 @@ class HConverter : public HChunkWriter<T>
             HChunkWriter<T>(),
             _bufferReady(ready),
             _valueReady(NULL),
-            _ready(NULL)
+            _ready(NULL),
+            _writer(NULL)
         {
         }
 
@@ -60,7 +67,8 @@ class HConverter : public HChunkWriter<T>
             HChunkWriter<T>(),
             _bufferReady(NULL),
             _valueReady(ready),
-            _ready(NULL)
+            _ready(NULL),
+            _writer(NULL)
         {
         }
 
@@ -68,7 +76,17 @@ class HConverter : public HChunkWriter<T>
             HChunkWriter<T>(),
             _bufferReady(NULL),
             _valueReady(NULL),
-            _ready(ready)
+            _ready(ready),
+            _writer(NULL)
+        {
+        }
+
+        HConverter(HWriter<O>* writer):
+            HChunkWriter<T>(),
+            _bufferReady(NULL),
+            _valueReady(NULL),
+            _ready(NULL),
+            _writer(writer)
         {
         }
 
@@ -76,7 +94,8 @@ class HConverter : public HChunkWriter<T>
             HChunkWriter<T>(chunksize),
             _bufferReady(NULL),
             _valueReady(NULL),
-            _ready(NULL)
+            _ready(NULL),
+            _writer(NULL)
         {
         }
 
@@ -84,7 +103,8 @@ class HConverter : public HChunkWriter<T>
             HChunkWriter<T>(chunksize),
             _bufferReady(ready),
             _valueReady(NULL),
-            _ready(NULL)
+            _ready(NULL),
+            _writer(NULL)
         {
         }
 
@@ -92,7 +112,8 @@ class HConverter : public HChunkWriter<T>
             HChunkWriter<T>(chunksize),
             _bufferReady(NULL),
             _valueReady(ready),
-            _ready(NULL)
+            _ready(NULL),
+            _writer(NULL)
         {
         }
 
@@ -101,6 +122,15 @@ class HConverter : public HChunkWriter<T>
             _bufferReady(NULL),
             _valueReady(NULL),
             _ready(ready)
+        {
+        }
+
+        HConverter(HWriter<O>* writer, int chunksize):
+            HChunkWriter<T>(chunksize),
+            _bufferReady(NULL),
+            _valueReady(NULL),
+            _ready(NULL),
+            _writer(writer)
         {
         }
 
