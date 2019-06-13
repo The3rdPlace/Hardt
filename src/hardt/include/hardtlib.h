@@ -17,7 +17,7 @@ Initialization, logging and other basic functions.
 Abstract base classes with no, or little implementation
 ********************************************************************/
 
-#include "hwriter.cpp"
+#include "hwriter.h"
 #include "hcustomwriter.h"
 #include "hreader.cpp"
 #include "hprocessor.cpp"

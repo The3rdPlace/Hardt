@@ -14,7 +14,6 @@ struct DspCmdConfig
     bool IsSignalGenerator = false;
     bool IsFilePlayer = false;
     bool IsFileRecorder = false;
-    bool IsFFTMagnitudeFlat = false;
     bool IsFFTMagnitudePlot = false;
     bool IsFFTMagnitudeGnuPlot = false;
 

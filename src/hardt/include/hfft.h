@@ -1,8 +1,15 @@
 #ifndef __HFFT_H
 #define __HFFT_H
 
+struct HFftResults
+{
+    double* Spectrum;
+    double* Phase;
+    int Size;
+};
+
 template <class T>
-class HFft : public HConverter<T, double>
+class HFft : public HConverter<T, HFftResults>
 {
     private:
 
@@ -19,7 +26,7 @@ class HFft : public HConverter<T, double>
 
     public:
 
-        HFft(int size, int average, HWriter<double>* writer, HWindow<T>* window);
+        HFft(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* window);
 
         ~HFft()
         {

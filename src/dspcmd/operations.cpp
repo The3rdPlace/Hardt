@@ -209,56 +209,14 @@ int RunFilePlayer()
     return 0;
 }
 
-template <typename T>
-int RunFFTMagnitudeFlat()
-{
-    // Create reader
-    HReader<T>* rd;
-    if( strcmp(Config.FileFormat, "wav") == 0 )
-    {
-        rd = new HWavReader<T>(Config.InputFile);
-    }
-    else if( strcmp(Config.FileFormat, "file") == 0 )
-    {
-        rd = new HFileReader<T>(Config.InputFile);
-    }
-    else
-    {
-        std::cout << "Unknown file format " << Config.FileFormat << std::endl;
-        return -1;
-    }
-
-    // Create writer
-    HFileWriter<double> fftWriter(Config.OutputFile);
-
-    // Create FFT
-    HFft<T> fft(Config.FFTSize, 4, &fftWriter, new HRectangularWindow<T>());
-
-    // Create processor
-    HStreamProcessor<T> proc(&fft, rd, Config.Blocksize, &terminated);
-    proc.Run();
-
-    // Delete reader
-    if( strcmp(Config.FileFormat, "wav") == 0 )
-    {
-        delete (HWavReader<T>*) rd;
-    }
-    else if( strcmp(Config.FileFormat, "file") == 0 )
-    {
-        delete (HFileReader<T>*) rd;
-    }
-
-    return 0;
-}
-
 double *aggregatedSpectrum;
 int numFfts = 0;
 
-int FFTMagnitudePlotWriter(double* data, size_t size)
+int FFTMagnitudePlotWriter(HFftResults* data, size_t size)
 {
-    for( int i = 0; i < size; i++ )
+    for( int i = 0; i < data[0].Size; i++ )
     {
-        aggregatedSpectrum[i] += data[i];
+        aggregatedSpectrum[i] += data[0].Spectrum[i];
     }
     numFfts++;
     return size;
@@ -396,7 +354,7 @@ int RunFFTMagnitudePlot()
     }
 
     // Create writer
-    HCustomWriter<double> fftWriter(FFTMagnitudePlotWriter);
+    HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
     HFft<T> fft(Config.FFTSize, 4, &fftWriter, new HHahnWindow<T>());
@@ -569,7 +527,7 @@ int RunOperation()
     }
 
     // Run an FFT on a local file and either write or plot the magnitude spectrum
-    if( Config.IsFFTMagnitudeFlat || Config.IsFFTMagnitudePlot || Config.IsFFTMagnitudeGnuPlot )
+    if( Config.IsFFTMagnitudePlot || Config.IsFFTMagnitudeGnuPlot )
     {
         // Verify configuration
         if( Config.InputFile == NULL )
@@ -582,16 +540,8 @@ int RunOperation()
             std::cout << "No input file format (-ff)" << std::endl;
             return -1;
         }
-        if( Config.IsFFTMagnitudeFlat )
-        {
-            if( Config.OutputFile == NULL )
-            {
-                std::cout << "No output file (-of)" << std::endl;
-                return -1;
-            }
-        }
 
-        return Config.IsFFTMagnitudeFlat ? RunFFTMagnitudeFlat<T>() : RunFFTMagnitudePlot<T>();
+        return RunFFTMagnitudePlot<T>();
     }
 
     // No known operation could be determined from the input arguments
