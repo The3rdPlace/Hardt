@@ -35,6 +35,9 @@ bool HWriter<int32_t>::Start();
 template
 bool HWriter<long>::Start();
 
+template
+bool HWriter<double>::Start();
+
 // Stop()
 template
 bool HWriter<int8_t>::Stop();
@@ -50,5 +53,8 @@ bool HWriter<int32_t>::Stop();
 
 template
 bool HWriter<long>::Stop();
+
+template
+bool HWriter<double>::Stop();
 
 #endif

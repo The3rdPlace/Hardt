@@ -12,8 +12,8 @@ typedef std::complex<double> Complex;
 typedef std::valarray<Complex> CArray;
 
 template <class T>
-HFft<T>::HFft(int size, int average, HWriter<long int>* writer, HWindow<T>* window):
-    HConverter<T, long int>(writer, size),
+HFft<T>::HFft(int size, int average, HWriter<double>* writer, HWindow<T>* window):
+    HConverter<T, double>(writer, size),
     _size(size),
     _average(average),
     _count(0),
@@ -22,8 +22,8 @@ HFft<T>::HFft(int size, int average, HWriter<long int>* writer, HWindow<T>* wind
     HLog("HFft(%d, %d, ...)", size, average);
 
     // Allocate a buffer for the spectrum and phase values
-    _spectrum = new long int[size];
-    memset((void*) _spectrum, 0, size * sizeof(long int));
+    _spectrum = new double[size];
+    memset((void*) _spectrum, 0, size * sizeof(double));
     _phase = new double[size];
     memset((void*) _phase, 0, size * sizeof(double));
 
@@ -83,11 +83,11 @@ int HFft<T>::Convert(T* src, size_t size)
     if( ++_count >= _average )
     {
         // Call the callback function with the calculated spectrum
-        HConverter<T, long int>::Ready(_spectrum, N / 2);
+        HConverter<T, double>::Ready(_spectrum, N / 2);
 
         // Reset results
         _count = 0;
-        memset((void*) _spectrum, 0, size * sizeof(long int));
+        memset((void*) _spectrum, 0, size * sizeof(double));
         memset((void*) _phase, 0, size * sizeof(double));
     }
 
@@ -100,16 +100,16 @@ Explicit instantiation
 ********************************************************************/
 
 template
-HFft<int8_t>::HFft(int size, int average, HWriter<long int>* writer, HWindow<int8_t>* window);
+HFft<int8_t>::HFft(int size, int average, HWriter<double>* writer, HWindow<int8_t>* window);
 
 template
-HFft<uint8_t>::HFft(int size, int average, HWriter<long int>* writer, HWindow<uint8_t>* window);
+HFft<uint8_t>::HFft(int size, int average, HWriter<double>* writer, HWindow<uint8_t>* window);
 
 template
-HFft<int16_t>::HFft(int size, int average, HWriter<long int>* writer, HWindow<int16_t>* window);
+HFft<int16_t>::HFft(int size, int average, HWriter<double>* writer, HWindow<int16_t>* window);
 
 template
-HFft<int32_t>::HFft(int size, int average, HWriter<long int>* writer, HWindow<int32_t>* window);
+HFft<int32_t>::HFft(int size, int average, HWriter<double>* writer, HWindow<int32_t>* window);
 
 template
 int HFft<int8_t>::Convert(int8_t* src, size_t size);

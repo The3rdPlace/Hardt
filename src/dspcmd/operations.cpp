@@ -229,7 +229,7 @@ int RunFFTMagnitudeFlat()
     }
 
     // Create writer
-    HFileWriter<long int> fftWriter(Config.OutputFile);
+    HFileWriter<double> fftWriter(Config.OutputFile);
 
     // Create FFT
     HFft<T> fft(Config.FFTSize, 4, &fftWriter, new HRectangularWindow<T>());
@@ -251,10 +251,10 @@ int RunFFTMagnitudeFlat()
     return 0;
 }
 
-long int *aggregatedSpectrum;
+double *aggregatedSpectrum;
 int numFfts = 0;
 
-int FFTMagnitudePlotWriter(long int* data, size_t size)
+int FFTMagnitudePlotWriter(double* data, size_t size)
 {
     for( int i = 0; i < size; i++ )
     {
@@ -280,8 +280,8 @@ void FFTMagnitudeShowPlot()
     int binsPerLine = (Config.FFTSize / 2) / spectrumWidth;
 
     // Calculate the output spectrum
-    long int displayedSpectrum[spectrumWidth];
-    memset((void*) displayedSpectrum, 0, spectrumWidth * sizeof(long int));
+    double displayedSpectrum[spectrumWidth];
+    memset((void*) displayedSpectrum, 0, spectrumWidth * sizeof(double));
     int lineNo = 0;
     for( int i = 0; i < spectrumWidth; i++ )
     {
@@ -396,14 +396,14 @@ int RunFFTMagnitudePlot()
     }
 
     // Create writer
-    HCustomWriter<long int> fftWriter(FFTMagnitudePlotWriter);
+    HCustomWriter<double> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
     HFft<T> fft(Config.FFTSize, 4, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
-    aggregatedSpectrum = new long int[Config.FFTSize / 2];
-    memset((void*) aggregatedSpectrum, 0, (Config.FFTSize / 2) * sizeof(long int));
+    aggregatedSpectrum = new double[Config.FFTSize / 2];
+    memset((void*) aggregatedSpectrum, 0, (Config.FFTSize / 2) * sizeof(double));
 
     // Create processor
     HStreamProcessor<T> proc(&fft, rd, Config.Blocksize, &terminated);

@@ -2,14 +2,14 @@
 #define __HFFT_H
 
 template <class T>
-class HFft : public HConverter<T, long int>
+class HFft : public HConverter<T, double>
 {
     private:
 
         int _size;
         int _average;
 
-        long int* _spectrum;
+        double* _spectrum;
         double* _phase;
 
         int _count;
@@ -19,7 +19,7 @@ class HFft : public HConverter<T, long int>
 
     public:
 
-        HFft(int size, int average, HWriter<long int>* writer, HWindow<T>* window);
+        HFft(int size, int average, HWriter<double>* writer, HWindow<T>* window);
 
         ~HFft()
         {

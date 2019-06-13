@@ -27,7 +27,7 @@ class HFft_Test: public Test
     private:
 
         static int staticReady;
-        static long int* staticSpectrum;
+        static double* staticSpectrum;
         int ready;
 
         void writeToFFT(HFft<int16_t>* fft)
@@ -36,20 +36,20 @@ class HFft_Test: public Test
             ASSERT_IS_EQUAL(fft->Write(input, 20), 20);
         }
 
-        static int staticCallback(long int* data, size_t length)
+        static int staticCallback(double* data, size_t length)
         {
             staticReady++;
-            long int r[64];
+            //double r[64];
 
             if( staticSpectrum != NULL && data != NULL )
             {
-                memcpy((void*) staticSpectrum, (void*) data, length * sizeof(long int));
+                memcpy((void*) staticSpectrum, (void*) data, length * sizeof(double));
             }
 
             return length;
         }
 
-        int memberCallback(long int* data, size_t length)
+        int memberCallback(double* data, size_t length)
         {
             ready++;
             return length;
@@ -68,7 +68,7 @@ class HFft_Test: public Test
         void test_fft_static_callback()
         {
             staticReady = 0;
-            auto fft = HFft<int16_t>(10, 1, new HCustomWriter<long int>(staticCallback), new TestWindow);
+            auto fft = HFft<int16_t>(10, 1, new HCustomWriter<double>(staticCallback), new TestWindow);
             writeToFFT(&fft);
             ASSERT_IS_EQUAL(staticReady, 2);
         }
@@ -76,7 +76,7 @@ class HFft_Test: public Test
         void test_fft_static_callback_with_factory()
         {
             staticReady = 0;
-            HFft<int16_t> fft(10, 1, HCustomWriter<long int>::Create(staticCallback), new TestWindow);
+            HFft<int16_t> fft(10, 1, HCustomWriter<double>::Create(staticCallback), new TestWindow);
             writeToFFT(&fft);
             ASSERT_IS_EQUAL(staticReady, 2);
         }
@@ -84,7 +84,7 @@ class HFft_Test: public Test
         void test_fft_member_callback()
         {
             ready = 0;
-            HFft<int16_t> fft(10, 1, HCustomWriter<long int>::Create<HFft_Test>(this, &HFft_Test::memberCallback), new TestWindow);
+            HFft<int16_t> fft(10, 1, HCustomWriter<double>::Create<HFft_Test>(this, &HFft_Test::memberCallback), new TestWindow);
             writeToFFT(&fft);
             ASSERT_IS_EQUAL(ready, 2);
         }
@@ -92,7 +92,7 @@ class HFft_Test: public Test
         int test_fft_rate_frequency_N(int fs, int fg, int N)
         {
             // Get local buffer for the spectrum
-            staticSpectrum = new long int[N / 2];
+            staticSpectrum = new double[N / 2];
 
             // Get a sinewave at 'fg' with samplerate 'fs' and amplitude '100'
             HSineGenerator<int16_t> g(fs, fg, 100);
@@ -100,12 +100,12 @@ class HFft_Test: public Test
             g.Read(input, N);
 
             // Run 'N' samples through the fft
-            HFft<int16_t> fft(N, 1, new HCustomWriter<long int>(staticCallback), new TestWindow);
+            HFft<int16_t> fft(N, 1, new HCustomWriter<double>(staticCallback), new TestWindow);
             fft.Write(input, N);
 
             // Check if the spectrum contains the expected peak af 'fg'
             float fdelta = fs / (float) N;
-            long int max = 0;
+            double max = 0;
             int avgFreq = 0;
             for( int i = 1; i < N / 2; i++ )
             {
@@ -210,7 +210,7 @@ class HFft_Test: public Test
         int test_fft_speed_N(int N, int chunks, int baseline)
         {
             // Get local buffer for the spectrum
-            staticSpectrum = new long int[N / 2];
+            staticSpectrum = new double[N / 2];
 
             // Get a 1KHz sinewave generator at samplerate 48K
             HSineGenerator<int16_t> g(48000, 1000, 100);
@@ -220,7 +220,7 @@ class HFft_Test: public Test
             time_t start;
             time_t end;
 
-            HFft<int16_t> fft(N, 1, new HCustomWriter<long int>(staticCallback), new TestWindow);
+            HFft<int16_t> fft(N, 1, new HCustomWriter<double>(staticCallback), new TestWindow);
 
             int ffts = 0;
             time(&start);
@@ -277,4 +277,4 @@ class HFft_Test: public Test
 
 int HFft_Test::staticReady = 0;
 
-long int* HFft_Test::staticSpectrum;
+double* HFft_Test::staticSpectrum;
