@@ -68,7 +68,7 @@ int HFft<T>::Convert(T* src, size_t size)
     CArray x(N);
     for( int i = 0; i < N ; i++ )
     {
-        Complex r(src[i], 0);
+        Complex r(_buffer[i], 0);
         x[i] = r;
     }
     fft(x);
