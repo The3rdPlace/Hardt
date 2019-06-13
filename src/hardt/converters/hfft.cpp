@@ -15,10 +15,9 @@ typedef std::valarray<Complex> CArray;
 
 template <class T>
 HFft<T>::HFft(int size, int average, HWriter<long int>* writer, HWindow<T>* window):
-    HConverter<T, long int>(size),
+    HConverter<T, long int>(writer, size),
     _size(size),
     _average(average),
-    _writer(writer),
     _count(0),
     _window(window)
 {
@@ -83,7 +82,7 @@ int HFft<T>::Convert(T* src, size_t size)
     if( ++_count >= _average )
     {
         // Call the callback function with the calculated spectrum
-        _writer->Write(_spectrum, N / 2);
+        HConverter<T, long int>::Ready(_spectrum, N / 2);
 
         // Reset results
         _count = 0;
