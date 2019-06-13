@@ -8,8 +8,15 @@ class HWriter : public HObject
 
         virtual int Write(T* src, size_t blocksize) = 0;
 
-        virtual bool Start();
-        virtual bool Stop();
+        virtual bool Start()
+        {
+            return true;
+        }
+
+        virtual bool Stop()
+        {
+            return true;
+        }
 };
 
 #endif
