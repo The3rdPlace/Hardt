@@ -16,6 +16,7 @@ target_sources(hardt_test
 	    hstreamprocessor_test.cpp
 	    hfilter_test.cpp
 	    hconverter_test.cpp
+	    houtput_test.cpp
 	    hnullwriter_test.cpp
 	    hchunkwriter_test.cpp
 	    hwindow_test.cpp

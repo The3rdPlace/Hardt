@@ -1,155 +1,113 @@
 #ifndef __HCONVERTER_H
 #define __HCONVERTER_H
 
-#include <functional>
+// Note: This class is implemented fully in this header to allow any
+//       Tin <==> Tout conversion to be defined without the need for
+//       a huge number of explicisit instantiations
 
-template <class T, class O>
-class HConverter : public HChunkWriter<T>
+template <class Tin, class Tout>
+class HConverter : public HReader<Tout>, HWriter<Tin>
 {
     private:
 
-        std::function<void(O*, size_t)> _bufferReady;
-        std::function<void(O)> _valueReady;
-        std::function<void()> _ready;
-        HWriter<O>* _writer;
+        HReader<Tin>* _reader;
+        HWriter<Tout>* _writer;
+        size_t _blocksize;
+
+        Tin *_input;
+        Tout *_output;
 
     public:
 
-        void Ready(O* buffer, size_t blocksize)
-        {
-            if( _bufferReady != NULL )
-            {
-                _bufferReady(buffer, blocksize);
-            }
-            if( _writer != NULL )
-            {
-                _writer->Write(buffer, blocksize);
-            }
-        }
-
-        void Ready(O value)
-        {
-            if( _valueReady != NULL )
-            {
-                _valueReady(value);
-            }
-        }
-
-        void Ready()
-        {
-            if( _ready != NULL )
-            {
-                _ready();
-            }
-        }
-
         bool Start()
         {
-            return _writer != NULL ?_writer->Start() : true;
+            return (_reader != NULL ? _reader->Start() : true) && (_writer != NULL ? _writer->Start() : true);
         }
 
         bool Stop()
         {
-            return _writer != NULL ?_writer->Stop() : true;
+            return (_reader != NULL ?_reader->Stop() : true) && (_writer != NULL ?_writer->Stop() : true);
         }
 
     public:
 
-        HConverter():
-            HChunkWriter<T>(),
-            _bufferReady(NULL),
-            _valueReady(NULL),
-            _ready(NULL),
-            _writer(NULL)
+        HConverter(HReader<Tin>* reader, size_t blocksize):
+            _reader(reader),
+            _blocksize(blocksize),
+            _output(NULL)
         {
+            _input = new Tin[blocksize];
         }
 
-        HConverter(std::function<void(O*, size_t)> ready):
-            HChunkWriter<T>(),
-            _bufferReady(ready),
-            _valueReady(NULL),
-            _ready(NULL),
-            _writer(NULL)
+        HConverter(HWriter<Tout>* writer, size_t blocksize):
+            _writer(writer),
+            _blocksize(blocksize),
+            _input(NULL)
         {
+            _output = new Tout[blocksize];
         }
 
-        HConverter(std::function<void(O)> ready):
-            HChunkWriter<T>(),
-            _bufferReady(NULL),
-            _valueReady(ready),
-            _ready(NULL),
-            _writer(NULL)
+        ~HConverter()
         {
+            if( _input != NULL )
+            {
+                delete[] _input;
+            }
+            if( _output != NULL )
+            {
+                delete[] _output;
+            }
         }
 
-        HConverter(std::function<void()> ready):
-            HChunkWriter<T>(),
-            _bufferReady(NULL),
-            _valueReady(NULL),
-            _ready(ready),
-            _writer(NULL)
-        {
+        int Read(Tout* dest, size_t blocksize) {
+            if( blocksize != _blocksize )
+            {
+                HError("Request for conversion-read with blocksize %d expected %d blocks", blocksize, _blocksize);
+                throw new HConverterIOException("Invalid number of blocks");
+            }
+
+            int read;
+            if( (read = _reader->Read(_input, blocksize)) != blocksize )
+            {
+                HError("Request for read with blocksize %d returned %d blocks", blocksize, read);
+                throw new HConverterIOException("Invalid number of blocks");
+            }
+
+            int converted;
+            if( (converted = Convert(_input, dest, blocksize)) != blocksize )
+            {
+                HError("Request for conversion of blocksize %d blocks converted %d blocks", blocksize, converted);
+                throw new HConverterIOException("Converted incorrect number of blocks");
+            }
+
+            return blocksize;
+        };
+
+        int Write(Tin* src, size_t blocksize) {
+            if( blocksize != _blocksize )
+            {
+                HError("Request for conversion-write with blocksize %d expected %d blocks", blocksize, _blocksize);
+                throw new HConverterIOException("Read incorrect number of blocks from input reader");
+            }
+
+            int converted;
+            if( (converted = Convert(src, _output, blocksize)) != blocksize )
+            {
+                HError("Request for conversion of blocksize %d blocks converted %d blocks", blocksize, converted);
+                throw new HConverterIOException("Converted incorrect number of blocks");
+            }
+
+            int written;
+            if( (written = _writer->Write(_output, blocksize)) != blocksize )
+            {
+                HError("Request for write with blocksize %d wrote %d blocks", blocksize, written);
+                throw new HConverterIOException("Wrote incorrect number of blocks to output writer");
+            }
+
+            return blocksize;
         }
 
-        HConverter(HWriter<O>* writer):
-            HChunkWriter<T>(),
-            _bufferReady(NULL),
-            _valueReady(NULL),
-            _ready(NULL),
-            _writer(writer)
-        {
-        }
-
-        HConverter(int chunksize):
-            HChunkWriter<T>(chunksize),
-            _bufferReady(NULL),
-            _valueReady(NULL),
-            _ready(NULL),
-            _writer(NULL)
-        {
-        }
-
-        HConverter(std::function<void(O*, size_t)> ready, int chunksize):
-            HChunkWriter<T>(chunksize),
-            _bufferReady(ready),
-            _valueReady(NULL),
-            _ready(NULL),
-            _writer(NULL)
-        {
-        }
-
-        HConverter(std::function<void(O)> ready, int chunksize):
-            HChunkWriter<T>(chunksize),
-            _bufferReady(NULL),
-            _valueReady(ready),
-            _ready(NULL),
-            _writer(NULL)
-        {
-        }
-
-        HConverter(std::function<void()> ready, int chunksize):
-            HChunkWriter<T>(chunksize),
-            _bufferReady(NULL),
-            _valueReady(NULL),
-            _ready(ready)
-        {
-        }
-
-        HConverter(HWriter<O>* writer, int chunksize):
-            HChunkWriter<T>(chunksize),
-            _bufferReady(NULL),
-            _valueReady(NULL),
-            _ready(NULL),
-            _writer(writer)
-        {
-        }
-
-        int WriteChunk(T* src, size_t blocksize)
-        {
-            return Convert(src, blocksize);
-        }
-
-        virtual int Convert(T* src, size_t blocksize) = 0;
+        virtual int Convert(Tin* src, Tout* dest, size_t blocksize) = 0;
 };
 
 #endif

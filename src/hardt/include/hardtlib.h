@@ -30,6 +30,7 @@ Include api function declarations
 
 #include "hchunkwriter.cpp"
 #include "hconverter.h"
+#include "houtput.h"
 #include "hnullwriter.cpp"
 #include "hsoundcardreader.cpp"
 #include "hfilewriter.cpp"

@@ -17,6 +17,7 @@
 
 #include "hchunkwriter.h"
 #include "hconverter.h"
+#include "houtput.h"
 #include "hnullwriter.h"
 #include "hfilewriter.h"
 #include "hfilereader.h"

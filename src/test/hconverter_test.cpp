@@ -3,22 +3,18 @@
 
 #include "test.h"
 
-void isReady(int32_t*, size_t size)
-{
-    std::cout << "READY" << std::endl;
-}
-
 class HConverter_Test: public Test
 {
     public:
 
         void run()
         {
-            UNITTEST(test_converter);
-            UNITTEST(test_converter_ready);
-            UNITTEST(test_converter_ready_buffer);
-            UNITTEST(test_converter_ready_value);
-            UNITTEST(test_chunked_converter);
+            UNITTEST(test_converter_int8_int8_read);
+            UNITTEST(test_converter_int8_int8_write);
+            UNITTEST(test_converter_int8_int8_read_overflow);
+            UNITTEST(test_converter_int8_int8_write_overflow);
+            UNITTEST(test_converter_int8_int16_read);
+            UNITTEST(test_converter_int8_int16_write);
         }
 
         const char* name()
@@ -31,223 +27,172 @@ class HConverter_Test: public Test
     public:
 
         template <class T>
-        class TestConverter : public HConverter<T, int32_t>
+        class TestWriter : public HWriter<T>
+        {
+            public:
+
+                T* Output;
+
+                TestWriter(T* output):
+                    Output(output)
+                {
+                }
+
+                int Write(T* src, size_t blocksize)
+                {
+                    memcpy((void*) Output, (void*) src, blocksize * sizeof(T));
+                    return blocksize;
+                }
+        };
+
+        template <class T>
+        class TestReader : public HReader<T>
+        {
+            public:
+
+                T* Input;
+
+                TestReader(T* input):
+                    Input(input)
+                {
+                }
+
+                int Read(T* dest, size_t blocksize)
+                {
+                    memcpy((void*) dest, (void*) Input, blocksize * sizeof(T));
+                    return blocksize;
+                }
+        };
+
+        template <class Tin, class Tout>
+        class TestConverter : public HConverter<Tin, Tout>
         {
             private:
 
-                int Convert(T* src, size_t blocksize)
-                {
-                    counter++;
+                int _factor;
 
+                int Convert(Tin* src, Tout* dest, size_t blocksize)
+                {
                     for( int i = 0; i < blocksize; i++ )
                     {
-                        result += src[i];
+                        dest[i] = src[i] * _factor;
                     }
-
-                    if( counter % 2 == 0 )
-                    {
-                        int32_t result[] = { 21, 22 };
-                        this->Ready(result, 2);
-                        this->Ready(23);
-                        this->Ready();
-                    }
-
                     return blocksize;
                 }
 
             public:
 
-                TestConverter():
-                    counter(0),
-                    result(0)
+                TestConverter(HReader<Tin>* reader, size_t blocksize, int factor):
+                    HConverter<Tin, Tout>(reader, blocksize),
+                    _factor(factor)
                 {}
 
-                TestConverter(std::function<void()> ready):
-                    HConverter<T, int32_t>(ready),
-                    counter(0),
-                    result(0)
+                TestConverter(HWriter<Tout>* writer, size_t blocksize, int factor):
+                    HConverter<Tin, Tout>(writer, blocksize),
+                    _factor(factor)
                 {}
-
-                TestConverter(std::function<void(int32_t*, size_t)> ready):
-                    HConverter<T, int32_t>(ready),
-                    counter(0),
-                    result(0)
-                {}
-
-                TestConverter(std::function<void(int32_t)> ready):
-                    HConverter<T, int32_t>(ready),
-                    counter(0),
-                    result(0)
-                {}
-
-                TestConverter(int chunksize):
-                    HConverter<T, int32_t>(2),
-                    counter(0),
-                    result(0)
-                {}
-
-                int counter;
-                int result;
         };
 
-        int readyCalled;
-        int readyBufferCalled;
-        int readyValueCalled;
-
-        void ready()
+        void test_converter_int8_int8_read()
         {
-            readyCalled++;
+            int8_t input[6] = {1, 2, 3, 4, 5, 6};
+            int8_t expected[6] = {2, 4, 6, 8, 10, 12};
+            int8_t output[6] = {0, 0 ,0 ,0 ,0 ,0};
+
+            TestReader<int8_t> reader(input);
+            TestConverter<int8_t, int8_t> converter(&reader, 6, 2);
+
+            converter.Read(output, 6);
+
+            for(int i = 0; i < 6; i++)
+            {
+                ASSERT_IS_EQUAL(output[i], expected[i]);
+            }
         }
 
-        void readyBuffer(int32_t* data, size_t size)
+        void test_converter_int8_int8_write()
         {
-            readyBufferCalled++;
-            ASSERT_IS_EQUAL((int) size, 2);
-            ASSERT_IS_EQUAL(data[0], 21);
-            ASSERT_IS_EQUAL(data[1], 22);
-        }
+            int8_t input[6] = {1, 2, 3, 4, 5, 6};
+            int8_t expected[6] = {3, 6, 9, 12, 15, 18};
+            int8_t output[6] = {0, 0 ,0 ,0 ,0 ,0};
 
-        void readyValue(int32_t value)
-        {
-            readyValueCalled++;
-            ASSERT_IS_EQUAL(value, 23);
-        }
-
-        void test_converter()
-        {
-            int8_t input[8] = {1, 2, 3, 4, 5, 6};
-
-            TestConverter<int8_t> converter;
-            readyCalled = 0;
-            readyBufferCalled = 0;
-            readyValueCalled = 0;
-
-            converter.Write(input, 2);
-            converter.Write(&input[2], 2);
-
-            ASSERT_IS_EQUAL(converter.result, 10);
-            ASSERT_IS_EQUAL(converter.counter, 2);
-
-            ASSERT_IS_EQUAL(readyCalled, 0);
-            ASSERT_IS_EQUAL(readyBufferCalled, 0);
-            ASSERT_IS_EQUAL(readyValueCalled, 0);
-
-            converter.Write(&input[4], 2);
-            ASSERT_IS_EQUAL(converter.result, 21);
-            ASSERT_IS_EQUAL(converter.counter, 3);
-
-            ASSERT_IS_EQUAL(readyCalled, 0);
-            ASSERT_IS_EQUAL(readyBufferCalled, 0);
-            ASSERT_IS_EQUAL(readyValueCalled, 0);
-        }
-
-        void test_converter_ready()
-        {
-            int8_t input[8] = {1, 2, 3, 4, 5, 6};
-
-            std::function<void()> func = std::bind( &HConverter_Test::ready, this);
-            TestConverter<int8_t> converter(func);
-            readyCalled = 0;
-            readyBufferCalled = 0;
-            readyValueCalled = 0;
-
-            converter.Write(input, 2);
-            converter.Write(&input[2], 2);
-
-            ASSERT_IS_EQUAL(converter.result, 10);
-            ASSERT_IS_EQUAL(converter.counter, 2);
-
-            ASSERT_IS_EQUAL(readyCalled, 1);
-            ASSERT_IS_EQUAL(readyBufferCalled, 0);
-            ASSERT_IS_EQUAL(readyValueCalled, 0);
-
-            converter.Write(&input[4], 2);
-            ASSERT_IS_EQUAL(converter.result, 21);
-            ASSERT_IS_EQUAL(converter.counter, 3);
-
-            ASSERT_IS_EQUAL(readyCalled, 1);
-            ASSERT_IS_EQUAL(readyBufferCalled, 0);
-            ASSERT_IS_EQUAL(readyValueCalled, 0);
-        }
-
-        void test_converter_ready_buffer()
-        {
-            int8_t input[8] = {1, 2, 3, 4, 5, 6};
-
-            using std::placeholders::_1;
-            using std::placeholders::_2;
-            std::function<void(int32_t*, size_t)> func = std::bind( &HConverter_Test::readyBuffer, this, _1, _2);
-            TestConverter<int8_t> converter(func);
-            readyCalled = 0;
-            readyBufferCalled = 0;
-            readyValueCalled = 0;
-
-            converter.Write(input, 2);
-            converter.Write(&input[2], 2);
-
-            ASSERT_IS_EQUAL(converter.result, 10);
-            ASSERT_IS_EQUAL(converter.counter, 2);
-
-            ASSERT_IS_EQUAL(readyCalled, 0);
-            ASSERT_IS_EQUAL(readyBufferCalled, 1);
-            ASSERT_IS_EQUAL(readyValueCalled, 0);
-
-            converter.Write(&input[4], 2);
-            ASSERT_IS_EQUAL(converter.result, 21);
-            ASSERT_IS_EQUAL(converter.counter, 3);
-
-            ASSERT_IS_EQUAL(readyCalled, 0);
-            ASSERT_IS_EQUAL(readyBufferCalled, 1);
-            ASSERT_IS_EQUAL(readyValueCalled, 0);
-        }
-
-        void test_converter_ready_value()
-        {
-            int8_t input[8] = {1, 2, 3, 4, 5, 6};
-
-            using std::placeholders::_1;
-            std::function<void(int32_t)> func = std::bind( &HConverter_Test::readyValue, this, _1);
-            TestConverter<int8_t> converter(func);
-            readyCalled = 0;
-            readyBufferCalled = 0;
-            readyValueCalled = 0;
-
-            converter.Write(input, 2);
-            converter.Write(&input[2], 2);
-
-            ASSERT_IS_EQUAL(converter.result, 10);
-            ASSERT_IS_EQUAL(converter.counter, 2);
-
-            ASSERT_IS_EQUAL(readyCalled, 0);
-            ASSERT_IS_EQUAL(readyBufferCalled, 0);
-            ASSERT_IS_EQUAL(readyValueCalled, 1);
-
-            converter.Write(&input[4], 2);
-            ASSERT_IS_EQUAL(converter.result, 21);
-            ASSERT_IS_EQUAL(converter.counter, 3);
-
-            ASSERT_IS_EQUAL(readyCalled, 0);
-            ASSERT_IS_EQUAL(readyBufferCalled, 0);
-            ASSERT_IS_EQUAL(readyValueCalled, 1);
-        }
-
-        void test_chunked_converter()
-        {
-            int8_t input[8] = {1, 2, 3, 4, 5, 6};
-
-            TestConverter<int8_t> converter(2);
-            readyCalled = 0;
-            readyBufferCalled = 0;
-            readyValueCalled = 0;
+            TestWriter<int8_t> writer(output);
+            TestConverter<int8_t, int8_t> converter(&writer, 6, 3);
 
             converter.Write(input, 6);
 
-            ASSERT_IS_EQUAL(converter.result, 21);
-            ASSERT_IS_EQUAL(converter.counter, 3);
+            for(int i = 0; i < 6; i++)
+            {
+                ASSERT_IS_EQUAL(output[i], expected[i]);
+            }
+        }
 
-            ASSERT_IS_EQUAL(readyCalled, 0);
-            ASSERT_IS_EQUAL(readyBufferCalled, 0);
-            ASSERT_IS_EQUAL(readyValueCalled, 0);
+        void test_converter_int8_int8_read_overflow()
+        {
+            int8_t input[6] = {1, 2, 3, 4, 5, 6};
+            int8_t expected[6] = {-24, -48, -72, -96, -120, 112};
+            int8_t output[6] = {0, 0 ,0 ,0 ,0 ,0};
+
+            TestReader<int8_t> reader(input);
+            TestConverter<int8_t, int8_t> converter(&reader, 6, 1000);
+
+            converter.Read(output, 6);
+
+            for(int i = 0; i < 6; i++)
+            {
+                ASSERT_IS_EQUAL(output[i], expected[i]);
+            }
+        }
+
+        void test_converter_int8_int8_write_overflow()
+        {
+            int8_t input[6] = {1, 2, 3, 4, 5, 6};
+            int8_t expected[6] = {-48, -96, 112, 64, 16, -32};
+            int8_t output[6] = {0, 0 ,0 ,0 ,0 ,0};
+
+            TestWriter<int8_t> writer(output);
+            TestConverter<int8_t, int8_t> converter(&writer, 6, 2000);
+
+            converter.Write(input, 6);
+
+            for(int i = 0; i < 6; i++)
+            {
+                ASSERT_IS_EQUAL(output[i], expected[i]);
+            }
+        }
+
+        void test_converter_int8_int16_read()
+        {
+            int8_t input[6] = {1, 2, 3, 4, 5, 6};
+            int16_t expected[6] = {3000, 6000, 9000, 12000, 15000, 18000};
+            int16_t output[6] = {0, 0 ,0 ,0 ,0 ,0};
+
+            TestReader<int8_t> reader(input);
+            TestConverter<int8_t, int16_t> converter(&reader, 6, 3000);
+
+            converter.Read(output, 6);
+
+            for(int i = 0; i < 6; i++)
+            {
+                ASSERT_IS_EQUAL(output[i], expected[i]);
+            }
+        }
+
+        void test_converter_int8_int16_write()
+        {
+            int8_t input[6] = {1, 2, 3, 4, 5, 6};
+            int16_t expected[6] = {4000, 8000, 12000, 16000, 20000, 24000};
+            int16_t output[6] = {0, 0 ,0 ,0 ,0 ,0};
+
+            TestWriter<int16_t> writer(output);
+            TestConverter<int8_t, int16_t> converter(&writer, 6, 4000);
+
+            converter.Write(input, 6);
+
+            for(int i = 0; i < 6; i++)
+            {
+                ASSERT_IS_EQUAL(output[i], expected[i]);
+            }
         }
 
 } hconverter_test;

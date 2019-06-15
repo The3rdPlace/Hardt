@@ -34,6 +34,10 @@ HWriterIOException::HWriterIOException(const char* reason):
     HException(reason)
 {}
 
+HConverterIOException::HConverterIOException(const char* reason):
+    HException(reason)
+{}
+
 HFilterIOException::HFilterIOException(const char* reason):
     HException(reason)
 {}

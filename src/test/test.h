@@ -48,7 +48,7 @@ class Test
         {
             if( a != b )
             {
-                std::cout << "- assertIsEqual(" << a << ", " << b << "): is not equal!" << std::endl;
+                std::cout << "- assertIsEqual(" << (T) a << ", " << (T) b << "): is not equal!" << std::endl;
                 std::cout << "  in " << file << "@" << line << std::endl;
                 Test::failed++;
             }

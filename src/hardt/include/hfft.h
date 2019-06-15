@@ -9,7 +9,7 @@ struct HFftResults
 };
 
 template <class T>
-class HFft : public HConverter<T, HFftResults>
+class HFft : public HOutput<T, HFftResults>
 {
     private:
 
@@ -35,7 +35,7 @@ class HFft : public HConverter<T, HFftResults>
             delete _buffer;
         }
 
-        int Convert(T* src, size_t size);
+        int Output(T* src, size_t size);
 };
 
 #endif

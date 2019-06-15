@@ -96,6 +96,19 @@ class HWriterIOException : public HException
 };
 
 /*
+    Thrown if there is errors during converter i/o
+
+    Constructor:
+        HWConverterIOException(reason)
+*/
+class HConverterIOException : public HException
+{
+    public:
+
+        HConverterIOException(const char* reason);
+};
+
+/*
     Thrown if there is errors during filter i/o
 
     Constructor:
