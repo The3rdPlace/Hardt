@@ -13,8 +13,9 @@ class HGenerator : public HReader<T>
     private:
 
         T* _lot;
+        int _lotSize;
         int _it;
-        int _samplesPerCycle;
+        int _delta;
 
     protected:
 
