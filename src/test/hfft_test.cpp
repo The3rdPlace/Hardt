@@ -203,7 +203,7 @@ class HFft_Test: public Test
             // than 2 percent
             avg = (avg / 12) * 100;
             INFO("Average deviation of measured vs input frequency (percent): " << avg);
-            ASSERT_IS_LESS_THAN(avg, (float) 0.30   );
+            ASSERT_IS_LESS_THAN(avg, (float) 0.60   );
         }
 
         int test_fft_speed_N(int N, int chunks, int baseline)
