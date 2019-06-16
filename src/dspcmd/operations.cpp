@@ -216,7 +216,8 @@ int FFTMagnitudePlotWriter(HFftResults* data, size_t size)
 {
     for( int i = 0; i < data[0].Size; i++ )
     {
-        aggregatedSpectrum[i] += data[0].Spectrum[i];
+        aggregatedSpectrum[i] += data[0].Phase[i];
+        //aggregatedSpectrum[i] += data[0].Spectrum[i];
     }
     numFfts++;
     return size;
@@ -324,8 +325,9 @@ void FFTMagnitudeShowGnuPlot()
     // Plot lines
     FILE * gnuplotPipe = popen ("gnuplot -persistent", "w");
 
-    fprintf(gnuplotPipe, "set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2 pointtype 7 pointsize 0.5\n");
-    fprintf(gnuplotPipe, "plot '-' with linespoints linestyle 1\n");
+    //fprintf(gnuplotPipe, "set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2 pointtype 7 pointsize 0.5\n");
+    //fprintf(gnuplotPipe, "plot '-' with linespoints linestyle 1\n");
+    fprintf(gnuplotPipe, "plot '-'\n");
     for( int bin = 0; bin < Config.FFTSize / 2; bin++ )
     {
         fprintf(gnuplotPipe, "%lf %lf\n", (double) bin * fdelta, displayedSpectrum[bin]);
@@ -357,7 +359,7 @@ int RunFFTMagnitudePlot()
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFft<T> fft(Config.FFTSize, 4, &fftWriter, new HHahnWindow<T>());
+    HFft<T> fft(Config.FFTSize, 4, &fftWriter, new HRectangularWindow<T>());//new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedSpectrum = new double[Config.FFTSize / 2];

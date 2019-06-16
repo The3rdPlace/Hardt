@@ -3,7 +3,7 @@
 
 #include "hfft.h"
 
-#include <math.h>
+#include <cmath>
 
 #include <complex>
 #include <valarray>
@@ -63,20 +63,39 @@ int HFft<T>::Output(T* src, size_t size)
     // Run the input buffer through a window function, if any is given
     _window->Apply(src, _buffer, size);
 
+    // Prepare a set of complex values
     int N = size;
-
     CArray x(N);
     for( int i = 0; i < N ; i++ )
     {
         Complex r(_buffer[i], 0);
         x[i] = r;
     }
+
+    // Calculate the FFT
     fft(x);
 
+    // Find the maximum magnitude value, we need it to determine thresshold for phase calculation
+    double max = 0;
     for( int i = 0; i < N; i++ )
     {
+        if( std::abs(x[i]) > max )
+        {
+            max = std::abs(x[i]);
+        }
+    }
+    max = max / 1000;
+
+    // Convert the complex results to magnitude and phase
+    for( int i = 0; i < N; i++ )
+    {
+        // Spectrum values
         _spectrum[i] += std::abs(x[i]) / _average;
-        _phase[i] += std::atan( x[i].imag() / x[i].real() ) / _average;
+
+        // Phase values
+        double tan = std::abs(x[i]) > max ? std::atan2( x[i].imag(), x[i].real() ) : 0;
+        double phase = (tan * 180) / M_PI;
+        _phase[i] += phase / (double) _average;
     }
 
     // Did we reach averaging target ?
