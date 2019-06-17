@@ -209,15 +209,16 @@ int RunFilePlayer()
     return 0;
 }
 
-double *aggregatedSpectrum;
+double *aggregatedMagnitudeSpectrum;
+double *aggregatedPhaseSpectrum;
 int numFfts = 0;
 
 int FFTMagnitudePlotWriter(HFftResults* data, size_t size)
 {
     for( int i = 0; i < data[0].Size; i++ )
     {
-        //aggregatedSpectrum[i] += data[0].Phase[i];
-        aggregatedSpectrum[i] += data[0].Spectrum[i];
+        aggregatedPhaseSpectrum[i] += data[0].Phase[i];
+        aggregatedMagnitudeSpectrum[i] += data[0].Spectrum[i];
     }
     numFfts++;
     return size;
@@ -232,7 +233,7 @@ void FFTMagnitudeShowPlot()
     // Calculate initial averaged values
     for( int i = 0; i < Config.FFTSize / 2; i++ )
     {
-        aggregatedSpectrum[i] = aggregatedSpectrum[i] / numFfts;
+        aggregatedMagnitudeSpectrum[i] = aggregatedMagnitudeSpectrum[i] / numFfts;
     }
 
     // Calculate how many individual spectrum lines needs to be combined per line in the spectrum graph
@@ -246,7 +247,7 @@ void FFTMagnitudeShowPlot()
     {
         for( int j = 0; j < binsPerLine; j++ )
         {
-            displayedSpectrum[i] += aggregatedSpectrum[(i * binsPerLine) + j];
+            displayedSpectrum[i] += aggregatedMagnitudeSpectrum[(i * binsPerLine) + j];
         }
     }
 
@@ -310,13 +311,15 @@ void FFTMagnitudeShowPlot()
     std::cout << std::endl;
 }
 
-void FFTMagnitudeShowGnuPlot()
+void FFTMagnitudeOrPhaseShowGnuPlot()
 {
     // Calculate the output spectrum
     double displayedSpectrum[Config.FFTSize / 2];
     for( int i = 0; i < Config.FFTSize / 2; i++ )
     {
-        displayedSpectrum[i] = (double) aggregatedSpectrum[i] / numFfts;
+        displayedSpectrum[i] = Config.IsFFTMagnitudeGnuPlot
+                             ? (double) aggregatedMagnitudeSpectrum[i] / numFfts
+                             : (double) aggregatedPhaseSpectrum[i] / numFfts;
     }
 
     // Calculate frequency span per bin
@@ -335,7 +338,7 @@ void FFTMagnitudeShowGnuPlot()
 }
 
 template <typename T>
-int RunFFTMagnitudePlot()
+int RunFFTMagnitudeOrPhasePlot()
 {
     // Create reader
     HReader<T>* rd;
@@ -360,8 +363,9 @@ int RunFFTMagnitudePlot()
     HFft<T> fft(Config.FFTSize, 4, &fftWriter, new HRectangularWindow<T>());//new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
-    aggregatedSpectrum = new double[Config.FFTSize / 2];
-    memset((void*) aggregatedSpectrum, 0, (Config.FFTSize / 2) * sizeof(double));
+    aggregatedMagnitudeSpectrum = new double[Config.FFTSize / 2];
+    aggregatedPhaseSpectrum = new double[Config.FFTSize / 2];
+    memset((void*) aggregatedPhaseSpectrum, 0, (Config.FFTSize / 2) * sizeof(double));
 
     // Create processor
     HStreamProcessor<T> proc(&fft, rd, Config.Blocksize, &terminated);
@@ -378,7 +382,7 @@ int RunFFTMagnitudePlot()
     }
 
     // Display the final plot
-    Config.IsFFTMagnitudePlot ? FFTMagnitudeShowPlot() : FFTMagnitudeShowGnuPlot();
+    Config.IsFFTMagnitudePlot ? FFTMagnitudeShowPlot() : FFTMagnitudeOrPhaseShowGnuPlot();
 
     return 0;
 }
@@ -527,7 +531,7 @@ int RunOperation()
     }
 
     // Run an FFT on a local file and either write or plot the magnitude spectrum
-    if( Config.IsFFTMagnitudePlot || Config.IsFFTMagnitudeGnuPlot )
+    if( Config.IsFFTMagnitudePlot || Config.IsFFTMagnitudeGnuPlot | Config.IsFFTPhaseGnuPlot)
     {
         // Verify configuration
         if( Config.InputFile == NULL )
@@ -541,7 +545,7 @@ int RunOperation()
             return -1;
         }
 
-        return RunFFTMagnitudePlot<T>();
+        return RunFFTMagnitudeOrPhasePlot<T>();
     }
 
     // No known operation could be determined from the input arguments
