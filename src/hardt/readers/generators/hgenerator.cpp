@@ -23,11 +23,11 @@ int HGenerator<T>::Read(T* dest, size_t blocksize)
 {
     for( int i = 0; i < blocksize; i++)
     {
-        dest[i] = _lot[_it];
+        dest[i] = _lot[(int) _it];
         _it += _delta;
-        if( _it >= _lotSize )
+        if( _it >= (float) _lotSize )
         {
-            _it -= _lotSize;
+            _it -= (float) _lotSize;
         }
     }
 
@@ -335,24 +335,32 @@ void HGenerator<T>::Calculate(H_SAMPLE_RATE rate, int frequency, T amplitude, fl
        for n=0->Tablesize-1 { SIN( (2 * M_Pi * n) / Tablesize) }
 
     */
-    
+
+    // Number of lot values
+    _lotSize = rate / 25;
+
     // Calculate size of Lot
-    _lotSize = 1920;
     _lot = new T[_lotSize];
     HLog("Created lookup table of size %d (%d bytes)", _lotSize, _lotSize * sizeof(float));
+
+    // Cast to floats to have a controlled calculation of the lot data
+    float l = _lotSize;
+    float r = rate;
+    float f = frequency;
+    float mag = amplitude;
+
+    // Calculate stepsize in the lot
+    _delta = (l / r) * f;
+    HLog("Using delta = %f", _delta);
 
     // Calculate Lot value at sample n=0 -> n = N-1
     for( int i = 0; i < _lotSize; i++ )
     {
-        _lot[i] = sin( ((2 * M_PI * i) / _lotSize) + phase ) * (float) amplitude;
+        float n = i;
+        float fact = 2 * M_PI * (n / l);
+        float out = sin(fact + phase) * mag;
+        _lot[i] = (T) out;
     }
-
-    // Calculate delta (convert to floats before calculation)
-    float l = _lotSize;
-    float r = rate;
-    float f = frequency;
-    _delta = (l / r) * f;
-    HLog("Using delta = %d", _delta);
 
     // Initial sample position
     _it = 0;

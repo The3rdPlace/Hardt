@@ -15,7 +15,7 @@ class HGenerator : public HReader<T>
         T* _lot;
         int _lotSize;
         int _it;
-        int _delta;
+        float _delta;
 
     protected:
 

@@ -360,7 +360,7 @@ int RunFFTMagnitudeOrPhasePlot()
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFft<T> fft(Config.FFTSize, 4, &fftWriter, new HRectangularWindow<T>());//new HHahnWindow<T>());
+    HFft<T> fft(Config.FFTSize, 4, &fftWriter, new HRectangularWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.FFTSize / 2];

@@ -84,7 +84,7 @@ int HFft<T>::Output(T* src, size_t size)
             max = std::abs(x[i]);
         }
     }
-    max = max / 1000;
+    max = max / 100;
 
     // Convert the complex results to magnitude and phase
     for( int i = 0; i < N; i++ )
@@ -93,7 +93,7 @@ int HFft<T>::Output(T* src, size_t size)
         _spectrum[i] += std::abs(x[i]) / _average;
 
         // Phase values
-        double tan = std::abs(x[i]) > max ? std::atan2( x[i].imag(), x[i].real() ) : 0;
+        double tan = std::abs(x[i]) >= max ? std::atan2( x[i].imag(), x[i].real() ) : 0;
         double phase = (tan * 180) / M_PI;
         _phase[i] += phase / (double) _average;
     }
