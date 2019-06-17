@@ -344,7 +344,7 @@ void HGenerator<T>::Calculate(H_SAMPLE_RATE rate, int frequency, T amplitude, fl
     // Calculate Lot value at sample n=0 -> n = N-1
     for( int i = 0; i < _lotSize; i++ )
     {
-        _lot[i] = cos( ((2 * M_PI * i) / _lotSize) + phase ) * (float) amplitude;
+        _lot[i] = sin( ((2 * M_PI * i) / _lotSize) + phase ) * (float) amplitude;
     }
 
     // Calculate delta (convert to floats before calculation)
