@@ -17,6 +17,8 @@ class HGenerator : public HReader<T>
         int _it;
         float _delta;
 
+        float* _flot;
+
     protected:
 
         HGenerator(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase = 0);

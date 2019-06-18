@@ -17,7 +17,8 @@ HFft<T>::HFft(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* w
     _size(size),
     _average(average),
     _count(0),
-    _window(window)
+    _window(window),
+    _max(0)
 {
     HLog("HFft(%d, %d, ...)", size, average);
 
@@ -26,6 +27,8 @@ HFft<T>::HFft(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* w
     memset((void*) _spectrum, 0, size * sizeof(double));
     _phase = new double[size];
     memset((void*) _phase, 0, size * sizeof(double));
+    _c = new Complex[size];
+    memset((void*) _c, 0, size * sizeof(Complex));
 
     // Allocate a buffer for intermediate results
     _buffer = new T[size];
@@ -75,36 +78,44 @@ int HFft<T>::Output(T* src, size_t size)
     // Calculate the FFT
     fft(x);
 
-    // Find the maximum magnitude value, we need it to determine thresshold for phase calculation
-    double max = 0;
-    for( int i = 0; i < N; i++ )
+    // Accumulate the results for averaging later
+    for( int i = 0; i < N / 2; i++ )
     {
-        if( std::abs(x[i]) > max )
+        _c[i] += x[i];
+        if( std::abs(x[i]) > _max )
         {
-            max = std::abs(x[i]);
+            _max = std::abs(x[i]);
         }
-    }
-    max = max / 100;
-
-    // Convert the complex results to magnitude and phase
-    for( int i = 0; i < N; i++ )
-    {
-        // Spectrum values
-        _spectrum[i] += std::abs(x[i]) / _average;
-
-        // Phase values
-        double tan = std::abs(x[i]) >= max ? std::atan2( x[i].imag(), x[i].real() ) : 0;
-        double phase = (tan * 180) / M_PI;
-        _phase[i] += phase / (double) _average;
     }
 
     // Did we reach averaging target ?
     if( ++_count >= _average )
     {
+        //_max = _max / _average;
+        HLog("MAX %f", _max);
+        // Calculate spectrum and phase
+        for( int i = 0; i < N / 2; i++ )
+        {
+            // Get absolute value at point n
+            double value = std::abs(_c[i]);
+
+            // Spectrum values
+            _spectrum[i] += value / _average;
+
+            if( value > _max / 10 )
+            {
+                double tan = std::atan2( _c[i].imag(), _c[i].real() );
+                double phase = (tan * 180) / M_PI;
+                _phase[i] = phase;// / (double) _average;
+            }
+        }
+
         // Call the callback function with the calculated spectrum
+        // Note that the FFT algorithm reverses the spectrum (even and odd is reversed)
+        // so we need to return the first N/2 bins, not the second part of the spectrum
         HFftResults results;
-        results.Spectrum = _spectrum;
-        results.Phase = _phase;
+        results.Spectrum = &_spectrum[0];
+        results.Phase = &_phase[0];
         results.Size = N / 2;
         HOutput<T, HFftResults>::Ready(&results, 1);
 
@@ -112,6 +123,8 @@ int HFft<T>::Output(T* src, size_t size)
         _count = 0;
         memset((void*) _spectrum, 0, size * sizeof(double));
         memset((void*) _phase, 0, size * sizeof(double));
+        memset((void*) _c, 0, size * sizeof(Complex));
+        _max = 0;
     }
 
     // We took the entire window

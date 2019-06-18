@@ -23,11 +23,29 @@ int HGenerator<T>::Read(T* dest, size_t blocksize)
 {
     for( int i = 0; i < blocksize; i++)
     {
-        dest[i] = _lot[(int) _it];
-        _it += _delta;
-        if( _it >= (float) _lotSize )
+        dest[i] = _lot[_it];
+
+        // Attempt phase correction
+        float diff = abs(_flot[_it] - (float) dest[i]);
+        if( diff > 0.3 )
         {
-            _it -= (float) _lotSize;
+            if( _flot[_it] > _lot[_it] )
+            {
+                dest[i]++;
+            }
+            else
+            {
+                dest[i]--;
+            }
+        }
+
+        // Increase to next lot value
+        _it += _delta;
+
+        // Past the end of the lot ?
+        if( _it >= _lotSize )
+        {
+            _it -= _lotSize;
         }
     }
 
@@ -337,10 +355,11 @@ void HGenerator<T>::Calculate(H_SAMPLE_RATE rate, int frequency, T amplitude, fl
     */
 
     // Number of lot values
-    _lotSize = rate / 25;
+    _lotSize = rate / 10;
 
     // Calculate size of Lot
     _lot = new T[_lotSize];
+    _flot = new float[_lotSize];
     HLog("Created lookup table of size %d (%d bytes)", _lotSize, _lotSize * sizeof(float));
 
     // Cast to floats to have a controlled calculation of the lot data
@@ -356,10 +375,16 @@ void HGenerator<T>::Calculate(H_SAMPLE_RATE rate, int frequency, T amplitude, fl
     // Calculate Lot value at sample n=0 -> n = N-1
     for( int i = 0; i < _lotSize; i++ )
     {
+        // Calculate value for lot at index i
         float n = i;
         float fact = 2 * M_PI * (n / l);
         float out = sin(fact + phase) * mag;
-        _lot[i] = (T) out;
+
+        // Round the floating point value to an integer value at 0.5
+        _lot[i] = (T) round(out);
+
+        // Add the real value
+        _flot[i] = out;
     }
 
     // Initial sample position

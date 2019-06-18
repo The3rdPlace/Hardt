@@ -106,7 +106,7 @@ int RunSignalGenerator()
     unsigned long int blocks = (Config.Duration * Config.Rate) / Config.Blocksize;
 
     // Create and run the signalgenerator
-    HVfo<T> sg(Config.Rate, Config.Frequency, (T) 15000, Config.Phase);
+    HVfo<T> sg(Config.Rate, Config.Frequency, (T) 5000, Config.Phase);
     HStreamProcessor<T> proc(wr, &sg, Config.Blocksize, &terminated);
     proc.Run(blocks);
 
@@ -328,6 +328,10 @@ void FFTMagnitudeOrPhaseShowGnuPlot()
     // Plot lines
     FILE* gnuplotPipe = popen ("gnuplot -persistent", "w");
     fprintf(gnuplotPipe, "set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2 pointtype 7 pointsize 0.5\n");
+    if( Config.IsFFTPhaseGnuPlot )
+    {
+        fprintf(gnuplotPipe, "set yrange [-360:360]\n");
+    }
     fprintf(gnuplotPipe, "plot '-' with linespoints linestyle 1\n");
     for( int bin = 0; bin < Config.FFTSize / 2; bin++ )
     {
