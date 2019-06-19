@@ -548,6 +548,23 @@ int RunOperation()
             std::cout << "No input file format (-ff)" << std::endl;
             return -1;
         }
+        if( Config.FFTSize == 0 || (Config.FFTSize % 2) > 0 )
+        {
+            std::cout << "Invalid fft size" << std::endl;
+            return -1;
+        }
+        if( Config.Average < 1 )
+        {
+            std::cout << "Average is too small. At least 1 fft must be taken" << std::endl;
+            return -1;
+        }
+
+        // Adjust blocksize
+        if( Config.FFTSize > Config.Blocksize )
+        {
+            Config.Blocksize = Config.FFTSize;
+            std::cout << "Blocksize < FFT size, setting new blocksize " << Config.Blocksize << std::endl;
+        }
 
         return RunFFTMagnitudeOrPhasePlot<T>();
     }

@@ -17,8 +17,7 @@ HFft<T>::HFft(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* w
     _size(size),
     _average(average),
     _count(0),
-    _window(window),
-    _max(0)
+    _window(window)
 {
     HLog("HFft(%d, %d, ...)", size, average);
 
@@ -82,17 +81,22 @@ int HFft<T>::Output(T* src, size_t size)
     for( int i = 0; i < N / 2; i++ )
     {
         _c[i] += x[i];
-        if( std::abs(x[i]) > _max )
-        {
-            _max = std::abs(x[i]);
-        }
     }
 
     // Did we reach averaging target ?
     if( ++_count >= _average )
     {
-        //_max = _max / _average;
-        HLog("MAX %f", _max);
+        // Find peak magnitude in order to filter away unneeded phase values
+        double max = 0;
+        for( int i = 0; i < N / 2; i++ )
+        {
+            double value = std::abs(_c[i]);
+            if( value > max )
+            {
+                max = value;
+            }
+        }
+
         // Calculate spectrum and phase
         for( int i = 0; i < N / 2; i++ )
         {
@@ -102,16 +106,26 @@ int HFft<T>::Output(T* src, size_t size)
             // Spectrum values
             _spectrum[i] += value / _average;
 
-            if( value > _max / 10 )
+            if( value > max / 10 )
             {
                 double tan = std::atan2( _c[i].imag(), _c[i].real() );
                 double phase = (tan * 180) / M_PI;
-                _phase[i] = phase;// / (double) _average;
+                _phase[i] = phase + 90; // cos() based FFT, phase is -90 degrees offset
+
+                // Adjust phase size
+                if( _phase[i] > 360 )
+                {
+                    _phase[i] -= 360;
+                }
+                else if ( _phase[i] < -360 )
+                {
+                    _phase[i] += 360;
+                }
             }
         }
 
         // Call the callback function with the calculated spectrum
-        // Note that the FFT algorithm reverses the spectrum (even and odd is reversed)
+        // Note that this FFT algorithm reverses the spectrum (even and odd is reversed)
         // so we need to return the first N/2 bins, not the second part of the spectrum
         HFftResults results;
         results.Spectrum = &_spectrum[0];
@@ -124,7 +138,6 @@ int HFft<T>::Output(T* src, size_t size)
         memset((void*) _spectrum, 0, size * sizeof(double));
         memset((void*) _phase, 0, size * sizeof(double));
         memset((void*) _c, 0, size * sizeof(Complex));
-        _max = 0;
     }
 
     // We took the entire window

@@ -22,6 +22,7 @@ struct DspCmdConfig
     char *Address = NULL;
 
     int FFTSize = 1024;
+    int Average = 1;
 
     char *InputFile = NULL;
     char *OutputFile = NULL;

@@ -21,7 +21,6 @@ class HFft : public HOutput<T, HFftResults>
         double* _spectrum;
         double* _phase;
         std::complex<double>* _c;
-        double _max;
 
         int _count;
         HWindow<T>* _window;

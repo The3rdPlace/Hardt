@@ -52,15 +52,6 @@ bool parseArguments(int argc, char** argv)
             Config.Port = argIntCmp(argv[argNo], "-ns", argv[argNo + 1], Config.Port);
 
             Config.FileFormat = argCharCmp(argv[argNo], "-ff", argv[argNo + 1], Config.FileFormat);
-
-            Config.IsFFTMagnitudePlot = argBoolCmp(argv[argNo], "-fmp", Config.IsFFTMagnitudePlot);
-            Config.FFTSize = argIntCmp(argv[argNo], "-fmp", argv[argNo + 1], Config.FFTSize);
-
-            Config.IsFFTMagnitudeGnuPlot = argBoolCmp(argv[argNo], "-fmgp", Config.IsFFTMagnitudeGnuPlot);
-            Config.FFTSize = argIntCmp(argv[argNo], "-fmgp", argv[argNo + 1], Config.FFTSize);
-
-            Config.IsFFTPhaseGnuPlot = argBoolCmp(argv[argNo], "-fpgp", Config.IsFFTPhaseGnuPlot);
-            Config.FFTSize = argIntCmp(argv[argNo], "-fpgp", argv[argNo + 1], Config.FFTSize);
         }
 
         if( argNo < argc - 2 )
@@ -68,6 +59,18 @@ bool parseArguments(int argc, char** argv)
             Config.IsNetworkReaderClient = argBoolCmp(argv[argNo], "-nc", Config.IsNetworkReaderClient);
             Config.Address = argCharCmp(argv[argNo], "-nc", argv[argNo + 1], Config.Address);
             Config.Port = argIntCmp(argv[argNo], "-nc", argv[argNo + 2], Config.Port);
+
+            Config.IsFFTMagnitudePlot = argBoolCmp(argv[argNo], "-fmp", Config.IsFFTMagnitudePlot);
+            Config.FFTSize = argIntCmp(argv[argNo], "-fmp", argv[argNo + 1], Config.FFTSize);
+            Config.Average = argIntCmp(argv[argNo], "-fmp", argv[argNo + 2], Config.Average);
+
+            Config.IsFFTMagnitudeGnuPlot = argBoolCmp(argv[argNo], "-fmgp", Config.IsFFTMagnitudeGnuPlot);
+            Config.FFTSize = argIntCmp(argv[argNo], "-fmgp", argv[argNo + 1], Config.FFTSize);
+            Config.Average = argIntCmp(argv[argNo], "-fmgp", argv[argNo + 2], Config.Average);
+
+            Config.IsFFTPhaseGnuPlot = argBoolCmp(argv[argNo], "-fpgp", Config.IsFFTPhaseGnuPlot);
+            Config.FFTSize = argIntCmp(argv[argNo], "-fpgp", argv[argNo + 1], Config.FFTSize);
+            Config.Average = argIntCmp(argv[argNo], "-fpgp", argv[argNo + 2], Config.Average);
         }
 
         if( argNo < argc - 3 )
@@ -107,9 +110,10 @@ bool parseArguments(int argc, char** argv)
             std::cout << "-pf                  Play file" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-fmp size            Run FFT on a file and plot the magnitude spectrum on screen" << std::endl;
-            std::cout << "-fmgp size           Run FFT on a file and plot the magnitude spectrum on screen using GnuPlot" << std::endl;
-            std::cout << "-fpgp size           Run FFT on a file and plot the phase spectrum on screen using GnuPlot" << std::endl;
+            std::cout << "-fmp size average    Run FFT on a file and plot the magnitude spectrum on screen" << std::endl;
+            std::cout << "-fmgp size average   Run FFT on a file and plot the magnitude spectrum on screen using GnuPlot" << std::endl;
+            std::cout << "-fpgp size average   Run FFT on a file and plot the phase spectrum on screen using GnuPlot" << std::endl;
+            std::cout << "                     average = 1-N indicates how many ffts is summed before the average is returned to the plot" << std::endl;
             std::cout << std::endl;
 
             // Force exit
