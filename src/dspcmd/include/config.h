@@ -1,6 +1,8 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
+#include <ctime>
+#include <time.h>
 #include "hsoundcard.h"
 
 // Settings
@@ -26,6 +28,7 @@ struct DspCmdConfig
     char *InputFile = NULL;
     char *OutputFile = NULL;
     char* FileFormat = NULL;
+    bool ForceOverwrite = false;
 
     int InputDevice = -1; // not implemented
     int OutputDevice = -1;
@@ -36,7 +39,9 @@ struct DspCmdConfig
 
     int Frequency = 1000;
     float Phase = 0;
+
     int Duration = 10;
+    time_t Start = 0;
 };
 
 extern DspCmdConfig Config;

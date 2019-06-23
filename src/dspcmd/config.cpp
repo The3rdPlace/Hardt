@@ -3,6 +3,7 @@
 #include <math.h>
 #include <string.h>
 #include <iostream>
+#include <ctime>
 
 #include "config.h"
 #include "hardtapi.h"
@@ -24,6 +25,46 @@ int argIntCmp(const char* arg, const char* option, char* value, int currentValue
     return strcmp(arg, option) == 0 ? atoi(value) : currentValue;
 }
 
+time_t argTimeCmp(const char* arg, const char* option, char* value, time_t currentValue)
+{
+    if( strcmp(arg, option) == 0 )
+    {
+        if( strlen(value) != 8 || value[2] != ':' || value[5] != ':' )
+        {
+            std::cout << "Time format is 'HH:MM:SS'" << std::endl;
+            return currentValue;
+        }
+
+        char valueString[3];
+        valueString[2] = 0;
+
+        valueString[0] = value[0];
+        valueString[1] = value[1];
+        int hour = atoi(valueString);
+
+        valueString[0] = value[3];
+        valueString[1] = value[4];
+        int minute = atoi(valueString);
+
+        valueString[0] = value[6];
+        valueString[1] = value[7];
+        int second = atoi(valueString);
+
+        time_t start = time( 0 );
+        struct tm* timeInfo = localtime( &start );
+        timeInfo->tm_hour = hour;
+        timeInfo->tm_min = minute;
+        timeInfo->tm_sec = second;
+
+        std::cout << "START " << mktime( timeInfo ) << std::endl;
+        return mktime( timeInfo );
+    }
+    else
+    {
+        return currentValue;
+    }
+}
+
 bool parseArguments(int argc, char** argv)
 {
     int PhaseIntValue = 0;
@@ -35,6 +76,8 @@ bool parseArguments(int argc, char** argv)
 
         Config.IsFileRecorder = argBoolCmp(argv[argNo], "-rf", Config.IsFileRecorder);
         Config.IsFilePlayer = argBoolCmp(argv[argNo], "-pf", Config.IsFilePlayer);
+
+        Config.ForceOverwrite = argBoolCmp(argv[argNo], "-force", Config.ForceOverwrite);
 
         if( argNo < argc - 1)
         {
@@ -52,6 +95,8 @@ bool parseArguments(int argc, char** argv)
             Config.Port = argIntCmp(argv[argNo], "-ns", argv[argNo + 1], Config.Port);
 
             Config.FileFormat = argCharCmp(argv[argNo], "-ff", argv[argNo + 1], Config.FileFormat);
+
+            Config.Start = argTimeCmp(argv[argNo], "-start", argv[argNo + 1], Config.Start);
         }
 
         if( argNo < argc - 2 )
@@ -93,7 +138,9 @@ bool parseArguments(int argc, char** argv)
             std::cout << "-if name             Name and path of input file" << std::endl;
             std::cout << "-od device           Output audio device" << std::endl;
             std::cout << "-of name             Name and path of output file" << std::endl;
+            std::cout << "-force               Force overwrite of existing file" << std::endl;
             std::cout << "-r rate              Sample rate (" << H_SAMPLE_RATE_8K << ", " << H_SAMPLE_RATE_11K << ", " << H_SAMPLE_RATE_22K << ", " << H_SAMPLE_RATE_32K << ", " << H_SAMPLE_RATE_44K1 << ", " << H_SAMPLE_RATE_48K << ", " << H_SAMPLE_RATE_96K << ", " << H_SAMPLE_RATE_192K << ") (default 48000)" << std::endl;
+            std::cout << "-start HH:MM:SS      Start time (today)" << std::endl;
             std::cout << std::endl;
             std::cout << "-sg freq phase sec   Run as signalgenerator" << std::endl;
             std::cout << std::endl;
@@ -132,6 +179,16 @@ bool VerifyConfig()
     {
         std::cout << "No format (-f)" << std::endl;
         return true;
+    }
+
+    // If we are writing a file, check if it exists
+    if( Config.OutputFile != NULL && !Config.ForceOverwrite )
+    {
+        if( !!std::ifstream(Config.OutputFile) )
+        {
+            std::cout << "Output file exists!. use -f to overwrite" << std::endl;
+            return true;
+        }
     }
 
     return false;

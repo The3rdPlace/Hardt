@@ -6,6 +6,8 @@
 
 #include "operations.h"
 #include "signalhandling.h"
+#include <thread>
+#include <chrono>
 #include "config.h"
 #include "hardtapi.h"
 
@@ -384,6 +386,26 @@ int RunFFTMagnitudePlot()
 template <typename T>
 int RunOperation()
 {
+    // Wait for start time ?
+    if( Config.Start != 0 )
+    {
+        struct tm* timeInfo = localtime( &Config.Start );
+        std::cout << "Operation will start at " << asctime(timeInfo) << std::endl;
+        time_t now;
+        std::chrono::seconds sleepDuration(1);
+        while( true )
+        {
+            if ( time(0) < Config.Start )
+            {
+                std::this_thread::sleep_for(sleepDuration);
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+
     // Show audio device information
     if( Config.ShowAudioDevices ) {
 
