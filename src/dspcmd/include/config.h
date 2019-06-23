@@ -24,6 +24,10 @@ struct DspCmdConfig
 
     int FFTSize = 1024;
     int Average = 1;
+    int XMin = 0;
+    int XMax = 0;
+    int YMin = 0;
+    int YMax = 0;
 
     char *InputFile = NULL;
     char *OutputFile = NULL;

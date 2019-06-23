@@ -326,6 +326,14 @@ void FFTMagnitudeShowGnuPlot()
     // Plot lines
     FILE* gnuplotPipe = popen ("gnuplot -persistent", "w");
     fprintf(gnuplotPipe, "set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2 pointtype 7 pointsize 0.5\n");
+    if( Config.XMax > 0 )
+    {
+        fprintf(gnuplotPipe, "set xrange [%d:%d]\n",Config.XMin, Config.XMax);
+    }
+    if( Config.YMax > 0 )
+    {
+        fprintf(gnuplotPipe, "set yrange [%d:%d]\n", Config.YMin, Config.YMax);
+    }
     fprintf(gnuplotPipe, "plot '-' with linespoints linestyle 1\n");
     for( int bin = 0; bin < Config.FFTSize / 2; bin++ )
     {
@@ -358,7 +366,7 @@ int RunFFTMagnitudePlot()
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFft<T> fft(Config.FFTSize, 4, &fftWriter, new HRectangularWindow<T>());
+    HFft<T> fft(Config.FFTSize, 4, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.FFTSize / 2];

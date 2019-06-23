@@ -97,6 +97,14 @@ bool parseArguments(int argc, char** argv)
             Config.FileFormat = argCharCmp(argv[argNo], "-ff", argv[argNo + 1], Config.FileFormat);
 
             Config.Start = argTimeCmp(argv[argNo], "-start", argv[argNo + 1], Config.Start);
+
+            Config.Average = argIntCmp(argv[argNo], "-avg", argv[argNo + 1], Config.Average);
+
+            Config.IsFFTMagnitudePlot = argBoolCmp(argv[argNo], "-fmp", Config.IsFFTMagnitudePlot);
+            Config.FFTSize = argIntCmp(argv[argNo], "-fmp", argv[argNo + 1], Config.FFTSize);
+
+            Config.IsFFTMagnitudeGnuPlot = argBoolCmp(argv[argNo], "-fmgp", Config.IsFFTMagnitudeGnuPlot);
+            Config.FFTSize = argIntCmp(argv[argNo], "-fmgp", argv[argNo + 1], Config.FFTSize);
         }
 
         if( argNo < argc - 2 )
@@ -105,17 +113,12 @@ bool parseArguments(int argc, char** argv)
             Config.Address = argCharCmp(argv[argNo], "-nc", argv[argNo + 1], Config.Address);
             Config.Port = argIntCmp(argv[argNo], "-nc", argv[argNo + 2], Config.Port);
 
-            Config.IsFFTMagnitudePlot = argBoolCmp(argv[argNo], "-fmp", Config.IsFFTMagnitudePlot);
-            Config.FFTSize = argIntCmp(argv[argNo], "-fmp", argv[argNo + 1], Config.FFTSize);
-            Config.Average = argIntCmp(argv[argNo], "-fmp", argv[argNo + 2], Config.Average);
-
-            Config.IsFFTMagnitudeGnuPlot = argBoolCmp(argv[argNo], "-fmgp", Config.IsFFTMagnitudeGnuPlot);
-            Config.FFTSize = argIntCmp(argv[argNo], "-fmgp", argv[argNo + 1], Config.FFTSize);
-            Config.Average = argIntCmp(argv[argNo], "-fmgp", argv[argNo + 2], Config.Average);
+            Config.XMin = argIntCmp(argv[argNo], "-pr", argv[argNo + 1], Config.XMin);
+            Config.XMax = argIntCmp(argv[argNo], "-pr", argv[argNo + 2], Config.XMax);
         }
 
-        if( argNo < argc - 3 )
         {
+        if( argNo < argc - 3 )
             Config.IsSignalGenerator = argBoolCmp(argv[argNo], "-sg", Config.IsSignalGenerator);
             Config.Frequency = argIntCmp(argv[argNo], "-sg", argv[argNo + 1], Config.Frequency);
             PhaseIntValue = argIntCmp(argv[argNo], "-sg", argv[argNo + 2], PhaseIntValue);
@@ -123,39 +126,49 @@ bool parseArguments(int argc, char** argv)
             Config.Duration = argIntCmp(argv[argNo], "-sg", argv[argNo + 3], Config.Duration);
         }
 
+        if( argNo < argc - 4 )
+        {
+            Config.XMin = argIntCmp(argv[argNo], "-pr", argv[argNo + 1], Config.XMin);
+            Config.XMax = argIntCmp(argv[argNo], "-pr", argv[argNo + 2], Config.XMax);
+            Config.YMin = argIntCmp(argv[argNo], "-pr", argv[argNo + 3], Config.YMin);
+            Config.YMax = argIntCmp(argv[argNo], "-pr", argv[argNo + 4], Config.YMax);
+        }
+
         if( argBoolCmp(argv[argNo], "-h", false) )
         {
             std::cout << "Usage: dspcmd [option [value]]" << std::endl << std::endl;
-            std::cout << "-a                   Show a list of available audio devices" << std::endl;
-            std::cout << "-h                   Show this help" << std::endl;
-            std::cout << "-v                   Be verbose, dont write to logfiles but to stdout" << std::endl;
+            std::cout << "-a                        Show a list of available audio devices" << std::endl;
+            std::cout << "-h                        Show this help" << std::endl;
+            std::cout << "-v                        Be verbose, dont write to logfiles but to stdout" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-bs blocksize        Blocksize used by readers and writers (default = 1024)" << std::endl;
-            std::cout << "-f                   Sample format (" << H_SAMPLE_FORMAT_INT_8 << "=Int8, " << H_SAMPLE_FORMAT_UINT_8 << "=UInt8, " << H_SAMPLE_FORMAT_INT_16 << "=Int16, " /*<< H_SAMPLE_FORMAT_INT_24 << "=Int24, "*/ << H_SAMPLE_FORMAT_INT_32 << "=Int32) (default " << H_SAMPLE_FORMAT_INT_16 << " = Int16)" << std::endl;
-            std::cout << "-ff file|wav         Type of filereader/filewriterwriter" << std::endl;
-            std::cout << "-id device           Input audio device" << std::endl;
-            std::cout << "-if name             Name and path of input file" << std::endl;
-            std::cout << "-od device           Output audio device" << std::endl;
-            std::cout << "-of name             Name and path of output file" << std::endl;
-            std::cout << "-force               Force overwrite of existing file" << std::endl;
-            std::cout << "-r rate              Sample rate (" << H_SAMPLE_RATE_8K << ", " << H_SAMPLE_RATE_11K << ", " << H_SAMPLE_RATE_22K << ", " << H_SAMPLE_RATE_32K << ", " << H_SAMPLE_RATE_44K1 << ", " << H_SAMPLE_RATE_48K << ", " << H_SAMPLE_RATE_96K << ", " << H_SAMPLE_RATE_192K << ") (default 48000)" << std::endl;
-            std::cout << "-start HH:MM:SS      Start time (today)" << std::endl;
+            std::cout << "-bs blocksize             Blocksize used by readers and writers (default = 1024)" << std::endl;
+            std::cout << "-f                        Sample format (" << H_SAMPLE_FORMAT_INT_8 << "=Int8, " << H_SAMPLE_FORMAT_UINT_8 << "=UInt8, " << H_SAMPLE_FORMAT_INT_16 << "=Int16, " /*<< H_SAMPLE_FORMAT_INT_24 << "=Int24, "*/ << H_SAMPLE_FORMAT_INT_32 << "=Int32) (default " << H_SAMPLE_FORMAT_INT_16 << " = Int16)" << std::endl;
+            std::cout << "-ff file|wav              Type of filereader/filewriterwriter" << std::endl;
+            std::cout << "-id device                Input audio device" << std::endl;
+            std::cout << "-if name                  Name and path of input file" << std::endl;
+            std::cout << "-od device                Output audio device" << std::endl;
+            std::cout << "-of name                  Name and path of output file" << std::endl;
+            std::cout << "-force                    Force overwrite of existing file" << std::endl;
+            std::cout << "-r rate                   Sample rate (" << H_SAMPLE_RATE_8K << ", " << H_SAMPLE_RATE_11K << ", " << H_SAMPLE_RATE_22K << ", " << H_SAMPLE_RATE_32K << ", " << H_SAMPLE_RATE_44K1 << ", " << H_SAMPLE_RATE_48K << ", " << H_SAMPLE_RATE_96K << ", " << H_SAMPLE_RATE_192K << ") (default 48000)" << std::endl;
+            std::cout << "-start HH:MM:SS           Start time (today)" << std::endl;
             std::cout << std::endl;
-            std::cout << "-sg freq phase sec   Run as signalgenerator" << std::endl;
-            std::cout << std::endl;
-
-            std::cout << "-nc server port      Run as network client, reading from the network and writing to a local writer" << std::endl;
-            std::cout << "-ns port             Run as network server, reading from a local reader and writing to the network" << std::endl;
+            std::cout << "-sg freq phase sec        Run as signalgenerator" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-rf                  Record file" << std::endl;
-            std::cout << "-pf                  Play file" << std::endl;
+            std::cout << "-nc server port           Run as network client, reading from the network and writing to a local writer" << std::endl;
+            std::cout << "-ns port                  Run as network server, reading from a local reader and writing to the network" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-fmp size average    Run FFT on a file and plot the magnitude spectrum on screen" << std::endl;
-            std::cout << "-fmgp size average   Run FFT on a file and plot the magnitude spectrum on screen using GnuPlot" << std::endl;
-            std::cout << "                     'average' indicates how many ffts is summed before the average is returned to the plot" << std::endl;
+            std::cout << "-rf                       Record file" << std::endl;
+            std::cout << "-pf                       Play file" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "-fmp size                 Run FFT on a file and plot the magnitude spectrum on screen" << std::endl;
+            std::cout << "-fmgp size                Run FFT on a file and plot the magnitude spectrum on screen using GnuPlot" << std::endl;
+            std::cout << "-avg number               Take 'number' FFT's and return the average spectrum" << std::endl;
+            std::cout << "-pr xmin xmax             Set minimum and maximum on the x-axis when plotting (only GnuPlot)" << std::endl;
+            std::cout << "-pr xmin xmax ymin ymax   Set minimum and maximum on the x-axis when plotting (only GnuPlot)" << std::endl;
             std::cout << std::endl;
 
             // Force exit
