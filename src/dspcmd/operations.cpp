@@ -210,14 +210,12 @@ int RunFilePlayer()
 }
 
 double *aggregatedMagnitudeSpectrum;
-double *aggregatedPhaseSpectrum;
 int numFfts = 0;
 
 int FFTMagnitudePlotWriter(HFftResults* data, size_t size)
 {
     for( int i = 0; i < data[0].Size; i++ )
     {
-        aggregatedPhaseSpectrum[i] += data[0].Phase[i];
         aggregatedMagnitudeSpectrum[i] += data[0].Spectrum[i];
     }
     numFfts++;
@@ -311,15 +309,13 @@ void FFTMagnitudeShowPlot()
     std::cout << std::endl;
 }
 
-void FFTMagnitudeOrPhaseShowGnuPlot()
+void FFTMagnitudeShowGnuPlot()
 {
     // Calculate the output spectrum
     double displayedSpectrum[Config.FFTSize / 2];
     for( int i = 0; i < Config.FFTSize / 2; i++ )
     {
-        displayedSpectrum[i] = Config.IsFFTMagnitudeGnuPlot
-                             ? (double) aggregatedMagnitudeSpectrum[i] / numFfts
-                             : (double) aggregatedPhaseSpectrum[i] / numFfts;
+        displayedSpectrum[i] = (double) aggregatedMagnitudeSpectrum[i] / numFfts;
     }
 
     // Calculate frequency span per bin
@@ -328,10 +324,6 @@ void FFTMagnitudeOrPhaseShowGnuPlot()
     // Plot lines
     FILE* gnuplotPipe = popen ("gnuplot -persistent", "w");
     fprintf(gnuplotPipe, "set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2 pointtype 7 pointsize 0.5\n");
-    if( Config.IsFFTPhaseGnuPlot )
-    {
-        fprintf(gnuplotPipe, "set yrange [-360:360]\n");
-    }
     fprintf(gnuplotPipe, "plot '-' with linespoints linestyle 1\n");
     for( int bin = 0; bin < Config.FFTSize / 2; bin++ )
     {
@@ -342,7 +334,7 @@ void FFTMagnitudeOrPhaseShowGnuPlot()
 }
 
 template <typename T>
-int RunFFTMagnitudeOrPhasePlot()
+int RunFFTMagnitudePlot()
 {
     // Create reader
     HReader<T>* rd;
@@ -368,8 +360,6 @@ int RunFFTMagnitudeOrPhasePlot()
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.FFTSize / 2];
-    aggregatedPhaseSpectrum = new double[Config.FFTSize / 2];
-    memset((void*) aggregatedPhaseSpectrum, 0, (Config.FFTSize / 2) * sizeof(double));
 
     // Create processor
     HStreamProcessor<T> proc(&fft, rd, Config.Blocksize, &terminated);
@@ -386,7 +376,7 @@ int RunFFTMagnitudeOrPhasePlot()
     }
 
     // Display the final plot
-    Config.IsFFTMagnitudePlot ? FFTMagnitudeShowPlot() : FFTMagnitudeOrPhaseShowGnuPlot();
+    Config.IsFFTMagnitudePlot ? FFTMagnitudeShowPlot() : FFTMagnitudeShowGnuPlot();
 
     return 0;
 }
@@ -535,7 +525,7 @@ int RunOperation()
     }
 
     // Run an FFT on a local file and either write or plot the magnitude spectrum
-    if( Config.IsFFTMagnitudePlot || Config.IsFFTMagnitudeGnuPlot | Config.IsFFTPhaseGnuPlot)
+    if( Config.IsFFTMagnitudePlot || Config.IsFFTMagnitudeGnuPlot )
     {
         // Verify configuration
         if( Config.InputFile == NULL )
@@ -566,7 +556,7 @@ int RunOperation()
             std::cout << "Blocksize < FFT size, setting new blocksize " << Config.Blocksize << std::endl;
         }
 
-        return RunFFTMagnitudeOrPhasePlot<T>();
+        return RunFFTMagnitudePlot<T>();
     }
 
     // No known operation could be determined from the input arguments

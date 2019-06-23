@@ -67,10 +67,6 @@ bool parseArguments(int argc, char** argv)
             Config.IsFFTMagnitudeGnuPlot = argBoolCmp(argv[argNo], "-fmgp", Config.IsFFTMagnitudeGnuPlot);
             Config.FFTSize = argIntCmp(argv[argNo], "-fmgp", argv[argNo + 1], Config.FFTSize);
             Config.Average = argIntCmp(argv[argNo], "-fmgp", argv[argNo + 2], Config.Average);
-
-            Config.IsFFTPhaseGnuPlot = argBoolCmp(argv[argNo], "-fpgp", Config.IsFFTPhaseGnuPlot);
-            Config.FFTSize = argIntCmp(argv[argNo], "-fpgp", argv[argNo + 1], Config.FFTSize);
-            Config.Average = argIntCmp(argv[argNo], "-fpgp", argv[argNo + 2], Config.Average);
         }
 
         if( argNo < argc - 3 )
@@ -112,8 +108,7 @@ bool parseArguments(int argc, char** argv)
 
             std::cout << "-fmp size average    Run FFT on a file and plot the magnitude spectrum on screen" << std::endl;
             std::cout << "-fmgp size average   Run FFT on a file and plot the magnitude spectrum on screen using GnuPlot" << std::endl;
-            std::cout << "-fpgp size average   Run FFT on a file and plot the phase spectrum on screen using GnuPlot" << std::endl;
-            std::cout << "                     average = 1-N indicates how many ffts is summed before the average is returned to the plot" << std::endl;
+            std::cout << "                     'average' indicates how many ffts is summed before the average is returned to the plot" << std::endl;
             std::cout << std::endl;
 
             // Force exit

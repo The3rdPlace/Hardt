@@ -6,7 +6,7 @@
 struct HFftResults
 {
     double* Spectrum;
-    double* Phase;
+    std::complex<double>* Result;
     int Size;
 };
 
@@ -19,8 +19,7 @@ class HFft : public HOutput<T, HFftResults>
         int _average;
 
         double* _spectrum;
-        double* _phase;
-        std::complex<double>* _c;
+        std::complex<double>* _result;
 
         int _count;
         HWindow<T>* _window;
@@ -34,7 +33,6 @@ class HFft : public HOutput<T, HFftResults>
         ~HFft()
         {
             delete _spectrum;
-            delete _phase;
             delete _buffer;
         }
 

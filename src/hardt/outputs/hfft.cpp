@@ -24,10 +24,8 @@ HFft<T>::HFft(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* w
     // Allocate a buffer for the spectrum and phase values
     _spectrum = new double[size];
     memset((void*) _spectrum, 0, size * sizeof(double));
-    _phase = new double[size];
-    memset((void*) _phase, 0, size * sizeof(double));
-    _c = new Complex[size];
-    memset((void*) _c, 0, size * sizeof(Complex));
+    _result = new Complex[size];
+    memset((void*) _result, 0, size * sizeof(Complex));
 
     // Allocate a buffer for intermediate results
     _buffer = new T[size];
@@ -80,48 +78,20 @@ int HFft<T>::Output(T* src, size_t size)
     // Accumulate the results for averaging later
     for( int i = 0; i < N / 2; i++ )
     {
-        _c[i] += x[i];
+        _result[i] += x[i];
     }
 
     // Did we reach averaging target ?
     if( ++_count >= _average )
     {
-        // Find peak magnitude in order to filter away unneeded phase values
-        double max = 0;
-        for( int i = 0; i < N / 2; i++ )
-        {
-            double value = std::abs(_c[i]);
-            if( value > max )
-            {
-                max = value;
-            }
-        }
-
-        // Calculate spectrum and phase
+        // Calculate spectrum
         for( int i = 0; i < N / 2; i++ )
         {
             // Get absolute value at point n
-            double value = std::abs(_c[i]);
+            double value = std::abs(_result[i]);
 
             // Spectrum values
             _spectrum[i] += value / _average;
-
-            if( value > max / 10 )
-            {
-                double tan = std::atan2( _c[i].imag(), _c[i].real() );
-                double phase = (tan * 180) / M_PI;
-                _phase[i] = phase + 90; // cos() based FFT, phase is -90 degrees offset
-
-                // Adjust phase size
-                if( _phase[i] > 360 )
-                {
-                    _phase[i] -= 360;
-                }
-                else if ( _phase[i] < -360 )
-                {
-                    _phase[i] += 360;
-                }
-            }
         }
 
         // Call the callback function with the calculated spectrum
@@ -129,15 +99,14 @@ int HFft<T>::Output(T* src, size_t size)
         // so we need to return the first N/2 bins, not the second part of the spectrum
         HFftResults results;
         results.Spectrum = &_spectrum[0];
-        results.Phase = &_phase[0];
+        results.Result = &_result[0];
         results.Size = N / 2;
         HOutput<T, HFftResults>::Ready(&results, 1);
 
         // Reset results
         _count = 0;
         memset((void*) _spectrum, 0, size * sizeof(double));
-        memset((void*) _phase, 0, size * sizeof(double));
-        memset((void*) _c, 0, size * sizeof(Complex));
+        memset((void*) _result, 0, size * sizeof(Complex));
     }
 
     // We took the entire window

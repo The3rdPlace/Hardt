@@ -373,6 +373,7 @@ void HGenerator<T>::Calculate(H_SAMPLE_RATE rate, int frequency, T amplitude, fl
     HLog("Using delta = %f", _delta);
 
     // Calculate Lot value at sample n=0 -> n = N-1
+    HLog("PHASE IS %f", phase);
     for( int i = 0; i < _lotSize; i++ )
     {
         // Calculate value for lot at index i
