@@ -35,6 +35,20 @@ time_t HTimer::parseDateTime(char *datetime)
 {
     std::cout << "parseDateTime ==> " << datetime << std::endl;
 
+    time_t x = time(0);
+    struct tm* y;
+    y = localtime(&x);
+
+    struct tm tm = {0};
+    if (!strptime(datetime, "%Y-%m-%d %H:%M", &tm)) {
+        std::cout << "Incorrect datetime string" << std::endl;
+    }
+    tm.tm_gmtoff = y->tm_gmtoff;
+    std::cout << "parseDateTime <== " << asctime(&tm) << std::endl;
+    return mktime(&tm);
+
+
+
     // This function uses old c-style string splitting/parsing. More clever
     // methods exists, using std::getline etc., but this is simple, portable and readable.
 
