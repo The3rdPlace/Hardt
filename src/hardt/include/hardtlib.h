@@ -8,6 +8,7 @@ Initialization, logging and other basic functions.
 
 #include "hardt.h"
 #include "hexceptions.h"
+#include "htimer.h"
 #include "hsoundcard.h"
 #include "hwav.h"
 #include "hmetrics.h"

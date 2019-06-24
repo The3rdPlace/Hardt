@@ -3,11 +3,10 @@
 #include <math.h>
 #include <string.h>
 #include <iostream>
+#include <ctime>
 
 #include "operations.h"
 #include "signalhandling.h"
-#include <thread>
-#include <chrono>
 #include "config.h"
 #include "hardtapi.h"
 
@@ -53,7 +52,15 @@ int RunNetworkReaderClient()
     HNetworkProcessor<T> client(Config.Address, Config.Port, wr, Config.Blocksize, &terminated);
     try
     {
-        client.Run();
+        if( Config.Timer.duration() > 0 )
+        {
+            unsigned long int blocks = (Config.Duration * Config.Rate) / Config.Blocksize;
+            client.Run(blocks);
+        }
+        else
+        {
+            client.Run();
+        }
     }
     catch( std::exception ex )
     {
@@ -157,7 +164,15 @@ int RunFileRecorder()
 
     // Create processor
     HStreamProcessor<T> proc(wr, &rd, Config.Blocksize, &terminated);
-    proc.Run();
+    if( Config.Timer.duration() > 0 )
+    {
+        unsigned long int blocks = (Config.Duration * Config.Rate) / Config.Blocksize;
+        proc.Run(blocks);
+    }
+    else
+    {
+        proc.Run();
+    }
 
     // Delete writer
     if( strcmp(Config.FileFormat, "wav") == 0 )
@@ -395,23 +410,15 @@ template <typename T>
 int RunOperation()
 {
     // Wait for start time ?
-    if( Config.Start != 0 )
+    if( Config.Timer.duration() > 0 )
     {
-        struct tm* timeInfo = localtime( &Config.Start );
-        std::cout << "Operation will start at " << asctime(timeInfo) << std::endl;
-        time_t now;
-        std::chrono::seconds sleepDuration(1);
-        while( true )
-        {
-            if ( time(0) < Config.Start )
-            {
-                std::this_thread::sleep_for(sleepDuration);
-            }
-            else
-            {
-                break;
-            }
-        }
+        time_t stamp = Config.Timer.start();
+        struct tm* timeInfo = localtime( &stamp );
+        std::cout << "Operation starts at " << asctime(timeInfo) << std::endl;
+        Config.Timer.wait();
+        stamp = Config.Timer.stop();
+        timeInfo = localtime( &stamp );
+        std::cout << "Operation stops at " << asctime(timeInfo) << std::endl;
     }
 
     // Show audio device information

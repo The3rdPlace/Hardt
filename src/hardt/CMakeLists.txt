@@ -12,6 +12,7 @@ target_sources(hardt
         hwav.cpp
         hexceptions.cpp
         hobject.cpp
+        htimer.cpp
 )
 
 include_directories("${PROJECT_BINARY_DIR}/src/hardt/")

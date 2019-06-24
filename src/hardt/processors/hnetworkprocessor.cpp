@@ -162,14 +162,14 @@ void HNetworkProcessor<T>::InitClient()
 }
 
 template <class T>
-void HNetworkProcessor<T>::Run()
+void HNetworkProcessor<T>::Run(long unsigned int blocks)
 {
-    _server != NULL ? RunClient() : RunServer();
+    _server != NULL ? RunClient(blocks) : RunServer(blocks);
     HLog(this->GetMetrics("HNetworkProcessor").c_str());
 }
 
 template <class T>
-void HNetworkProcessor<T>::RunServer()
+void HNetworkProcessor<T>::RunServer(long unsigned int blocks)
 {
     // Prepare select()
     int activity;
@@ -236,7 +236,7 @@ void HNetworkProcessor<T>::RunServer()
             HLog("Accepting new connection from %s", inet_ntoa(((struct sockaddr_in *) &_address)->sin_addr));
 
             // Handle readers or writers
-            RunProcessor();
+            RunProcessor(blocks);
 
             // Close the socket, should it still be open
             if( _clientSocket > -1 )
@@ -267,9 +267,9 @@ void HNetworkProcessor<T>::RunServer()
 }
 
 template <class T>
-void HNetworkProcessor<T>::RunClient()
+void HNetworkProcessor<T>::RunClient(long unsigned int blocks)
 {
-    RunProcessor();
+    RunProcessor(blocks);
     if( _clientSocket > -1 )
     {
         HLog("Closing connection to the client");
@@ -281,11 +281,11 @@ void HNetworkProcessor<T>::RunClient()
 }
 
 template <class T>
-void HNetworkProcessor<T>::RunProcessor()
+void HNetworkProcessor<T>::RunProcessor(long unsigned int blocks)
 {
     _networkReader.SetSocket(_clientSocket);
     _networkWriter.SetSocket(_clientSocket);
-    HProcessor<T>::Run();
+    HProcessor<T>::Run(blocks);
 }
 
 template <class T>
@@ -373,16 +373,16 @@ HNetworkProcessor<int32_t>::~HNetworkProcessor();
 
 // Run()
 template
-void HNetworkProcessor<int8_t>::Run();
+void HNetworkProcessor<int8_t>::Run(long unsigned int blocks);
 
 template
-void HNetworkProcessor<uint8_t>::Run();
+void HNetworkProcessor<uint8_t>::Run(long unsigned int blocks);
 
 template
-void HNetworkProcessor<int16_t>::Run();
+void HNetworkProcessor<int16_t>::Run(long unsigned int blocks);
 
 template
-void HNetworkProcessor<int32_t>::Run();
+void HNetworkProcessor<int32_t>::Run(long unsigned int blocks);
 
 // Halt()
 template

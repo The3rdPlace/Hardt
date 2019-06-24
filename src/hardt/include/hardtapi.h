@@ -7,6 +7,7 @@
 #include "hwav.h"
 #include "hsoundcard.h"
 #include "hexceptions.h"
+#include "htimer.h"
 
 #include "hwriter.h"
 #include "hcustomwriter.h"

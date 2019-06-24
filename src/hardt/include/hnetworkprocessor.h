@@ -25,9 +25,9 @@ class HNetworkProcessor : public HProcessor<T>
 
         void InitServer();
         void InitClient();
-        void RunServer();
-        void RunClient();
-        void RunProcessor();
+        void RunServer(long unsigned int blocks);
+        void RunClient(long unsigned int blocks);
+        void RunProcessor(long unsigned int blocks);
 
     public:
 
@@ -38,7 +38,7 @@ class HNetworkProcessor : public HProcessor<T>
 
         ~HNetworkProcessor();
 
-        void Run();
+        void Run(long unsigned int blocks = 0);
         void Halt();
 };
 

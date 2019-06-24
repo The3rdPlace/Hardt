@@ -4,6 +4,7 @@
 #include <ctime>
 #include <time.h>
 #include "hsoundcard.h"
+#include "htimer.h"
 
 // Settings
 struct DspCmdConfig
@@ -46,6 +47,7 @@ struct DspCmdConfig
 
     int Duration = 10;
     time_t Start = 0;
+    HTimer Timer;
 };
 
 extern DspCmdConfig Config;
