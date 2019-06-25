@@ -83,10 +83,14 @@ bool parseArguments(int argc, char** argv)
 
             Config.XMin = argIntCmp(argv[argNo], "-pr", argv[argNo + 1], Config.XMin);
             Config.XMax = argIntCmp(argv[argNo], "-pr", argv[argNo + 2], Config.XMax);
+
+            Config.IsFileConverter = argBoolCmp(argv[argNo], "-fc", Config.IsFileConverter);
+            Config.InFileFormat = argCharCmp(argv[argNo], "-fc", argv[argNo + 1], Config.InFileFormat);
+            Config.OutFileFormat = argCharCmp(argv[argNo], "-fc", argv[argNo + 2], Config.OutFileFormat);
         }
 
-        {
         if( argNo < argc - 3 )
+        {
             Config.IsSignalGenerator = argBoolCmp(argv[argNo], "-sg", Config.IsSignalGenerator);
             Config.Frequency = argIntCmp(argv[argNo], "-sg", argv[argNo + 1], Config.Frequency);
             PhaseIntValue = argIntCmp(argv[argNo], "-sg", argv[argNo + 2], PhaseIntValue);
@@ -138,6 +142,9 @@ bool parseArguments(int argc, char** argv)
             std::cout << "-avg number                Take 'number' FFT's and return the average spectrum" << std::endl;
             std::cout << "-pr xmin xmax              Set minimum and maximum on the x-axis when plotting (only GnuPlot)" << std::endl;
             std::cout << "-pr xmin xmax ymin ymax    Set minimum and maximum on the x-axis when plotting (only GnuPlot)" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "-fc in-format out-format   Convert input file format to output file format" << std::endl;
             std::cout << std::endl;
 
             // Force exit

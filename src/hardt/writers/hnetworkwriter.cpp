@@ -30,7 +30,7 @@ int HNetworkWriter<T>::Write(T* src, size_t blocksize)
     int out = send(_socket, (void*) src, blocksize *  sizeof(T), 0 );
     if( out >= 0 )
     {
-        this->Metrics.BlocksOut += out / sizeof(T);
+        this->Metrics.BlocksOut++;
         this->Metrics.BytesOut += out;
 
         return out / sizeof(T);

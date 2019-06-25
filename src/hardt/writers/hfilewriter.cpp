@@ -17,7 +17,7 @@ int HFileWriter<T>::Write(T* src, size_t blocksize)
 {
     this->Metrics.Writes++;
     _stream.write((char*) src, blocksize * sizeof(T));
-    this->Metrics.BlocksOut += blocksize;
+    this->Metrics.BlocksOut++;
     this->Metrics.BytesOut += blocksize * sizeof(T);
     return blocksize;
 }

@@ -43,6 +43,7 @@ time_t HTimer::parseDateTime(char *datetime)
     // Initialize with 'now'
     time_t now = time(0);
     struct tm* tm = localtime(&now);
+    tm->tm_sec = 0;
 
     // Parse input
     if (!strptime(datetime, strlen(datetime) == 5 ? "%H:%M" : "%Y-%m-%d %H:%M", tm)) {

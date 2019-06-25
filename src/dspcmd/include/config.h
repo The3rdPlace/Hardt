@@ -19,6 +19,10 @@ struct DspCmdConfig
     bool IsFileRecorder = false;
     bool IsFFTMagnitudePlot = false;
     bool IsFFTMagnitudeGnuPlot = false;
+    bool IsFileConverter = false;
+
+    char* InFileFormat = NULL;
+    char* OutFileFormat = NULL;
 
     int Port = 8080;
     char *Address = NULL;
