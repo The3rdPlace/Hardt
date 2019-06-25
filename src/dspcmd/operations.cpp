@@ -54,7 +54,7 @@ int RunNetworkReaderClient()
     {
         if( Config.Timer.duration() > 0 )
         {
-            unsigned long int blocks = (Config.Duration * Config.Rate) / Config.Blocksize;
+            unsigned long int blocks = (Config.Timer.duration() * Config.Rate) / Config.Blocksize;
             client.Run(blocks);
         }
         else
@@ -166,7 +166,7 @@ int RunFileRecorder()
     HStreamProcessor<T> proc(wr, &rd, Config.Blocksize, &terminated);
     if( Config.Timer.duration() > 0 )
     {
-        unsigned long int blocks = (Config.Duration * Config.Rate) / Config.Blocksize;
+        unsigned long int blocks = (Config.Timer.duration() * Config.Rate) / Config.Blocksize;
         proc.Run(blocks);
     }
     else
