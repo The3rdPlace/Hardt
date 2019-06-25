@@ -29,34 +29,42 @@ HTimer::HTimer(char* start, char* stop):
     // Start value
     _start = parseDateTime(start);
     _stop = parseDateTime(stop);
-
 }
 
 time_t HTimer::parseDateTime(char *datetime)
 {
-    struct tm tm = {0};
-    if (!strptime(datetime, "%Y-%m-%d %H:%M", &tm)) {
+    // Check that we know the datetime format
+    if( strlen(datetime) != 5 && strlen(datetime) != 16 )
+    {
+        HError("Unknown datetime string format");
+        return 0;
+    }
+
+    // Initialize with 'now'
+    time_t now = time(0);
+    struct tm* tm = localtime(&now);
+
+    // Parse input
+    if (!strptime(datetime, strlen(datetime) == 5 ? "%H:%M" : "%Y-%m-%d %H:%M", tm)) {
         HError("Incorrect datetime string %s", datetime);
     }
-    //tm.tm_hour -= tm.tm_gmtoff;
-    //tm.tm_hour -= (tm.tm_isdst > 0 ? 1 : 0);
-    tm.tm_hour--;  // Works in denmark - we need to figure this out!
-    std::cout << "gm " << tm.tm_gmtoff << " dst " << tm.tm_isdst << std::endl;
-    HLog("datetime was %s, parsed time is %s", datetime, asctime(&tm));
-    return mktime(&tm);
+    HLog("Datetime was %s, parsed time is %s", datetime, asctime(tm));
+
+    // Return timestamp
+    time_t result = mktime(tm);
+    HLog("Returned timestamp is %s", asctime(localtime(&result)));
+    return result;
 }
 
 void HTimer::setStart(char *datetime)
 {
     _start = parseDateTime(datetime);
-    std::cout << "start = " << _start << std::endl;
     _active = true;
 }
 
 void HTimer::setStop(char *datetime)
 {
     _stop = parseDateTime(datetime);
-    std::cout << "stop = " << _stop << std::endl;
     _active = true;
 }
 
@@ -77,7 +85,6 @@ void HTimer::wait()
         while( _active && time(0) < _start )
         {
             std::this_thread::sleep_for(sleepDuration);
-            std::cout << "now = " << _start - time(0) << std::endl;
         }
 
         tm = localtime(&_start);
