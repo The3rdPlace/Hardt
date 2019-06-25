@@ -27,18 +27,24 @@ template <class T>
 int HNetworkReader<T>::Read(T* dest, size_t blocksize)
 {
     // Read data
-    int in = read( _socket, (void*) dest, blocksize * sizeof(T));
-    if( in <= 0 )
+    int total = 0;
+    int len = 0;
+    while( total < blocksize * sizeof(T) )
     {
-        HLog("Zero read from socket, socket may have been closed");
-        return 0;
+        int in = read( _socket, (void*) &dest[total / sizeof(T)], (blocksize * sizeof(T)) - total);
+        if( in <= 0 )
+        {
+            HLog("Zero read from socket, socket may have been closed");
+            return 0;
+        }
+        total += in;
     }
 
     this->Metrics.Reads++;
-    this->Metrics.BlocksIn += in / sizeof(T);
-    this->Metrics.BytesIn += in;
+    this->Metrics.BlocksIn++;
+    this->Metrics.BytesIn += total;
 
-    return in / sizeof(T);
+    return total / sizeof(T);
 }
 
 /********************************************************************
