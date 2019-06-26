@@ -6,6 +6,19 @@
 
 int main(int argc, char** argv)
 {
+    // Initialize the Hardt library, giving a name for logfiles, or if
+    // the '-v' switch has been given, let Hardt log directly to stdout.
+    // We need to detect the -v switch now to enable verbose logging from
+    // the beginning
+    for( int i = 0; i < argc; i++ )
+    {
+        if( strcmp(argv[i], "-v" ) == 0 )
+        {
+            Config.Verbose = true;
+        }
+    }
+    HInit(std::string("dspcmd"), Config.Verbose);
+
     // Show application name and parse input arguments
 	std::cout << "dspcmd: using Hardt " + getversion() << std::endl ;
     if( parseArguments(argc, argv) )
@@ -18,10 +31,6 @@ int main(int argc, char** argv)
     {
         return 1;
     }
-
-    // Initialize the Hardt library, giving a name for logfiles, or if
-    // the '-v' switch has been given, let Hardt log directly to stdout
-    HInit(std::string("dspcmd"), Config.Verbose);
 
     // Setup signal handling
     SetupSignalHandling();

@@ -10,6 +10,8 @@ class HTimer
 
         time_t parseDateTime(char *datetime);
 
+        static char *asctime2(struct tm* tm);
+
         bool _active;
 
     public:

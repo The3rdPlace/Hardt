@@ -49,11 +49,11 @@ time_t HTimer::parseDateTime(char *datetime)
     if (!strptime(datetime, strlen(datetime) == 5 ? "%H:%M" : "%Y-%m-%d %H:%M", tm)) {
         HError("Incorrect datetime string %s", datetime);
     }
-    HLog("Datetime was %s, parsed time is %s", datetime, asctime(tm));
+    HLog("Datetime was %s, parsed time is %s", datetime, HTimer::asctime2(tm));
 
     // Return timestamp
     time_t result = mktime(tm);
-    HLog("Returned timestamp is %s", asctime(localtime(&result)));
+    HLog("Returned timestamp is %s", HTimer::asctime2(localtime(&result)));
     return result;
 }
 
@@ -80,7 +80,7 @@ void HTimer::wait()
     if( time(0) < _start )
     {
         struct tm* tm = localtime(&_start);
-        HLog("Waiting untill %s", asctime(tm));
+        HLog("Waiting untill %s", HTimer::asctime2(tm));
 
         std::chrono::seconds sleepDuration(1);
         while( _active && time(0) < _start )
@@ -89,7 +89,7 @@ void HTimer::wait()
         }
 
         tm = localtime(&_start);
-        HLog("Wait finished, operation should run untill %s", asctime(tm));
+        HLog("Wait finished, operation should run untill %s", HTimer::asctime2(tm));
     }
     else if( time(0) > _stop )
     {
@@ -101,4 +101,15 @@ void HTimer::wait()
     }
 }
 
+char *HTimer::asctime2(struct tm* tm)
+{
+    char *time = asctime(tm);
+    #ifdef _WIN32
+        time[strlen(time) - 2] = '\0';
+    #else
+        time[strlen(time) - 1] = '\0';
+    #endif
+
+    return time;
+}
 #endif
