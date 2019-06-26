@@ -38,5 +38,6 @@
 #include "hrectangularwindow.h"
 #include "hhammingwindow.h"
 #include "hhahnwindow.h"
+#include "hlinearmixer.h"
 
 #endif

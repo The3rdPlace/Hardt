@@ -51,5 +51,6 @@ Include api function declarations
 #include "hrectangularwindow.cpp"
 #include "hhammingwindow.cpp"
 #include "hhahnwindow.cpp"
+#include "hlinearmixer.cpp"
 
 #endif
