@@ -10,7 +10,8 @@ class HLinearMixer : public HReader<T>
         HReader<T>* _reader_2;
 
         int _blocksize;
-        T* _buffer;
+        T* _buffer_1;
+        T* _buffer_2;
 
     public:
 

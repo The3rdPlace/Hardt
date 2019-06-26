@@ -11,16 +11,17 @@ HLinearMixer<T>::HLinearMixer(HReader<T>* reader_1, HReader<T>* reader_2, size_t
     _blocksize(blocksize)
 {
     HLog("Hlinearmixer(HReader*, HReader*)");
-
-    _buffer = new T[blocksize];
-    HLog("Allocated %d as local buffer", blocksize * sizeof(T));
+    _buffer_1 = new T[blocksize];
+    _buffer_2 = new T[blocksize];
+    HLog("Allocated 2 X %d as local buffers", blocksize * sizeof(T));
 }
 
 template <class T>
 HLinearMixer<T>::~HLinearMixer()
 {
     HLog("~HLinearMixer()");
-    delete _buffer;
+    delete _buffer_1;
+    delete _buffer_2;
 }
 
 template <class T>
@@ -32,10 +33,32 @@ int HLinearMixer<T>::Read(T* dest, size_t blocksize)
         throw new HFilterIOException("It is not possible to read more data than the size given at creation of the mixer");
     }
 
-    // Todo: read from both inputs
-    int received = _reader_1->Read(dest, blocksize);
+    // Read from both inputs
+    int received_1 = _reader_1->Read(_buffer_1, blocksize);
+    int received_2 = _reader_2->Read(_buffer_2, blocksize);
+    if( received_1 <= 0)
+    {
+        HLog("Zero read from reader-1, stopping");
+        return 0;
+    }
+    if( received_2 <= 0)
+    {
+        HLog("Zero read from reader-2, stopping");
+        return 0;
+    }
+    if( received_1 != received_2 )
+    {
+        HError("Short read from reader 1 or 2, returning empty frame");
+        memset((void*) dest, 0, sizeof(T) * blocksize);
+        return blocksize;
+    }
 
-    return received;
+    // Mix inputs
+    for( int i = 0; i < blocksize; i++ )
+    {
+        dest[i] = _buffer_1[i] + _buffer_2[i];
+    }
+    return blocksize;
 }
 
 /********************************************************************
