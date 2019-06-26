@@ -41,13 +41,13 @@ class HGenerator_Test: public Test
 
             ASSERT_IS_EQUAL((int) buffer[0], 0);
             ASSERT_IS_EQUAL((int) buffer[1], 74);
-            ASSERT_IS_EQUAL((int) buffer[2], 120);
-            ASSERT_IS_EQUAL((int) buffer[3], 120);
+            ASSERT_IS_EQUAL((int) buffer[2], 121);
+            ASSERT_IS_EQUAL((int) buffer[3], 121);
             ASSERT_IS_EQUAL((int) buffer[4], 74);
             ASSERT_IS_EQUAL((int) buffer[5], 0);
             ASSERT_IS_EQUAL((int) buffer[6], -74);
-            ASSERT_IS_EQUAL((int) buffer[7], -120);
-            ASSERT_IS_EQUAL((int) buffer[8], -120);
+            ASSERT_IS_EQUAL((int) buffer[7], -121);
+            ASSERT_IS_EQUAL((int) buffer[8], -121);
             ASSERT_IS_EQUAL((int) buffer[9], -74);
             ASSERT_IS_EQUAL((int) buffer[10], 0);
         }
@@ -62,16 +62,16 @@ class HGenerator_Test: public Test
             int8_t buffer[11];
             tg.Read(buffer, 11);
 
-            ASSERT_IS_EQUAL((int) buffer[0], 126);
-            ASSERT_IS_EQUAL((int) buffer[1], 102);
+            ASSERT_IS_EQUAL((int) buffer[0], 127);
+            ASSERT_IS_EQUAL((int) buffer[1], 103);
             ASSERT_IS_EQUAL((int) buffer[2], 39);
             ASSERT_IS_EQUAL((int) buffer[3], -39);
-            ASSERT_IS_EQUAL((int) buffer[4], -102);
-            ASSERT_IS_EQUAL((int) buffer[5], -126);
-            ASSERT_IS_EQUAL((int) buffer[6], -102);
+            ASSERT_IS_EQUAL((int) buffer[4], -103);
+            ASSERT_IS_EQUAL((int) buffer[5], -127);
+            ASSERT_IS_EQUAL((int) buffer[6], -103);
             ASSERT_IS_EQUAL((int) buffer[7], -39);
             ASSERT_IS_EQUAL((int) buffer[8], 39);
-            ASSERT_IS_EQUAL((int) buffer[9], 102);
-            ASSERT_IS_EQUAL((int) buffer[10], 126);
+            ASSERT_IS_EQUAL((int) buffer[9], 103);
+            ASSERT_IS_EQUAL((int) buffer[10], 127);
         }
 } hgenerator_test;

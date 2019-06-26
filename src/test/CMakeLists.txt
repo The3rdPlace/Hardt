@@ -9,10 +9,10 @@ target_sources(hardt_test
 	    hwavwriter_test.cpp
 	    hfilereader_test.cpp
 	    hwavreader_test.cpp
-	    #hgenerator_test.cpp
-	    #hsinegenerator_test.cpp
-	    #hcosinegenerator_test.cpp
-	    #hvfo_test.cpp
+	    hgenerator_test.cpp
+	    hsinegenerator_test.cpp
+	    hcosinegenerator_test.cpp
+	    hvfo_test.cpp
 	    hstreamprocessor_test.cpp
 	    hfilter_test.cpp
 	    hconverter_test.cpp
