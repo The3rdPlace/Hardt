@@ -5,6 +5,7 @@
 #include <ctime>
 #include <thread>
 #include <chrono>
+#include <string.h>
 
 #include "hardt.h"
 #include "htimer.h"
