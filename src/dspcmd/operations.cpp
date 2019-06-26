@@ -38,7 +38,7 @@ int RunNetworkReaderClient()
     {
         wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
     }
-    else if( strcmp(Config.FileFormat, "file") == 0 )
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
         wr = new HFileWriter<T>(Config.OutputFile);
     }
@@ -73,7 +73,7 @@ int RunNetworkReaderClient()
     {
         delete (HWavWriter<T>*) wr;
     }
-    else if( strcmp(Config.FileFormat, "file") == 0 )
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
         delete (HFileWriter<T>*) wr;
     }
@@ -95,7 +95,7 @@ int RunSignalGenerator()
         {
             wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
         }
-        else if( strcmp(Config.FileFormat, "file") == 0 )
+        else if( strcmp(Config.FileFormat, "pcm") == 0 )
         {
             wr = new HFileWriter<T>(Config.OutputFile);
         }
@@ -130,7 +130,7 @@ int RunSignalGenerator()
         {
             delete (HWavWriter<T>*) wr;
         }
-        else if( strcmp(Config.FileFormat, "file") == 0 )
+        else if( strcmp(Config.FileFormat, "pcm") == 0 )
         {
             delete (HFileWriter<T>*) wr;
         }
@@ -151,7 +151,7 @@ int RunFileRecorder()
     {
         wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
     }
-    else if( strcmp(Config.FileFormat, "file") == 0 )
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
         wr = new HFileWriter<T>(Config.OutputFile);
     }
@@ -179,7 +179,7 @@ int RunFileRecorder()
     {
         delete (HWavWriter<T>*) wr;
     }
-    else if( strcmp(Config.FileFormat, "file") == 0 )
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
         delete (HFileWriter<T>*) wr;
     }
@@ -196,7 +196,7 @@ int RunFilePlayer()
     {
         rd = new HWavReader<T>(Config.InputFile);
     }
-    else if( strcmp(Config.FileFormat, "file") == 0 )
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
         rd = new HFileReader<T>(Config.InputFile);
     }
@@ -218,7 +218,7 @@ int RunFilePlayer()
     {
         delete (HWavReader<T>*) rd;
     }
-    else if( strcmp(Config.FileFormat, "file") == 0 )
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
         delete (HFileReader<T>*) rd;
     }
@@ -367,7 +367,7 @@ int RunFFTMagnitudePlot()
     {
         rd = new HWavReader<T>(Config.InputFile);
     }
-    else if( strcmp(Config.FileFormat, "file") == 0 )
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
         rd = new HFileReader<T>(Config.InputFile);
     }
@@ -395,7 +395,7 @@ int RunFFTMagnitudePlot()
     {
         delete (HWavReader<T>*) rd;
     }
-    else if( strcmp(Config.FileFormat, "file") == 0 )
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
         delete (HFileReader<T>*) rd;
     }
@@ -415,7 +415,7 @@ int RunFileConverter()
     {
         rd = new HWavReader<T>(Config.InputFile);
     }
-    else if( strcmp(Config.InFileFormat, "file") == 0 )
+    else if( strcmp(Config.InFileFormat, "pcm") == 0 )
     {
         rd = new HFileReader<T>(Config.InputFile);
     }
@@ -431,7 +431,7 @@ int RunFileConverter()
     {
         wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
     }
-    else if( strcmp(Config.OutFileFormat, "file") == 0 )
+    else if( strcmp(Config.OutFileFormat, "pcm") == 0 )
     {
         wr = new HFileWriter<T>(Config.OutputFile);
     }
@@ -450,7 +450,7 @@ int RunFileConverter()
     {
         delete (HWavReader<T>*) rd;
     }
-    else if( strcmp(Config.InFileFormat, "file") == 0 )
+    else if( strcmp(Config.InFileFormat, "pcm") == 0 )
     {
         delete (HFileReader<T>*) rd;
     }
@@ -460,7 +460,7 @@ int RunFileConverter()
     {
         delete (HWavWriter<T>*) wr;
     }
-    else if( strcmp(Config.OutFileFormat, "file") == 0 )
+    else if( strcmp(Config.OutFileFormat, "pcm") == 0 )
     {
         delete (HFileWriter<T>*) wr;
     }
