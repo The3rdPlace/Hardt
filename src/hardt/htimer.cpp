@@ -89,7 +89,7 @@ void HTimer::wait()
             std::this_thread::sleep_for(sleepDuration);
         }
 
-        tm = localtime(&_start);
+        tm = localtime(&_stop);
         HLog("Wait finished, operation should run untill %s", HTimer::asctime2(tm));
     }
     else if( time(0) > _stop )
