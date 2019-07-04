@@ -87,6 +87,14 @@ bool parseArguments(int argc, char** argv)
             Config.IsFileConverter = argBoolCmp(argv[argNo], "-fc", Config.IsFileConverter);
             Config.InFileFormat = argCharCmp(argv[argNo], "-fc", argv[argNo + 1], Config.InFileFormat);
             Config.OutFileFormat = argCharCmp(argv[argNo], "-fc", argv[argNo + 2], Config.OutFileFormat);
+
+            Config.IsMixer = argBoolCmp(argv[argNo], "-mx", Config.IsMixer);
+            Config.InputFile1 = argCharCmp(argv[argNo], "-mx", argv[argNo + 1], Config.InputFile1);
+            Config.InputFile2 = argCharCmp(argv[argNo], "-mx", argv[argNo + 2], Config.InputFile2);
+
+            Config.IsMultiplier = argBoolCmp(argv[argNo], "-mp", Config.IsMultiplier);
+            Config.InputFile1 = argCharCmp(argv[argNo], "-mp", argv[argNo + 1], Config.InputFile1);
+            Config.InputFile2 = argCharCmp(argv[argNo], "-mp", argv[argNo + 2], Config.InputFile2);
         }
 
         if( argNo < argc - 3 )
@@ -145,6 +153,10 @@ bool parseArguments(int argc, char** argv)
             std::cout << std::endl;
 
             std::cout << "-fc in-format out-format   Convert input file format to output file format (same as in -ff)" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "-mx file1 file2            Mix (linear) file1 and file2" << std::endl;
+            std::cout << "-mp file1 file2            Multiply (mix nonlinear) file1 and file2" << std::endl;
             std::cout << std::endl;
 
             // Force exit

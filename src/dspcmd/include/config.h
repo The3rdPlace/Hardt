@@ -20,6 +20,8 @@ struct DspCmdConfig
     bool IsFFTMagnitudePlot = false;
     bool IsFFTMagnitudeGnuPlot = false;
     bool IsFileConverter = false;
+    bool IsMixer = false;
+    bool IsMultiplier = false;
 
     char* InFileFormat = NULL;
     char* OutFileFormat = NULL;
@@ -52,6 +54,9 @@ struct DspCmdConfig
     int Duration = 10;
     time_t Start = 0;
     HTimer Timer;
+
+    char *InputFile1 = NULL;
+    char *InputFile2 = NULL;
 };
 
 extern DspCmdConfig Config;

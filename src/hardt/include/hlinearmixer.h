@@ -20,6 +20,9 @@ class HLinearMixer : public HReader<T>
         ~HLinearMixer();
 
         int Read(T* dest, size_t blocksize);
+
+        bool Start();
+        bool Stop();
 };
 
 #endif

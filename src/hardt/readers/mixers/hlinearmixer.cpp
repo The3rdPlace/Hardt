@@ -38,12 +38,12 @@ int HLinearMixer<T>::Read(T* dest, size_t blocksize)
     int received_2 = _reader_2->Read(_buffer_2, blocksize);
     if( received_1 <= 0)
     {
-        HLog("Zero read from reader-1, stopping");
+        HLog("Zero read from reader-1, stopping %d", received_1);
         return 0;
     }
     if( received_2 <= 0)
     {
-        HLog("Zero read from reader-2, stopping");
+        HLog("Zero read from reader-2, stopping %d", received_2);
         return 0;
     }
     if( received_1 != received_2 )
@@ -59,6 +59,30 @@ int HLinearMixer<T>::Read(T* dest, size_t blocksize)
         dest[i] = _buffer_1[i] + _buffer_2[i];
     }
     return blocksize;
+}
+
+template <class T>
+bool HLinearMixer<T>::Start()
+{
+    HLog("Calling Start() on reader 1");
+    if( !_reader_1->Start() )
+    {
+        return false;
+    }
+    HLog("Calling Start() on reader 2");
+    return _reader_2->Start();
+}
+
+template <class T>
+bool HLinearMixer<T>::Stop()
+{
+    HLog("Calling Stop() on reader 1");
+    if( !_reader_1->Stop() )
+    {
+        return false;
+    }
+    HLog("Calling Stop() on reader 2");
+    return _reader_2->Stop();
 }
 
 /********************************************************************
@@ -103,5 +127,31 @@ int HLinearMixer<int16_t>::Read(int16_t* dest, size_t blocksize);
 
 template
 int HLinearMixer<int32_t>::Read(int32_t* dest, size_t blocksize);
+
+// Start()
+template
+bool HLinearMixer<int8_t>::Start();
+
+template
+bool HLinearMixer<uint8_t>::Start();
+
+template
+bool HLinearMixer<int16_t>::Start();
+
+template
+bool HLinearMixer<int32_t>::Start();
+
+// Stop()
+template
+bool HLinearMixer<int8_t>::Stop();
+
+template
+bool HLinearMixer<uint8_t>::Stop();
+
+template
+bool HLinearMixer<int16_t>::Stop();
+
+template
+bool HLinearMixer<int32_t>::Stop();
 
 #endif
