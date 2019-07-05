@@ -31,6 +31,7 @@
 #include "hsinegenerator.h"
 #include "hcosinegenerator.h"
 #include "hvfo.h"
+#include "hlocaloscillator.h"
 #include "hstreamprocessor.h"
 #include "hsoundcardwriter.h"
 #include "hwindow.h"
@@ -39,5 +40,6 @@
 #include "hhammingwindow.h"
 #include "hhahnwindow.h"
 #include "hlinearmixer.h"
+#include "hmultiplier.h"
 
 #endif

@@ -44,6 +44,7 @@ Include api function declarations
 #include "hsinegenerator.cpp"
 #include "hcosinegenerator.cpp"
 #include "hvfo.cpp"
+#include "hlocaloscillator.cpp"
 #include "hstreamprocessor.cpp"
 #include "hsoundcardwriter.cpp"
 #include "hwindow.cpp"
@@ -52,5 +53,6 @@ Include api function declarations
 #include "hhammingwindow.cpp"
 #include "hhahnwindow.cpp"
 #include "hlinearmixer.cpp"
+#include "hmultiplier.cpp"
 
 #endif
