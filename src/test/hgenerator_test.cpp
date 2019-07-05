@@ -40,15 +40,15 @@ class HGenerator_Test: public Test
             tg.Read(buffer, 11);
 
             ASSERT_IS_EQUAL((int) buffer[0], 0);
-            ASSERT_IS_EQUAL((int) buffer[1], 74);
+            ASSERT_IS_EQUAL((int) buffer[1], 75);
             ASSERT_IS_EQUAL((int) buffer[2], 121);
             ASSERT_IS_EQUAL((int) buffer[3], 121);
-            ASSERT_IS_EQUAL((int) buffer[4], 74);
+            ASSERT_IS_EQUAL((int) buffer[4], 75);
             ASSERT_IS_EQUAL((int) buffer[5], 0);
-            ASSERT_IS_EQUAL((int) buffer[6], -74);
+            ASSERT_IS_EQUAL((int) buffer[6], -75);
             ASSERT_IS_EQUAL((int) buffer[7], -121);
             ASSERT_IS_EQUAL((int) buffer[8], -121);
-            ASSERT_IS_EQUAL((int) buffer[9], -74);
+            ASSERT_IS_EQUAL((int) buffer[9], -75);
             ASSERT_IS_EQUAL((int) buffer[10], 0);
         }
 

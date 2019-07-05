@@ -31,15 +31,15 @@ class HVfo_Test: public Test
             g.Read(buffer, 11);
 
             ASSERT_IS_EQUAL((int) buffer[0], 0);
-            ASSERT_IS_EQUAL((int) buffer[1], 74);
+            ASSERT_IS_EQUAL((int) buffer[1], 75);
             ASSERT_IS_EQUAL((int) buffer[2], 121);
             ASSERT_IS_EQUAL((int) buffer[3], 121);
-            ASSERT_IS_EQUAL((int) buffer[4], 74);
+            ASSERT_IS_EQUAL((int) buffer[4], 75);
             ASSERT_IS_EQUAL((int) buffer[5], 0);
-            ASSERT_IS_EQUAL((int) buffer[6], -74);
+            ASSERT_IS_EQUAL((int) buffer[6], -75);
             ASSERT_IS_EQUAL((int) buffer[7], -121);
             ASSERT_IS_EQUAL((int) buffer[8], -121);
-            ASSERT_IS_EQUAL((int) buffer[9], -74);
+            ASSERT_IS_EQUAL((int) buffer[9], -75);
             ASSERT_IS_EQUAL((int) buffer[10], 0);
 
             g.SetFrequency(frequency, M_PI / 2);
@@ -68,15 +68,15 @@ class HVfo_Test: public Test
             g.Read(buffer, 11);
 
             ASSERT_IS_EQUAL((int) buffer[0], 0);
-            ASSERT_IS_EQUAL((int) buffer[1], 74);
+            ASSERT_IS_EQUAL((int) buffer[1], 75);
             ASSERT_IS_EQUAL((int) buffer[2], 121);
             ASSERT_IS_EQUAL((int) buffer[3], 121);
-            ASSERT_IS_EQUAL((int) buffer[4], 74);
+            ASSERT_IS_EQUAL((int) buffer[4], 75);
             ASSERT_IS_EQUAL((int) buffer[5], 0);
-            ASSERT_IS_EQUAL((int) buffer[6], -74);
+            ASSERT_IS_EQUAL((int) buffer[6], -75);
             ASSERT_IS_EQUAL((int) buffer[7], -121);
             ASSERT_IS_EQUAL((int) buffer[8], -121);
-            ASSERT_IS_EQUAL((int) buffer[9], -74);
+            ASSERT_IS_EQUAL((int) buffer[9], -75);
             ASSERT_IS_EQUAL((int) buffer[10], 0);
 
             g.SetFrequency(20);
@@ -84,13 +84,13 @@ class HVfo_Test: public Test
 
             ASSERT_IS_EQUAL((int) buffer[0], 0);
             ASSERT_IS_EQUAL((int) buffer[1], 121);
-            ASSERT_IS_EQUAL((int) buffer[2], 74);
-            ASSERT_IS_EQUAL((int) buffer[3], -74);
+            ASSERT_IS_EQUAL((int) buffer[2], 75);
+            ASSERT_IS_EQUAL((int) buffer[3], -75);
             ASSERT_IS_EQUAL((int) buffer[4], -121);
             ASSERT_IS_EQUAL((int) buffer[5], 0);
             ASSERT_IS_EQUAL((int) buffer[6], 121);
-            ASSERT_IS_EQUAL((int) buffer[7], 74);
-            ASSERT_IS_EQUAL((int) buffer[8], -74);
+            ASSERT_IS_EQUAL((int) buffer[7], 75);
+            ASSERT_IS_EQUAL((int) buffer[8], -75);
             ASSERT_IS_EQUAL((int) buffer[9], -121);
             ASSERT_IS_EQUAL((int) buffer[10], 0);
         }
