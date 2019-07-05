@@ -4,7 +4,6 @@
 #include "hreader.h"
 #include "hmultiplier.h"
 
-
 template <class T>
 HMultiplier<T>::HMultiplier(HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, size_t blocksize):
     _reader(reader),
@@ -51,24 +50,7 @@ int HMultiplier<T>::Read(T* dest, size_t blocksize)
     // Multiply inputs (= convolution in freq. domain = frequency shift)
     for( int i = 0; i < blocksize; i++ )
     {
-        //float y = 2 * M_PI * (1000.0 / 48000.0) * n;
-
-        //float s = _buffer_1[i] * cos(y);
-
-        //Complex e(cos(y), sin(y));
-        //std::cout << "e n y " << e.real() << " " << n << " " << y << std::endl;
-        //Complex q = e * x1[i];
-        // float s = q.real();
-
-        //float s = (float) _buffer_1[i] * ((float) _buffer_2[i] / 5000);
-        //std::cout << "buffer cos " << _buffer_2[i] << " " << cos(y) << std::endl;;
-
-
         dest[i] = _buffer[i] * _oscillatorBuffer[i];
-        //dest[i] = _buffer_1[i] * _buffer_2[i];
-        //dest[i] = (x1[i] * x2[i]).real();
-        //dest[i] = x2[i].real();
-        //dest[i] = _buffer_2[i];
     }
     return blocksize;
 }
