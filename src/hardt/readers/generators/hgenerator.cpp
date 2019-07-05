@@ -381,10 +381,10 @@ void HGenerator<T>::Calculate(H_SAMPLE_RATE rate, int frequency, T amplitude, fl
         float fact = 2 * M_PI * (n / l);
         float out = sin(fact + phase) * mag;
 
-        // Round the floating point value to an integer value at 0.5
-        _lot[i] = (T) round(out);
+        // Store the typed value
+        _lot[i] = out;
 
-        // Add the real value
+        // Add the real (float) value
         _flot[i] = out;
     }
 
@@ -409,6 +409,12 @@ HGenerator<int16_t>::HGenerator(H_SAMPLE_RATE rate, int frequency, int16_t ampli
 template
 HGenerator<int32_t>::HGenerator(H_SAMPLE_RATE rate, int frequency, int32_t amplitude, float phase);
 
+template
+HGenerator<float>::HGenerator(H_SAMPLE_RATE rate, int frequency, float amplitude, float phase);
+
+template
+HGenerator<double>::HGenerator(H_SAMPLE_RATE rate, int frequency, double amplitude, float phase);
+
 // ~HGenerator
 template
 HGenerator<int8_t>::~HGenerator();
@@ -422,6 +428,12 @@ HGenerator<int16_t>::~HGenerator();
 template
 HGenerator<int32_t>::~HGenerator();
 
+template
+HGenerator<float>::~HGenerator();
+
+template
+HGenerator<double>::~HGenerator();
+
 // Read
 template
 int HGenerator<int8_t>::Read(int8_t* dest, size_t blocksize);
@@ -434,5 +446,11 @@ int HGenerator<int16_t>::Read(int16_t* dest, size_t blocksize);
 
 template
 int HGenerator<int32_t>::Read(int32_t* dest, size_t blocksize);
+
+template
+int HGenerator<float>::Read(float* dest, size_t blocksize);
+
+template
+int HGenerator<double>::Read(double* dest, size_t blocksize);
 
 #endif
