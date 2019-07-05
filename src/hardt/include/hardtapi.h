@@ -41,5 +41,6 @@
 #include "hhahnwindow.h"
 #include "hlinearmixer.h"
 #include "hmultiplier.h"
+#include "hfirfilter.h"
 
 #endif

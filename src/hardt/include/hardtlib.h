@@ -54,5 +54,6 @@ Include api function declarations
 #include "hhahnwindow.cpp"
 #include "hlinearmixer.cpp"
 #include "hmultiplier.cpp"
+#include "hfirfilter.cpp"
 
 #endif
