@@ -163,4 +163,30 @@ int HFilter<int16_t>::Read(int16_t* dest, size_t blocksize);
 template
 int HFilter<int32_t>::Read(int32_t* dest, size_t blocksize);
 
+// Start()
+template
+bool HFilter<int8_t>::Start();
+
+template
+bool HFilter<uint8_t>::Start();
+
+template
+bool HFilter<int16_t>::Start();
+
+template
+bool HFilter<int32_t>::Start();
+
+// Stop()
+template
+bool HFilter<int8_t>::Stop();
+
+template
+bool HFilter<uint8_t>::Stop();
+
+template
+bool HFilter<int16_t>::Stop();
+
+template
+bool HFilter<int32_t>::Stop();
+
 #endif
