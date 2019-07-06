@@ -23,6 +23,9 @@ class HFilter : public HWriter<T>, public HReader<T>
         int Read(T* dest, size_t blocksize);
 
         virtual void Filter(T* src, T* dest, size_t blocksize) = 0;
+
+        bool Start();
+        bool Stop();
 };
 
 #endif

@@ -41,3 +41,7 @@ HConverterIOException::HConverterIOException(const char* reason):
 HFilterIOException::HFilterIOException(const char* reason):
     HException(reason)
 {}
+
+HFilterInitializationException::HFilterInitializationException(const char* reason):
+    HException(reason)
+{}

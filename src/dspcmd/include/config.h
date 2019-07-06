@@ -22,6 +22,9 @@ struct DspCmdConfig
     bool IsFileConverter = false;
     bool IsMixer = false;
     bool IsMultiplier = false;
+    bool IsFilter = false;
+    bool IsFilterSpectrumPlot = false;
+    bool IsFilterSpectrumGnuPlot = false;
 
     char* InFileFormat = NULL;
     char* OutFileFormat = NULL;
@@ -55,8 +58,11 @@ struct DspCmdConfig
     time_t Start = 0;
     HTimer Timer;
 
-    char *InputFile1 = NULL;
-    char *InputFile2 = NULL;
+    char* InputFile1 = NULL;
+    char* InputFile2 = NULL;
+
+    char* FilterName = NULL;
+    char* FilterCoeffs = NULL;
 };
 
 extern DspCmdConfig Config;

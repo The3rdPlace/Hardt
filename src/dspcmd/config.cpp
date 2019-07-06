@@ -94,6 +94,18 @@ bool parseArguments(int argc, char** argv)
             Config.IsMixer = argBoolCmp(argv[argNo], "-mx", Config.IsMixer);
             Config.InputFile1 = argCharCmp(argv[argNo], "-mx", argv[argNo + 1], Config.InputFile1);
             Config.InputFile2 = argCharCmp(argv[argNo], "-mx", argv[argNo + 2], Config.InputFile2);
+
+            Config.IsFilter = argBoolCmp(argv[argNo], "-flt", Config.IsFilter);
+            Config.FilterName = argCharCmp(argv[argNo], "-flt", argv[argNo + 1], Config.FilterName);
+            Config.FilterCoeffs = argCharCmp(argv[argNo], "-flt", argv[argNo + 2], Config.FilterCoeffs);
+
+            Config.IsFilterSpectrumPlot = argBoolCmp(argv[argNo], "-flp", Config.IsFilterSpectrumPlot);
+            Config.FilterName = argCharCmp(argv[argNo], "-flp", argv[argNo + 1], Config.FilterName);
+            Config.FilterCoeffs = argCharCmp(argv[argNo], "-flp", argv[argNo + 2], Config.FilterCoeffs);
+
+            Config.IsFilterSpectrumGnuPlot = argBoolCmp(argv[argNo], "-flgp", Config.IsFilterSpectrumGnuPlot);
+            Config.FilterName = argCharCmp(argv[argNo], "-flgp", argv[argNo + 1], Config.FilterName);
+            Config.FilterCoeffs = argCharCmp(argv[argNo], "-flgp", argv[argNo + 2], Config.FilterCoeffs);
         }
 
         if( argNo < argc - 3 )
@@ -157,6 +169,10 @@ bool parseArguments(int argc, char** argv)
             std::cout << "-mx file1 file2            Mix (linear) file1 and file2" << std::endl;
             std::cout << "-mp frequency              Multiply (mix nonlinear) with localoscilator signal running at frequency" << std::endl;
             std::cout << std::endl;
+
+            std::cout << "-flt name coeffs           Read coefficients from coeffs and run file through filter name" << std::endl;
+            std::cout << "-flp name coeffs           Read coefficients from coeffs and plot filter response for filter name" << std::endl;
+            std::cout << "-flgp name coeffs          Read coefficients from coeffs and plot filter response for filter name using GnuPlot" << std::endl;
 
             // Force exit
             return true;

@@ -63,6 +63,38 @@ int HFilter<T>::Read(T* dest, size_t blocksize)
     return received;
 }
 
+template <class T>
+bool HFilter<T>::Start()
+{
+    if( _reader != NULL )
+    {
+        HLog("Calling Start() on reader");
+        return _reader->Start();
+    }
+    if( _writer != NULL )
+    {
+        HLog("Calling Start() on writer");
+        return _writer->Start();
+    }
+    return false;
+}
+
+template <class T>
+bool HFilter<T>::Stop()
+{
+    if( _reader != NULL )
+    {
+        HLog("Calling Stop() on reader");
+        return _reader->Stop();
+    }
+    if( _writer != NULL )
+    {
+        HLog("Calling Stop() on writer");
+        return _writer->Stop();
+    }
+    return false;
+}
+
 /********************************************************************
 Explicit instantiation
 ********************************************************************/

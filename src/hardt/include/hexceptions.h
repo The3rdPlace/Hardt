@@ -121,4 +121,17 @@ class HFilterIOException : public HException
         HFilterIOException(const char* reason);
 };
 
+/*
+    Thrown if there is errors during filter initialization
+
+    Constructor:
+        HFilterInitializationException(reason)
+*/
+class HFilterInitializationException : public HException
+{
+    public:
+
+        HFilterInitializationException(const char* reason);
+};
+
 #endif

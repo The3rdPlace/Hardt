@@ -4,6 +4,7 @@
 #include <string.h>
 #include <iostream>
 #include <ctime>
+#include <limits>
 
 #include "operations.h"
 #include "signalhandling.h"
@@ -601,6 +602,148 @@ int RunMultiplier()
 }
 
 template <typename T>
+int RunFilter()
+{
+    // Create reader
+    HReader<T>* rd;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        rd = new HWavReader<T>(Config.InputFile);
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        rd = new HFileReader<T>(Config.InputFile);
+    }
+    else
+    {
+        std::cout << "Unknown input file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+    // Create writer
+    HWriter<T>* wr;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        wr = new HFileWriter<T>(Config.OutputFile);
+    }
+    else
+    {
+        std::cout << "Unknown output file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+    // Create  filter
+    HFirFilter<T>* filter;
+    if( strcmp(Config.FilterName, "FirFilter") == 0 )
+    {
+        filter = HFirFilter<T>::Create((HReader<T>*) rd, Config.Blocksize, Config.FilterCoeffs);
+    }
+    else
+    {
+        std::cout << "Unknown filtername " << Config.FilterName << std::endl;
+        return -1;
+    }
+
+    // Create processor
+    HStreamProcessor<T> proc(wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
+    proc.Run();
+
+    // Delete the reader and writer
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        delete (HWavReader<T>*) rd;
+        delete (HWavWriter<T>*) wr;
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        delete (HFileReader<T>*) rd;
+        delete (HFileWriter<T>*) wr;
+    }
+
+    return 0;
+}
+
+template <typename T>
+class FilterSpectrumReader : public HReader<T>
+{
+    private:
+
+        T* _data;
+        int _numBlocks;
+        int _blocksRead;
+
+    public:
+
+        FilterSpectrumReader(size_t blocksize, int numBlocks):
+            _numBlocks(numBlocks),
+            _blocksRead(0)
+        {
+            T midpoint = (std::numeric_limits<T>::min() + std::numeric_limits<T>::max()) / 2;
+            _data = new T[blocksize];
+            for( int i = 0; i < blocksize; i++ )
+            {
+                _data[i] = midpoint;
+            }
+        }
+
+        ~FilterSpectrumReader()
+        {
+            delete[] _data;
+        }
+
+        int Read(T* dest, size_t blocksize)
+        {
+            if( _blocksRead++ >= _numBlocks )
+            {
+                return 0;
+            }
+            memcpy(dest, _data, blocksize * sizeof(T));
+            return blocksize;
+        }
+};
+
+template <typename T>
+int RunFilterSpectrum()
+{
+   // Create reader
+    FilterSpectrumReader<T> rd(Config.Blocksize,10);
+
+    // Create  filter
+    HFirFilter<T>* filter;
+    if( strcmp(Config.FilterName, "FirFilter") == 0 )
+    {
+        filter = HFirFilter<T>::Create((HReader<T>*) &rd, Config.Blocksize, Config.FilterCoeffs);
+    }
+    else
+    {
+        std::cout << "Unknown filtername " << Config.FilterName << std::endl;
+        return -1;
+    }
+
+    // Create writer
+    HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
+
+    // Create FFT
+    HFft<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
+
+    // Buffer for the accumulated spectrum values
+    aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
+
+    // Create processor
+    HStreamProcessor<T> proc(&fft, (HReader<T>*) filter, Config.Blocksize, &terminated);
+    proc.Run();
+
+    // Display the final plot
+    Config.IsFilterSpectrumPlot ? FFTMagnitudeShowPlot() : FFTMagnitudeShowGnuPlot();
+
+    return 0;
+}
+
+template <typename T>
 int RunOperation()
 {
     // Wait for start time ?
@@ -864,6 +1007,54 @@ int RunOperation()
         }
 
         return RunMultiplier<T>();
+    }
+
+    if( Config.IsFilter )
+    {
+        // Verify configuration
+        if( Config.InputFile == NULL )
+        {
+            std::cout << "No input file (-if file)" << std::endl;
+            return -1;
+        }
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file (-of)" << std::endl;
+            return -1;
+        }
+        if( Config.FileFormat == NULL )
+        {
+            std::cout << "No input file format (-ff pcm|wav)" << std::endl;
+            return -1;
+        }
+        if( Config.FilterName == NULL )
+        {
+            std::cout << "No filter name (-flt name coeffs)" << std::endl;
+            return -1;
+        }
+        if( Config.FilterCoeffs == NULL )
+        {
+            std::cout << "No filter coeffs. filename (-flt name coeffs)" << std::endl;
+            return -1;
+        }
+
+        return RunFilter<T>();
+    }
+
+    if( Config.IsFilterSpectrumPlot || Config.IsFilterSpectrumGnuPlot)
+    {
+        if( Config.FilterName == NULL )
+        {
+            std::cout << "No filter name (-flt name coeffs)" << std::endl;
+            return -1;
+        }
+        if( Config.FilterCoeffs == NULL )
+        {
+            std::cout << "No filter coeffs. filename (-flt name coeffs)" << std::endl;
+            return -1;
+        }
+
+        return RunFilterSpectrum<T>();
     }
 
     // No known operation could be determined from the input arguments
