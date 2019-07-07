@@ -679,7 +679,6 @@ class FilterSpectrumReader : public HReader<T>
         T* _data;
         int _numBlocks;
         int _blocksRead;
-        T _midpoint;
 
     public:
 
@@ -687,15 +686,12 @@ class FilterSpectrumReader : public HReader<T>
             _numBlocks(numBlocks),
             _blocksRead(0)
         {
-            // Calculate midpoint, eg. 0 (zero)
-            _midpoint = (std::numeric_limits<T>::min() + std::numeric_limits<T>::max()) / 2;
-
             // First frame is a unit step
             _data = new T[blocksize];
             _data[0] = std::numeric_limits<T>::max();
             for( int i = 1; i < blocksize; i++ )
             {
-                _data[i] = _midpoint;
+                _data[i] = 0;
             }
         }
 
