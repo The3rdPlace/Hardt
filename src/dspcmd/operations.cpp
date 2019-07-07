@@ -679,37 +679,58 @@ class FilterSpectrumReader : public HReader<T>
         T* _data;
         int _numBlocks;
         int _blocksRead;
+        HVfo<T>* vfo;
+        int _freq;
 
     public:
 
         FilterSpectrumReader(size_t blocksize, int numBlocks):
             _numBlocks(numBlocks),
-            _blocksRead(0)
+            _blocksRead(0),
+            _freq(1)
         {
+            vfo = new HVfo<T>(Config.Rate, _freq, std::numeric_limits<T>::max() / 2, 0);
+
             // First frame is a unit step
-            _data = new T[blocksize];
+            /*_data = new T[blocksize];
             _data[0] = std::numeric_limits<T>::max();
+            //int x = -1;
             for( int i = 1; i < blocksize; i++ )
             {
-                _data[i] = 0;
-            }
+                _data[i] = 0; //_data[0];// * x;
+                //x = -1 * x;
+            }*/
         }
 
         ~FilterSpectrumReader()
         {
-            delete[] _data;
+            //delete[] _data;
+            delete vfo;
         }
 
         int Read(T* dest, size_t blocksize)
         {
-            if( _blocksRead++ >= _numBlocks )
+            /*if( _blocksRead++ >= _numBlocks )
+            {
+                return 0;
+            }*/
+            /*memcpy(dest, _data, blocksize * sizeof(T));*/
+            /*for( int i = 0; i < blocksize; i++ )
+            {
+
+            }*/
+            if( _freq >= (Config.Rate / 2) - ((Config.Rate / 2) / Config.Blocksize ) )
             {
                 return 0;
             }
-            memcpy(dest, _data, blocksize * sizeof(T));
+
+            vfo->SetFrequency(_freq, 0);
+            vfo->Read(dest, blocksize);
+            _freq += 1;//(Config.Rate / Config.Blocksize) / 2;
+
 
             // Reset first value, from here on, only return zero values
-            _data[0] = 0;
+            //_data[0] = 0;
 
             return blocksize;
         }

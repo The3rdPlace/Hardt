@@ -360,7 +360,7 @@ void HGenerator<T>::Calculate(H_SAMPLE_RATE rate, int frequency, T amplitude, fl
     // Calculate size of Lot
     _lot = new T[_lotSize];
     _flot = new float[_lotSize];
-    HLog("Created lookup table of size %d (%d bytes)", _lotSize, _lotSize * sizeof(float));
+    //HLog("Created lookup table of size %d (%d bytes)", _lotSize, _lotSize * sizeof(float));
 
     // Cast to floats to have a controlled calculation of the lot data
     float l = _lotSize;
@@ -370,10 +370,9 @@ void HGenerator<T>::Calculate(H_SAMPLE_RATE rate, int frequency, T amplitude, fl
 
     // Calculate stepsize in the lot
     _delta = (l / r) * f;
-    HLog("Using delta = %f", _delta);
+    //HLog("Using delta = %f", _delta);
 
     // Calculate Lot value at sample n=0 -> n = N-1
-    HLog("PHASE IS %f", phase);
     for( int i = 0; i < _lotSize; i++ )
     {
         // Calculate value for lot at index i

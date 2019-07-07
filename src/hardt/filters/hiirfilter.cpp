@@ -79,7 +79,7 @@ void HIirFilter<T>::Filter(T* src, T* dest, size_t blocksize)
         for( int j = 1; j < _length + 1; j++ )
         {
             result += _taps[j] * _bCoefficients[j];
-            result += _output[j] * _aCoefficients[j - 1];
+            result -= _output[j] * _aCoefficients[j - 1];
         }
 
         // Add output to the feedback delay line

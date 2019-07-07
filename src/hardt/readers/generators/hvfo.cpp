@@ -8,7 +8,9 @@ HVfo<T>::HVfo(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase):
     HGenerator<T>::HGenerator(rate, frequency, amplitude, phase),
     _rate(rate),
     _amplitude(amplitude)
-{}
+{
+    SetFrequency(frequency, phase);
+}
 
 template <class T>
 void HVfo<T>::SetFrequency(int frequency, float phase)
