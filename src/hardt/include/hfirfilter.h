@@ -48,6 +48,8 @@ class HFirFilter : public HFilter<T>
             return coeffs;
         }
 
+        void Init(float* coefficients, int length);
+
     public:
 
         HFirFilter(HWriter<T>* writer, float* coefficients, int length, size_t blocksize);

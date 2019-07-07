@@ -9,13 +9,7 @@ HFirFilter<T>::HFirFilter(HWriter<T>* writer, float* coefficients, int length, s
     _length(length)
 {
     HLog("HFirFilter(HWriter*)");
-
-    _coefficients = new float[length];
-    memcpy(_coefficients, coefficients, length * sizeof(float));
-    HLog("Copied filter coefficients");
-
-    _taps = new T[length];
-    HLog("Allocated delay buffer for %d taps", length);
+    Init(coefficients, length);
 }
 
 template <class T>
@@ -24,13 +18,24 @@ HFirFilter<T>::HFirFilter(HReader<T>* reader, float* coefficients, int length, s
     _length(length)
 {
     HLog("HFirFilter(HReader*)");
+    Init(coefficients, length);
+}
+
+template <class T>
+void HFirFilter<T>::Init(float* coefficients, int length)
+{
+    HLog("Init(float*, %d)", length);
 
     _coefficients = new float[length];
     memcpy(_coefficients, coefficients, length * sizeof(float));
     HLog("Copied filter coefficients");
 
     _taps = new T[length];
-    HLog("Allocated delay buffer for %d taps", length);
+    for( int i = 0; i < length; i++ )
+    {
+        _taps[i] = 0;
+    }
+    HLog("Allocated and initialized delay buffer for %d taps", length);
 }
 
 template <class T>
@@ -93,6 +98,19 @@ HFirFilter<int16_t>::HFirFilter(HReader<int16_t>* reader, float* coefficients, i
 
 template
 HFirFilter<int32_t>::HFirFilter(HReader<int32_t>* reader, float* coefficients, int length, size_t blocksize);
+
+// Init
+template
+void HFirFilter<int8_t>::Init(float* coefficients, int length);
+
+template
+void HFirFilter<uint8_t>::Init(float* coefficients, int length);
+
+template
+void HFirFilter<int16_t>::Init(float* coefficients, int length);
+
+template
+void HFirFilter<int32_t>::Init(float* coefficients, int length);
 
 // ~HFirFilter()
 template
