@@ -637,10 +637,14 @@ int RunFilter()
     }
 
     // Create  filter
-    HFirFilter<T>* filter;
-    if( strcmp(Config.FilterName, "FirFilter") == 0 )
+    HFilter<T>* filter;
+    if( strcmp(Config.FilterName, "HFirFilter") == 0 )
     {
         filter = HFirFilter<T>::Create((HReader<T>*) rd, Config.Blocksize, Config.FilterCoeffs);
+    }
+    else if( strcmp(Config.FilterName, "HIirFilter") == 0 )
+    {
+        filter = HIirFilter<T>::Create((HReader<T>*) rd, Config.Blocksize, Config.FilterCoeffs);
     }
     else
     {
@@ -675,6 +679,7 @@ class FilterSpectrumReader : public HReader<T>
         T* _data;
         int _numBlocks;
         int _blocksRead;
+        T _midpoint;
 
     public:
 
@@ -682,11 +687,15 @@ class FilterSpectrumReader : public HReader<T>
             _numBlocks(numBlocks),
             _blocksRead(0)
         {
-            T midpoint = (std::numeric_limits<T>::min() + std::numeric_limits<T>::max()) / 2;
+            // Calculate midpoint, eg. 0 (zero)
+            _midpoint = (std::numeric_limits<T>::min() + std::numeric_limits<T>::max()) / 2;
+
+            // First frame is a unit step
             _data = new T[blocksize];
-            for( int i = 0; i < blocksize; i++ )
+            _data[0] = std::numeric_limits<T>::max();
+            for( int i = 1; i < blocksize; i++ )
             {
-                _data[i] = midpoint;
+                _data[i] = _midpoint;
             }
         }
 
@@ -702,6 +711,10 @@ class FilterSpectrumReader : public HReader<T>
                 return 0;
             }
             memcpy(dest, _data, blocksize * sizeof(T));
+
+            // Reset first value, from here on, only return zero values
+            _data[0] = 0;
+
             return blocksize;
         }
 };
@@ -713,10 +726,14 @@ int RunFilterSpectrum()
     FilterSpectrumReader<T> rd(Config.Blocksize,10);
 
     // Create  filter
-    HFirFilter<T>* filter;
-    if( strcmp(Config.FilterName, "FirFilter") == 0 )
+    HFilter<T>* filter;
+    if( strcmp(Config.FilterName, "HFirFilter") == 0 )
     {
         filter = HFirFilter<T>::Create((HReader<T>*) &rd, Config.Blocksize, Config.FilterCoeffs);
+    }
+    else if( strcmp(Config.FilterName, "HIirFilter") == 0 )
+    {
+        filter = HIirFilter<T>::Create((HReader<T>*) &rd, Config.Blocksize, Config.FilterCoeffs);
     }
     else
     {

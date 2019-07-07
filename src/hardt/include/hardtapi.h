@@ -42,5 +42,6 @@
 #include "hlinearmixer.h"
 #include "hmultiplier.h"
 #include "hfirfilter.h"
+#include "hiirfilter.h"
 
 #endif

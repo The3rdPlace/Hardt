@@ -55,5 +55,6 @@ Include api function declarations
 #include "hlinearmixer.cpp"
 #include "hmultiplier.cpp"
 #include "hfirfilter.cpp"
+#include "hiirfilter.cpp"
 
 #endif
