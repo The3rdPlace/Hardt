@@ -10,7 +10,7 @@ class HIirFilter_Test: public Test
         void run()
         {
             UNITTEST(test_filter_as_writer);
-            //UNITTEST(test_filter_as_reader);
+            UNITTEST(test_filter_as_reader);
         }
 
         const char* name()
@@ -31,50 +31,50 @@ class HIirFilter_Test: public Test
                     taps = 1 0 0 => 0 1 0
                     output = 1 0 0 => 0 1 0
 
-                2 1 0 = 2 2 0 + 1 0 = 5
+                2 1 0 = 2 2 0 - 1 0 = 3
 
                     taps = 2 1 0 => 0 2 1
-                    output = 5 1 0 => 0 5 1
+                    output = 3 1 0 => 0 3 1
 
-                4 2 1 = 4 4 3 + 5 2 = 18
+                4 2 1 = 4 4 3 - 3 2 = 6
 
                     taps = 4 2 1 => 0 4 2
-                    output = 18 5 1 => 0 18 5
+                    output = 6 3 1 => 0 6 3
 
-                8 4 2 = 8 8 6 + 18 10 = 50
+                8 4 2 = 8 8 6 - 6 6 = 10
 
                     taps = 8 4 2 => 0 8 4
-                    output = 50 18 5 => 0 50 18
+                    output = 10 6 3 => 0 10 6
 
-                16 8 4 = 16 16 12 + 50 36 = 130
+                16 8 4 = 16 16 12 - 10 12 = 22
 
                     taps = 16 8 4 => 0 16 8
-                    output = 130 50 18 => 0 130 50
+                    output = 22 10 6 => 0 22 10
 
-                32 16 8 = 32 32 24 +  130 100 = 318
+                32 16 8 = 32 32 24 - 22 20 = 46
 
-                Expected = 1 5 18 50 130 318
+                Expected = 1 3 6 10 22 46
 
             Second write:
 
                 Initial taps buffer: 32 16 8
-                Initial output buffer: 318 130 50
+                Initial output buffer: 46 22 10
 
                     taps = 32 16 8 => 0 32 16
-                    output = 318 130 50 => 0 318 130
+                    output = 46 22 10 => 0 46 22
 
-                1 32 16 = 1 64 48 + 318 260 = 691
+                1 32 16 = 1 64 48 - 46 44 = 23
 
                     taps = 1 32 16 => 0 1 32
-                    output = 691 318 130 => 0 691 318
+                    output = 23 46 22 => 0 23 46
 
-                2 1 32 = 2 2 96 + 691 636 = 1427
+                2 1 32 = 2 2 96 - 23 92 = -15
 
-                Expected = 691 1427
+                Expected = 23 -15
          */
         float coeefs[5] = { 1.0, 2.0, 1.0, 2.0, 3.0 };
-        int16_t expected[6] = {1, 5, 18, 50, 130, 318};
-        int16_t expectedNext[2] = {691, 1427};
+        int16_t expected[6] = {1, 3, 6, 10, 22, 46};
+        int16_t expectedNext[2] = {23, -15};
 
         template <class T>
         class TestWriter : public HWriter<T>
