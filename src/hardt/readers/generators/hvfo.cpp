@@ -15,7 +15,7 @@ HVfo<T>::HVfo(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase):
 template <class T>
 void HVfo<T>::SetFrequency(int frequency, float phase)
 {
-    HGenerator<T>::Calculate(_rate, frequency, _amplitude, phase);
+    HGenerator<T>::Calculate(frequency, _amplitude, phase);
 }
 
 /********************************************************************

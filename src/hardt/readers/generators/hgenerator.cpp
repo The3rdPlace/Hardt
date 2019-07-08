@@ -8,7 +8,7 @@ HGenerator<T>::HGenerator(H_SAMPLE_RATE rate, int frequency, T amplitude, float 
     _lot(NULL)
 {
     HLog("HGenerator(rate = %d, frequency = %d, phase = %f)", rate, frequency, phase);
-    Calculate(rate, frequency, amplitude, phase);
+    Init(rate, frequency, amplitude, phase);
 }
 
 template <class T>
@@ -53,15 +53,23 @@ int HGenerator<T>::Read(T* dest, size_t blocksize)
 }
 
 template <class T>
-void HGenerator<T>::Calculate(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase)
+void HGenerator<T>::Init(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase)
 {
-    // Release previous lookup table ?
-    if( _lot != NULL )
-    {
-        HLog("Releasing previous lookup table");
-        delete _lot;
-    }
+    // Number of lot values
+    _rate = rate;
+    _lotSize = rate / 10;
 
+    // Calculate size of Lot
+    _lot = new T[_lotSize];
+    _flot = new float[_lotSize];
+    HLog("Created lookup table of size %d (%d bytes)", _lotSize, _lotSize * sizeof(float));
+
+    Calculate(frequency, amplitude, phase);
+}
+
+template <class T>
+void HGenerator<T>::Calculate(int frequency, T amplitude, float phase)
+{
     /*
      Reasoning behind the lookup table sizing and usage
     
@@ -354,17 +362,10 @@ void HGenerator<T>::Calculate(H_SAMPLE_RATE rate, int frequency, T amplitude, fl
 
     */
 
-    // Number of lot values
-    _lotSize = rate / 10;
-
-    // Calculate size of Lot
-    _lot = new T[_lotSize];
-    _flot = new float[_lotSize];
-    //HLog("Created lookup table of size %d (%d bytes)", _lotSize, _lotSize * sizeof(float));
 
     // Cast to floats to have a controlled calculation of the lot data
     float l = _lotSize;
-    float r = rate;
+    float r = _rate;
     float f = frequency;
     float mag = amplitude;
 

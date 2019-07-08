@@ -16,8 +16,11 @@ class HGenerator : public HReader<T>
         int _lotSize;
         int _it;
         float _delta;
+        H_SAMPLE_RATE _rate;
 
         float* _flot;
+
+        void Init(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase);
 
     protected:
 
@@ -27,7 +30,7 @@ class HGenerator : public HReader<T>
     public:
 
         int Read(T* dest, size_t blocksize);
-        void Calculate(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase);
+        void Calculate(int frequency, T amplitude, float phase);
 
 };
 
