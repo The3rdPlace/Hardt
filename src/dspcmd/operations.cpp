@@ -676,61 +676,50 @@ class FilterSpectrumReader : public HReader<T>
 {
     private:
 
-        T* _data;
-        int _numBlocks;
-        int _blocksRead;
         HVfo<T>* vfo;
         int _freq;
+        double _fdelta;
+        int _lastDisplayedFreq;
 
     public:
 
-        FilterSpectrumReader(size_t blocksize, int numBlocks):
-            _numBlocks(numBlocks),
-            _blocksRead(0),
-            _freq(1)
+        FilterSpectrumReader()
         {
-            vfo = new HVfo<T>(Config.Rate, _freq, std::numeric_limits<T>::max() / 2, 0);
-
-            // First frame is a unit step
-            /*_data = new T[blocksize];
-            _data[0] = std::numeric_limits<T>::max();
-            //int x = -1;
-            for( int i = 1; i < blocksize; i++ )
+            _fdelta = (((double) Config.Rate / 2) / ((double) Config.FFTSize / 2)) / 10;
+            if( _fdelta < 1 )
             {
-                _data[i] = 0; //_data[0];// * x;
-                //x = -1 * x;
-            }*/
+                std::cout << "Too low fft size" << std::endl;
+                _fdelta = 1;
+            }
+            _freq = _fdelta;
+            _lastDisplayedFreq = _freq;
+
+            vfo = new HVfo<T>(Config.Rate, _freq, std::numeric_limits<T>::max() / 2, 0);
         }
 
         ~FilterSpectrumReader()
         {
-            //delete[] _data;
             delete vfo;
         }
 
         int Read(T* dest, size_t blocksize)
         {
-            /*if( _blocksRead++ >= _numBlocks )
-            {
-                return 0;
-            }*/
-            /*memcpy(dest, _data, blocksize * sizeof(T));*/
-            /*for( int i = 0; i < blocksize; i++ )
-            {
-
-            }*/
-            if( _freq >= (Config.Rate / 2) - ((Config.Rate / 2) / Config.Blocksize ) )
+            // At end of sweep ?
+            if( _freq >= (Config.Rate / 2) )
             {
                 return 0;
             }
 
+            // Set frequency then return signal
             vfo->SetFrequency(_freq, 0);
             vfo->Read(dest, blocksize);
-            _freq += 1;//(Config.Rate / Config.Blocksize) / 2;
+            _freq += _fdelta;
 
-
-            // Reset first value, from here on, only return zero values
-            //_data[0] = 0;
+            if( _freq - _lastDisplayedFreq > 1000 )
+            {
+                std::cout << "  - " << _freq << "Hz" << std::endl;
+                _lastDisplayedFreq = _freq;
+            }
 
             return blocksize;
         }
@@ -740,7 +729,7 @@ template <typename T>
 int RunFilterSpectrum()
 {
    // Create reader
-    FilterSpectrumReader<T> rd(Config.Blocksize,10);
+    FilterSpectrumReader<T> rd;
 
     // Create  filter
     HFilter<T>* filter;
@@ -769,6 +758,7 @@ int RunFilterSpectrum()
 
     // Create processor
     HStreamProcessor<T> proc(&fft, (HReader<T>*) filter, Config.Blocksize, &terminated);
+    std::cout << "Sweep from 0Hz - " << (Config.Rate / 2) << "Hz" << std::endl;
     proc.Run();
 
     // Display the final plot
