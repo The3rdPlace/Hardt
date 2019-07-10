@@ -1,5 +1,5 @@
-#ifndef __HIirFilter_CPP
-#define __HIirFilter_CPP
+#ifndef __HIIRFILTER_CPP
+#define __HIIRFILTER_CPP
 
 #include "hiirfilter.h"
 
@@ -26,8 +26,8 @@ void HIirFilter<T>::Init(float* coefficients, int length)
 {
     HLog("Init(float*, %d)", length);
 
-    // Expect an equal number of coefficients to proper implement (at least
-    // a single biquad
+    // Expect an unequal number of coefficients to proper implement (at least)
+    // a single normalized biquad
     if( length % 2 == 0 || length < 3 )
     {
         HError("An IIR filter needs an unequal number of a and b coefficients, ex. 3 b and 2 a");
