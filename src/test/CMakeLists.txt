@@ -27,6 +27,7 @@ target_sources(hardt_test
 	    hlinearmixer_test.cpp
 	    hfirfilter_test.cpp
 	    hiirfilter_test.cpp
+	    hbiquads_test.cpp
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")

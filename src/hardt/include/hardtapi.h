@@ -15,6 +15,7 @@
 #include "hprocessor.h"
 #include "hgenerator.h"
 #include "hfilter.h"
+#include "hbiquad.h"
 
 #include "hchunkwriter.h"
 #include "hconverter.h"
@@ -43,5 +44,6 @@
 #include "hmultiplier.h"
 #include "hfirfilter.h"
 #include "hiirfilter.h"
+#include "hlowpassbiquad.h"
 
 #endif
