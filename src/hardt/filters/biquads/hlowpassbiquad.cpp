@@ -4,17 +4,32 @@
 #include "hlowpassbiquad.h"
 
 template <class T>
-HIirFilter<T>* HLowpassBiQuad<T>::Create(HWriter<T>* writer, size_t blocksize)
+float* HLowpassBiQuad<T>::Calculate()
 {
-    // Todo: Calculate correct values
-    a0 = 0;
-    a1 = 0;
-    a2 = 0;
-    b0 = 0;
-    b1 = 0;
-    b2 = 0;
+    a0 = 1 + alpha;
+    a1 = -2 * omegaC;
+    a2 = 1 - alpha;
+    b0 = (1 - omegaC) / 2;
+    b1 = 1 - omegaC;
+    b2 = (1 - omegaC) / 2;
 
-    return new HIirFilter<T>(writer, Normalize(), 5, blocksize);
+    return Normalize();
+}
+
+template <class T>
+HIirFilter<T>* HLowpassBiQuad<T>::Create(HWriter<T>* writer, float fCutOff, float rate, float quality, float gain, size_t blocksize)
+{
+    Initialize(fCutOff, rate, quality, gain);
+
+    return new HIirFilter<T>(writer, Calculate(), 5, blocksize);
+}
+
+template <class T>
+HIirFilter<T>* HLowpassBiQuad<T>::Create(HReader<T>* reader, float fCutOff, float rate, float quality, float gain,  size_t blocksize)
+{
+    Initialize(fCutOff, rate, quality, gain);
+
+    return new HIirFilter<T>(reader, Calculate(), 5, blocksize);
 }
 
 #endif

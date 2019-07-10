@@ -15,8 +15,15 @@ class HBiQuad
         static float biquadParameters[6];
         static float normalizedBiquadParameters[5];
 
+        static float omegaC;
+        static float omegaS;
+        static float alpha;
+        static float A;
+        static float beta;
+
     protected:
 
+        static void Initialize(float fCutOff, float rate, float quality, float gain);
         static float* Normalize();
 };
 
