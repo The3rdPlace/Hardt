@@ -60,6 +60,20 @@ class HIirFilter : public HFilter<T>
 
         void Filter(T* src, T* dest, size_t blocksize);
 
+        std::vector<float> GetCoefficients()
+        {
+            std::vector<float> coefficients;
+            for( int i = 0; i < _length; i++ )
+            {
+                coefficients.push_back(_aCoefficients[i]);
+            }
+            for( int i = 0; i <= _length; i++ )
+            {
+                coefficients.push_back(_bCoefficients[i]);
+            }
+            return coefficients;
+        }
+
         static HIirFilter<T>* Create(HWriter<T>* writer, size_t blocksize, char* coeffsFilename)
         {
             std::vector<float> coeffs = ReadCoeffsFromFile(coeffsFilename);
