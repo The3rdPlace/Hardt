@@ -61,41 +61,55 @@ class HBiQuads_Test: public Test
         };
 
         template <class T>
-        class TestBiQuad : public HBiQuad
+        class TestBiQuad : public HBiQuad<T>
         {
+            private:
+
+                float _a0;
+                float _a1;
+                float _a2;
+                float _b0;
+                float _b1;
+                float _b2;
+
+                void Calculate(float omegaC, float omegaS, float alpha, float A, float beta, float *a0, float* a1, float* a2, float* b0, float* b1, float* b2)
+                {
+                    *a0 = _a0;
+                    *a1 = _a1;
+                    *a2 = _a2;
+                    *b0 = _b0;
+                    *b1 = _b1;
+                    *b2 = _b2;
+                }
+
             public:
+
+                TestBiQuad(float a0, float a1, float a2, float b0, float b1, float b2):
+                    HBiQuad<T>(0.0f, 0.0f, 0.0f, 0.0f),
+                    _a0(a0),
+                    _a1(a1),
+                    _a2(a2),
+                    _b0(b0),
+                    _b1(b1),
+                    _b2(b2)
+                {}
 
                 static HIirFilter<T>* Create(HWriter<T>* writer, size_t blocksize)
                 {
-                    a0 = 1.0;
-                    a1 = 1.0;
-                    a2 = 2.0;
-                    b0 = 1.0;
-                    b1 = 2.0;
-                    b2 = 3.0;
-                    return new HIirFilter<T>(writer, Normalize(), 5, blocksize);
+                    TestBiQuad<T>* bq = new TestBiQuad(1, 1, 2, 1, 2, 3);
+                    return new HIirFilter<T>(writer, ((HBiQuad<T>*) bq)->Calculate(), 5, blocksize);
                 }
 
                 static HIirFilter<T>* Create(HReader<T>* writer, size_t blocksize)
                 {
-                    a0 = 1.0;
-                    a1 = 1.0;
-                    a2 = 2.0;
-                    b0 = 1.0;
-                    b1 = 2.0;
-                    b2 = 3.0;
-                    return new HIirFilter<T>(writer, Normalize(), 5, blocksize);
+                    TestBiQuad<T>* bq = new TestBiQuad(1, 1, 2, 1, 2, 3);
+                    return new HIirFilter<T>(writer, ((HBiQuad<T>*) bq)->Calculate(), 5, blocksize);
                 }
 
                 static HIirFilter<T>* CreateNormalized(HWriter<T>* writer, size_t blocksize)
                 {
-                    a0 = 2.0;
-                    a1 = 2.0;
-                    a2 = 4.0;
-                    b0 = 2.0;
-                    b1 = 4.0;
-                    b2 = 6.0;
-                    return new HIirFilter<T>(writer, Normalize(), 5, blocksize);
+                    TestBiQuad<T>* bq = new TestBiQuad(2, 2, 4, 2, 4, 6);
+                    return new HIirFilter<T>(writer, ((HBiQuad<T>*) bq)->Calculate(), 5, blocksize);
                 }
         };
 

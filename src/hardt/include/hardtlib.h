@@ -24,7 +24,6 @@ Abstract base classes with no, or little implementation
 #include "hprocessor.cpp"
 #include "hgenerator.cpp"
 #include "hfilter.cpp"
-#include "hbiquad.cpp"
 
 /********************************************************************
 Include api function declarations
@@ -57,6 +56,7 @@ Include api function declarations
 #include "hmultiplier.cpp"
 #include "hfirfilter.cpp"
 #include "hiirfilter.cpp"
-#include "hlowpassbiquad.cpp"
+#include "hbiquad.cpp"
+#include "hlowpassbiquad.h"
 
 #endif
