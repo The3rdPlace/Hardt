@@ -11,7 +11,7 @@ HBiQuad<T>::HBiQuad(float fCutOff, float rate, float quality, float gain)
     // Basic intermediate values
     omegaC = cos(omegaCutOff);
     omegaS = sin(omegaCutOff);
-    alpha = omegaS / (2 * quality);
+    alpha = omegaS / (2.0f * quality);
 
     // Only used for shelving and peaking filters
     A = sqrt(pow(10, (gain / 20)));
@@ -39,6 +39,7 @@ float* HBiQuad<T>::Normalize()
         normalizedBiquadParameters[3] = biquadParameters[4];
         normalizedBiquadParameters[4] = biquadParameters[5];
     }
+
     return normalizedBiquadParameters;
 }
 

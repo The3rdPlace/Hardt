@@ -768,6 +768,44 @@ int RunFilterSpectrum()
 }
 
 template <typename T>
+int RunBiQuadSpectrum()
+{
+   // Create reader
+    FilterSpectrumReader<T> rd;
+
+    // Create  filter
+    HFilter<T>* filter;
+    if( strcmp(Config.FilterName, "HLowpassBiQuad") == 0 )
+    {
+        filter = HBiQuadFactory<HLowpassBiQuad<T>, T>::Create((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+    }
+    else
+    {
+        std::cout << "Unknown filtername " << Config.FilterName << std::endl;
+        return -1;
+    }
+
+    // Create writer
+    HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
+
+    // Create FFT
+    HFft<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
+
+    // Buffer for the accumulated spectrum values
+    aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
+
+    // Create processor
+    HStreamProcessor<T> proc(&fft, (HReader<T>*) filter, Config.Blocksize, &terminated);
+    std::cout << "Sweep from 0Hz - " << (Config.Rate / 2) << "Hz" << std::endl;
+    proc.Run();
+
+    // Display the final plot
+    Config.IsFilterSpectrumPlot ? FFTMagnitudeShowPlot() : FFTMagnitudeShowGnuPlot();
+
+    return 0;
+}
+
+template <typename T>
 int RunOperation()
 {
     // Wait for start time ?
@@ -1079,6 +1117,22 @@ int RunOperation()
         }
 
         return RunFilterSpectrum<T>();
+    }
+
+    if( Config.IsBiQuad )
+    {
+        if( Config.FilterName == NULL )
+        {
+            std::cout << "No filter name (-bq name Fcutoff Q G)" << std::endl;
+            return -1;
+        }
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file, for the coefficients (-of)" << std::endl;
+            return -1;
+        }
+
+        return RunBiQuadSpectrum<T>();
     }
 
     // No known operation could be determined from the input arguments

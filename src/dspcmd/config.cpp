@@ -25,6 +25,11 @@ int argIntCmp(const char* arg, const char* option, char* value, int currentValue
     return strcmp(arg, option) == 0 ? atoi(value) : currentValue;
 }
 
+float argFloatCmp(const char* arg, const char* option, char* value, float currentValue)
+{
+    return strcmp(arg, option) == 0 ? atof(value) : currentValue;
+}
+
 bool parseArguments(int argc, char** argv)
 {
     int PhaseIntValue = 0;
@@ -123,6 +128,12 @@ bool parseArguments(int argc, char** argv)
             Config.XMax = argIntCmp(argv[argNo], "-pr", argv[argNo + 2], Config.XMax);
             Config.YMin = argIntCmp(argv[argNo], "-pr", argv[argNo + 3], Config.YMin);
             Config.YMax = argIntCmp(argv[argNo], "-pr", argv[argNo + 4], Config.YMax);
+
+            Config.IsBiQuad = argBoolCmp(argv[argNo], "-bq", Config.IsBiQuad);
+            Config.FilterName = argCharCmp(argv[argNo], "-bq", argv[argNo + 1], Config.FilterName);
+            Config.FCutOff = argFloatCmp(argv[argNo], "-bq", argv[argNo + 2], Config.FCutOff);
+            Config.Quality = argFloatCmp(argv[argNo], "-bq", argv[argNo + 3], Config.Quality);
+            Config.Gain = argFloatCmp(argv[argNo], "-bq", argv[argNo + 4], Config.Gain);
         }
 
         if( argBoolCmp(argv[argNo], "-h", false) )
@@ -173,6 +184,10 @@ bool parseArguments(int argc, char** argv)
             std::cout << "-flt name coeffs           Read coefficients from coeffs and run file through filter name" << std::endl;
             std::cout << "-flp name coeffs           Read coefficients from coeffs and plot filter response for filter name" << std::endl;
             std::cout << "-flgp name coeffs          Read coefficients from coeffs and plot filter response for filter name using GnuPlot" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "-bq name Fcutoff Q G       Create biquad filter, dump coefficients and run sweep" << std::endl;
+            std::cout << std::endl;
 
             // Force exit
             return true;

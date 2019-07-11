@@ -25,6 +25,7 @@ struct DspCmdConfig
     bool IsFilter = false;
     bool IsFilterSpectrumPlot = false;
     bool IsFilterSpectrumGnuPlot = false;
+    bool IsBiQuad = false;
 
     char* InFileFormat = NULL;
     char* OutFileFormat = NULL;
@@ -63,6 +64,10 @@ struct DspCmdConfig
 
     char* FilterName = NULL;
     char* FilterCoeffs = NULL;
+
+    float FCutOff;
+    float Quality;
+    float Gain;
 };
 
 extern DspCmdConfig Config;
