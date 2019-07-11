@@ -778,6 +778,17 @@ int RunBiQuadSpectrum()
     if( strcmp(Config.FilterName, "HLowpassBiQuad") == 0 )
     {
         filter = HBiQuadFactory<HLowpassBiQuad<T>, T>::Create((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+
+        // Dump the coefficients
+        std::vector<float> coeffs = ((HIirFilter<T>*) filter)->GetCoefficients();
+        std::ofstream stream;
+        stream.open(Config.OutputFile);
+        stream << coeffs[0] << std::endl;
+        stream << coeffs[1] << std::endl;
+        stream << coeffs[2] << std::endl;
+        stream << coeffs[3] << std::endl;
+        stream << coeffs[4] << std::endl;
+        stream.close();
     }
     else
     {
