@@ -6,6 +6,10 @@ class HLowpassBiQuad : public HBiQuad<T>
 {
     public:
 
+        HLowpassBiQuad(float fCutOff, float rate, float quality, float gain):
+            HBiQuad<T>(fCutOff, rate, quality, gain)
+        {}
+
         void Calculate(float omegaC, float omegaS, float alpha, float A, float beta, float *a0, float* a1, float* a2, float* b0, float* b1, float* b2)
         {
             *a0 = 1 + alpha;
@@ -15,19 +19,6 @@ class HLowpassBiQuad : public HBiQuad<T>
             *b1 = 1 - omegaC;
             *b2 = (1 - omegaC) / 2;
         }
-
-        static HIirFilter<T>* Create(HWriter<T>* writer, float fCutOff, float rate, float quality, float gain,  size_t blocksize)
-        {
-            HLowpassBiQuad<T> bq(fCutOff, rate, quality, gain);
-            return new HIirFilter<T>(writer, bq.Calculate(), 5, blocksize);
-        }
-
-        static HIirFilter<T>* Create(HReader<T>* reader, float fCutOff, float rate, float quality, float gain,  size_t blocksize)
-        {
-            HLowpassBiQuad<T> bq(fCutOff, rate, quality, gain);
-            return new HIirFilter<T>(reader, bq.Calculate(), 5, blocksize);
-        }
-
 };
 
 #endif

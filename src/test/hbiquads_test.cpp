@@ -18,7 +18,7 @@ class HBiQuads_Test: public Test
             UNITTEST(test_filter_as_reader);
 
             // Todo: Test specific biquad implementations
-            //UNITTEST(test_lowpassbiquad);
+            UNITTEST(test_lowpassbiquad);
         }
 
         const char* name()
@@ -163,13 +163,14 @@ class HBiQuads_Test: public Test
         void test_lowpassbiquad()
         {
             TestWriter<int16_t> wr;
-            HFilter<int16_t>* filter = TestBiQuad<int16_t>::Create(&wr, 6);
+            HBiQuadFactory<HLowpassBiQuad<int16_t>, int16_t>::Create(&wr, 0, 0, 0, 0, 6);
+            /*HFilter<int16_t>* filter = TestBiQuad<int16_t>::Create(&wr, 6);
 
             std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
             ASSERT_IS_EQUAL(c[0], 1.0f);
             ASSERT_IS_EQUAL(c[1], 2.0f);
             ASSERT_IS_EQUAL(c[2], 1.0f);
             ASSERT_IS_EQUAL(c[3], 2.0f);
-            ASSERT_IS_EQUAL(c[4], 3.0f);
+            ASSERT_IS_EQUAL(c[4], 3.0f);*/
         }
 } hbiquads_test;

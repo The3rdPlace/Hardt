@@ -58,5 +58,6 @@ Include api function declarations
 #include "hiirfilter.cpp"
 #include "hbiquad.cpp"
 #include "hlowpassbiquad.h"
+#include "hbiquadfactory.h"
 
 #endif

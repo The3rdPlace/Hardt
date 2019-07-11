@@ -45,5 +45,6 @@
 #include "hiirfilter.h"
 #include "hbiquad.h"
 #include "hlowpassbiquad.h"
+#include "hbiquadfactory.h"
 
 #endif
