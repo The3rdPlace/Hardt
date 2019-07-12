@@ -25,6 +25,7 @@ struct DspCmdConfig
     bool IsFilter = false;
     bool IsFilterSpectrumPlot = false;
     bool IsFilterSpectrumGnuPlot = false;
+    bool IsBiQuadSpectrum = false;
     bool IsBiQuad = false;
 
     char* InFileFormat = NULL;

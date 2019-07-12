@@ -129,11 +129,17 @@ bool parseArguments(int argc, char** argv)
             Config.YMin = argIntCmp(argv[argNo], "-pr", argv[argNo + 3], Config.YMin);
             Config.YMax = argIntCmp(argv[argNo], "-pr", argv[argNo + 4], Config.YMax);
 
-            Config.IsBiQuad = argBoolCmp(argv[argNo], "-bq", Config.IsBiQuad);
+            Config.IsBiQuadSpectrum = argBoolCmp(argv[argNo], "-bq", Config.IsBiQuadSpectrum);
             Config.FilterName = argCharCmp(argv[argNo], "-bq", argv[argNo + 1], Config.FilterName);
             Config.FCutOff = argFloatCmp(argv[argNo], "-bq", argv[argNo + 2], Config.FCutOff);
             Config.Quality = argFloatCmp(argv[argNo], "-bq", argv[argNo + 3], Config.Quality);
             Config.Gain = argFloatCmp(argv[argNo], "-bq", argv[argNo + 4], Config.Gain);
+
+            Config.IsBiQuad = argBoolCmp(argv[argNo], "-bqt", Config.IsBiQuad);
+            Config.FilterName = argCharCmp(argv[argNo], "-bqt", argv[argNo + 1], Config.FilterName);
+            Config.FCutOff = argFloatCmp(argv[argNo], "-bqt", argv[argNo + 2], Config.FCutOff);
+            Config.Quality = argFloatCmp(argv[argNo], "-bqt", argv[argNo + 3], Config.Quality);
+            Config.Gain = argFloatCmp(argv[argNo], "-bqt", argv[argNo + 4], Config.Gain);
         }
 
         if( argBoolCmp(argv[argNo], "-h", false) )
@@ -187,6 +193,7 @@ bool parseArguments(int argc, char** argv)
             std::cout << std::endl;
 
             std::cout << "-bq name Fcutoff Q G       Create biquad filter, dump coefficients and run sweep" << std::endl;
+            std::cout << "-bgt name Fcutoff Q G      Create biquad filter and run file through the filter" << std::endl;
             std::cout << std::endl;
 
             // Force exit
