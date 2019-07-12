@@ -81,6 +81,9 @@ bool parseArguments(int argc, char** argv)
 
             Config.IsMultiplier = argBoolCmp(argv[argNo], "-mp", Config.IsMultiplier);
             Config.Frequency = argIntCmp(argv[argNo], "-mp", argv[argNo + 1], Config.Frequency);
+
+            Config.IsGain = argBoolCmp(argv[argNo], "-g", Config.IsGain);
+            Config.Gain = argFloatCmp(argv[argNo], "-g", argv[argNo + 1], Config.Gain);
         }
 
         if( argNo < argc - 2 )
@@ -194,6 +197,9 @@ bool parseArguments(int argc, char** argv)
 
             std::cout << "-bq name Fcutoff Q G       Create biquad filter, dump coefficients and run sweep" << std::endl;
             std::cout << "-bgt name Fcutoff Q G      Create biquad filter and run file through the filter" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "-g gain                    Run file through gain filter" << std::endl;
             std::cout << std::endl;
 
             // Force exit

@@ -883,6 +883,63 @@ int RunBiQuadFilter()
 }
 
 template <typename T>
+int RunGain()
+{
+    // Create reader
+    HReader<T>* rd;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        rd = new HWavReader<T>(Config.InputFile);
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        rd = new HFileReader<T>(Config.InputFile);
+    }
+    else
+    {
+        std::cout << "Unknown input file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+    // Create writer
+    HWriter<T>* wr;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        wr = new HFileWriter<T>(Config.OutputFile);
+    }
+    else
+    {
+        std::cout << "Unknown output file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+    // Create gain
+    HGain<T> gain(rd, Config.Gain, Config.Blocksize);
+
+    // Create processor
+    HStreamProcessor<T> proc(wr, (HReader<T>*) &gain, Config.Blocksize, &terminated);
+    proc.Run();
+
+    // Delete the reader and writer
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        delete (HWavReader<T>*) rd;
+        delete (HWavWriter<T>*) wr;
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        delete (HFileReader<T>*) rd;
+        delete (HFileWriter<T>*) wr;
+    }
+
+    return 0;
+}
+
+template <typename T>
 int RunOperation()
 {
     // Wait for start time ?
@@ -1231,6 +1288,22 @@ int RunOperation()
         }
 
         return RunBiQuadFilter<T>();
+    }
+
+    if( Config.IsGain )
+    {
+        if( Config.InputFile == NULL )
+        {
+            std::cout << "No input file (-if)" << std::endl;
+            return -1;
+        }
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file (-of)" << std::endl;
+            return -1;
+        }
+
+        return RunGain<T>();
     }
 
     // No known operation could be determined from the input arguments
