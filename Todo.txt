@@ -1,4 +1,11 @@
-Specialized PCM writer than can handle endianness
+Needed:
+  - Coomb filter (forward- and backward feedback)
+  - Implement missing biquad standard types
+    
+Nice2have:
+  - AGC component
 
-put data on the network in network-byte-order, and read this way then convert to system-endianness
+Later:
+  - Specialized PCM writer than can handle endianness
+  - put data on the network in network-byte-order, and read this way then convert to system-endianness
 
