@@ -72,6 +72,38 @@ int HGain<T>::Read(T* dest, size_t blocksize)
 }
 
 template <class T>
+bool HGain<T>::Start()
+{
+    if( _reader != NULL )
+    {
+        HLog("Calling Start() on reader");
+        return _reader->Start();
+    }
+    if( _writer != NULL )
+    {
+        HLog("Calling Start() on writer");
+        return _writer->Start();
+    }
+    return false;
+}
+
+template <class T>
+bool HGain<T>::Stop()
+{
+    if( _reader != NULL )
+    {
+        HLog("Calling Stop() on reader");
+        return _reader->Stop();
+    }
+    if( _writer != NULL )
+    {
+        HLog("Calling Stop() on writer");
+        return _writer->Stop();
+    }
+    return false;
+}
+
+template <class T>
 void HGain<T>::SetGain(float gain)
 {
     _gain = gain;
@@ -144,6 +176,32 @@ int HGain<int16_t>::Read(int16_t* dest, size_t blocksize);
 
 template
 int HGain<int32_t>::Read(int32_t* dest, size_t blocksize);
+
+// Start()
+template
+bool HGain<int8_t>::Start();
+
+template
+bool HGain<uint8_t>::Start();
+
+template
+bool HGain<int16_t>::Start();
+
+template
+bool HGain<int32_t>::Start();
+
+// Stop()
+template
+bool HGain<int8_t>::Stop();
+
+template
+bool HGain<uint8_t>::Stop();
+
+template
+bool HGain<int16_t>::Stop();
+
+template
+bool HGain<int32_t>::Stop();
 
 // SetGain()
 template

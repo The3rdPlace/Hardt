@@ -24,6 +24,9 @@ class HGain : public HWriter<T>, public HReader<T>
         int Write(T* src, size_t blocksize);
         int Read(T* dest, size_t blocksize);
 
+        bool Start();
+        bool Stop();
+
         void SetGain(float gain);
 };
 
