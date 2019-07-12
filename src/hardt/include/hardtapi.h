@@ -46,5 +46,6 @@
 #include "hbiquad.h"
 #include "hlowpassbiquad.h"
 #include "hbiquadfactory.h"
+#include "hgain.h"
 
 #endif

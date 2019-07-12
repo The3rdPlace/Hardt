@@ -59,5 +59,6 @@ Include api function declarations
 #include "hbiquad.cpp"
 #include "hlowpassbiquad.h"
 #include "hbiquadfactory.h"
+#include "hgain.cpp"
 
 #endif
