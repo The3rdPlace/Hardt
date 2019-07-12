@@ -160,30 +160,36 @@ class HBiQuads_Test: public Test
             ASSERT_IS_EQUAL(memcmp((void*) received, (void*) expected, 6 * sizeof(int16_t)), 0);
         }
 
+        float ftrim(float value)
+        {
+            int intval = ceil(value * 1e6);
+            return intval / 1e6;
+        }
+
         void test_lowpassbiquad_as_writer()
         {
             TestWriter<int16_t> wr;
-            HFilter<int16_t>* filter = HBiQuadFactory<HLowpassBiQuad<int16_t>, int16_t>::Create(&wr, 150, 192000, 0.707, 1, 4096);
+            HFilter<int16_t>* filter = HBiQuadFactory<HLowpassBiQuad<int16_t>, int16_t>::Create(&wr, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
-            ASSERT_IS_EQUAL((int) (c[0] * 1e5) , (int) (ceil(-1.99306f * 1e5)));
-            ASSERT_IS_EQUAL((int) (c[1] * 1e6), (int) (ceil(0.993081f * 1e6)));
-            ASSERT_IS_EQUAL((int) (c[2] * 1e11), (int) (ceil(5.99924e-06f * 1e11)));
-            ASSERT_IS_EQUAL((int) (c[3] * 1e10) , (int) (ceil(1.19984e-05f * 1e10)));
-            ASSERT_IS_EQUAL((int) (c[4] * 1e11), (int) (ceil(5.99924e-06f * 1e11)));
+            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(-0.617822f));
+            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(0.235644f));
+            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.154455f));
+            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(0.308910f));
+            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.154455f));
         }
 
         void test_lowpassbiquad_as_reader()
         {
             TestReader<int16_t> rd;
-            HFilter<int16_t>* filter = HBiQuadFactory<HLowpassBiQuad<int16_t>, int16_t>::Create(&rd, 150, 192000, 0.707, 1, 6);
+            HFilter<int16_t>* filter = HBiQuadFactory<HLowpassBiQuad<int16_t>, int16_t>::Create(&rd, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
-            ASSERT_IS_EQUAL((int) (c[0] * 1e5) , (int) (ceil(-1.99306f * 1e5)));
-            ASSERT_IS_EQUAL((int) (c[1] * 1e6), (int) (ceil(0.993081f * 1e6)));
-            ASSERT_IS_EQUAL((int) (c[2] * 1e11), (int) (ceil(5.99924e-06f * 1e11)));
-            ASSERT_IS_EQUAL((int) (c[3] * 1e10) , (int) (ceil(1.19984e-05f * 1e10)));
-            ASSERT_IS_EQUAL((int) (c[4] * 1e11), (int) (ceil(5.99924e-06f * 1e11)));
+            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(-0.617822f));
+            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(0.235644f));
+            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.154455f));
+            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(0.308910f));
+            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.154455f));
         }
 
 } hbiquads_test;
