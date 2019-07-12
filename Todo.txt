@@ -1,7 +1,7 @@
 Needed:
   - Coomb filter (forward- and backward feedback)
   - Implement missing biquad standard types
-    
+
 Nice2have:
   - AGC component
 
