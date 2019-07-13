@@ -1,106 +1,38 @@
 #ifndef __HGAIN_CPP
 #define __HGAIN_CPP
 
-#include "hwriter.h"
-#include "hreader.h"
 #include "hgain.h"
 
 template <class T>
 HGain<T>::HGain(HWriter<T>* writer, float gain, size_t blocksize):
-    _writer(writer),
-    _reader(NULL),
-    _blocksize(blocksize),
+    HFilter<T>(writer, blocksize),
     _gain(gain)
 {
     HLog("HGain(HWriter*, %f, %d)", gain, blocksize);
-
-    _buffer = new T[blocksize];
-    HLog("Allocated %d as local buffer", blocksize * sizeof(T));
 }
 
 template <class T>
 HGain<T>::HGain(HReader<T>* reader, float gain, size_t blocksize):
-    _writer(NULL),
-    _reader(reader),
-    _blocksize(blocksize),
+    HFilter<T>(reader, blocksize),
     _gain(gain)
 {
     HLog("HGain(HReader*, %f, %d)", gain, blocksize);
-
-    _buffer = new T[blocksize];
-    HLog("Allocated %d as local buffer", blocksize * sizeof(T));
 }
 
 template <class T>
 HGain<T>::~HGain()
 {
     HLog("~HGain()");
-    delete _buffer;
 }
 
 template <class T>
-int HGain<T>::Write(T* src, size_t blocksize)
+void HGain<T>::Filter(T* src, T* dest, size_t blocksize)
 {
-    if( blocksize > _blocksize )
-    {
-        HError("Illegal blocksize in Write() to HGain. Initialized with %d called with %d", _blocksize, blocksize);
-        throw new HFilterIOException("It is not allowed to write more data than the size given at creation");
-    }
-
+    // Run gain filter
     for( int i = 0; i < blocksize; i++ )
     {
-        _buffer[i] = _gain * src[i];
+        dest[i] = src[i] * _gain;
     }
-    return _writer->Write(_buffer, blocksize);
-}
-
-template <class T>
-int HGain<T>::Read(T* dest, size_t blocksize)
-{
-    if( blocksize > _blocksize )
-    {
-        HError("Illegal blocksize in Read() to HGain. Initialized with %d called with %d", _blocksize, blocksize);
-        throw new HFilterIOException("It is not possible to read more data than the size given at creation");
-    }
-
-    int received = _reader->Read(_buffer, blocksize);
-    for( int i = 0; i < blocksize; i++ )
-    {
-        dest[i] = _gain * _buffer[i];
-    }
-    return received;
-}
-
-template <class T>
-bool HGain<T>::Start()
-{
-    if( _reader != NULL )
-    {
-        HLog("Calling Start() on reader");
-        return _reader->Start();
-    }
-    if( _writer != NULL )
-    {
-        HLog("Calling Start() on writer");
-        return _writer->Start();
-    }
-    return false;
-}
-
-template <class T>
-bool HGain<T>::Stop()
-{
-    if( _reader != NULL )
-    {
-        HLog("Calling Stop() on reader");
-        return _reader->Stop();
-    }
-    if( _writer != NULL )
-    {
-        HLog("Calling Stop() on writer");
-        return _writer->Stop();
-    }
-    return false;
 }
 
 template <class T>
@@ -151,57 +83,18 @@ HGain<int16_t>::~HGain();
 template
 HGain<int32_t>::~HGain();
 
-// Write()
+// Filter
 template
-int HGain<int8_t>::Write(int8_t* src, size_t blocksize);
+void HGain<int8_t>::Filter(int8_t* src, int8_t* dest, size_t blocksize);
 
 template
-int HGain<uint8_t>::Write(uint8_t* src, size_t blocksize);
+void HGain<uint8_t>::Filter(uint8_t* src, uint8_t* dest, size_t blocksize);
 
 template
-int HGain<int16_t>::Write(int16_t* src, size_t blocksize);
+void HGain<int16_t>::Filter(int16_t* src, int16_t* dest, size_t blocksize);
 
 template
-int HGain<int32_t>::Write(int32_t* src, size_t blocksize);
-
-// Read()
-template
-int HGain<int8_t>::Read(int8_t* dest, size_t blocksize);
-
-template
-int HGain<uint8_t>::Read(uint8_t* dest, size_t blocksize);
-
-template
-int HGain<int16_t>::Read(int16_t* dest, size_t blocksize);
-
-template
-int HGain<int32_t>::Read(int32_t* dest, size_t blocksize);
-
-// Start()
-template
-bool HGain<int8_t>::Start();
-
-template
-bool HGain<uint8_t>::Start();
-
-template
-bool HGain<int16_t>::Start();
-
-template
-bool HGain<int32_t>::Start();
-
-// Stop()
-template
-bool HGain<int8_t>::Stop();
-
-template
-bool HGain<uint8_t>::Stop();
-
-template
-bool HGain<int16_t>::Stop();
-
-template
-bool HGain<int32_t>::Stop();
+void HGain<int32_t>::Filter(int32_t* src, int32_t* dest, size_t blocksize);
 
 // SetGain()
 template
