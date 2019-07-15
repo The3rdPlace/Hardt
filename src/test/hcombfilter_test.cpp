@@ -68,19 +68,16 @@ class HCombFilter_Test: public Test
         void test_feedforward_filter_as_writer()
         {
             TestWriter<int8_t> wr;
-            HCombFilter<int8_t> filter(&wr, 48000, 50, HCombFilter<int8_t>::FEED_FORWARD, 1024);
+            HCombFilter<int8_t> filter(&wr, 48000, 50, 1, HCombFilter<int8_t>::FEED_FORWARD, 1024);
 
             ASSERT_IS_EQUAL(filter.Write(input, 1024), 1024);
+            ASSERT_IS_EQUAL((int) wr.received[0], 1);
+            ASSERT_IS_EQUAL((int) wr.received[960], -1);
             for( int i = 0; i < 1024; i++)
             {
-                //std::cout << "received[" << i << "] = " << (int) wr.received[i] << std::endl;
                 if( i != 0 && i != 960 )
                 {
                     ASSERT_IS_EQUAL((int) wr.received[i], 0);
-                }
-                else
-                {
-                    ASSERT_IS_EQUAL((int) wr.received[i], 1);
                 }
             }
 
@@ -102,19 +99,17 @@ class HCombFilter_Test: public Test
         void test_feedforward_filter_as_reader()
         {
             TestReader<int8_t> rd(input);
-            HCombFilter<int8_t> filter(&rd, 48000, 50, HCombFilter<int8_t>::FEED_FORWARD, 1024);
+            HCombFilter<int8_t> filter(&rd, 48000, 50, 1, HCombFilter<int8_t>::FEED_FORWARD, 1024);
 
             int8_t received[1024];
             ASSERT_IS_EQUAL(filter.Read(received, 1024), 1024);
+            ASSERT_IS_EQUAL((int) received[0], 1);
+            ASSERT_IS_EQUAL((int) received[960], -1);
             for( int i = 0; i < 1024; i++)
             {
                 if( i != 0 && i != 960 )
                 {
                     ASSERT_IS_EQUAL((int) received[i], 0);
-                }
-                else
-                {
-                    ASSERT_IS_EQUAL((int) received[i], 1);
                 }
             }
 
