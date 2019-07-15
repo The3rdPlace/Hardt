@@ -14,6 +14,7 @@
 #include "hreader.h"
 #include "hprocessor.h"
 #include "hgenerator.h"
+#include "hfilterbase.h"
 #include "hfilter.h"
 
 #include "hchunkwriter.h"

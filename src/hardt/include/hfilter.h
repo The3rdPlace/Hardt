@@ -2,7 +2,7 @@
 #define __HFILTER_H
 
 template <class T>
-class HFilter : public HWriter<T>, public HReader<T>
+class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>
 {
     private:
 

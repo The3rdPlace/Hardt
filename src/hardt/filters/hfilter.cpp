@@ -3,6 +3,7 @@
 
 #include "hwriter.h"
 #include "hreader.h"
+#include "hfilterbase.h"
 #include "hfilter.h"
 
 template <class T>
