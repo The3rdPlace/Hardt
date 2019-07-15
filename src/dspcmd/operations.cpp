@@ -683,15 +683,23 @@ class FilterSpectrumReader : public HReader<T>
 
     public:
 
-        FilterSpectrumReader()
+        FilterSpectrumReader(int delta = 0)
         {
-            _fdelta = (((double) Config.Rate / 2) / ((double) Config.FFTSize / 2)) / 10;
+            if( delta == 0 )
+            {
+                _fdelta = (((double) Config.Rate / 2) / ((double) Config.FFTSize / 2)) / 10;
+            }
+            else
+            {
+                _fdelta = delta;
+            }
+
             if( _fdelta < 1 )
             {
                 std::cout << "Too low fft size" << std::endl;
                 _fdelta = 1;
             }
-            _freq = _fdelta;
+            _freq = Config.XMin == 0 ? _fdelta : Config.XMin;
             _lastDisplayedFreq = _freq;
 
             vfo = new HVfo<T>(Config.Rate, _freq, std::numeric_limits<T>::max() / 2, 0);
@@ -705,7 +713,7 @@ class FilterSpectrumReader : public HReader<T>
         int Read(T* dest, size_t blocksize)
         {
             // At end of sweep ?
-            if( _freq >= (Config.Rate / 2) )
+            if( _freq >= (Config.XMax == 0 ? (Config.Rate / 2) : Config.XMax) )
             {
                 return 0;
             }
@@ -936,6 +944,101 @@ int RunGain()
         delete (HFileWriter<T>*) wr;
     }
 
+    return 0;
+}
+
+template <typename T>
+int RunCombSpectrum()
+{
+    // Create reader
+    FilterSpectrumReader<T> rd(10);
+
+    // Create  filter
+    HCombFilter<T> filter(&rd, Config.Rate, Config.Frequency, Config.Alpha, Config.Blocksize);
+
+    // Create writer
+    HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
+
+    // Create FFT
+    HFft<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
+
+    // Buffer for the accumulated spectrum values
+    aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
+
+    // Create processor
+    HStreamProcessor<T> proc(&fft, (HReader<T>*) &filter, Config.Blocksize, &terminated);
+    std::cout << "Sweep from 0Hz - " << (Config.Rate / 2) << "Hz" << std::endl;
+    proc.Run();
+
+    // Display the final plot
+    FFTMagnitudeShowGnuPlot();
+
+    return 0;
+}
+
+template <typename T>
+int RunCombFilter()
+{/*
+    // Create reader
+    HReader<T>* rd;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        rd = new HWavReader<T>(Config.InputFile);
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        rd = new HFileReader<T>(Config.InputFile);
+    }
+    else
+    {
+        std::cout << "Unknown input file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+    // Create writer
+    HWriter<T>* wr;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        wr = new HFileWriter<T>(Config.OutputFile);
+    }
+    else
+    {
+        std::cout << "Unknown output file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+    // Create  filter
+    HFilter<T>* filter;
+    if( strcmp(Config.FilterName, "HLowpassBiQuad") == 0 )
+    {
+        filter = HBiQuadFactory<HLowpassBiQuad<T>, T>::Create((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+    }
+    else
+    {
+        std::cout << "Unknown filtername " << Config.FilterName << std::endl;
+        return -1;
+    }
+
+    // Create processor
+    HStreamProcessor<T> proc(wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
+    proc.Run();
+
+    // Delete the reader and writer
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        delete (HWavReader<T>*) rd;
+        delete (HWavWriter<T>*) wr;
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        delete (HFileReader<T>*) rd;
+        delete (HFileWriter<T>*) wr;
+    }
+*/
     return 0;
 }
 
@@ -1304,6 +1407,27 @@ int RunOperation()
         }
 
         return RunGain<T>();
+    }
+
+    if( Config.IsCombSpectrum )
+    {
+        return RunCombSpectrum<T>();
+    }
+
+    if( Config.IsComb )
+    {
+        if( Config.InputFile == NULL )
+        {
+            std::cout << "No input file (-if)" << std::endl;
+            return -1;
+        }
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file (-of)" << std::endl;
+            return -1;
+        }
+
+        return RunCombFilter<T>();
     }
 
     // No known operation could be determined from the input arguments

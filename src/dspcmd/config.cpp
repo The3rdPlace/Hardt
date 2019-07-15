@@ -50,6 +50,7 @@ bool parseArguments(int argc, char** argv)
             Config.OutputFile = argCharCmp(argv[argNo], "-of", argv[argNo + 1], Config.OutputFile);
 
             Config.Blocksize = argIntCmp(argv[argNo], "-bs", argv[argNo + 1], Config.Blocksize);
+            Config.FFTSize = argIntCmp(argv[argNo], "-bs", argv[argNo + 1], Config.FFTSize); // also set default fft size
 
             Config.InputDevice = argIntCmp(argv[argNo], "-id", argv[argNo + 1], Config.InputDevice);
             Config.OutputDevice = argIntCmp(argv[argNo], "-od", argv[argNo + 1], Config.OutputDevice);
@@ -114,6 +115,14 @@ bool parseArguments(int argc, char** argv)
             Config.IsFilterSpectrumGnuPlot = argBoolCmp(argv[argNo], "-flgp", Config.IsFilterSpectrumGnuPlot);
             Config.FilterName = argCharCmp(argv[argNo], "-flgp", argv[argNo + 1], Config.FilterName);
             Config.FilterCoeffs = argCharCmp(argv[argNo], "-flgp", argv[argNo + 2], Config.FilterCoeffs);
+
+            Config.IsComb = argBoolCmp(argv[argNo], "-cbt", Config.IsComb);
+            Config.Frequency = argIntCmp(argv[argNo], "-cbt", argv[argNo + 1], Config.Frequency);
+            Config.Alpha = argFloatCmp(argv[argNo], "-cb", argv[argNo + 2], Config.Alpha);
+
+            Config.IsCombSpectrum = argBoolCmp(argv[argNo], "-cb", Config.IsCombSpectrum);
+            Config.Frequency = argIntCmp(argv[argNo], "-cb", argv[argNo + 1], Config.Frequency);
+            Config.Alpha = argFloatCmp(argv[argNo], "-cb", argv[argNo + 2], Config.Alpha);
         }
 
         if( argNo < argc - 3 )
@@ -200,6 +209,10 @@ bool parseArguments(int argc, char** argv)
             std::cout << std::endl;
 
             std::cout << "-g gain                    Run file through gain filter" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "-cb fBase alpha            Sweep a comb filter with base frequency fBase and alpha (gain)" << std::endl;
+            std::cout << "-cbt fBase alpha           Run a file through a comb filter with base frequency fBase and alpha (gain)" << std::endl;
             std::cout << std::endl;
 
             // Force exit

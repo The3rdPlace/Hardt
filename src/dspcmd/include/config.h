@@ -28,6 +28,8 @@ struct DspCmdConfig
     bool IsBiQuadSpectrum = false;
     bool IsBiQuad = false;
     bool IsGain = false;
+    bool IsComb = false;
+    bool IsCombSpectrum = false;
 
     char* InFileFormat = NULL;
     char* OutFileFormat = NULL;
@@ -56,6 +58,7 @@ struct DspCmdConfig
 
     int Frequency = 1000;
     float Phase = 0;
+    float Alpha = 1;
 
     int Duration = 10;
     time_t Start = 0;
