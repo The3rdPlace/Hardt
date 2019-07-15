@@ -725,7 +725,8 @@ class FilterSpectrumReader : public HReader<T>
 
             if( _freq - _lastDisplayedFreq > 1000 )
             {
-                std::cout << "  - " << _freq << "Hz" << std::endl;
+                int freq = _freq / 1000;
+                std::cout << "  - " << freq << "000Hz" << std::endl;
                 _lastDisplayedFreq = _freq;
             }
 
@@ -951,10 +952,10 @@ template <typename T>
 int RunCombSpectrum()
 {
     // Create reader
-    FilterSpectrumReader<T> rd(10);
+    FilterSpectrumReader<T> rd(2);
 
     // Create  filter
-    HCombFilter<T> filter(&rd, Config.Rate, Config.Frequency, Config.Alpha, Config.Blocksize);
+    HCombFilter<T> filter(&rd, Config.Rate, Config.Frequency, Config.Alpha, (Config.Alpha < 0 ? HCombFilter<T>::FEED_FORWARD : HCombFilter<T>::FEED_BACK), Config.Blocksize);
 
     // Create writer
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
@@ -1411,11 +1412,21 @@ int RunOperation()
 
     if( Config.IsCombSpectrum )
     {
+        if( Config.Alpha == 0 )
+        {
+            std::cout << "Alpha can not be 0 (zero) (-cb fBase alpha)" << std::endl;
+            return -1;
+        }
         return RunCombSpectrum<T>();
     }
 
     if( Config.IsComb )
     {
+        if( Config.Alpha == 0 )
+        {
+            std::cout << "Alpha can not be 0 (zero) (-cb fBase alpha)" << std::endl;
+            return -1;
+        }
         if( Config.InputFile == NULL )
         {
             std::cout << "No input file (-if)" << std::endl;

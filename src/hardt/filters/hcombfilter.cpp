@@ -110,6 +110,18 @@ void HCombFilter<T>::Init(H_SAMPLE_RATE rate, size_t blocksize, int frequency)
         _taps[i] = 0;
     }
     HLog("Allocated and initialized delay buffer for %d taps", _length);
+
+    // Make sure the alpha setting is sane
+    if( _type == FEED_FORWARD && _alpha > 0 )
+    {
+        HError("Provided positive alpha value for feedforward type comb filter, converting to negative");
+        _alpha = -1 * _alpha;
+    }
+    else if( _type == FEED_BACK && _alpha < 0 )
+    {
+        HError("Provided negative alpha value for feedback type comb filter, converting to positive");
+        _alpha = -1 * _alpha;
+    }
 }
 
 template <class T>
@@ -122,12 +134,15 @@ HCombFilter<T>::~HCombFilter()
 template <class T>
 void HCombFilter<T>::Filter(T* src, T* dest, size_t blocksize)
 {
+    // Optimize by precalculating some variables
+    T* feedback = (_type == FEED_FORWARD ? src : dest);
+    size_t delayLength = (_length - 1) * sizeof(T);
+
     for( int i = 0; i < blocksize; i ++ )
     {
-        // Todo: This is feedforward - we need to implement feedback, even though it's rarely needed
-        dest[i] = src[i] - ( _alpha * (float) _taps[_length - 1]);
-        memcpy((void*) &_taps[1], (void*) _taps, (_length - 1) * sizeof(T));
-        _taps[0] = src[i];
+        dest[i] = src[i] + ( _alpha * (float) _taps[_length - 1]);
+        memcpy((void*) &_taps[1], (void*) _taps, delayLength);
+        _taps[0] = *(feedback + i);
     }
 }
 
