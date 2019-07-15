@@ -979,7 +979,7 @@ int RunCombSpectrum()
 
 template <typename T>
 int RunCombFilter()
-{/*
+{
     // Create reader
     HReader<T>* rd;
     if( strcmp(Config.FileFormat, "wav") == 0 )
@@ -1013,19 +1013,10 @@ int RunCombFilter()
     }
 
     // Create  filter
-    HFilter<T>* filter;
-    if( strcmp(Config.FilterName, "HLowpassBiQuad") == 0 )
-    {
-        filter = HBiQuadFactory<HLowpassBiQuad<T>, T>::Create((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
-    }
-    else
-    {
-        std::cout << "Unknown filtername " << Config.FilterName << std::endl;
-        return -1;
-    }
+    HCombFilter<T> filter(rd, Config.Rate, Config.Frequency, Config.Alpha, (Config.Alpha < 0 ? HCombFilter<T>::FEED_FORWARD : HCombFilter<T>::FEED_BACK), Config.Blocksize);
 
     // Create processor
-    HStreamProcessor<T> proc(wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc(wr, (HReader<T>*) &filter, Config.Blocksize, &terminated);
     proc.Run();
 
     // Delete the reader and writer
@@ -1039,7 +1030,7 @@ int RunCombFilter()
         delete (HFileReader<T>*) rd;
         delete (HFileWriter<T>*) wr;
     }
-*/
+
     return 0;
 }
 

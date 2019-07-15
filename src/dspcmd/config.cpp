@@ -118,7 +118,7 @@ bool parseArguments(int argc, char** argv)
 
             Config.IsComb = argBoolCmp(argv[argNo], "-cbt", Config.IsComb);
             Config.Frequency = argIntCmp(argv[argNo], "-cbt", argv[argNo + 1], Config.Frequency);
-            Config.Alpha = argFloatCmp(argv[argNo], "-cb", argv[argNo + 2], Config.Alpha);
+            Config.Alpha = argFloatCmp(argv[argNo], "-cbt", argv[argNo + 2], Config.Alpha);
 
             Config.IsCombSpectrum = argBoolCmp(argv[argNo], "-cb", Config.IsCombSpectrum);
             Config.Frequency = argIntCmp(argv[argNo], "-cb", argv[argNo + 1], Config.Frequency);
