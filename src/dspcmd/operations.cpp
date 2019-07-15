@@ -955,7 +955,17 @@ int RunCombSpectrum()
     FilterSpectrumReader<T> rd(2);
 
     // Create  filter
-    HCombFilter<T> filter(&rd, Config.Rate, Config.Frequency, Config.Alpha, (Config.Alpha < 0 ? HCombFilter<T>::FEED_FORWARD : HCombFilter<T>::FEED_BACK), Config.Blocksize);
+    HCombFilter<T>* filter;
+    if( Config.IsCombSpectrumWithFilter )
+    {
+        // Insert a somewhat generic lowpass filter into the feedback loop, using a 3db cutoff frequency of 5 * fBase
+        HFilterBase<T>* feedbackFilter = HBiQuadFactory< HLowpassBiQuad<T>, T >::Create((HReader<T>*) NULL, Config.CutoffFrequency, Config.Rate, 0.7, 1, 1);
+        filter = new HCombFilter<T>(&rd, Config.Rate, Config.Frequency, Config.Alpha, (Config.Alpha < 0 ? HCombFilter<T>::FEED_FORWARD : HCombFilter<T>::FEED_BACK), feedbackFilter, Config.Blocksize);
+    }
+    else
+    {
+        filter = new HCombFilter<T>(&rd, Config.Rate, Config.Frequency, Config.Alpha, (Config.Alpha < 0 ? HCombFilter<T>::FEED_FORWARD : HCombFilter<T>::FEED_BACK), Config.Blocksize);
+    }
 
     // Create writer
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
@@ -967,12 +977,15 @@ int RunCombSpectrum()
     aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
 
     // Create processor
-    HStreamProcessor<T> proc(&fft, (HReader<T>*) &filter, Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc(&fft, (HReader<T>*) filter, Config.Blocksize, &terminated);
     std::cout << "Sweep from 0Hz - " << (Config.Rate / 2) << "Hz" << std::endl;
     proc.Run();
 
     // Display the final plot
     FFTMagnitudeShowGnuPlot();
+
+    // Delete the filter
+    delete filter;
 
     return 0;
 }
@@ -1013,10 +1026,20 @@ int RunCombFilter()
     }
 
     // Create  filter
-    HCombFilter<T> filter(rd, Config.Rate, Config.Frequency, Config.Alpha, (Config.Alpha < 0 ? HCombFilter<T>::FEED_FORWARD : HCombFilter<T>::FEED_BACK), Config.Blocksize);
+    HCombFilter<T>* filter;
+    if( Config.IsCombWithFilter )
+    {
+        // Insert a somewhat generic lowpass filter into the feedback loop
+        HFilterBase<T>* feedbackFilter = HBiQuadFactory< HLowpassBiQuad<T>, T >::Create((HReader<T>*) NULL, Config.CutoffFrequency, Config.Rate, 0.7, 1, 1);
+        filter = new HCombFilter<T>(rd, Config.Rate, Config.Frequency, Config.Alpha, (Config.Alpha < 0 ? HCombFilter<T>::FEED_FORWARD : HCombFilter<T>::FEED_BACK), feedbackFilter, Config.Blocksize);
+    }
+    else
+    {
+        filter = new HCombFilter<T>(rd, Config.Rate, Config.Frequency, Config.Alpha, (Config.Alpha < 0 ? HCombFilter<T>::FEED_FORWARD : HCombFilter<T>::FEED_BACK), Config.Blocksize);
+    }
 
     // Create processor
-    HStreamProcessor<T> proc(wr, (HReader<T>*) &filter, Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc(wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
     proc.Run();
 
     // Delete the reader and writer
@@ -1030,6 +1053,9 @@ int RunCombFilter()
         delete (HFileReader<T>*) rd;
         delete (HFileWriter<T>*) wr;
     }
+
+    // Delete the filter
+    delete filter;
 
     return 0;
 }
@@ -1401,7 +1427,7 @@ int RunOperation()
         return RunGain<T>();
     }
 
-    if( Config.IsCombSpectrum )
+    if( Config.IsCombSpectrum || Config.IsCombSpectrumWithFilter )
     {
         if( Config.Alpha == 0 )
         {
@@ -1411,7 +1437,7 @@ int RunOperation()
         return RunCombSpectrum<T>();
     }
 
-    if( Config.IsComb )
+    if( Config.IsComb || Config.IsCombWithFilter )
     {
         if( Config.Alpha == 0 )
         {

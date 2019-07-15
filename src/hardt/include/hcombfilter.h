@@ -14,21 +14,22 @@ class HCombFilter : public HFilter<T>
         T* _taps;
         COMB_FILTER_TYPE _type;
         float _alpha;
+        HFilterBase<T>* _feedbackFilter;
 
         void Init(H_SAMPLE_RATE rate, size_t blocksize, int  frequency);
 
     public:
 
-        HCombFilter(HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize):
-            HCombFilter(writer, rate, frequency, alpha, COMB_FILTER_TYPE::FEED_FORWARD, blocksize)
+        HCombFilter(HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, float alpha, COMB_FILTER_TYPE type, size_t blocksize):
+            HCombFilter(writer, rate, frequency, alpha, type, NULL, blocksize)
         {}
 
-        HCombFilter(HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize):
-            HCombFilter(reader, rate, frequency, alpha, COMB_FILTER_TYPE::FEED_FORWARD, blocksize)
+        HCombFilter(HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, float alpha, COMB_FILTER_TYPE type, size_t blocksize):
+            HCombFilter(reader, rate, frequency, alpha, type, NULL, blocksize)
         {}
 
-        HCombFilter(HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, float alpha, COMB_FILTER_TYPE type, size_t blocksize);
-        HCombFilter(HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, float alpha, COMB_FILTER_TYPE type, size_t blocksize);
+        HCombFilter(HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, float alpha, COMB_FILTER_TYPE type, HFilterBase<T>* feedbackFilter, size_t blocksize);
+        HCombFilter(HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, float alpha, COMB_FILTER_TYPE type, HFilterBase<T>* feedbackFilter, size_t blocksize);
 
         ~HCombFilter();
 

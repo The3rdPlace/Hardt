@@ -30,6 +30,8 @@ struct DspCmdConfig
     bool IsGain = false;
     bool IsComb = false;
     bool IsCombSpectrum = false;
+    bool IsCombWithFilter = false;
+    bool IsCombSpectrumWithFilter = false;
 
     char* InFileFormat = NULL;
     char* OutFileFormat = NULL;
@@ -59,6 +61,7 @@ struct DspCmdConfig
     int Frequency = 1000;
     float Phase = 0;
     float Alpha = 1;
+    int CutoffFrequency = 0;
 
     int Duration = 10;
     time_t Start = 0;
