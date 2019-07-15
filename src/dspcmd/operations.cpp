@@ -341,7 +341,7 @@ void FFTMagnitudeShowGnuPlot()
 
     // Plot lines
     FILE* gnuplotPipe = popen ("gnuplot -persistent", "w");
-    fprintf(gnuplotPipe, "set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2 pointtype 7 pointsize 0.5\n");
+    fprintf(gnuplotPipe, "set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2 pointtype -1\n");
     if( Config.XMax > 0 )
     {
         fprintf(gnuplotPipe, "set xrange [%d:%d]\n",Config.XMin, Config.XMax);
