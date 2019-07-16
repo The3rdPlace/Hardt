@@ -51,6 +51,8 @@
 #include "hnotchbiquad.h"
 #include "hallpassbiquad.h"
 #include "hpeakingeqbiquad.h"
+#include "hlowshelvingbiquad.h"
+#include "hhighshelvingbiquad.h"
 #include "hbiquadfactory.h"
 #include "hgain.h"
 #include "hcombfilter.h"

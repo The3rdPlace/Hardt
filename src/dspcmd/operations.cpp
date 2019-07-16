@@ -808,6 +808,14 @@ int RunBiQuadSpectrum()
     {
         filter = HBiQuadFactory<HPeakingEQBiQuad<T>, T>::Create((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
+    else if( strcmp(Config.FilterName, "HLowShelvingBiQuad") == 0 )
+    {
+        filter = HBiQuadFactory<HLowShelvingBiQuad<T>, T>::Create((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+    }
+    else if( strcmp(Config.FilterName, "HHighShelvingBiQuad") == 0 )
+    {
+        filter = HBiQuadFactory<HHighShelvingBiQuad<T>, T>::Create((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+    }
     else
     {
         std::cout << "Unknown filtername " << Config.FilterName << std::endl;
@@ -905,6 +913,14 @@ int RunBiQuadFilter()
     else if( strcmp(Config.FilterName, "HPeakingEQBiQuad") == 0 )
     {
         filter = HBiQuadFactory<HPeakingEQBiQuad<T>, T>::Create((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+    }
+    else if( strcmp(Config.FilterName, "HLowShelvingBiQuad") == 0 )
+    {
+        filter = HBiQuadFactory<HLowShelvingBiQuad<T>, T>::Create((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+    }
+    else if( strcmp(Config.FilterName, "HHighShelvingBiQuad") == 0 )
+    {
+        filter = HBiQuadFactory<HHighShelvingBiQuad<T>, T>::Create((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else
     {
