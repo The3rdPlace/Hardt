@@ -1,12 +1,12 @@
-#ifndef __HBANDPASSBIQUAD_H
-#define __HBANDPASSBIQUAD_H
+#ifndef __HNOTCHBIQUAD_H
+#define __HNOTCHBIQUAD_H
 
 template <class T>
-class HBandpassBiQuad : public HBiQuad<T>
+class HNotchBiQuad : public HBiQuad<T>
 {
     public:
 
-        HBandpassBiQuad(float fCutOff, float rate, float quality, float gain):
+        HNotchBiQuad(float fCutOff, float rate, float quality, float gain):
             HBiQuad<T>(fCutOff, rate, quality, gain)
         {}
 
@@ -15,9 +15,9 @@ class HBandpassBiQuad : public HBiQuad<T>
             *a0 = 1 + alpha;
             *a1 = -2 * omegaC;
             *a2 = 1 - alpha;
-            *b0 = omegaS / 2;
-            *b1 = 0;
-            *b2 = -1 * (omegaS / 2);
+            *b0 = 1;
+            *b1 = -2 * omegaC;
+            *b2 = 1;
         }
 };
 

@@ -24,6 +24,8 @@ class HBiQuads_Test: public Test
             UNITTEST(test_highpassbiquad_as_reader);
             UNITTEST(test_bandpassbiquad_as_writer);
             UNITTEST(test_bandpassbiquad_as_reader);
+            UNITTEST(test_notchbiquad_as_writer);
+            UNITTEST(test_notchbiquad_as_reader);
         }
 
         const char* name()
@@ -167,7 +169,9 @@ class HBiQuads_Test: public Test
         float ftrim(float value)
         {
             int intval = ceil(value * 1e6);
-            return intval / 1e6;
+            float out = intval / 1e6;
+            //std::cout << "in/out = " << value << "/" << out << std::endl;
+            return out;
         }
 
         void test_lowpassbiquad_as_writer()
@@ -246,6 +250,32 @@ class HBiQuads_Test: public Test
             ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.267525f));
             ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(0.0f));
             ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(-0.267524f));
+        }
+
+        void test_notchbiquad_as_writer()
+        {
+            TestWriter<int16_t> wr;
+            HFilter<int16_t>* filter = HBiQuadFactory<HNotchBiQuad<int16_t>, int16_t>::Create(&wr, 8000, 48000, 0.7, 1, 4096);
+
+            std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
+            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(-0.617822f));
+            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(0.235644f));
+            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.617822f));
+            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.617822f));
+            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.617822f));
+        }
+
+        void test_notchbiquad_as_reader()
+        {
+            TestReader<int16_t> rd;
+            HFilter<int16_t>* filter = HBiQuadFactory<HNotchBiQuad<int16_t>, int16_t>::Create(&rd, 8000, 48000, 0.7, 1, 4096);
+
+            std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
+            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(-0.617822f));
+            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(0.235644f));
+            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.617822f));
+            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.617822f));
+            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.617822f));
         }
 
 } hbiquads_test;

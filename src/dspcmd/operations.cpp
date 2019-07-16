@@ -796,6 +796,10 @@ int RunBiQuadSpectrum()
     {
         filter = HBiQuadFactory<HBandpassBiQuad<T>, T>::Create((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
+    else if( strcmp(Config.FilterName, "HNotchBiQuad") == 0 )
+    {
+        filter = HBiQuadFactory<HNotchBiQuad<T>, T>::Create((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+    }
     else
     {
         std::cout << "Unknown filtername " << Config.FilterName << std::endl;
@@ -881,6 +885,10 @@ int RunBiQuadFilter()
     else if( strcmp(Config.FilterName, "HBandpassBiQuad") == 0 )
     {
         filter = HBiQuadFactory<HBandpassBiQuad<T>, T>::Create((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+    }
+    else if( strcmp(Config.FilterName, "HNotchBiQuad") == 0 )
+    {
+        filter = HBiQuadFactory<HNotchBiQuad<T>, T>::Create((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else
     {
