@@ -788,6 +788,10 @@ int RunBiQuadSpectrum()
     {
         filter = HBiQuadFactory<HLowpassBiQuad<T>, T>::Create((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
+    else if( strcmp(Config.FilterName, "HHighpassBiQuad") == 0 )
+    {
+        filter = HBiQuadFactory<HHighpassBiQuad<T>, T>::Create((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+    }
     else
     {
         std::cout << "Unknown filtername " << Config.FilterName << std::endl;
@@ -865,6 +869,10 @@ int RunBiQuadFilter()
     if( strcmp(Config.FilterName, "HLowpassBiQuad") == 0 )
     {
         filter = HBiQuadFactory<HLowpassBiQuad<T>, T>::Create((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+    }
+    else if( strcmp(Config.FilterName, "HHighpassBiQuad") == 0 )
+    {
+        filter = HBiQuadFactory<HHighpassBiQuad<T>, T>::Create((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else
     {
@@ -956,9 +964,9 @@ int RunCombSpectrum()
 
     // Create  filter
     HCombFilter<T>* filter;
-    if( Config.IsCombSpectrumWithFilter )
+    if( Config.IsHumSpectrum )
     {
-        filter = new HLowpassCombFilter<T>(&rd, Config.Rate, Config.Frequency, Config.Alpha, Config.FCutOff, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HHumFilter<T>(&rd, Config.Rate, Config.Frequency, Config.FCutOff, Config.Blocksize);
     }
     else
     {
@@ -1025,9 +1033,9 @@ int RunCombFilter()
 
     // Create  filter
     HCombFilter<T>* filter;
-    if( Config.IsCombWithFilter )
+    if( Config.IsHum )
     {
-        filter = new HLowpassCombFilter<T>(rd, Config.Rate, Config.Frequency, Config.Alpha, Config.FCutOff, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HHumFilter<T>(rd, Config.Rate, Config.Frequency, Config.FCutOff, Config.Blocksize);
     }
     else
     {
@@ -1423,7 +1431,7 @@ int RunOperation()
         return RunGain<T>();
     }
 
-    if( Config.IsCombSpectrum || Config.IsCombSpectrumWithFilter )
+    if( Config.IsCombSpectrum )
     {
         if( Config.Alpha == 0 )
         {
@@ -1433,13 +1441,34 @@ int RunOperation()
         return RunCombSpectrum<T>();
     }
 
-    if( Config.IsComb || Config.IsCombWithFilter )
+    if( Config.IsComb )
     {
         if( Config.Alpha == 0 )
         {
             std::cout << "Alpha can not be 0 (zero) (-cb fBase alpha)" << std::endl;
             return -1;
         }
+        if( Config.InputFile == NULL )
+        {
+            std::cout << "No input file (-if)" << std::endl;
+            return -1;
+        }
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file (-of)" << std::endl;
+            return -1;
+        }
+
+        return RunCombFilter<T>();
+    }
+
+    if( Config.IsHumSpectrum )
+    {
+        return RunCombSpectrum<T>();
+    }
+
+    if( Config.IsHum )
+    {
         if( Config.InputFile == NULL )
         {
             std::cout << "No input file (-if)" << std::endl;

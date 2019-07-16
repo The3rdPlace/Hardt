@@ -85,6 +85,15 @@ bool parseArguments(int argc, char** argv)
 
             Config.IsGain = argBoolCmp(argv[argNo], "-g", Config.IsGain);
             Config.Gain = argFloatCmp(argv[argNo], "-g", argv[argNo + 1], Config.Gain);
+
+            Config.IsHum = argBoolCmp(argv[argNo], "-hmt", Config.IsHum);
+            Config.Frequency = argIntCmp(argv[argNo], "-hmt", argv[argNo + 1], Config.Frequency);
+            Config.FCutOff = argIntCmp(argv[argNo], "-hmt", argv[argNo + 2], Config.FCutOff);
+
+            Config.IsHumSpectrum = argBoolCmp(argv[argNo], "-hm", Config.IsHumSpectrum);
+            Config.Frequency = argIntCmp(argv[argNo], "-hm", argv[argNo + 1], Config.Frequency);
+            Config.FCutOff = argIntCmp(argv[argNo], "-hm", argv[argNo + 2], Config.FCutOff);
+
         }
 
         if( argNo < argc - 2 )
@@ -154,23 +163,6 @@ bool parseArguments(int argc, char** argv)
             Config.Gain = argFloatCmp(argv[argNo], "-bqt", argv[argNo + 4], Config.Gain);
         }
 
-        if( argNo < argc - 5 )
-        {
-            Config.IsCombWithFilter = argBoolCmp(argv[argNo], "-cbtlp", Config.IsCombWithFilter);
-            Config.Frequency = argIntCmp(argv[argNo], "-cbtlp", argv[argNo + 1], Config.Frequency);
-            Config.Alpha = argFloatCmp(argv[argNo], "-cbtlp", argv[argNo + 2], Config.Alpha);
-            Config.FCutOff = argIntCmp(argv[argNo], "-cbtlp", argv[argNo + 3], Config.FCutOff);
-            Config.Quality = argFloatCmp(argv[argNo], "-cbtlp", argv[argNo + 4], Config.Quality);
-            Config.Gain = argFloatCmp(argv[argNo], "-cbtlp", argv[argNo + 5], Config.Gain);
-
-            Config.IsCombSpectrumWithFilter = argBoolCmp(argv[argNo], "-cblp", Config.IsCombSpectrumWithFilter);
-            Config.Frequency = argIntCmp(argv[argNo], "-cblp", argv[argNo + 1], Config.Frequency);
-            Config.Alpha = argFloatCmp(argv[argNo], "-cblp", argv[argNo + 2], Config.Alpha);
-            Config.FCutOff = argIntCmp(argv[argNo], "-cblp", argv[argNo + 3], Config.FCutOff);
-            Config.Quality = argFloatCmp(argv[argNo], "-cblp", argv[argNo + 4], Config.Quality);
-            Config.Gain = argFloatCmp(argv[argNo], "-cblp", argv[argNo + 5], Config.Gain);
-        }
-
         if( argBoolCmp(argv[argNo], "-h", false) )
         {
             std::cout << "Usage: dspcmd [option [value]]" << std::endl << std::endl;
@@ -229,9 +221,11 @@ bool parseArguments(int argc, char** argv)
             std::cout << std::endl;
 
             std::cout << "-cb fBase alpha            Sweep a comb filter with base frequency fBase and alpha (gain)" << std::endl;
-            std::cout << "-cblp fBase alpha F G Q    Sweep a comb filter with base frequency fBase and alpha (gain), with a feedback lowpass filter" << std::endl;
             std::cout << "-cbt fBase alpha           Run a file through a comb filter with base frequency fBase and alpha (gain)" << std::endl;
-            std::cout << "-cbtlp fBase alpha F G Q   Run a file through a comb filter with base frequency fBase and alpha (gain), with a feedback lowpass filter" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "-hm fBase fCutoff          Sweep a hum filter with base frequency fBase and cutoff frequency fCutoff" << std::endl;
+            std::cout << "-hmt fBase F G Q           Run a file through a hum filter with base frequency fBase and cutoff frequency fCutoff" << std::endl;
             std::cout << std::endl;
 
             // Force exit

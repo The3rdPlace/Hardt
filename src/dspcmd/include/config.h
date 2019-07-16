@@ -30,8 +30,8 @@ struct DspCmdConfig
     bool IsGain = false;
     bool IsComb = false;
     bool IsCombSpectrum = false;
-    bool IsCombWithFilter = false;
-    bool IsCombSpectrumWithFilter = false;
+    bool IsHum = false;
+    bool IsHumSpectrum = false;
 
     char* InFileFormat = NULL;
     char* OutFileFormat = NULL;

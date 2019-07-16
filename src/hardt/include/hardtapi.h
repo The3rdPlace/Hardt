@@ -46,9 +46,10 @@
 #include "hiirfilter.h"
 #include "hbiquad.h"
 #include "hlowpassbiquad.h"
+#include "hhighpassbiquad.h"
 #include "hbiquadfactory.h"
 #include "hgain.h"
 #include "hcombfilter.h"
-#include "hlowpasscombfilter.h"
+#include "hhumfilter.h"
 
 #endif

@@ -30,7 +30,7 @@ class HCombFilter : public HFilter<T>
 
         ~HCombFilter();
 
-        void Filter(T* src, T* dest, size_t blocksize);
+        virtual void Filter(T* src, T* dest, size_t blocksize);
 };
 
 #endif
