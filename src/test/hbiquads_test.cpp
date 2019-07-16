@@ -28,6 +28,8 @@ class HBiQuads_Test: public Test
             UNITTEST(test_notchbiquad_as_reader);
             UNITTEST(test_allpassbiquad_as_writer);
             UNITTEST(test_allpassbiquad_as_reader);
+            UNITTEST(test_peakingeqbiquad_as_writer);
+            UNITTEST(test_allpassbiquad_as_reader);
         }
 
         const char* name()
@@ -168,12 +170,11 @@ class HBiQuads_Test: public Test
             ASSERT_IS_EQUAL(memcmp((void*) received, (void*) expected, 6 * sizeof(int16_t)), 0);
         }
 
-        float ftrim(float value)
+        int ftrim(float value)
         {
             int intval = ceil(value * 1e6);
-            float out = intval / 1e6;
-            //std::cout << "in/out = " << value << "/" << out << std::endl;
-            return out;
+            //std::cout << "in/out = " << value << "/" << intval << std::endl;
+            return intval;
         }
 
         void test_lowpassbiquad_as_writer()
@@ -304,6 +305,32 @@ class HBiQuads_Test: public Test
             ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.235644f));
             ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.617822f));
             ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(1.0f));
+        }
+
+        void test_peakingeqbiquad_as_writer()
+        {
+            TestWriter<int16_t> wr;
+            HFilter<int16_t>* filter = HBiQuadFactory<HPeakingEQBiQuad<int16_t>, int16_t>::Create(&wr, 8000, 48000, 0.7, 1, 4096);
+
+            std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
+            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(-0.631319f));
+            ASSERT_IS_EQUAL(ftrim(c[1]), 262638);
+            ASSERT_IS_EQUAL(ftrim(c[2]), 1044986);
+            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.631319f));
+            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.217652f));
+        }
+
+        void test_peakingeqbiquad_as_reader()
+        {
+            TestReader<int16_t> rd;
+            HFilter<int16_t>* filter = HBiQuadFactory<HPeakingEQBiQuad<int16_t>, int16_t>::Create(&rd, 8000, 48000, 0.7, 1, 4096);
+
+            std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
+            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(-0.631319f));
+            ASSERT_IS_EQUAL(ftrim(c[1]), 262638);
+            ASSERT_IS_EQUAL(ftrim(c[2]), 1044986);
+            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.631319f));
+            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.217652f));
         }
 
 } hbiquads_test;
