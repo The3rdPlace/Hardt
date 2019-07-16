@@ -958,7 +958,7 @@ int RunCombSpectrum()
     HCombFilter<T>* filter;
     if( Config.IsCombSpectrumWithFilter )
     {
-        filter = new HLowpassCombFilter<T>(&rd, Config.Rate, Config.Frequency, Config.Alpha, Config.CutoffFrequency, 1, Config.Blocksize);
+        filter = new HLowpassCombFilter<T>(&rd, Config.Rate, Config.Frequency, Config.Alpha, Config.FCutOff, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else
     {
@@ -1027,7 +1027,7 @@ int RunCombFilter()
     HCombFilter<T>* filter;
     if( Config.IsCombWithFilter )
     {
-        filter = new HLowpassCombFilter<T>(rd, Config.Rate, Config.Frequency, Config.Alpha, Config.CutoffFrequency, 1, Config.Blocksize);
+        filter = new HLowpassCombFilter<T>(rd, Config.Rate, Config.Frequency, Config.Alpha, Config.FCutOff, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else
     {
