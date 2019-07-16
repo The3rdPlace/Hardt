@@ -49,6 +49,7 @@
 #include "hhighpassbiquad.h"
 #include "hbandpassbiquad.h"
 #include "hnotchbiquad.h"
+#include "hallpassbiquad.h"
 #include "hbiquadfactory.h"
 #include "hgain.h"
 #include "hcombfilter.h"
