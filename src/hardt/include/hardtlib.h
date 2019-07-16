@@ -59,6 +59,7 @@ Include api function declarations
 #include "hbiquad.cpp"
 #include "hlowpassbiquad.h"
 #include "hhighpassbiquad.h"
+#include "hbandpassbiquad.h"
 #include "hbiquadfactory.h"
 #include "hgain.cpp"
 #include "hcombfilter.cpp"
