@@ -4,24 +4,20 @@
 #include "hcombfilter.h"
 
 template <class T>
-HCombFilter<T>::HCombFilter(HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, float alpha, COMB_FILTER_TYPE type, HFilterBase<T>* feedbackFilter, size_t blocksize):
+HCombFilter<T>::HCombFilter(HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize):
     HFilter<T>(writer, blocksize),
-    _type(type),
-    _alpha(alpha),
-    _feedbackFilter(feedbackFilter)
+    _alpha(alpha)
 {
-    HLog("HCombFilter(HWriter*, %d, %d, %f, %d, %d)", rate, frequency, alpha, type, blocksize);
+    HLog("HCombFilter(HWriter*, %d, %d, %f, %d)", rate, frequency, alpha, blocksize);
     Init(rate, blocksize, frequency);
 }
 
 template <class T>
-HCombFilter<T>::HCombFilter(HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, float alpha, COMB_FILTER_TYPE type, HFilterBase<T>* feedbackFilter, size_t blocksize):
+HCombFilter<T>::HCombFilter(HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize):
     HFilter<T>(reader, blocksize),
-    _type(type),
-    _alpha(alpha),
-    _feedbackFilter(feedbackFilter)
+    _alpha(alpha)
 {
-    HLog("HCombFilter(HReader*, %d, %d, %f, %d, %d)", rate, frequency, alpha, type, blocksize);
+    HLog("HCombFilter(HReader*, %d, %d, %f, %d)", rate, frequency, alpha, blocksize);
     Init(rate, blocksize, frequency);
 }
 
@@ -113,16 +109,16 @@ void HCombFilter<T>::Init(H_SAMPLE_RATE rate, size_t blocksize, int frequency)
     }
     HLog("Allocated and initialized delay buffer for %d taps", _length);
 
-    // Make sure the alpha setting is sane
-    if( _type == FEED_FORWARD && _alpha > 0 )
+    // Set type of filter
+    if( _alpha < 0 )
     {
-        HError("Provided positive alpha value for feedforward type comb filter, converting to negative");
-        _alpha = -1 * _alpha;
+        _type = FEED_FORWARD;
+        HLog("Comb type set to FEED_FORWARD, alpha = %f", _alpha);
     }
-    else if( _type == FEED_BACK && _alpha < 0 )
+    else
     {
-        HError("Provided negative alpha value for feedback type comb filter, converting to positive");
-        _alpha = -1 * _alpha;
+        _type = FEED_BACK;
+        HLog("Comb type set to FEED_BACK, alpha = %f", _alpha);
     }
 }
 
@@ -142,17 +138,12 @@ void HCombFilter<T>::Filter(T* src, T* dest, size_t blocksize)
 
     for( int i = 0; i < blocksize; i ++ )
     {
+        // Output
         dest[i] = src[i] + ( _alpha * (float) _taps[_length - 1]);
-        memcpy((void*) &_taps[1], (void*) _taps, delayLength);
 
-        if( _feedbackFilter == NULL )
-        {
-            _taps[0] = *(feedback + i);
-        }
-        else
-        {
-            _feedbackFilter->Filter(feedback + i, _taps, 1);
-        }
+        // Feedback
+        memcpy((void*) &_taps[1], (void*) _taps, delayLength);
+        _taps[0] = FeedBack(feedback + i);
     }
 }
 
@@ -162,28 +153,28 @@ Explicit instantiation
 
 // HCombFilter
 template
-HCombFilter<int8_t>::HCombFilter(HWriter<int8_t>* writer, H_SAMPLE_RATE rate, int frequency, float alpha, COMB_FILTER_TYPE type, HFilterBase<int8_t>* feedbackFilter, size_t blocksize);
+HCombFilter<int8_t>::HCombFilter(HWriter<int8_t>* writer, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize);
 
 template
-HCombFilter<uint8_t>::HCombFilter(HWriter<uint8_t>* writer, H_SAMPLE_RATE rate, int frequency, float alpha, COMB_FILTER_TYPE type, HFilterBase<uint8_t>* feedbackFilter, size_t blocksize);
+HCombFilter<uint8_t>::HCombFilter(HWriter<uint8_t>* writer, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize);
 
 template
-HCombFilter<int16_t>::HCombFilter(HWriter<int16_t>* writer, H_SAMPLE_RATE rate, int frequency, float alpha, COMB_FILTER_TYPE type, HFilterBase<int16_t>* feedbackFilter, size_t blocksize);
+HCombFilter<int16_t>::HCombFilter(HWriter<int16_t>* writer, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize);
 
 template
-HCombFilter<int32_t>::HCombFilter(HWriter<int32_t>* writer, H_SAMPLE_RATE rate, int frequency, float alpha, COMB_FILTER_TYPE type, HFilterBase<int32_t>* feedbackFilter, size_t blocksize);
+HCombFilter<int32_t>::HCombFilter(HWriter<int32_t>* writer, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize);
 
 template
-HCombFilter<int8_t>::HCombFilter(HReader<int8_t>* reader, H_SAMPLE_RATE rate, int frequency, float alpha, COMB_FILTER_TYPE type, HFilterBase<int8_t>* feedbackFilter, size_t blocksize);
+HCombFilter<int8_t>::HCombFilter(HReader<int8_t>* reader, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize);
 
 template
-HCombFilter<uint8_t>::HCombFilter(HReader<uint8_t>* reader, H_SAMPLE_RATE rate, int frequency, float alpha, COMB_FILTER_TYPE type, HFilterBase<uint8_t>* feedbackFilter, size_t blocksize);
+HCombFilter<uint8_t>::HCombFilter(HReader<uint8_t>* reader, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize);
 
 template
-HCombFilter<int16_t>::HCombFilter(HReader<int16_t>* reader, H_SAMPLE_RATE rate, int frequency, float alpha, COMB_FILTER_TYPE type, HFilterBase<int16_t>* feedbackFilter, size_t blocksize);
+HCombFilter<int16_t>::HCombFilter(HReader<int16_t>* reader, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize);
 
 template
-HCombFilter<int32_t>::HCombFilter(HReader<int32_t>* reader, H_SAMPLE_RATE rate, int frequency, float alpha, COMB_FILTER_TYPE type, HFilterBase<int32_t>* feedbackFilter, size_t blocksize);
+HCombFilter<int32_t>::HCombFilter(HReader<int32_t>* reader, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize);
 
 // Init
 template

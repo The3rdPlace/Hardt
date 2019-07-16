@@ -958,13 +958,11 @@ int RunCombSpectrum()
     HCombFilter<T>* filter;
     if( Config.IsCombSpectrumWithFilter )
     {
-        // Insert a somewhat generic lowpass filter into the feedback loop, using a 3db cutoff frequency of 5 * fBase
-        HFilterBase<T>* feedbackFilter = HBiQuadFactory< HLowpassBiQuad<T>, T >::Create((HReader<T>*) NULL, Config.CutoffFrequency, Config.Rate, 0.7, 1, 1);
-        filter = new HCombFilter<T>(&rd, Config.Rate, Config.Frequency, Config.Alpha, (Config.Alpha < 0 ? HCombFilter<T>::FEED_FORWARD : HCombFilter<T>::FEED_BACK), feedbackFilter, Config.Blocksize);
+        filter = new HLowpassCombFilter<T>(&rd, Config.Rate, Config.Frequency, Config.Alpha, Config.CutoffFrequency, 1, Config.Blocksize);
     }
     else
     {
-        filter = new HCombFilter<T>(&rd, Config.Rate, Config.Frequency, Config.Alpha, (Config.Alpha < 0 ? HCombFilter<T>::FEED_FORWARD : HCombFilter<T>::FEED_BACK), Config.Blocksize);
+        filter = new HCombFilter<T>(&rd, Config.Rate, Config.Frequency, Config.Alpha, Config.Blocksize);
     }
 
     // Create writer
@@ -1029,13 +1027,11 @@ int RunCombFilter()
     HCombFilter<T>* filter;
     if( Config.IsCombWithFilter )
     {
-        // Insert a somewhat generic lowpass filter into the feedback loop
-        HFilterBase<T>* feedbackFilter = HBiQuadFactory< HLowpassBiQuad<T>, T >::Create((HReader<T>*) NULL, Config.CutoffFrequency, Config.Rate, 0.7, 1, 1);
-        filter = new HCombFilter<T>(rd, Config.Rate, Config.Frequency, Config.Alpha, (Config.Alpha < 0 ? HCombFilter<T>::FEED_FORWARD : HCombFilter<T>::FEED_BACK), feedbackFilter, Config.Blocksize);
+        filter = new HLowpassCombFilter<T>(rd, Config.Rate, Config.Frequency, Config.Alpha, Config.CutoffFrequency, 1, Config.Blocksize);
     }
     else
     {
-        filter = new HCombFilter<T>(rd, Config.Rate, Config.Frequency, Config.Alpha, (Config.Alpha < 0 ? HCombFilter<T>::FEED_FORWARD : HCombFilter<T>::FEED_BACK), Config.Blocksize);
+        filter = new HCombFilter<T>(rd, Config.Rate, Config.Frequency, Config.Alpha, Config.Blocksize);
     }
 
     // Create processor

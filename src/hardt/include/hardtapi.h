@@ -49,5 +49,6 @@
 #include "hbiquadfactory.h"
 #include "hgain.h"
 #include "hcombfilter.h"
+#include "hlowpasscombfilter.h"
 
 #endif
