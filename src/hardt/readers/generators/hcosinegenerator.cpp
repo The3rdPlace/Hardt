@@ -5,7 +5,7 @@
 
 template <class T>
 HCosineGenerator<T>::HCosineGenerator(H_SAMPLE_RATE rate, int frequency, T amplitude):
-    HGenerator<T>::HGenerator(rate, frequency, amplitude, M_PI / 2)
+    HGenerator<T>::HGenerator(rate, frequency, amplitude, M_PI / 2.0f)
 {}
 
 /********************************************************************

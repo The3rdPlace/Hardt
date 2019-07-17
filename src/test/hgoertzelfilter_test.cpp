@@ -39,45 +39,32 @@ class HGoertzelFilter_Test: public Test
             HGoertzelFilter<int16_t>* grtzl;
             HRectangularWindow<int16_t> window;
 
-            // Check for result at 1KHz
-            int bin = (24000 / 1024) * 1000;
-            grtzl = new HGoertzelFilter<int16_t>(N, 4, bin, HCustomWriter<int>::Create<HGoertzelFilter_Test>(this, &HGoertzelFilter_Test::callback), &window);
-            ASSERT_IS_EQUAL(grtzl->Write(input, 4 * N), 4 * N);
-            ASSERT_IS_EQUAL(magnitude, 4); // Todo: Check for real expected value
-            delete grtzl;
-            magnitude = -1;
+            float n = N;
+            for( float bin = 1; bin < N / 2; bin += 0.1f )
+            {
+                // Check for result at 1KHz
+                grtzl = new HGoertzelFilter<int16_t>(N, 4, bin, HCustomWriter<int>::Create<HGoertzelFilter_Test>(this, &HGoertzelFilter_Test::callback), &window);
+                ASSERT_IS_EQUAL(grtzl->Write(input, 4 * N), 4 * N);
 
-            // Check for result at 1KHz + 1 bin
-            bin = ((24000 / 1024) * 1000) + 1;
-            grtzl = new HGoertzelFilter<int16_t>(N, 4, bin, HCustomWriter<int>::Create<HGoertzelFilter_Test>(this, &HGoertzelFilter_Test::callback), &window);
-            ASSERT_IS_EQUAL(grtzl->Write(input, 4 * N), 4 * N);
-            ASSERT_IS_EQUAL(magnitude, 4); // Todo: Check for real expected value
-            delete grtzl;
-            magnitude = -1;
-
-            // Check for result at 1KHz - 1 bin
-            bin = ((24000 / 1024) * 1000) - 1;
-            grtzl = new HGoertzelFilter<int16_t>(N, 4, bin, HCustomWriter<int>::Create<HGoertzelFilter_Test>(this, &HGoertzelFilter_Test::callback), &window);
-            ASSERT_IS_EQUAL(grtzl->Write(input, 4 * N), 4 * N);
-            ASSERT_IS_EQUAL(magnitude, 4); // Todo: Check for real expected value
-            delete grtzl;
-            magnitude = -1;
-
-            // Check for result at 500Hz
-            bin = (24000 / 1024) * 500;
-            grtzl = new HGoertzelFilter<int16_t>(N, 4, bin, HCustomWriter<int>::Create<HGoertzelFilter_Test>(this, &HGoertzelFilter_Test::callback), &window);
-            ASSERT_IS_EQUAL(grtzl->Write(input, 4 * N), 4 * N);
-            ASSERT_IS_EQUAL(magnitude, 4); // Todo: Check for real expected value
-            delete grtzl;
-            magnitude = -1;
-
-            // Check for result at 4KHz
-            bin = (24000 / 1024) * 4000;
-            grtzl = new HGoertzelFilter<int16_t>(N, 4, bin, HCustomWriter<int>::Create<HGoertzelFilter_Test>(this, &HGoertzelFilter_Test::callback), &window);
-            ASSERT_IS_EQUAL(grtzl->Write(input, 4 * N), 4 * N);
-            ASSERT_IS_EQUAL(magnitude, 4); // Todo: Check for real expected value
-            delete grtzl;
-            magnitude = -1;
+                if( floor(bin * 10) == 213 ) // = bin 21.3 adjusted for tiny decimal fractions
+                {
+                    if( ! ASSERT_IS_EQUAL(magnitude, 51301) )
+                    {
+                        std::cout << "At bin = " << bin << std::endl;
+                        break;
+                    }
+                }
+                else
+                {
+                    if (! ASSERT_IS_LESS_THAN(magnitude, 51301) )
+                    {
+                        std::cout << "At bin = " << bin << std::endl;
+                        break;
+                    }
+                }
+                delete grtzl;
+                magnitude = -1;
+            }
         }
 
 } hgoertzelfilter_test;

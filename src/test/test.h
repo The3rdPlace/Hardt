@@ -46,81 +46,95 @@ class Test
     public:
 
         template <typename T>
-        void assertIsEqual(std::string file, int line, T a, T b)
+        bool assertIsEqual(std::string file, int line, T a, T b)
         {
             if( a != b )
             {
                 std::cout << "- assertIsEqual(" << (T) a << ", " << (T) b << "): is not equal!" << std::endl;
                 std::cout << "  in " << file << "@" << line << std::endl;
                 Test::failed++;
+                return false;
             }
+            return true;
         }
 
         template <typename T>
-        void assertIsLessThanOrEqual(std::string file, int line, T a, T b)
+        bool assertIsLessThanOrEqual(std::string file, int line, T a, T b)
         {
             if( a > b )
             {
                 std::cout << "- assertIsLessThanOrEqual(" << a << ", " << b << "): is not less than or equal!" << std::endl;
                 std::cout << "  in " << file << "@" << line << std::endl;
                 Test::failed++;
+                return false;
             }
+            return true;
         }
 
         template <typename T>
-        void assertIsLessThan(std::string file, int line, T a, T b)
+        bool assertIsLessThan(std::string file, int line, T a, T b)
         {
             if( a >= b )
             {
                 std::cout << "- assertIsLessThan(" << a << ", " << b << "): is not less than!" << std::endl;
                 std::cout << "  in " << file << "@" << line << std::endl;
                 Test::failed++;
+                return false;
             }
+            return true;
         }
 
         template <typename T>
-        void assertIsGreaterThanOrEqual(std::string file, int line, T a, T b)
+        bool assertIsGreaterThanOrEqual(std::string file, int line, T a, T b)
         {
             if( a < b )
             {
                 std::cout << "- assertIsGreaterThanOrEqual(" << a << ", " << b << "): is not greater than or equal!" << std::endl;
                 std::cout << "  in " << file << "@" << line << std::endl;
                 Test::failed++;
+                return false;
             }
+            return true;
         }
 
         template <typename T>
-        void assertIsGreaterThan(std::string file, int line, T a, T b)
+        bool assertIsGreaterThan(std::string file, int line, T a, T b)
         {
             if( a <= b )
             {
                 std::cout << "- assertIsGreaterThan(" << a << ", " << b << "): is not greater than!" << std::endl;
                 std::cout << "  in " << file << "@" << line << std::endl;
                 Test::failed++;
+                return false;
             }
+            return true;
         }
 
-        void assertIsTrue(std::string file, int line, bool a)
+        bool assertIsTrue(std::string file, int line, bool a)
         {
             if( a != true )
             {
                 std::cout << "- assertIsTrue(" << a << "): is not true!" << std::endl;
                 std::cout << "  in " << file << "@" << line << std::endl;
                 Test::failed++;
+                return false;
             }
+            return true;
         }
 
-        void assertFail(std::string file, int line, std::string reason)
+        bool assertFail(std::string file, int line, std::string reason)
         {
             std::cout << "- assertFail: " << reason << std::endl;
             std::cout << "  in " << file << "@" << line << "\n";
             Test::failed++;
+            return false;
         }
 
-        void assertIgnore(std::string file, int line, std::string reason)
+        bool assertIgnore(std::string file, int line, std::string reason)
         {
             std::cout << "Ignoring testcase: " << reason << std::endl;
             std::cout << "in " << file << "@" << line << "\n";
+            return true;
         }
 
     public:
