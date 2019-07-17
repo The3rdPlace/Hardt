@@ -57,5 +57,6 @@
 #include "hgain.h"
 #include "hcombfilter.h"
 #include "hhumfilter.h"
+#include "hgoertzelfilter.h"
 
 #endif

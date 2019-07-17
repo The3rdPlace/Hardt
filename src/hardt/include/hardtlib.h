@@ -69,5 +69,6 @@ Include api function declarations
 #include "hgain.cpp"
 #include "hcombfilter.cpp"
 #include "hhumfilter.h"
+#include "hgoertzelfilter.cpp"
 
 #endif
