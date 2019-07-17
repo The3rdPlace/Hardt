@@ -37,6 +37,7 @@ hardt_test
 CMakeFiles/
 CMakeFiles/*
 CMakeCache.txt
+Makefile
 
 cmake_install.cmake
 src/.DS_Store
@@ -44,3 +45,6 @@ src/hardt/hardt.h
 src/hardt/hardt.pc
 
 build
+
+# Doxygen
+doxygen.conf.in
