@@ -21,11 +21,11 @@ find_package(Doxygen REQUIRED dot)
 
 if(DOXYGEN_FOUND)
 
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doxygen.conf.in ${CMAKE_CURRENT_BINARY_DIR}/doxygen.conf @ONLY)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
 
     ADD_CUSTOM_TARGET(documentation ALL
         COMMAND ${CMAKE_COMMAND} -E echo_append "Building API Documentation..."
-        COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/doxygen.conf
+        COMMAND ${DOXYGEN_EXECUTABLE}
         COMMAND ${CMAKE_COMMAND} -E echo "Done.")
 
 else()
