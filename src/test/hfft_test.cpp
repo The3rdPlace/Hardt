@@ -15,8 +15,8 @@ class HFft_Test: public Test
 
             UNITTEST(test_fft);
 
-            UNITTEST(test_fft_speed);
-            UNITTEST(test_fft_speed_with_chunking);
+            INTEGRATIONTEST(test_fft_speed);
+            INTEGRATIONTEST(test_fft_speed_with_chunking);
         }
 
         const char* name()
