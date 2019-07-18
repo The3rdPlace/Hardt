@@ -10,6 +10,7 @@ class HGoertzelFilter_Test: public Test
         void run()
         {
             UNITTEST(test_goertzel_magnitude);
+            UNITTEST(test_goertzel_bin);
             UNITTEST(test_goertzel_phase);
         }
 
@@ -68,6 +69,24 @@ class HGoertzelFilter_Test: public Test
                 delete grtzl;
                 magnitude = -1;
             }
+        }
+
+        void test_goertzel_bin()
+        {
+            const int N = 1024;
+
+            // Get a 1KHz sinewave generator at samplerate 48K
+            HSineGenerator<int16_t> g(48000, 1000, 100);
+            int16_t input[4 * N];
+            g.Read(input, 4 * N);
+
+            // Get a Goertzel filter at 1Khz (bin = 21.3)
+            HRectangularWindow<int16_t> window;
+            HGoertzelFilter<int16_t> grtzl(N, 4, 48000, 1000, HCustomWriter<HGoertzelFilterResult>::Create<HGoertzelFilter_Test>(this, &HGoertzelFilter_Test::callback), &window);
+
+            // Check for result at 1KHz
+            ASSERT_IS_EQUAL(grtzl.Write(input, 4 * N), 4 * N);
+            ASSERT_IS_EQUAL(magnitude, 51393);
         }
 
         void test_goertzel_phase()

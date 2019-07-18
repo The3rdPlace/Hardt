@@ -13,16 +13,7 @@ HGoertzelFilter<T>::HGoertzelFilter(int size, int average, float bin, HWriter<HG
     _window(window)
 {
     HLog("HGoerzelFilter(%f, %d, %f, ...)", size, average, bin);
-
-    // Allocate a buffer for intermediate results
-    _buffer = new T[size];
-
-    // Initialize results
-    _result.Magnitude = 0;
-    _result.Phase = 0;
-
-    // Set window size
-    _window->SetSize(size);
+    Init();
 }
 
 template <class T>
@@ -30,27 +21,36 @@ HGoertzelFilter<T>::HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, i
     HOutput<T, HGoertzelFilterResult>(writer, size),
     _size(size),
     _average(average),
-    _bin( frequency / (rate / size) ),
+    _bin( (float) frequency / ((float) rate / (float) size) ),
     _count(0),
     _window(window)
 {
     HLog("HGoerzelFilter(%f, %d, %d, %d, ...)", size, average, rate, frequency);
+    HLog("Bin number set to %f for frequency %d", _bin, frequency);
+    Init();
+}
 
+template <class T>
+void HGoertzelFilter<T>::Init()
+{
     // Allocate a buffer for intermediate results
-    _buffer = new T[size];
+    _buffer = new T[_size];
 
     // Initialize results
     _result.Magnitude = 0;
     _result.Phase = 0;
 
     // Set window size
-    _window->SetSize(size);
+    _window->SetSize(_size);
 
-    // Calculate bin number
-    float floatFrequency = frequency;
-    float floatRate = rate;
-    _bin = floatFrequency / (floatRate / _size);
-    HLog("Bin number set to %f for frequency %d", _bin, frequency);
+    // Calculate constant values
+    omega = (2.0f * M_PI * _bin) / _size;
+    sine = sin(omega);
+    cosine = cos(omega);
+    coeff = 2.0f * cosine;
+
+    // For phase calculations
+    rad2degr = (float) 180 / M_PI;
 }
 
 template <class T>
@@ -58,13 +58,6 @@ int HGoertzelFilter<T>::Output(T* src, size_t size)
 {
     // Run the input buffer through a window function, if any is given
     _window->Apply(src, _buffer, size);
-
-    // Todo: Move these to the constructor
-    float k = _bin;
-    float omega = (2.0f * M_PI * k) / _size;
-    float sine = sin(omega);
-    float cosine = cos(omega);
-    float coeff = 2.0f * cosine;
 
     // Setup delayed output values
     float q0 = 0;
@@ -91,7 +84,7 @@ int HGoertzelFilter<T>::Output(T* src, size_t size)
         _result.Magnitude = _result.Magnitude / _average;
 
         // Phase can not be averaged, calculate the last phase value
-        _result.Phase = ceil(atan2(imag, real) * (180 / M_PI));
+        _result.Phase = ceil(atan2(imag, real) * rad2degr);
 
         // Send the result
         HOutput<T, HGoertzelFilterResult>::Ready(&_result, 1);
@@ -110,6 +103,7 @@ int HGoertzelFilter<T>::Output(T* src, size_t size)
 Explicit instantiation
 ********************************************************************/
 
+// HGoertzelFilter
 template
 HGoertzelFilter<int8_t>::HGoertzelFilter(int size, int average, float bin, HWriter<HGoertzelFilterResult>* writer, HWindow<int8_t>* window);
 
@@ -134,6 +128,7 @@ HGoertzelFilter<int16_t>::HGoertzelFilter(int size, int average, H_SAMPLE_RATE r
 template
 HGoertzelFilter<int32_t>::HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<HGoertzelFilterResult>* writer, HWindow<int32_t>* window);
 
+// Output
 template
 int HGoertzelFilter<int8_t>::Output(int8_t* src, size_t size);
 
@@ -145,4 +140,18 @@ int HGoertzelFilter<int16_t>::Output(int16_t* src, size_t size);
 
 template
 int HGoertzelFilter<int32_t>::Output(int32_t* src, size_t size);
+
+// Init
+template
+void HGoertzelFilter<int8_t>::Init();
+
+template
+void HGoertzelFilter<uint8_t>::Init();
+
+template
+void HGoertzelFilter<int16_t>::Init();
+
+template
+void HGoertzelFilter<int32_t>::Init();
+
 #endif

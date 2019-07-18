@@ -12,7 +12,7 @@ class HGoertzelFilter : public HOutput<T, HGoertzelFilterResult>
 {
     private:
 
-        float _size;
+        int _size;
         int _average;
         float _bin;
         HWindow<T>* _window;
@@ -20,6 +20,14 @@ class HGoertzelFilter : public HOutput<T, HGoertzelFilterResult>
 
         int _count;
         HGoertzelFilterResult _result;
+
+        float omega;
+        float sine;
+        float cosine;
+        float coeff;
+        float rad2degr;
+
+        void Init();
 
     public:
 
