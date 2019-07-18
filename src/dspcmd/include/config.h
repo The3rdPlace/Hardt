@@ -32,6 +32,7 @@ struct DspCmdConfig
     bool IsCombSpectrum = false;
     bool IsHum = false;
     bool IsHumSpectrum = false;
+    bool IsGoertzl = false;
 
     char* InFileFormat = NULL;
     char* OutFileFormat = NULL;
@@ -75,6 +76,8 @@ struct DspCmdConfig
     float FCutOff;
     float Quality;
     float Gain;
+
+    float Bin = 0;
 };
 
 extern DspCmdConfig Config;

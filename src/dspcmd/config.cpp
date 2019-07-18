@@ -44,6 +44,8 @@ bool parseArguments(int argc, char** argv)
 
         Config.ForceOverwrite = argBoolCmp(argv[argNo], "-force", Config.ForceOverwrite);
 
+        Config.IsGoertzl = argBoolCmp(argv[argNo], "-gz", Config.IsGoertzl);
+
         if( argNo < argc - 1)
         {
             Config.InputFile = argCharCmp(argv[argNo], "-if", argv[argNo + 1], Config.InputFile);
@@ -226,6 +228,9 @@ bool parseArguments(int argc, char** argv)
 
             std::cout << "-hm fBase fCutoff          Sweep a hum filter with base frequency fBase and cutoff frequency fCutoff" << std::endl;
             std::cout << "-hmt fBase F G Q           Run a file through a hum filter with base frequency fBase and cutoff frequency fCutoff" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "-gz                        Sweep a file by running the individual bins through a Goertzl filter" << std::endl;
             std::cout << std::endl;
 
             // Force exit

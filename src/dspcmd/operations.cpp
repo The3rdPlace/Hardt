@@ -1112,6 +1112,86 @@ int RunCombFilter()
     return 0;
 }
 
+int CurrentGoertzlBin = 0;
+
+int GoertzelMagnitudePlotWriter(HGoertzelFilterResult* data, size_t size)
+{
+    aggregatedMagnitudeSpectrum[CurrentGoertzlBin] += data->Magnitude;
+    numFfts++;
+    return size;
+}
+
+template <typename T>
+int RunGoertzlSweep()
+{
+    // Create and initialize buffer for the accumulated spectrum values
+    aggregatedMagnitudeSpectrum = new double[Config.Blocksize];
+    for( int i = 0; i < Config.Blocksize; i ++ )
+    {
+        aggregatedMagnitudeSpectrum[i] = 0;
+    }
+
+    // Sweep
+    HRectangularWindow<T> window;
+    HCustomWriter<HGoertzelFilterResult> resultWriter(GoertzelMagnitudePlotWriter);
+    HGoertzelFilter<T>* filter;
+    HReader<T>* rd;
+    std::cout << "Sweep from 0Hz - " << (Config.Rate / 2) << "Hz" << std::endl;
+    for( int i = 0; i < Config.Blocksize; i++ )
+    {
+        // Reset fft counter
+        numFfts = 0;
+
+        // Create reader
+        if( strcmp(Config.FileFormat, "wav") == 0 )
+        {
+            rd = new HWavReader<T>(Config.InputFile);
+        }
+        else if( strcmp(Config.FileFormat, "pcm") == 0 )
+        {
+            rd = new HFileReader<T>(Config.InputFile);
+        }
+        else
+        {
+            std::cout << "Unknown input file format " << Config.FileFormat << std::endl;
+            return -1;
+        }
+
+        // Create Goertzl filter at this bin
+        filter = new HGoertzelFilter<T>(Config.Blocksize, 4, i, &resultWriter, &window);
+
+        // Create processor
+        HStreamProcessor<T> proc(filter, rd, Config.Blocksize, &terminated);
+        proc.Run();
+        delete filter;
+
+        // Delete the reader
+        if( strcmp(Config.FileFormat, "wav") == 0 )
+        {
+            delete (HWavReader<T>*) rd;
+        }
+        else if( strcmp(Config.FileFormat, "pcm") == 0 )
+        {
+            delete (HFileReader<T>*) rd;
+        }
+
+        // Show progress
+        int fDelta = (Config.Rate / Config.Blocksize) / 2;
+        if( CurrentGoertzlBin % (Config.Blocksize / 10) == 0 && CurrentGoertzlBin > 0 )
+        {
+            std::cout << "  - " << (i * fDelta) << "Hz" << " = bin " << i << std::endl;
+        }
+
+        // Next bin
+        CurrentGoertzlBin ++;
+    }
+
+    // Display the final plot
+    FFTMagnitudeShowGnuPlot();
+
+    return 0;
+}
+
 template <typename T>
 int RunOperation()
 {
@@ -1529,6 +1609,17 @@ int RunOperation()
         }
 
         return RunCombFilter<T>();
+    }
+
+    if( Config.IsGoertzl )
+    {
+        if( Config.InputFile == NULL )
+        {
+            std::cout << "No input file (-if)" << std::endl;
+            return -1;
+        }
+
+        return RunGoertzlSweep<T>();
     }
 
     // No known operation could be determined from the input arguments
