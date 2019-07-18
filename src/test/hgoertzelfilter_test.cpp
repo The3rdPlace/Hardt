@@ -52,7 +52,7 @@ class HGoertzelFilter_Test: public Test
 
                 if( floor(bin * 10) == 213 ) // = bin 21.3 adjusted for tiny decimal fractions
                 {
-                    if( ! ASSERT_IS_EQUAL(magnitude, 51301) )
+                    if( ! ASSERT_IS_EQUAL(magnitude, 51402) )
                     {
                         std::cout << "At bin = " << bin << std::endl;
                         break;
@@ -60,7 +60,7 @@ class HGoertzelFilter_Test: public Test
                 }
                 else
                 {
-                    if (! ASSERT_IS_LESS_THAN(magnitude, 51301) )
+                    if (! ASSERT_IS_LESS_THAN(magnitude, 51402) )
                     {
                         std::cout << "At bin = " << bin << std::endl;
                         break;
@@ -86,13 +86,13 @@ class HGoertzelFilter_Test: public Test
 
             // Check for result at 1KHz
             ASSERT_IS_EQUAL(grtzl.Write(input, 4 * N), 4 * N);
-            ASSERT_IS_EQUAL(magnitude, 51393);
+            ASSERT_IS_EQUAL(magnitude, 51489);
         }
 
         void test_goertzel_phase()
         {
             const int N = 1024;
-            const int Iter = 1;
+            const int Iter = 4;
 
             // Get a 1KHz sine and cosine generator at samplerate 48K
             // It has not importance to use sin and cos, other than that

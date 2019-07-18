@@ -3,6 +3,8 @@
 
 #include "hgoertzelfilter.h"
 
+#include <complex>
+
 template <class T>
 HGoertzelFilter<T>::HGoertzelFilter(int size, int average, float bin, HWriter<HGoertzelFilterResult>* writer, HWindow<T>* window):
     HOutput<T, HGoertzelFilterResult>(writer, size),
@@ -10,7 +12,8 @@ HGoertzelFilter<T>::HGoertzelFilter(int size, int average, float bin, HWriter<HG
     _average(average),
     _bin(bin),
     _count(0),
-    _window(window)
+    _window(window),
+    _tempResult(0)
 {
     HLog("HGoerzelFilter(%f, %d, %f, ...)", size, average, bin);
     Init();
@@ -23,7 +26,8 @@ HGoertzelFilter<T>::HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, i
     _average(average),
     _bin( (float) frequency / ((float) rate / (float) size) ),
     _count(0),
-    _window(window)
+    _window(window),
+    _tempResult(0)
 {
     HLog("HGoerzelFilter(%f, %d, %d, %d, ...)", size, average, rate, frequency);
     HLog("Bin number set to %f for frequency %d", _bin, frequency);
@@ -36,10 +40,6 @@ void HGoertzelFilter<T>::Init()
     // Allocate a buffer for intermediate results
     _buffer = new T[_size];
 
-    // Initialize results
-    _result.Magnitude = 0;
-    _result.Phase = 0;
-
     // Set window size
     _window->SetSize(_size);
 
@@ -51,6 +51,8 @@ void HGoertzelFilter<T>::Init()
 
     // For phase calculations
     rad2degr = (float) 180 / M_PI;
+
+    //_tempResult = 0;
 }
 
 template <class T>
@@ -72,26 +74,23 @@ int HGoertzelFilter<T>::Output(T* src, size_t size)
         q0 = coeff * q1 - q2 + (float) src[i];
     }
 
-    // Get the magnitude
-    float real = (q0 - q1 * cosine);
-    float imag = (-q1 * sine);
-    _result.Magnitude += sqrtf(real*real + imag*imag);
+    // Calculate real and imaginary parts and add to the temporary averaging value
+    //   real = (q0 - q1 * cosine)
+    //   imag = (-q1 * sine)
+    _tempResult += std::complex<float>(q0 - q1 * cosine, -q1 * sine);
 
     // Time to report the total summed result ?
     if( ++_count >= _average )
     {
-        // Average the magnitude
-        _result.Magnitude = _result.Magnitude / _average;
-
-        // Phase can not be averaged, calculate the last phase value
-        _result.Phase = ceil(atan2(imag, real) * rad2degr);
+        // Get average values for magnitude and phase over all iterations
+        _result.Magnitude = std::abs(_tempResult);
+        _result.Phase = std::arg(_tempResult) * rad2degr;
 
         // Send the result
         HOutput<T, HGoertzelFilterResult>::Ready(&_result, 1);
 
         // Reset result and counter
-        _result.Magnitude = 0;
-        _result.Phase = 0;
+        _tempResult = 0;
         _count = 0;
     }
 

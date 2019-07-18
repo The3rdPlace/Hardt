@@ -27,6 +27,8 @@ class HGoertzelFilter : public HOutput<T, HGoertzelFilterResult>
         float coeff;
         float rad2degr;
 
+        std::complex<float> _tempResult;
+
         void Init();
 
     public:
