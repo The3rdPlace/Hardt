@@ -10,6 +10,9 @@
 
 DspCmdConfig Config;
 
+static char PCM_FORMAT_STRING[] = "pcm";
+static char  WAV_FORMAT_STRING[] = "wav";
+
 bool argBoolCmp(const char* arg, const char* option, bool currentValue)
 {
     return strcmp(arg, option) == 0 ? true : currentValue;
@@ -272,25 +275,25 @@ bool VerifyConfig()
     {
         if( strcmp( &Config.InputFile[strlen(Config.InputFile) - 4], ".pcm") == 0 )
         {
-            Config.FileFormat = "pcm";
+            Config.FileFormat = (char*) &PCM_FORMAT_STRING;
         }
         else if( strcmp( &Config.InputFile[strlen(Config.InputFile) - 4], ".wav") == 0 )
         {
-            Config.FileFormat = "wav";
+            Config.FileFormat = (char*) &WAV_FORMAT_STRING;
         }
     }
     else if( Config.OutputFile != NULL && Config.FileFormat == NULL && strlen(Config.OutputFile) > 4 )
     {
         if( strcmp( &Config.OutputFile[strlen(Config.OutputFile) - 4], ".pcm") == 0 )
         {
-            Config.FileFormat = "pcm";
+            Config.FileFormat = (char*) &PCM_FORMAT_STRING;
         }
         else if( strcmp( &Config.OutputFile[strlen(Config.OutputFile) - 4], ".wav") == 0 )
         {
-            Config.FileFormat = "wav";
+            Config.FileFormat = (char*) &WAV_FORMAT_STRING;
         }
     }
-    if( Config.FileFormat == NULL )
+    if( (Config.InputFile != NULL || Config.OutputFile != NULL) && Config.FileFormat == NULL )
     {
         std::cout << "No file format specified, and can not be guessed from the file extension" << std::endl;
         return true;
