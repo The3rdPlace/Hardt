@@ -4,13 +4,12 @@
 #include "hgoertzelfilter.h"
 
 template <class T>
-HGoertzelFilter<T>::HGoertzelFilter(int size, int average, float bin, HWriter<int>* writer, HWindow<T>* window):
-    HOutput<T, int>(writer, size),
+HGoertzelFilter<T>::HGoertzelFilter(int size, int average, float bin, HWriter<HGoertzelFilterResult>* writer, HWindow<T>* window):
+    HOutput<T, HGoertzelFilterResult>(writer, size),
     _size(size),
     _average(average),
     _bin(bin),
     _count(0),
-    _magnitude(0),
     _window(window)
 {
     HLog("HGoerzelFilter(%f, %d, %f, ...)", size, average, bin);
@@ -18,24 +17,31 @@ HGoertzelFilter<T>::HGoertzelFilter(int size, int average, float bin, HWriter<in
     // Allocate a buffer for intermediate results
     _buffer = new T[size];
 
+    // Initialize results
+    _result.Magnitude = 0;
+    _result.Phase = 0;
+
     // Set window size
     _window->SetSize(size);
 }
 
 template <class T>
-HGoertzelFilter<T>::HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<int>* writer, HWindow<T>* window):
-    HOutput<T, int>(writer, size),
+HGoertzelFilter<T>::HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<HGoertzelFilterResult>* writer, HWindow<T>* window):
+    HOutput<T, HGoertzelFilterResult>(writer, size),
     _size(size),
     _average(average),
     _bin( frequency / (rate / size) ),
     _count(0),
-    _magnitude(0),
     _window(window)
 {
     HLog("HGoerzelFilter(%f, %d, %d, %d, ...)", size, average, rate, frequency);
 
     // Allocate a buffer for intermediate results
     _buffer = new T[size];
+
+    // Initialize results
+    _result.Magnitude = 0;
+    _result.Phase = 0;
 
     // Set window size
     _window->SetSize(size);
@@ -76,23 +82,24 @@ int HGoertzelFilter<T>::Output(T* src, size_t size)
     // Get the magnitude
     float real = (q0 - q1 * cosine);
     float imag = (-q1 * sine);
-    _magnitude += sqrtf(real*real + imag*imag);
+    _result.Magnitude += sqrtf(real*real + imag*imag);
 
     // Time to report the total summed result ?
     if( ++_count >= _average )
     {
         // Average the magnitude
-        _magnitude = _magnitude / _average;
+        _result.Magnitude = _result.Magnitude / _average;
 
         // Phase can not be averaged, calculate the last phase value
-        float phase = atan(imag / real) * (180 / M_PI);
+        _result.Phase = ceil(atan2(imag, real) * (180 / M_PI));
 
         // Send the result
-        HOutput<T, int>::Ready(&_magnitude, 1);
+        HOutput<T, HGoertzelFilterResult>::Ready(&_result, 1);
 
         // Reset result and counter
+        _result.Magnitude = 0;
+        _result.Phase = 0;
         _count = 0;
-        _magnitude = 0;
     }
 
     // We took the entire window
@@ -104,28 +111,28 @@ Explicit instantiation
 ********************************************************************/
 
 template
-HGoertzelFilter<int8_t>::HGoertzelFilter(int size, int average, float bin, HWriter<int>* writer, HWindow<int8_t>* window);
+HGoertzelFilter<int8_t>::HGoertzelFilter(int size, int average, float bin, HWriter<HGoertzelFilterResult>* writer, HWindow<int8_t>* window);
 
 template
-HGoertzelFilter<uint8_t>::HGoertzelFilter(int size, int average, float bin, HWriter<int>* writer, HWindow<uint8_t>* window);
+HGoertzelFilter<uint8_t>::HGoertzelFilter(int size, int average, float bin, HWriter<HGoertzelFilterResult>* writer, HWindow<uint8_t>* window);
 
 template
-HGoertzelFilter<int16_t>::HGoertzelFilter(int size, int average, float bin, HWriter<int>* writer, HWindow<int16_t>* window);
+HGoertzelFilter<int16_t>::HGoertzelFilter(int size, int average, float bin, HWriter<HGoertzelFilterResult>* writer, HWindow<int16_t>* window);
 
 template
-HGoertzelFilter<int32_t>::HGoertzelFilter(int size, int average, float bin, HWriter<int>* writer, HWindow<int32_t>* window);
+HGoertzelFilter<int32_t>::HGoertzelFilter(int size, int average, float bin, HWriter<HGoertzelFilterResult>* writer, HWindow<int32_t>* window);
 
 template
-HGoertzelFilter<int8_t>::HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<int>* writer, HWindow<int8_t>* window);
+HGoertzelFilter<int8_t>::HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<HGoertzelFilterResult>* writer, HWindow<int8_t>* window);
 
 template
-HGoertzelFilter<uint8_t>::HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<int>* writer, HWindow<uint8_t>* window);
+HGoertzelFilter<uint8_t>::HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<HGoertzelFilterResult>* writer, HWindow<uint8_t>* window);
 
 template
-HGoertzelFilter<int16_t>::HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<int>* writer, HWindow<int16_t>* window);
+HGoertzelFilter<int16_t>::HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<HGoertzelFilterResult>* writer, HWindow<int16_t>* window);
 
 template
-HGoertzelFilter<int32_t>::HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<int>* writer, HWindow<int32_t>* window);
+HGoertzelFilter<int32_t>::HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<HGoertzelFilterResult>* writer, HWindow<int32_t>* window);
 
 template
 int HGoertzelFilter<int8_t>::Output(int8_t* src, size_t size);
