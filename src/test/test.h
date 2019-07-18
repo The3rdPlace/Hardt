@@ -137,6 +137,19 @@ class Test
             return true;
         }
 
+        template <typename T>
+        bool assertIsBetween(std::string file, int line, T a, T b, T c)
+        {
+            if( a < b || a > c)
+            {
+                std::cout << "- assertIsBetween(" << a << ", " << b << ", " << c << "): " << a << " is not between " << b << " and " << c << "!" << std::endl;
+                std::cout << "  in " << file << "@" << line << std::endl;
+                Test::failed++;
+                return false;
+            }
+            return true;
+        }
+
     public:
 
         virtual void run() = 0;
@@ -154,6 +167,7 @@ class Test
 #define ASSERT_IS_TRUE(a) assertIsTrue(__FILE__,__LINE__, (bool) a)
 #define ASSERT_FAIL(reason) assertFail(__FILE__,__LINE__, reason)
 #define ASSERT_IGNORE(a) { assertIgnore(__FILE__, __LINE__, a); return; }
+#define ASSERT_IS_BETWEEN(a, b, c) assertIsBetween(__FILE__,__LINE__, a, b, c)
 
 #define INFO(a) std::cout << "  " << a << std::endl;
 #define WARNING(a) std::cout << "  WARNING: " << a << "!!" << std::endl;
