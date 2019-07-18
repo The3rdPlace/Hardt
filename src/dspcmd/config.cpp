@@ -266,5 +266,45 @@ bool VerifyConfig()
         }
     }
 
+    // If we have input and/or output files but no file format, check if we can
+    // guess the format
+    if( Config.InputFile != NULL && Config.FileFormat == NULL && strlen(Config.InputFile) > 4 )
+    {
+        if( strcmp( &Config.InputFile[strlen(Config.InputFile) - 4], ".pcm") == 0 )
+        {
+            Config.FileFormat = "pcm";
+        }
+        else if( strcmp( &Config.InputFile[strlen(Config.InputFile) - 4], ".wav") == 0 )
+        {
+            Config.FileFormat = "wav";
+        }
+    }
+    else if( Config.OutputFile != NULL && Config.FileFormat == NULL && strlen(Config.OutputFile) > 4 )
+    {
+        if( strcmp( &Config.OutputFile[strlen(Config.OutputFile) - 4], ".pcm") == 0 )
+        {
+            Config.FileFormat = "pcm";
+        }
+        else if( strcmp( &Config.OutputFile[strlen(Config.OutputFile) - 4], ".wav") == 0 )
+        {
+            Config.FileFormat = "wav";
+        }
+    }
+    if( Config.FileFormat == NULL )
+    {
+        std::cout << "No file format specified, and can not be guessed from the file extension" << std::endl;
+        return true;
+    }
+
+    // Check that an input file exists
+    if( Config.InputFile != NULL )
+    {
+        if( !( !!std::ifstream(Config.InputFile) ) )
+        {
+            std::cout << "Input file does not exist!." << std::endl;
+            return true;
+        }
+    }
+
     return false;
 }
