@@ -15,6 +15,7 @@ configure_file (
 )
 
 add_subdirectory (src)
+add_subdirectory (examples)
 
 # Generate documentation from in-source documentation and structure
 find_package(Doxygen REQUIRED dot)
