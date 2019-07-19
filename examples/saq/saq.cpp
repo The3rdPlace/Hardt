@@ -43,12 +43,22 @@ int main(int argc, char** argv)
     // General lowpass filtering
     HBiQuadFilter<int16_t>* lowpass = HBiQuadFactory< HLowpassBiQuad<int16_t>, int16_t >::Create((HReader<int16_t>*)  &multiplier, 1000, H_SAMPLE_RATE_48K, 0.7071f, 1, 4096);
 
+    // Narrow butterworth bandpass filter, bandwidth 100Hz around 1000-1100.
+    // Designed using http://www.micromodeler.com/dsp/
+    float coeffs[20] =
+    {
+        0.06053979315740952, -0.12107958631481903, 0.06053979315740952, 1.9701579350811518, -0.9881958184253727,// b0, b1, b2, a1, a2
+        0.125, -0.25, 0.125, 1.9780280925054692, -0.9952212910209018,// b0, b1, b2, a1, a2
+        0.00048828125, 0.0009765625, 0.00048828125, 1.9683639531082289, -0.9877622267827567,// b0, b1, b2, a1, a2
+        0.00048828125, 0.0009765625, 0.00048828125, 1.9742906058109615, -0.9947853486870636// b0, b1, b2, a1, a2
+
+    };
     // Create a very narrow bandpass filter around 1khz - a peak biquad
-    float coeffs[] = { -1.848823142275648,
+/*    float coeffs[] = { -1.848823142275648,
                         0.8647765642900187,
                         1.4694472470493185,
                        -1.848823142275648,
-                        0.39532931724070025, };
+                        0.39532931724070025, };*/
     /*float coeffs[] = { -1.848823142275648,   // a1
                         0.8647765642900187,  // a2
                         1.0672913948313805,  // b0
