@@ -63,13 +63,13 @@ class HIirFilter : public HFilter<T>
         std::vector<float> GetCoefficients()
         {
             std::vector<float> coefficients;
-            for( int i = 0; i < _length; i++ )
-            {
-                coefficients.push_back(_aCoefficients[i]);
-            }
             for( int i = 0; i <= _length; i++ )
             {
                 coefficients.push_back(_bCoefficients[i]);
+            }
+            for( int i = 0; i < _length; i++ )
+            {
+                coefficients.push_back(_aCoefficients[i]);
             }
             return coefficients;
         }

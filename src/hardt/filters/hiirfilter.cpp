@@ -34,10 +34,12 @@ void HIirFilter<T>::Init(float* coefficients, int length)
         throw new HFilterInitializationException("Not enough coefficients");
     }
 
+    // When receiving the coefficients array, we expect the b0,...,bN coefficients to come first.
+    // It seems that all designers returns coefficienets this way.
     _aCoefficients = new float[_length];
     _bCoefficients = new float[_length + 1];
-    memcpy(_aCoefficients, coefficients, (_length) * sizeof(float));
-    memcpy(_bCoefficients, &coefficients[_length], (_length + 1) * sizeof(float));
+    memcpy(_bCoefficients, coefficients, (_length + 1) * sizeof(float));
+    memcpy(_aCoefficients, &coefficients[_length + 1], _length * sizeof(float));
     HLog("Copied filter coefficients");
 
     _taps = new T[_length + 1];

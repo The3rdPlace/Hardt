@@ -21,23 +21,25 @@ HBiQuad<T>::HBiQuad(float fCutOff, float rate, float quality, float gain)
 template <class T>
 float* HBiQuad<T>::Normalize()
 {
-    float a0 = biquadParameters[0];
+    // Be aware that biquad parameters are reversed in the array - most designers
+    // returns them this way.!
+    float a0 = biquadParameters[3];
 
     if( a0 != 1 )
     {
-        normalizedBiquadParameters[0] = biquadParameters[1] / a0;
-        normalizedBiquadParameters[1] = biquadParameters[2] / a0;
-        normalizedBiquadParameters[2] = biquadParameters[3] / a0;
-        normalizedBiquadParameters[3] = biquadParameters[4] / a0;
-        normalizedBiquadParameters[4] = biquadParameters[5] / a0;
+        normalizedBiquadParameters[0] = biquadParameters[0] / a0; // b0
+        normalizedBiquadParameters[1] = biquadParameters[1] / a0; // b1
+        normalizedBiquadParameters[2] = biquadParameters[2] / a0; // b2
+        normalizedBiquadParameters[3] = biquadParameters[4] / a0; // a1
+        normalizedBiquadParameters[4] = biquadParameters[5] / a0; // a2
     }
     else
     {
-        normalizedBiquadParameters[0] = biquadParameters[1];
-        normalizedBiquadParameters[1] = biquadParameters[2];
-        normalizedBiquadParameters[2] = biquadParameters[3];
-        normalizedBiquadParameters[3] = biquadParameters[4];
-        normalizedBiquadParameters[4] = biquadParameters[5];
+        normalizedBiquadParameters[0] = biquadParameters[0]; // b0
+        normalizedBiquadParameters[1] = biquadParameters[1]; // b1
+        normalizedBiquadParameters[2] = biquadParameters[2]; // b2
+        normalizedBiquadParameters[3] = biquadParameters[4]; // a1
+        normalizedBiquadParameters[4] = biquadParameters[5]; // a2
     }
 
     return normalizedBiquadParameters;
@@ -46,7 +48,7 @@ float* HBiQuad<T>::Normalize()
 template <class T>
 float* HBiQuad<T>::Calculate()
 {
-    Calculate(omegaC, omegaS, alpha, A, beta, &biquadParameters[0], &biquadParameters[1], &biquadParameters[2], &biquadParameters[3], &biquadParameters[4], &biquadParameters[5]);
+    Calculate(omegaC, omegaS, alpha, A, beta, &biquadParameters[3], &biquadParameters[4], &biquadParameters[5], &biquadParameters[0], &biquadParameters[1], &biquadParameters[2]);
     return Normalize();
 }
 

@@ -134,11 +134,11 @@ class HBiQuads_Test: public Test
             HFilter<int16_t>* filter = TestBiQuad<int16_t>::Create(&wr, 6);
 
             std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
-            ASSERT_IS_EQUAL(c[0], 1.0f);
-            ASSERT_IS_EQUAL(c[1], 2.0f);
-            ASSERT_IS_EQUAL(c[2], 1.0f);
-            ASSERT_IS_EQUAL(c[3], 2.0f);
-            ASSERT_IS_EQUAL(c[4], 3.0f);
+            ASSERT_IS_EQUAL(c[0], 1.0f); // b0
+            ASSERT_IS_EQUAL(c[1], 2.0f); // b1
+            ASSERT_IS_EQUAL(c[2], 3.0f); // b2
+            ASSERT_IS_EQUAL(c[3], 1.0f); // a1
+            ASSERT_IS_EQUAL(c[4], 2.0f); // a2
         }
 
         void test_biquad_parameters_normalized()
@@ -147,11 +147,11 @@ class HBiQuads_Test: public Test
             HFilter<int16_t>* filter = TestBiQuad<int16_t>::CreateNormalized(&wr, 6);
 
             std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
-            ASSERT_IS_EQUAL(c[0], 1.0f);
-            ASSERT_IS_EQUAL(c[1], 2.0f);
-            ASSERT_IS_EQUAL(c[2], 1.0f);
-            ASSERT_IS_EQUAL(c[3], 2.0f);
-            ASSERT_IS_EQUAL(c[4], 3.0f);
+            ASSERT_IS_EQUAL(c[0], 1.0f); // b0
+            ASSERT_IS_EQUAL(c[1], 2.0f); // b1
+            ASSERT_IS_EQUAL(c[2], 3.0f); // b2
+            ASSERT_IS_EQUAL(c[3], 1.0f); // a1
+            ASSERT_IS_EQUAL(c[4], 2.0f); // a2
         }
 
         void test_filter_as_writer()
@@ -186,11 +186,11 @@ class HBiQuads_Test: public Test
             HBiQuadFilter<int16_t>* filter = HBiQuadFactory<HLowpassBiQuad<int16_t>, int16_t>::Create(&wr, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
-            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(-0.617822f));
-            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(0.235644f));
-            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.154455f));
-            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(0.308910f));
-            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.154455f));
+            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(0.154455f));  // b0
+            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(0.308910f));  // b1
+            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.154455f));  // b2
+            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.617822f)); // a1
+            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.235644f));  // a2
         }
 
         void test_lowpassbiquad_as_reader()
@@ -199,11 +199,11 @@ class HBiQuads_Test: public Test
             HBiQuadFilter<int16_t>* filter = HBiQuadFactory<HLowpassBiQuad<int16_t>, int16_t>::Create(&rd, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
-            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(-0.617822f));
-            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(0.235644f));
-            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.154455f));
-            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(0.308910f));
-            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.154455f));
+            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(0.154455f));  // b0
+            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(0.308910f));  // b1
+            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.154455f));  // b2
+            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.617822f)); // a1
+            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.235644f));  // a2
         }
 
         void test_highpassbiquad_as_writer()
@@ -212,11 +212,11 @@ class HBiQuads_Test: public Test
             HBiQuadFilter<int16_t>* filter = HBiQuadFactory<HHighpassBiQuad<int16_t>, int16_t>::Create(&wr, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
-            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(-0.617822f));
-            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(0.235644f));
-            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.463367f));
-            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.926732f));
-            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.463367f));
+            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(0.463367f));  // b0
+            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(-0.926732f)); // b1
+            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.463367f));  // b2
+            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.617822f)); // a1
+            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.235644f));  // a2
         }
 
         void test_highpassbiquad_as_reader()
@@ -225,11 +225,11 @@ class HBiQuads_Test: public Test
             HBiQuadFilter<int16_t>* filter = HBiQuadFactory<HHighpassBiQuad<int16_t>, int16_t>::Create(&rd, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
-            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(-0.617822f));
-            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(0.235644f));
-            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.463367f));
-            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.926732f));
-            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.463367f));
+            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(0.463367f));  // b0
+            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(-0.926732f)); // b1
+            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.463367f));  // b2
+            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.617822f)); // a1
+            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.235644f));  // a2
         }
 
         void test_bandpassbiquad_as_writer()
@@ -238,11 +238,11 @@ class HBiQuads_Test: public Test
             HBiQuadFilter<int16_t>* filter = HBiQuadFactory<HBandpassBiQuad<int16_t>, int16_t>::Create(&wr, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
-            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(-0.617822f));
-            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(0.235644f));
-            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.267525f));
-            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(0.0f));
-            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(-0.267524f));
+            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(0.267525f));  // b0
+            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(0.0f));       // b1
+            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(-0.267524f)); // b2
+            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.617822f)); // a1
+            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.235644f));  // a2
         }
 
         void test_bandpassbiquad_as_reader()
@@ -251,11 +251,11 @@ class HBiQuads_Test: public Test
             HBiQuadFilter<int16_t>* filter = HBiQuadFactory<HBandpassBiQuad<int16_t>, int16_t>::Create(&rd, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
-            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(-0.617822f));
-            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(0.235644f));
-            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.267525f));
-            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(0.0f));
-            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(-0.267524f));
+            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(0.267525f));  // b0
+            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(0.0f));       // b1
+            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(-0.267524f)); // b2
+            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.617822f)); // a1
+            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.235644f));  // a2
         }
 
         void test_notchbiquad_as_writer()
@@ -264,11 +264,13 @@ class HBiQuads_Test: public Test
             HBiQuadFilter<int16_t>* filter = HBiQuadFactory<HNotchBiQuad<int16_t>, int16_t>::Create(&wr, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
-            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(-0.617822f));
-            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(0.235644f));
-            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.617822f));
-            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.617822f));
-            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.617822f));
+            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.617822f)); // a1
+            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.235644f));  // a2
+            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(0.617822f));  // b0
+            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(-0.617822f)); // b1
+            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.617822f));  // b2
+            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.617822f)); // a1
+            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.235644f));  // a2
         }
 
         void test_notchbiquad_as_reader()
@@ -277,11 +279,11 @@ class HBiQuads_Test: public Test
             HBiQuadFilter<int16_t>* filter = HBiQuadFactory<HNotchBiQuad<int16_t>, int16_t>::Create(&rd, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
-            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(-0.617822f));
-            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(0.235644f));
-            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.617822f));
-            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.617822f));
-            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.617822f));
+            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(0.617822f));  // b0
+            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(-0.617822f)); // b1
+            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.617822f));  // b2
+            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.617822f)); // a1
+            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.235644f));  // a2
         }
 
         void test_allpassbiquad_as_writer()
@@ -290,11 +292,11 @@ class HBiQuads_Test: public Test
             HBiQuadFilter<int16_t>* filter = HBiQuadFactory<HAllpassBiQuad<int16_t>, int16_t>::Create(&wr, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
-            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(-0.617822f));
-            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(0.235644f));
-            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.235644f));
-            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.617822f));
-            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(1.0f));
+            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(0.235644f));  // b0
+            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(-0.617822f)); // b1
+            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(1.0f));       // b2
+            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.617822f)); // a1
+            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.235644f));  // a2
         }
 
         void test_allpassbiquad_as_reader()
@@ -303,11 +305,11 @@ class HBiQuads_Test: public Test
             HBiQuadFilter<int16_t>* filter = HBiQuadFactory<HAllpassBiQuad<int16_t>, int16_t>::Create(&rd, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
-            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(-0.617822f));
-            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(0.235644f));
-            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.235644f));
-            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.617822f));
-            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(1.0f));
+            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(0.235644f));  // b0
+            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(-0.617822f)); // b1
+            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(1.0f));       // b2
+            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.617822f)); // a1
+            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.235644f));  // a2
         }
 
         void test_peakingeqbiquad_as_writer()
@@ -316,11 +318,11 @@ class HBiQuads_Test: public Test
             HBiQuadFilter<int16_t>* filter = HBiQuadFactory<HPeakingEQBiQuad<int16_t>, int16_t>::Create(&wr, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
-            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(-0.631319f));
-            ASSERT_IS_EQUAL(ftrim(c[1]), 262638);
-            ASSERT_IS_EQUAL(ftrim(c[2]), 1044986);
-            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.631319f));
-            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.217652f));
+            ASSERT_IS_EQUAL(ftrim(c[0]), 1044986);           // b0
+            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(-0.631319f)); // b1
+            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.217652f));  // b2
+            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.631319f)); // a1
+            ASSERT_IS_EQUAL(ftrim(c[4]), 262638);            // a2
         }
 
         void test_peakingeqbiquad_as_reader()
@@ -329,11 +331,11 @@ class HBiQuads_Test: public Test
             HBiQuadFilter<int16_t>* filter = HBiQuadFactory<HPeakingEQBiQuad<int16_t>, int16_t>::Create(&rd, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
-            ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(-0.631319f));
-            ASSERT_IS_EQUAL(ftrim(c[1]), 262638);
-            ASSERT_IS_EQUAL(ftrim(c[2]), 1044986);
-            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.631319f));
-            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.217652f));
+            ASSERT_IS_EQUAL(ftrim(c[0]), 1044986);           // b0
+            ASSERT_IS_EQUAL(ftrim(c[1]), ftrim(-0.631319f)); // b1
+            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.217652f));  // b2
+            ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(-0.631319f)); // a1
+            ASSERT_IS_EQUAL(ftrim(c[4]), 262638);            // a2
         }
 
         void test_lowshelvingbiquad_as_writer()
@@ -342,11 +344,11 @@ class HBiQuads_Test: public Test
             HBiQuadFilter<int16_t>* filter = HBiQuadFactory<HLowShelvingBiQuad<int16_t>, int16_t>::Create(&wr, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
-            ASSERT_IS_EQUAL(ftrim(c[0]), -647721);
-            ASSERT_IS_EQUAL(ftrim(c[1]), 242573);
-            ASSERT_IS_EQUAL(ftrim(c[2]), 1040586);
-            ASSERT_IS_EQUAL(ftrim(c[3]), -611430);
-            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.238278f));
+            ASSERT_IS_EQUAL(ftrim(c[0]), 1040586);          // b0
+            ASSERT_IS_EQUAL(ftrim(c[1]), -611430);          // b1
+            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.238278f)); // b2
+            ASSERT_IS_EQUAL(ftrim(c[3]), -647721);          // a1
+            ASSERT_IS_EQUAL(ftrim(c[4]), 242573);           // a2
         }
 
         void test_lowshelvingbiquad_as_reader()
@@ -355,11 +357,11 @@ class HBiQuads_Test: public Test
             HBiQuadFilter<int16_t>* filter = HBiQuadFactory<HLowShelvingBiQuad<int16_t>, int16_t>::Create(&rd, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
-            ASSERT_IS_EQUAL(ftrim(c[0]), -647721);
-            ASSERT_IS_EQUAL(ftrim(c[1]), 242573);
-            ASSERT_IS_EQUAL(ftrim(c[2]), 1040586);
-            ASSERT_IS_EQUAL(ftrim(c[3]), -611430);
-            ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(0.238278f));
+            ASSERT_IS_EQUAL(ftrim(c[0]), 1040586);          // b0
+            ASSERT_IS_EQUAL(ftrim(c[1]), -611430);          // b1
+            ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.238278f)); // b2
+            ASSERT_IS_EQUAL(ftrim(c[3]), -647721);          // a1
+            ASSERT_IS_EQUAL(ftrim(c[4]), 242573);           // a2
         }
 
         void test_highshelvingbiquad_as_writer()
@@ -368,11 +370,11 @@ class HBiQuads_Test: public Test
             HBiQuadFilter<int16_t>* filter = HBiQuadFactory<HHighShelvingBiQuad<int16_t>, int16_t>::Create(&wr, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
-            ASSERT_IS_EQUAL(ftrim(c[0]), -587582);
-            ASSERT_IS_EQUAL(ftrim(c[1]), 228985);
-            ASSERT_IS_EQUAL(ftrim(c[2]), 1078257);
-            ASSERT_IS_EQUAL(ftrim(c[3]), -698410);
-            ASSERT_IS_EQUAL(ftrim(c[4]), 261556);
+            ASSERT_IS_EQUAL(ftrim(c[0]), 1078257); // b0
+            ASSERT_IS_EQUAL(ftrim(c[1]), -698410); // b1
+            ASSERT_IS_EQUAL(ftrim(c[2]), 261556);  // b2
+            ASSERT_IS_EQUAL(ftrim(c[3]), -587582); // a1
+            ASSERT_IS_EQUAL(ftrim(c[4]), 228985);  // a2
         }
 
         void test_highshelvingbiquad_as_reader()
@@ -381,11 +383,11 @@ class HBiQuads_Test: public Test
             HBiQuadFilter<int16_t>* filter = HBiQuadFactory<HHighShelvingBiQuad<int16_t>, int16_t>::Create(&rd, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
-            ASSERT_IS_EQUAL(ftrim(c[0]), -587582);
-            ASSERT_IS_EQUAL(ftrim(c[1]), 228985);
-            ASSERT_IS_EQUAL(ftrim(c[2]), 1078257);
-            ASSERT_IS_EQUAL(ftrim(c[3]), -698410);
-            ASSERT_IS_EQUAL(ftrim(c[4]), 261556);
+            ASSERT_IS_EQUAL(ftrim(c[0]), 1078257); // b0
+            ASSERT_IS_EQUAL(ftrim(c[1]), -698410); // b1
+            ASSERT_IS_EQUAL(ftrim(c[2]), 261556);  // b2
+            ASSERT_IS_EQUAL(ftrim(c[3]), -587582); // a1
+            ASSERT_IS_EQUAL(ftrim(c[4]), 228985);  // a2
         }
 
 } hbiquads_test;
