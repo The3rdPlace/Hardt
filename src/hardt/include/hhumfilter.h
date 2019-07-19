@@ -8,8 +8,8 @@ class HHumFilter : public HCombFilter<T>
 {
     private:
 
-        HFilterBase<T>* _feedbackFilter;
-        HFilterBase<T>* _outputFilter;
+        HBiQuadFilter<T>* _feedbackFilter;
+        HBiQuadFilter<T>* _outputFilter;
         T* _buffer;
         T dest[1];
 
@@ -41,7 +41,7 @@ class HHumFilter : public HCombFilter<T>
 
         ~HHumFilter()
         {
-            delete _feedbackFilter;
+            delete  _feedbackFilter;
             delete _outputFilter;
             delete _buffer;
         }
