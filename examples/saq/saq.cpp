@@ -19,10 +19,11 @@ int main(int argc, char** argv)
         std::cout << "Use 'dspcmd -a' to get a list of your sound device numbers" << std::endl;
     }
 
+    // Todo: Lock this down to the correct value when we are done fidling with the dsp chain
     int loFreq = atoi(argv[3]);
 
-    // ------------------------------------------------------------------------
-    // Setup dsp chain
+    // -------------------------------------------------------------------------------------
+    // Setup dsp chain for readers - first to last
 
     // Create a wave-file reader, reading a local file with a prerecorded saq transmission.
     // We know that the recording is 16 bit signed, 48KSps, mono
@@ -31,7 +32,7 @@ int main(int argc, char** argv)
     // Add hum filter to remove 50Hz harmonics and the very lowest part of the spectrum (incl. 50Hz)
     HHumFilter<int16_t> humFilter((HReader<int16_t>*) &input, H_SAMPLE_RATE_48K, 50, 500, 4096);
 
-    // Mix to IF
+    // Mix down to IF = 1KHz
     HMultiplier<int16_t> multiplier((HReader<int16_t>*) &humFilter, H_SAMPLE_RATE_48K, loFreq, 4096);
 
     // General lowpass filtering
@@ -41,36 +42,38 @@ int main(int argc, char** argv)
     HGain<int16_t> amplifier((HReader<int16_t>*) lowpass, 1000, 4096);
 
     // Narrow butterworth bandpass filter, bandwidth 100Hz around 1000-1100. 4th. order, 4 biquads cascaded
+    // Removes (almost) anything but the mixed down signal from SAQ (Grimeton)
+    //
     // Designed using http://www.micromodeler.com/dsp/
+    //
+    // Do not forget that the a1 and a2 coefficients alread has been multiplied by -1, this makes the IIR filter simpler
     float coeffs[20] =
     {
-        0.06053979315740952, -0.12107958631481903, 0.06053979315740952, 1.9701579350811518, -0.9881958184253727,// b0, b1, b2, a1, a2
-        0.125, -0.25, 0.125, 1.9780280925054692, -0.9952212910209018,// b0, b1, b2, a1, a2
-        0.00048828125, 0.0009765625, 0.00048828125, 1.9683639531082289, -0.9877622267827567,// b0, b1, b2, a1, a2
-        0.00048828125, 0.0009765625, 0.00048828125, 1.9742906058109615, -0.9947853486870636// b0, b1, b2, a1, a2
+        0.06053979315740952, -0.12107958631481903, 0.06053979315740952, 1.9701579350811518, -0.9881958184253727,// b0, b1, b2, -a1, -a2
+        0.125, -0.25, 0.125, 1.9780280925054692, -0.9952212910209018,// b0, b1, b2, -a1, -a2
+        0.00048828125, 0.0009765625, 0.00048828125, 1.9683639531082289, -0.9877622267827567,// b0, b1, b2, -a1, -a2
+        0.00048828125, 0.0009765625, 0.00048828125, 1.9742906058109615, -0.9947853486870636// b0, b1, b2, -a1, -a2
     };
-    HIirFilter<int16_t> if1((HReader<int16_t>*) &amplifier, coeffs, 5, 4096);
-    HIirFilter<int16_t> if2((HReader<int16_t>*) &if1, &coeffs[5], 5, 4096);
-    HIirFilter<int16_t> if3((HReader<int16_t>*) &if2, &coeffs[10], 5, 4096);
-    HIirFilter<int16_t> if4((HReader<int16_t>*) &if3, &coeffs[15], 5, 4096);
+    HCascadedBiQuadFilter<int16_t> bandpass((HReader<int16_t>*) &amplifier, coeffs, 20, 4096);
 
     // General lowpass filtering after mixing down to IF
-    HBiQuadFilter<int16_t>* lowpass2 = HBiQuadFactory< HLowpassBiQuad<int16_t>, int16_t >::Create((HReader<int16_t>*)  &if4, 1000, H_SAMPLE_RATE_48K, 0.7071f, 1, 4096);
+    HBiQuadFilter<int16_t>* lowpass2 = HBiQuadFactory< HLowpassBiQuad<int16_t>, int16_t >::Create((HReader<int16_t>*)  &bandpass, 1000, H_SAMPLE_RATE_48K, 0.7071f, 1, 4096);
 
     // Final boost of signal
     HGain<int16_t> gain((HReader<int16_t>*) lowpass2, 10, 4096);
 
-    // Create a soundcard writer, to output the final decoded transmission
-    // We would like to pass 4096 samples per write, to avoid too much overhead when moving data to the card
-    HSoundcardWriter<int16_t> soundcard(atoi(argv[2]), H_SAMPLE_RATE_48K, 1, H_SAMPLE_FORMAT_INT_16, 4096);
-    //HWavWriter<int16_t> soundcard("out.wav", H_SAMPLE_FORMAT_INT_16, 1, H_SAMPLE_RATE_48K);
+    // -------------------------------------------------------------------------------------
+    // Setup dsp chain for writers - last to first (there is only one in this example)
 
-    // Create a processor that reads from the reader-chain and writes to the writer-chain
-    // Set the bool variable 'terminated' to stop the processor thread immediately
+    // Create a soundcard writer, to output the final decoded transmission
+    //HSoundcardWriter<int16_t> soundcard(atoi(argv[2]), H_SAMPLE_RATE_48K, 1, H_SAMPLE_FORMAT_INT_16, 4096);
+    HWavWriter<int16_t> soundcard("out.wav", H_SAMPLE_FORMAT_INT_16, 1, H_SAMPLE_RATE_48K);
+
+    // -------------------------------------------------------------------------------------
+    // Create a processor that reads from the readers-chain and writes to the writers-chain
+
+    // Processor: read from last gain boost and write to the soundcard writer. Run until EOF
     bool terminated = false;
     HStreamProcessor<int16_t> processor(&soundcard, (HReader<int16_t>*) &gain, 4096, &terminated);
-
-    // ------------------------------------------------------------------------
-    // Run: Read the entire file and output the decoded signal
     processor.Run();
 }
