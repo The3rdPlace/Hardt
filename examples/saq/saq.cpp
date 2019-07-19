@@ -35,7 +35,7 @@ int main(int argc, char** argv)
     // Mix down to IF = 1KHz
     HMultiplier<int16_t> multiplier((HReader<int16_t>*) &humFilter, H_SAMPLE_RATE_48K, loFreq, 4096);
 
-    // General lowpass filtering
+    // General lowpass filtering, removes most signals above the IF
     HBiQuadFilter<int16_t>* lowpass = HBiQuadFactory< HLowpassBiQuad<int16_t>, int16_t >::Create((HReader<int16_t>*)  &multiplier, 2000, H_SAMPLE_RATE_48K, 0.7071f, 1, 4096);
 
     // Increase signal strength after filtering
@@ -46,7 +46,7 @@ int main(int argc, char** argv)
     //
     // Designed using http://www.micromodeler.com/dsp/
     //
-    // Do not forget that the a1 and a2 coefficients alread has been multiplied by -1, this makes the IIR filter simpler
+    // Do not forget that the a1 and a2 coefficients already has been multiplied by -1, this makes the IIR filter simpler
     float coeffs[20] =
     {
         0.06053979315740952, -0.12107958631481903, 0.06053979315740952, 1.9701579350811518, -0.9881958184253727,// b0, b1, b2, -a1, -a2
