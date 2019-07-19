@@ -36,6 +36,8 @@ void HIirFilter<T>::Init(float* coefficients, int length)
 
     // When receiving the coefficients array, we expect the b0,...,bN coefficients to come first.
     // It seems that all designers returns coefficienets this way.
+    // Also be aware that we expect the input a1 and a2 coefficient to have the '-1' multiplied
+    // already, so that the filter need only do a summation !!
     _aCoefficients = new float[_length];
     _bCoefficients = new float[_length + 1];
     memcpy(_bCoefficients, coefficients, (_length + 1) * sizeof(float));
@@ -50,6 +52,18 @@ void HIirFilter<T>::Init(float* coefficients, int length)
         _output[i] = 0;
     }
     HLog("Allocated and initialized delay buffers for %d taps and output values", _length + 1);
+
+
+    for( int i = 0; i < _length + 1; i++ )
+    {
+        HLog("b%d = %f", i + 1, _bCoefficients[i]);
+    }
+    for( int i = 0; i < _length; i++ )
+    {
+        HLog("a%d = %f", i + 1, _aCoefficients[i]);
+    }
+
+
 }
 
 template <class T>
@@ -81,7 +95,7 @@ void HIirFilter<T>::Filter(T* src, T* dest, size_t blocksize)
         for( int j = 1; j < _length + 1; j++ )
         {
             result += _taps[j] * _bCoefficients[j];
-            result -= _output[j] * _aCoefficients[j - 1];
+            result += _output[j] * _aCoefficients[j - 1];
         }
 
         // Add output to the feedback delay line

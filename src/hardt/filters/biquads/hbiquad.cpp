@@ -42,13 +42,21 @@ float* HBiQuad<T>::Normalize()
         normalizedBiquadParameters[4] = biquadParameters[5]; // a2
     }
 
+    // The generic IIR filter expects the a1, a2, aN coefficients to be multiplied by -1
+    // so that the filter only have to sum on the feedback path, not also multiplying by -1
+    normalizedBiquadParameters[3] = normalizedBiquadParameters[3] * -1;
+    normalizedBiquadParameters[4] = normalizedBiquadParameters[4] * -1;
+
     return normalizedBiquadParameters;
 }
 
 template <class T>
 float* HBiQuad<T>::Calculate()
 {
+    // Let the specific filter calculate coefficients
     Calculate(omegaC, omegaS, alpha, A, beta, &biquadParameters[3], &biquadParameters[4], &biquadParameters[5], &biquadParameters[0], &biquadParameters[1], &biquadParameters[2]);
+
+    // Get the final IIR input coefficients
     return Normalize();
 }
 

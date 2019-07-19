@@ -75,7 +75,7 @@ class HIirFilter_Test: public Test
 
         // b and a coefficients are reversed in the list - most designers return the list
         // of coefficients this way!
-        float coeefs[5] = { 1.0, 2.0, 3.0, 1.0, 2.0 };
+        float coeefs[5] = { 1.0, 2.0, 3.0, -1.0, -2.0 };
         int16_t expected[6] = {1, 3, 6, 10, 22, 46};
         int16_t expectedNext[2] = {23, -15};
 
