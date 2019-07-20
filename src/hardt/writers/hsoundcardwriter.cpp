@@ -25,7 +25,7 @@ HSoundcardWriter<T>::HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channe
     _cbd.framesize = framesPerBuffer;
     _cbd.wrloc = 0;
     _cbd.rdloc = 0;
-    _cbd.buffer = new T[NUMBER_OF_BUFFERS * framesPerBuffer * sizeof(T)];
+    _cbd.buffer = new T[NUMBER_OF_BUFFERS * framesPerBuffer];
     if( _cbd.buffer == NULL )
     {
         HError("Unable to allocate %d buffers for %d frames á %d bytes", NUMBER_OF_BUFFERS, framesPerBuffer, sizeof(T));
