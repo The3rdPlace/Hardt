@@ -19,6 +19,11 @@ class HBandpassBiQuad : public HBiQuad<T>
             *b1 = 0;
             *b2 = -1 * (omegaS / 2);
         }
+
+        float* Calculate()
+        {
+            return HBiQuad<T>::Calculate();
+        }
 };
 
 #endif

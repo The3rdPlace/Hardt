@@ -786,35 +786,35 @@ int RunBiQuadSpectrum()
     HFilter<T>* filter;
     if( strcmp(Config.FilterName, "HLowpassBiQuad") == 0 )
     {
-        filter = HBiQuadFactory<HLowpassBiQuad<T>, T>::Create((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HLowpassBiQuad<T>, T>((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HHighpassBiQuad") == 0 )
     {
-        filter = HBiQuadFactory<HHighpassBiQuad<T>, T>::Create((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HHighpassBiQuad<T>, T>((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HBandpassBiQuad") == 0 )
     {
-        filter = HBiQuadFactory<HBandpassBiQuad<T>, T>::Create((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HBandpassBiQuad<T>, T>((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HNotchBiQuad") == 0 )
     {
-        filter = HBiQuadFactory<HNotchBiQuad<T>, T>::Create((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HNotchBiQuad<T>, T>((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HAllpassBiQuad") == 0 )
     {
-        filter = HBiQuadFactory<HAllpassBiQuad<T>, T>::Create((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HAllpassBiQuad<T>, T>((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HPeakingEQBiQuad") == 0 )
     {
-        filter = HBiQuadFactory<HPeakingEQBiQuad<T>, T>::Create((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HPeakingEQBiQuad<T>, T>((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HLowShelvingBiQuad") == 0 )
     {
-        filter = HBiQuadFactory<HLowShelvingBiQuad<T>, T>::Create((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HLowShelvingBiQuad<T>, T>((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HHighShelvingBiQuad") == 0 )
     {
-        filter = HBiQuadFactory<HHighShelvingBiQuad<T>, T>::Create((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HHighShelvingBiQuad<T>, T>((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else
     {
@@ -892,35 +892,35 @@ int RunBiQuadFilter()
     HFilter<T>* filter;
     if( strcmp(Config.FilterName, "HLowpassBiQuad") == 0 )
     {
-        filter = HBiQuadFactory<HLowpassBiQuad<T>, T>::Create((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HLowpassBiQuad<T>, T> ((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HHighpassBiQuad") == 0 )
     {
-        filter = HBiQuadFactory<HHighpassBiQuad<T>, T>::Create((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HHighpassBiQuad<T>, T>((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HBandpassBiQuad") == 0 )
     {
-        filter = HBiQuadFactory<HBandpassBiQuad<T>, T>::Create((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HBandpassBiQuad<T>, T>((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HNotchBiQuad") == 0 )
     {
-        filter = HBiQuadFactory<HNotchBiQuad<T>, T>::Create((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HNotchBiQuad<T>, T>((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HAllpassBiQuad") == 0 )
     {
-        filter = HBiQuadFactory<HAllpassBiQuad<T>, T>::Create((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HAllpassBiQuad<T>, T>((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HPeakingEQBiQuad") == 0 )
     {
-        filter = HBiQuadFactory<HPeakingEQBiQuad<T>, T>::Create((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HPeakingEQBiQuad<T>, T>((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HLowShelvingBiQuad") == 0 )
     {
-        filter = HBiQuadFactory<HLowShelvingBiQuad<T>, T>::Create((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HLowShelvingBiQuad<T>, T>((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HHighShelvingBiQuad") == 0 )
     {
-        filter = HBiQuadFactory<HHighShelvingBiQuad<T>, T>::Create((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HHighShelvingBiQuad<T>, T>((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else
     {

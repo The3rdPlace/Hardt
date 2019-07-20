@@ -19,6 +19,11 @@ class HNotchBiQuad : public HBiQuad<T>
             *b1 = -2 * omegaC;
             *b2 = 1;
         }
+
+        float* Calculate()
+        {
+            return HBiQuad<T>::Calculate();
+        }
 };
 
 #endif

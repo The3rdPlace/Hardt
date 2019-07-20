@@ -65,7 +65,7 @@ Include api function declarations
 #include "hpeakingeqbiquad.h"
 #include "hlowshelvingbiquad.h"
 #include "hhighshelvingbiquad.h"
-#include "hbiquadfactory.h"
+#include "hbiquadfilter.h"
 #include "hcascadedbiquadfilter.cpp"
 #include "hgain.cpp"
 #include "hcombfilter.cpp"

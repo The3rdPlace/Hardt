@@ -53,7 +53,7 @@
 #include "hpeakingeqbiquad.h"
 #include "hlowshelvingbiquad.h"
 #include "hhighshelvingbiquad.h"
-#include "hbiquadfactory.h"
+#include "hbiquadfilter.h"
 #include "hcascadedbiquadfilter.h"
 #include "hgain.h"
 #include "hcombfilter.h"

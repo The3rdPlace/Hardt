@@ -72,11 +72,11 @@ int main(int argc, char** argv)
     // Highpass filter before mixing to remove some of the lowest frequencies that may
     // get mirrored back into the final frequency range and cause (more) distortion.
     // (In this receiver, the results are good when the cutoff frequency is located at the local oscillator frequency)
-    HBiQuadFilter<int16_t>* highpass = HBiQuadFactory< HHighpassBiQuad<int16_t>, int16_t >::Create(gain.Reader(), LOCAL_OSCILATOR, H_SAMPLE_RATE_48K, 0.7071f, 1, BLOCKSIZE);
+    HBiQuadFilter<HHighpassBiQuad<int16_t>, int16_t> highpass(gain.Reader(), LOCAL_OSCILATOR, H_SAMPLE_RATE_48K, 0.7071f, 1, BLOCKSIZE);
 
     // Mix down to the output frequency.
     // 17200Hz - 16160Hz = 1040Hz  (place it somewhere inside the bandpass filter pass region)
-    HMultiplier<int16_t> multiplier(highpass->Reader(), H_SAMPLE_RATE_48K, LOCAL_OSCILATOR, BLOCKSIZE);
+    HMultiplier<int16_t> multiplier(highpass.Reader(), H_SAMPLE_RATE_48K, LOCAL_OSCILATOR, BLOCKSIZE);
 
     // Narrow butterworth bandpass filter, bandwidth 100Hz around 1000-1100. 4th. order, 4 biquads cascaded
     // Removes (almost) anything but the mixed down signal from SAQ (Grimeton)
@@ -95,10 +95,10 @@ int main(int argc, char** argv)
     HCascadedBiQuadFilter<int16_t> bandpass(multiplier.Reader(), coeffs, 20, BLOCKSIZE);
 
     // General lowpass filtering after mixing down to IF
-    HBiQuadFilter<int16_t>* lowpass = HBiQuadFactory< HLowpassBiQuad<int16_t>, int16_t >::Create(bandpass.Reader(), 2000, H_SAMPLE_RATE_48K, 0.7071f, 1, BLOCKSIZE);
+    HBiQuadFilter<HLowpassBiQuad<int16_t>, int16_t> lowpass(bandpass.Reader(), 2000, H_SAMPLE_RATE_48K, 0.7071f, 1, BLOCKSIZE);
 
     // Final boost of signal (output volume)
-    HGain<int16_t> volume(lowpass->Reader(), 200, BLOCKSIZE);
+    HGain<int16_t> volume(lowpass.Reader(), 200, BLOCKSIZE);
 
     // -------------------------------------------------------------------------------------
     // Setup dsp chain for writers - last to first
@@ -118,10 +118,4 @@ int main(int argc, char** argv)
     bool terminated = false;
     HStreamProcessor<int16_t> processor(&fade, volume.Reader(), BLOCKSIZE, &terminated);
     processor.Run();
-
-    // The high- and lowpass filters is dynamically allocated, using a ::Create() method, which saves
-    // you some plumbing code, they are just normal IIR filters (biquads) but can be calculated from
-    // standard formulas. These dynamically allocated filters must be freed by you!
-    delete highpass;
-    delete lowpass;
 }

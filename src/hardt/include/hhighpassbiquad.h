@@ -19,6 +19,11 @@ class HHighpassBiQuad : public HBiQuad<T>
             *b1 = - 1 * (1 + omegaC);
             *b2 = (1 + omegaC) / 2;
         }
+
+        float* Calculate()
+        {
+            return HBiQuad<T>::Calculate();
+        }
 };
 
 #endif

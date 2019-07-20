@@ -19,6 +19,11 @@ class HHighShelvingBiQuad : public HBiQuad<T>
             *b1 = -2 * A * ((A - 1) + ((A + 1) * omegaC));
             *b2 = A * ( (A + 1) + ((A-1) * omegaC) - (beta * omegaS));
         }
+
+        float* Calculate()
+        {
+            return HBiQuad<T>::Calculate();
+        }
 };
 
 #endif

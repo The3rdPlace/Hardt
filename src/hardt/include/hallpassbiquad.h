@@ -19,6 +19,11 @@ class HAllpassBiQuad : public HBiQuad<T>
             *b1 = -2 * omegaC;
             *b2 = 1 + alpha;
         }
+
+        float* Calculate()
+        {
+            return HBiQuad<T>::Calculate();
+        }
 };
 
 #endif

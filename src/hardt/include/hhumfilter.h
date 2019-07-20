@@ -8,8 +8,8 @@ class HHumFilter : public HCombFilter<T>
 {
     private:
 
-        HBiQuadFilter<T>* _feedbackFilter;
-        HBiQuadFilter<T>* _outputFilter;
+        HBiQuadFilter<HLowpassBiQuad<T>, T>* _feedbackFilter;
+        HBiQuadFilter<HHighpassBiQuad<T>, T>* _outputFilter;
         T* _buffer;
         T dest[1];
 
@@ -25,8 +25,8 @@ class HHumFilter : public HCombFilter<T>
             HCombFilter<T>(writer, rate, frequency, -0.5, blocksize)
         {
             HLog("HHumFilter(HWriter*, %d, %d, %d, %d)", rate, frequency, cutoffFrequency, blocksize);
-            _feedbackFilter = HBiQuadFactory< HLowpassBiQuad<T>, T >::Create((HReader<T>*) NULL, cutoffFrequency, rate, 0.5, 0, 1);
-            _outputFilter = HBiQuadFactory< HHighpassBiQuad<T>, T >::Create((HReader<T>*) NULL, cutoffFrequency, rate, 0.6, 0, 1);
+            _feedbackFilter = new HBiQuadFilter<HLowpassBiQuad<T>, T>((HReader<T>*) NULL, cutoffFrequency, rate, 0.5, 0, 1);
+            _outputFilter = new HBiQuadFilter<HHighpassBiQuad<T>, T>((HReader<T>*) NULL, cutoffFrequency, rate, 0.6, 0, 1);
             _buffer = new T[blocksize];
         }
 
@@ -34,8 +34,8 @@ class HHumFilter : public HCombFilter<T>
             HCombFilter<T>(reader, rate, frequency, -0.5, blocksize)
         {
             HLog("HHumFilter(HReader*, %d, %d, %d, %d)", rate, frequency, cutoffFrequency, blocksize);
-            _feedbackFilter = HBiQuadFactory< HLowpassBiQuad<T>, T >::Create((HReader<T>*) NULL, cutoffFrequency, rate, 0.5, 0, 1);
-            _outputFilter = HBiQuadFactory< HHighpassBiQuad<T>, T >::Create((HReader<T>*) NULL, cutoffFrequency, rate, 0.6, 0, 1);
+            _feedbackFilter = new HBiQuadFilter<HLowpassBiQuad<T>, T>((HReader<T>*) NULL, cutoffFrequency, rate, 0.5, 0, 1);
+            _outputFilter = new HBiQuadFilter<HHighpassBiQuad<T>, T>((HReader<T>*) NULL, cutoffFrequency, rate, 0.6, 0, 1);
             _buffer = new T[blocksize];
         }
 

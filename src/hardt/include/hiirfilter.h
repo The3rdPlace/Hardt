@@ -49,6 +49,8 @@ class HIirFilter : public HFilter<T>
             return coeffs;
         }
 
+    protected:
+
         void Init(float* coefficients, int length);
 
     public:
@@ -58,7 +60,7 @@ class HIirFilter : public HFilter<T>
 
         ~HIirFilter();
 
-        void Filter(T* src, T* dest, size_t blocksize);
+        virtual void Filter(T* src, T* dest, size_t blocksize);
 
         std::vector<float> GetCoefficients()
         {
