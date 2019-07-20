@@ -17,6 +17,11 @@ class HWriter : public HObject
         {
             return true;
         }
+
+        HWriter<T>* Writer()
+        {
+            return (HWriter<T>*) this;
+        }
 };
 
 #endif

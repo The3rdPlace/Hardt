@@ -64,19 +64,19 @@ int main(int argc, char** argv)
     // Add hum filter to remove 50Hz harmonics and the very lowest part of the spectrum (incl. 50Hz)
     // These components, which have very high levels, will completely botch the rest of the chain
     // if allowed through (50Hz input is here a.o., with an insanely high level)
-    HHumFilter<int16_t> humFilter((HReader<int16_t>*) &input, H_SAMPLE_RATE_48K, 50, 500, BLOCKSIZE);
+    HHumFilter<int16_t> humFilter(&input, H_SAMPLE_RATE_48K, 50, 500, BLOCKSIZE);
 
     // Increase signal strength after mixing to avoid losses before filtering and mixing
-    HGain<int16_t> gain((HReader<int16_t>*) &humFilter, 100, BLOCKSIZE);
+    HGain<int16_t> gain(humFilter.Reader(), 100, BLOCKSIZE);
 
     // Highpass filter before mixing to remove some of the lowest frequencies that may
     // get mirrored back into the final frequency range and cause (more) distortion.
     // (In this receiver, the results are good when the cutoff frequency is located at the local oscillator frequency)
-    HBiQuadFilter<int16_t>* highpass = HBiQuadFactory< HHighpassBiQuad<int16_t>, int16_t >::Create((HReader<int16_t>*)  &gain, LOCAL_OSCILATOR, H_SAMPLE_RATE_48K, 0.7071f, 1, BLOCKSIZE);
+    HBiQuadFilter<int16_t>* highpass = HBiQuadFactory< HHighpassBiQuad<int16_t>, int16_t >::Create(gain.Reader(), LOCAL_OSCILATOR, H_SAMPLE_RATE_48K, 0.7071f, 1, BLOCKSIZE);
 
     // Mix down to the output frequency.
     // 17200Hz - 16160Hz = 1040Hz  (place it somewhere inside the bandpass filter pass region)
-    HMultiplier<int16_t> multiplier((HReader<int16_t>*) highpass, H_SAMPLE_RATE_48K, LOCAL_OSCILATOR, BLOCKSIZE);
+    HMultiplier<int16_t> multiplier(highpass->Reader(), H_SAMPLE_RATE_48K, LOCAL_OSCILATOR, BLOCKSIZE);
 
     // Narrow butterworth bandpass filter, bandwidth 100Hz around 1000-1100. 4th. order, 4 biquads cascaded
     // Removes (almost) anything but the mixed down signal from SAQ (Grimeton)
@@ -92,13 +92,13 @@ int main(int argc, char** argv)
         0.00048828125, 0.0009765625, 0.00048828125, 1.9683639531082289, -0.9877622267827567,// b0, b1, b2, -a1, -a2
         0.00048828125, 0.0009765625, 0.00048828125, 1.9742906058109615, -0.9947853486870636// b0, b1, b2, -a1, -a2
     };
-    HCascadedBiQuadFilter<int16_t> bandpass((HReader<int16_t>*) &multiplier, coeffs, 20, BLOCKSIZE);
+    HCascadedBiQuadFilter<int16_t> bandpass(multiplier.Reader(), coeffs, 20, BLOCKSIZE);
 
     // General lowpass filtering after mixing down to IF
-    HBiQuadFilter<int16_t>* lowpass = HBiQuadFactory< HLowpassBiQuad<int16_t>, int16_t >::Create((HReader<int16_t>*)  &bandpass, 2000, H_SAMPLE_RATE_48K, 0.7071f, 1, BLOCKSIZE);
+    HBiQuadFilter<int16_t>* lowpass = HBiQuadFactory< HLowpassBiQuad<int16_t>, int16_t >::Create(bandpass.Reader(), 2000, H_SAMPLE_RATE_48K, 0.7071f, 1, BLOCKSIZE);
 
     // Final boost of signal (output volume)
-    HGain<int16_t> volume((HReader<int16_t>*) lowpass, 200, BLOCKSIZE);
+    HGain<int16_t> volume(lowpass->Reader(), 200, BLOCKSIZE);
 
     // -------------------------------------------------------------------------------------
     // Setup dsp chain for writers - last to first (there is only one in this example)
@@ -111,7 +111,7 @@ int main(int argc, char** argv)
 
     // Read from last gain boost and write to the soundcard. Runs until EOF
     bool terminated = false;
-    HStreamProcessor<int16_t> processor(&soundcard, (HReader<int16_t>*) &volume, BLOCKSIZE, &terminated);
+    HStreamProcessor<int16_t> processor(&soundcard, volume.Reader(), BLOCKSIZE, &terminated);
     processor.Run();
 
     // The high- and lowpass filters is dynamically allocated, using a ::Create() method, which saves

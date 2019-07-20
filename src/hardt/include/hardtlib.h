@@ -20,7 +20,7 @@ Abstract base classes with no, or little implementation
 
 #include "hwriter.h"
 #include "hcustomwriter.h"
-#include "hreader.cpp"
+#include "hreader.h"
 #include "hprocessor.cpp"
 #include "hgenerator.cpp"
 #include "hfilter.cpp"
