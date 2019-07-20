@@ -33,6 +33,10 @@ HSoundcardWriter<T>::HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channe
     }
     HLog("Buffers allocated");
 
+    // Initialize buffers so that we have total silence untill something is written to the buffers
+    memset((void*) _cbd.buffer, std::numeric_limits<T>::is_signed ? 0 : std::numeric_limits<T>::max() / 2, NUMBER_OF_BUFFERS * framesPerBuffer * sizeof(T));
+    HLog("Initialized soundcard buffers with value %d", std::numeric_limits<T>::is_signed ? 0 : std::numeric_limits<T>::max() / 2);
+
     PaError err = Pa_Initialize();
 	if( err != paNoError )
 	{
