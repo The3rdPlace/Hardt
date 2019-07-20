@@ -59,5 +59,6 @@
 #include "hcombfilter.h"
 #include "hhumfilter.h"
 #include "hgoertzelfilter.h"
+#include "hfade.h"
 
 #endif

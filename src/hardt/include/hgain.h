@@ -15,7 +15,7 @@ class HGain : public HFilter<T> //public HWriter<T>, public HReader<T>
 
         ~HGain();
 
-        void Filter(T* src, T* dest, size_t blocksize);
+        virtual void Filter(T* src, T* dest, size_t blocksize);
 
         void SetGain(float gain);
 };

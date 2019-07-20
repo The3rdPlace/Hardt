@@ -101,17 +101,22 @@ int main(int argc, char** argv)
     HGain<int16_t> volume(lowpass->Reader(), 200, BLOCKSIZE);
 
     // -------------------------------------------------------------------------------------
-    // Setup dsp chain for writers - last to first (there is only one in this example)
+    // Setup dsp chain for writers - last to first
 
     // Create a soundcard writer, to output the final decoded transmission
     HSoundcardWriter<int16_t> soundcard(atoi(argv[2]), H_SAMPLE_RATE_48K, 1, H_SAMPLE_FORMAT_INT_16, BLOCKSIZE);
+
+    // Create a fader that turns up the output volume when we begin to process samples.
+    // This hides a naste "Click" in the beginning of the file, and other spurious noise
+    // coming from filters that needs to stabilize
+    HFade<int16_t> fade(soundcard.Writer(), 0 , 1000, true, BLOCKSIZE);
 
     // -------------------------------------------------------------------------------------
     // Create a processor that reads from the readers-chain and writes to the writers-chain
 
     // Read from last gain boost and write to the soundcard. Runs until EOF
     bool terminated = false;
-    HStreamProcessor<int16_t> processor(&soundcard, volume.Reader(), BLOCKSIZE, &terminated);
+    HStreamProcessor<int16_t> processor(&fade, volume.Reader(), BLOCKSIZE, &terminated);
     processor.Run();
 
     // The high- and lowpass filters is dynamically allocated, using a ::Create() method, which saves

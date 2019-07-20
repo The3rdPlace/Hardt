@@ -71,5 +71,6 @@ Include api function declarations
 #include "hcombfilter.cpp"
 #include "hhumfilter.h"
 #include "hgoertzelfilter.cpp"
+#include "hfade.cpp"
 
 #endif
