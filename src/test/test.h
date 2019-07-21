@@ -59,6 +59,19 @@ class Test
         }
 
         template <typename T>
+        bool assertIsNotEqual(std::string file, int line, T a, T b)
+        {
+            if( a == b )
+            {
+                std::cout << "- assertIsNotEqual(" << (T) a << ", " << (T) b << "): is equal!" << std::endl;
+                std::cout << "  in " << file << "@" << line << std::endl;
+                Test::failed++;
+                return false;
+            }
+            return true;
+        }
+
+        template <typename T>
         bool assertIsLessThanOrEqual(std::string file, int line, T a, T b)
         {
             if( a > b )
@@ -160,6 +173,7 @@ class Test
 #define INTEGRATIONTEST(a) if( run_integration_tests ) { std::cout << "* Running integrationtest: " << #a << std::endl; a(); } else { std::cout << "- Skipping integrationtest: " << #a << std::endl; }
 
 #define ASSERT_IS_EQUAL(a, b) assertIsEqual(__FILE__,__LINE__, a, b)
+#define ASSERT_IS_NOT_EQUAL(a, b) assertIsNotEqual(__FILE__,__LINE__, a, b)
 #define ASSERT_IS_LESS_THAN_OR_EQUAL(a, b) assertIsLessThanOrEqual(__FILE__,__LINE__, a, b)
 #define ASSERT_IS_LESS_THAN(a, b) assertIsLessThan(__FILE__,__LINE__, a, b)
 #define ASSERT_IS_GREATER_THAN_OR_EQUAL(a, b) assertIsGreaterThanOrEqual(__FILE__,__LINE__, a, b)
