@@ -26,6 +26,42 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>
 
         bool Start();
         bool Stop();
+
+        static std::vector<float> ReadCoeffsFromFile(char* filename)
+        {
+            std::vector<float> coeffs;
+
+            std::ifstream coeffsFile(filename);
+            if (coeffsFile.is_open())
+            {
+                try
+                {
+                    float a;
+                    while (coeffsFile >> a)
+                    {
+                        coeffs.push_back(a);
+                    }
+                }
+                catch( std::exception* ex )
+                {
+                    HError("Caught exception while reading coefficients file: %s", ex->what());
+                    throw new HFilterInitializationException("Exception while reading coefficients from file");
+                }
+                catch( ... )
+                {
+                    HError("Caught unknown exception while reading coefficients file");
+                    throw new HFilterInitializationException("Exception while reading coefficients from file");
+                }
+            }
+            else
+            {
+                HError("No such file %s", filename);
+                throw new HFilterInitializationException("Coefficients file not found");
+            }
+            coeffsFile.close();
+            return coeffs;
+        }
+
 };
 
 #endif

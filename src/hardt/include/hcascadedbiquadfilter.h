@@ -29,6 +29,19 @@ class HCascadedBiQuadFilter: public HReader<T>, public HWriter<T>
         bool Start();
         bool Stop();
 
+        static HCascadedBiQuadFilter<T>* Create(HWriter<T>* writer, size_t blocksize, char* coeffsFilename)
+        {
+            std::vector<float> coeffs = HFilter<T>::ReadCoeffsFromFile(coeffsFilename);
+
+            return new HCascadedBiQuadFilter<T>(writer, coeffs.data(), coeffs.size(), blocksize);
+        }
+
+        static HCascadedBiQuadFilter<T>* Create(HReader<T>* reader, size_t blocksize, char* coeffsFilename)
+        {
+            std::vector<float> coeffs = HFilter<T>::ReadCoeffsFromFile(coeffsFilename);
+
+            return new HCascadedBiQuadFilter<T>(reader, coeffs.data(), coeffs.size(), blocksize);
+        }
 };
 
 #endif

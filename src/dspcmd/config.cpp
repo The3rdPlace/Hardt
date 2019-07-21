@@ -99,6 +99,11 @@ bool parseArguments(int argc, char** argv)
             Config.Frequency = argIntCmp(argv[argNo], "-hm", argv[argNo + 1], Config.Frequency);
             Config.FCutOff = argIntCmp(argv[argNo], "-hm", argv[argNo + 2], Config.FCutOff);
 
+            Config.IsBiQuadCascadeSpectrum = argBoolCmp(argv[argNo], "-bqc", Config.IsBiQuadCascadeSpectrum);
+            Config.FilterCoeffs = argCharCmp(argv[argNo], "-bqc", argv[argNo + 1], Config.FilterCoeffs);
+
+            Config.IsBiQuadCascade = argBoolCmp(argv[argNo], "-bqct", Config.IsBiQuadCascade);
+            Config.FilterCoeffs = argCharCmp(argv[argNo], "-bqct", argv[argNo + 1], Config.FilterCoeffs);
         }
 
         if( argNo < argc - 2 )
@@ -220,6 +225,10 @@ bool parseArguments(int argc, char** argv)
 
             std::cout << "-bq name Fcutoff Q G       Create biquad filter, dump coefficients and run sweep" << std::endl;
             std::cout << "-bgt name Fcutoff Q G      Create biquad filter and run file through the filter" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "-bqc coeffs                Create biquad filter, dump coefficients and run sweep" << std::endl;
+            std::cout << "-bgct coeffs               Create biquad filter and run file through the filter" << std::endl;
             std::cout << std::endl;
 
             std::cout << "-g gain                    Run file through gain filter" << std::endl;

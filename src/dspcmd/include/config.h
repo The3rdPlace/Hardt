@@ -33,6 +33,8 @@ struct DspCmdConfig
     bool IsHum = false;
     bool IsHumSpectrum = false;
     bool IsGoertzl = false;
+    bool IsBiQuadCascade = false;
+    bool IsBiQuadCascadeSpectrum = false;
 
     char* InFileFormat = NULL;
     char* OutFileFormat = NULL;
