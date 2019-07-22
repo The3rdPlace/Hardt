@@ -32,7 +32,7 @@ Include api function declarations
 #include "hchunkwriter.cpp"
 #include "hconverter.h"
 #include "houtput.h"
-#include "hnullwriter.cpp"
+#include "hnullwriter.h"
 #include "hsoundcardreader.cpp"
 #include "hfilewriter.cpp"
 #include "hfilereader.cpp"
@@ -73,5 +73,6 @@ Include api function declarations
 #include "hgoertzelfilter.cpp"
 #include "hfade.cpp"
 #include "hsplitter.cpp"
+#include "hsignallevel.cpp"
 
 #endif

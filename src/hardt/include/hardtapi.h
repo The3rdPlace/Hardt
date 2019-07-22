@@ -61,5 +61,6 @@
 #include "hgoertzelfilter.h"
 #include "hfade.h"
 #include "hsplitter.h"
+#include "hsignallevel.h"
 
 #endif

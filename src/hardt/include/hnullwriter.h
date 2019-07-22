@@ -6,7 +6,10 @@ class HNullWriter : public HWriter<T>
 {
     public:
 
-        int Write(T* src, size_t blocksize);
+        int Write(T* src, size_t blocksize)
+        {
+            return blocksize;
+        }
 };
 
 #endif

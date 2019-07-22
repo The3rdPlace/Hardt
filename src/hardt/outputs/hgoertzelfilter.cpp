@@ -51,8 +51,6 @@ void HGoertzelFilter<T>::Init()
 
     // For phase calculations
     rad2degr = (float) 180 / M_PI;
-
-    //_tempResult = 0;
 }
 
 template <class T>
