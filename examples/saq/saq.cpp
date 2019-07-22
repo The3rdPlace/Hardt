@@ -27,6 +27,12 @@
 
 #include "hardtapi.h"
 
+int callback(HSignalLevelResult* result, size_t length)
+{
+    std::cout << "\b\b\bS " << result->S << std::endl;
+    return length;
+}
+
 int main(int argc, char** argv)
 {
     // Initialize the Hardt toolkit.
@@ -35,10 +41,11 @@ int main(int argc, char** argv)
 
     // Show application name and and Hardt version.
     // This is not needed, just to have something on the screen
-	std::cout << "saq: using Hardt " + getversion() << std::endl ;
+	std::cout << "saq: using Hardt " + getversion() << std::endl;
+    std::cout << "S 0";
 
     // Check that we got the required input parameters
-    if( argc < 4 )
+    if( argc < 3 )
     {
         std::cout << "Usage: saq 'filename' 'output-sound-device-number'" << std::endl;
         std::cout << "Use 'dspcmd -a' to get a list of your sound device numbers" << std::endl;
@@ -111,11 +118,19 @@ int main(int argc, char** argv)
     // coming from filters that needs to stabilize
     HFade<int16_t> fade(soundcard.Writer(), 0 , 1000, true, BLOCKSIZE);
 
+    // Create a signal level writer so that we can show the current signal level
+    auto wr = HCustomWriter<HSignalLevelResult>::Create(callback);
+    HSignalLevel<int16_t> level(wr, 10);
+
+    // Create a splitter that splits the samples into two streams,
+    // one goes to the soundcard and the other to the signallevel indicator
+    HSplitter<int16_t> splitter(&fade, &level);
+
     // -------------------------------------------------------------------------------------
     // Create a processor that reads from the readers-chain and writes to the writers-chain
 
     // Read from last gain boost and write to the soundcard. Runs until EOF
     bool terminated = false;
-    HStreamProcessor<int16_t> processor(&fade, volume.Reader(), BLOCKSIZE, &terminated);
+    HStreamProcessor<int16_t> processor(&splitter, volume.Reader(), BLOCKSIZE, &terminated);
     processor.Run();
 }
