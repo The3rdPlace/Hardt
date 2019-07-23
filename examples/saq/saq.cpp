@@ -29,7 +29,7 @@
 
 int callback(HSignalLevelResult* result, size_t length)
 {
-    std::cout << "\b\b\bS " << result->S << std::endl;
+    std::cout << "\b\b\bS " << result->S << std::flush;
     return length;
 }
 
@@ -120,10 +120,10 @@ int main(int argc, char** argv)
 
     // Create a signal level writer so that we can show the current signal level
     auto wr = HCustomWriter<HSignalLevelResult>::Create(callback);
-    HSignalLevel<int16_t> level(wr, 10);
+    HSignalLevel<int16_t> level(wr, 2);
 
     // Create a splitter that splits the samples into two streams,
-    // one goes to the soundcard and the other to the signallevel indicator
+    // one goes to the fader->soundcard and the other to the signallevel indicator
     HSplitter<int16_t> splitter(&fade, &level);
 
     // -------------------------------------------------------------------------------------
