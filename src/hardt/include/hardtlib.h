@@ -74,5 +74,6 @@ Include api function declarations
 #include "hfade.cpp"
 #include "hsplitter.cpp"
 #include "hsignallevel.cpp"
+#include "hdemux.cpp"
 
 #endif

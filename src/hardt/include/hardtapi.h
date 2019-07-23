@@ -62,5 +62,6 @@
 #include "hfade.h"
 #include "hsplitter.h"
 #include "hsignallevel.h"
+#include "hdemux.h"
 
 #endif

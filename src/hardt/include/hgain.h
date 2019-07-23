@@ -2,7 +2,7 @@
 #define __HGAIN_H
 
 template <class T>
-class HGain : public HFilter<T> //public HWriter<T>, public HReader<T>
+class HGain : public HFilter<T>
 {
     private:
 
