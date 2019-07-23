@@ -24,7 +24,9 @@ int HSignalLevel<T>::Output(T* src, size_t blocksize)
         return blocksize;
     }
 
-    // Analyze block
+    // Analyze block - disable warnings about using abs() for unsigned types
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wabsolute-value"
     T max = 0;
     for( int i = 0; i < blocksize; i++ )
     {
@@ -33,6 +35,7 @@ int HSignalLevel<T>::Output(T* src, size_t blocksize)
             max = abs(src[i]);
         }
     }
+    #pragma GCC diagnostic pop
 
     // Store collected information
     _result.Max = max;

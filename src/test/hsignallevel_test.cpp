@@ -236,7 +236,7 @@ class HSignalLevel_Test: public Test
             ASSERT_IS_EQUAL(Db, -6);
             ASSERT_IS_EQUAL(S, 8);
 
-            g.Calculate(1000, 32768, 0);
+            g.Calculate(1000, 32767, 0);
             g.Read(input, 1024);
             siglevel.Write(input, 1024);
             ASSERT_IS_EQUAL(Db, 0);
@@ -310,7 +310,7 @@ class HSignalLevel_Test: public Test
             ASSERT_IS_EQUAL(Db, -6);
             ASSERT_IS_EQUAL(S, 8);
 
-            g.Calculate(1000, 2147483648, 0);
+            g.Calculate(1000, 2147483647, 0);
             g.Read(input, 1024);
             siglevel.Write(input, 1024);
             ASSERT_IS_EQUAL(Db, 0);
