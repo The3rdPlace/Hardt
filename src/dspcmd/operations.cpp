@@ -115,8 +115,12 @@ int RunSignalGenerator()
     // Calculate how many blocks fit into 10 seconds
     unsigned long int blocks = (Config.Duration * Config.Rate) / Config.Blocksize;
 
+    // Generate a signal with half the maximum amplitude available
+    int amplitude = floor(std::numeric_limits<T>::max() / (std::numeric_limits<T>::is_signed ? 2 : 4));
+    HLog("Amplitude set to %d", amplitude);
+
     // Create and run the signalgenerator
-    HVfo<T> sg(Config.Rate, Config.Frequency, (T) 5000, Config.Phase);
+    HVfo<T> sg(Config.Rate, Config.Frequency, amplitude, Config.Phase);
     HStreamProcessor<T> proc(wr, &sg, Config.Blocksize, &terminated);
     proc.Run(blocks);
 

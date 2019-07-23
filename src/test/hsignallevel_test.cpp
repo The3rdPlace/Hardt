@@ -26,8 +26,6 @@ class HSignalLevel_Test: public Test
         int S;
         int callback(HSignalLevelResult* result, size_t length)
         {
-            std::cout << "DB " << result->Db << ", S " << result->S << std::endl;
-
             Db = result->Db;
             S = result->S;
 

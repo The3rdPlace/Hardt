@@ -6,6 +6,7 @@
 #include "hobject.h"
 #include "hreader.h"
 #include <math.h>
+#include <limits>
 
 template <class T>
 class HGenerator : public HReader<T>
@@ -19,6 +20,8 @@ class HGenerator : public HReader<T>
         H_SAMPLE_RATE _rate;
 
         float* _flot;
+
+        float _zero;
 
         void Init(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase);
 

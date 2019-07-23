@@ -5,9 +5,10 @@
 
 template <class T>
 HGenerator<T>::HGenerator(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase):
-    _lot(NULL)
+    _lot(NULL),
+    _zero(0)
 {
-    HLog("HGenerator(rate = %d, frequency = %d, phase = %f)", rate, frequency, phase);
+    HLog("HGenerator(rate = %d, frequency = %d, amplitude = %d, phase = %f)", rate, frequency, amplitude, phase);
     Init(rate, frequency, amplitude, phase);
 }
 
@@ -63,6 +64,13 @@ void HGenerator<T>::Init(H_SAMPLE_RATE rate, int frequency, T amplitude, float p
     _lot = new T[_lotSize];
     _flot = new float[_lotSize];
     HLog("Created lookup table of size %d (%d bytes)", _lotSize, _lotSize * sizeof(float));
+
+    // Handle unsigned datatype
+    if( !std::numeric_limits<T>::is_signed )
+    {
+        _zero = floor(std::numeric_limits<T>::max() / 2);
+        HLog("Unsigned datatype, zero adjust set to %f", _zero);
+    }
 
     Calculate(frequency, amplitude, phase);
 }
@@ -371,7 +379,7 @@ void HGenerator<T>::Calculate(int frequency, T amplitude, float phase)
 
     // Calculate stepsize in the lot
     _delta = (l / r) * f;
-    //HLog("Using delta = %f", _delta);
+    HLog("Using delta = %f", _delta);
 
     // Calculate Lot value at sample n=0 -> n = N-1
     for( int i = 0; i < _lotSize; i++ )
@@ -380,6 +388,9 @@ void HGenerator<T>::Calculate(int frequency, T amplitude, float phase)
         float n = i;
         float fact = 2 * M_PI * (n / l);
         float out = sin(fact + phase) * mag;
+
+        // Zero level adjust (unsigned types)
+        out += _zero;
 
         // Store the typed value
         _lot[i] = out;
