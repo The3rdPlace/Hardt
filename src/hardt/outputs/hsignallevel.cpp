@@ -37,6 +37,12 @@ int HSignalLevel<T>::Output(T* src, size_t blocksize)
     }
     #pragma GCC diagnostic pop
 
+    // Adjust max for unsigned types
+    if( !std::numeric_limits<T>::is_signed )
+    {
+        max -= floor(std::numeric_limits<T>::max() / 2);
+    }
+
     // Store collected information
     _result.Max = max;
 

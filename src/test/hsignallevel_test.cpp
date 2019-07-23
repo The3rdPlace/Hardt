@@ -34,7 +34,7 @@ class HSignalLevel_Test: public Test
 
         void test_signallevel_int8()
         {
-            // Signal, max amplitude = (+-) 100
+            // Signal
             HSineGenerator<int8_t> g(48000, 1000, 0);
             int8_t input[1024];
             g.Read(input, 1024);
@@ -102,9 +102,9 @@ class HSignalLevel_Test: public Test
 
         void test_signallevel_uint8()
         {
-            ASSERT_IGNORE("Generators does not handle uint8 correctly - enable this test when fixed");
+            //ASSERT_IGNORE("Generators does not handle uint8 correctly - enable this test when fixed");
 
-            // Signal, max amplitude = (+-) 100
+            // Signal
             HSineGenerator<uint8_t> g(48000, 1000, 0);
             uint8_t input[1024];
             g.Read(input, 1024);
@@ -172,7 +172,7 @@ class HSignalLevel_Test: public Test
 
         void test_signallevel_int16()
         {
-            // Signal, max amplitude = (+-) 100
+            // Signal
             HSineGenerator<int16_t> g(48000, 1000, 0);
             int16_t input[1024];
             g.Read(input, 1024);
@@ -245,7 +245,7 @@ class HSignalLevel_Test: public Test
 
         void test_signallevel_int32()
         {
-            // Signal, max amplitude = (+-) 100
+            // Signal
             HSineGenerator<int32_t> g(48000, 1000, 0);
             int32_t input[1024];
             g.Read(input, 1024);
