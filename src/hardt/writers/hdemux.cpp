@@ -12,7 +12,7 @@ HDeMux<T>::HDeMux( std::vector< HWriter<T>* > writers, size_t blocksize):
     _buffers = new T*[writers.size()];
     for( int i = 0; i < writers.size(); i++ )
     {
-        _buffers[i] = new T[blocksize / _writers.size()];
+        _buffers[i] = new T[blocksize / writers.size()];
     }
 }
 

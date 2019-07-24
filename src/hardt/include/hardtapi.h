@@ -63,5 +63,6 @@
 #include "hsplitter.h"
 #include "hsignallevel.h"
 #include "hdemux.h"
+#include "hmux.h"
 
 #endif

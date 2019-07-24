@@ -34,6 +34,7 @@ target_sources(hardt_test
 	    hsplitter_test.cpp
 	    hsignallevel_test.cpp
 	    hdemux_test.cpp
+	    hmux_test.cpp
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
