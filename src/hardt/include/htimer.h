@@ -1,6 +1,9 @@
 #ifndef __HTIMER_H
 #define __HTIMER_H
 
+/**
+    Timer that will wait to the given date and time
+*/
 class HTimer
 {
     private:
@@ -8,31 +11,52 @@ class HTimer
         time_t _start;
         time_t _stop;
 
-        time_t parseDateTime(char *datetime);
+        time_t ParseDateTime(char *datetime);
 
-        static char *asctime2(struct tm* tm);
+        static char *Asctime2(struct tm* tm);
 
         bool _active;
 
     public:
 
+        /**
+            Create a new timer
+        */
         HTimer();
 
+        /**
+            Create a new timer with a start date and time of NOW and a given stop date and time
+        */
         HTimer(char* stop);
 
+        /**
+            Create a new timer with a given start and stop date and time
+        */
         HTimer(char* start, char* stop);
 
+        /**
+            Create a new timer that waits for a given duration (seconds)
+        */
         HTimer(long duration)
         {
             _start = time(0);
             _stop = _start + duration;
         }
 
-        void setStart(char* datetime);
+        /**
+            Set a (new) start date and time
+        */
+        void SetStart(char* datetime);
 
-        void setStop(char* datetime);
+        /**
+            Set a (new) stop date and time
+        */
+        void SetStop(char* datetime);
 
-        long duration()
+        /**
+            Return the duration left before the timer continues
+        */
+        long Duration()
         {
             if( !_active )
             {
@@ -42,20 +66,32 @@ class HTimer
             return _stop - now;
         }
 
-        bool active()
+        /**
+            Returns true if the timer is currently active, thus would block in Wait()
+        */
+        bool Active()
         {
             time_t now = time(0);
             return _active && now > _start && now < _stop;
         }
 
-        void wait();
+        /**
+            Block untill the timer expires
+        */
+        void Wait();
 
-        time_t start()
+        /**
+            Return the current start date and time
+        */
+        time_t Start()
         {
             return _start;
         }
 
-        time_t stop()
+        /**
+            Return the current stop date and time
+        */
+        time_t Stop()
         {
             return _stop;
         }

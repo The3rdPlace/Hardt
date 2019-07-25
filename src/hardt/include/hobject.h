@@ -4,6 +4,13 @@
 #include "hmetrics.h"
 #include <string>
 
+/**
+    Base class for (almost) all Hardt types.
+
+    If you extend the Hardt framework by adding your own components,
+    then either inherit an existing Hardt component, or at the very least
+    this type.
+*/
 class HObject
 {
     public:

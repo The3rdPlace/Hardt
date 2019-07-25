@@ -9,14 +9,38 @@
 #include <sstream>
 #include <fstream>
 
+/**
+    Get the current version of Hardt
+*/
 std::string getversion();
 
+/**
+    Write a message to the logfile (or stdout)
+*/
 void HWriteLogMessage(std::string file, const char* fmt, ...);
+
+/**
+    Write a message to the errorlog (or stderr)
+*/
 void HWriteErrorMessage(std::string file, std::string line, const char* fmt, ...);
 
+/**
+    Shorthand alias for HWriteLogMessage
+*/
 #define HLog(fmt, ...) HWriteLogMessage(std::string(__FILE__), fmt,  ##__VA_ARGS__)
+
+/**
+    Shorthand alias for HWriteErrorMessage
+*/
 #define HError(fmt, ...) HWriteErrorMessage(std::string(__FILE__), std::to_string(__LINE__), fmt,  ##__VA_ARGS__)
 
+/**
+    Initialize the Hardt framework.
+    It is not absolutely mandatory that you call it, but since it, a.o., initializes logging,
+    your application will behave better when used.
+
+    Call HInit() as soon as you can in your app.
+*/
 void HInit(std::string logname, bool verbose = true);
 
 #endif

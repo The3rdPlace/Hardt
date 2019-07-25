@@ -69,12 +69,12 @@ bool parseArguments(int argc, char** argv)
 
             if( argBoolCmp(argv[argNo], "-start", false) )
             {
-                Config.Timer.setStart(argv[argNo + 1]);
+                Config.Timer.SetStart(argv[argNo + 1]);
             }
 
             if( argBoolCmp(argv[argNo], "-stop", false) )
             {
-                Config.Timer.setStop(argv[argNo + 1]);
+                Config.Timer.SetStop(argv[argNo + 1]);
             }
 
             Config.Average = argIntCmp(argv[argNo], "-avg", argv[argNo + 1], Config.Average);

@@ -53,9 +53,9 @@ int RunNetworkReaderClient()
     HNetworkProcessor<T> client(Config.Address, Config.Port, wr, Config.Blocksize, &terminated);
     try
     {
-        if( Config.Timer.duration() > 0 )
+        if( Config.Timer.Duration() > 0 )
         {
-            unsigned long int blocks = (Config.Timer.duration() * Config.Rate) / Config.Blocksize;
+            unsigned long int blocks = (Config.Timer.Duration() * Config.Rate) / Config.Blocksize;
             client.Run(blocks);
         }
         else
@@ -169,9 +169,9 @@ int RunFileRecorder()
 
     // Create processor
     HStreamProcessor<T> proc(wr, &rd, Config.Blocksize, &terminated);
-    if( Config.Timer.duration() > 0 )
+    if( Config.Timer.Duration() > 0 )
     {
-        unsigned long int blocks = (Config.Timer.duration() * Config.Rate) / Config.Blocksize;
+        unsigned long int blocks = (Config.Timer.Duration() * Config.Rate) / Config.Blocksize;
         proc.Run(blocks);
     }
     else
@@ -1292,13 +1292,13 @@ template <typename T>
 int RunOperation()
 {
     // Wait for start time ?
-    if( Config.Timer.duration() > 0 )
+    if( Config.Timer.Duration() > 0 )
     {
-        time_t stamp = Config.Timer.start();
+        time_t stamp = Config.Timer.Start();
         struct tm* timeInfo = localtime( &stamp );
         std::cout << "Operation starts at " << asctime(timeInfo) << std::endl;
-        Config.Timer.wait();
-        stamp = Config.Timer.stop();
+        Config.Timer.Wait();
+        stamp = Config.Timer.Stop();
         timeInfo = localtime( &stamp );
         std::cout << "Operation stops at " << asctime(timeInfo) << std::endl;
     }

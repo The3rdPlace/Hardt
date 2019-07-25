@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <exception>
 
+/**
+    Base class for specific exceptions thrown by any Hardt class.
+    This type can not be instantianted directly.
+*/
 class HException : public std::exception
 {
     protected:
@@ -17,7 +21,7 @@ class HException : public std::exception
         const char* what() const throw();
 };
 
-/*
+/**
     Thrown by constructors if the object could not be initialized
 
     Constructor:
@@ -30,7 +34,7 @@ class HInitializationException : public HException
         HInitializationException(const char* reason);
 };
 
-/*
+/**
     Thrown if a network connection fails
 
     Constructor:
@@ -43,7 +47,7 @@ class HNetworkException : public HException
         HNetworkException(const char* reason);
 };
 
-/*
+/**
     Thrown if there is errors during file i/o
 
     Constructor:
@@ -56,7 +60,7 @@ class HFileIOException : public HException
         HFileIOException(const char* reason);
 };
 
-/*
+/**
     Thrown if there is errors during audio i/o
 
     Constructor:
@@ -69,7 +73,7 @@ class HAudioIOException : public HException
         HAudioIOException(const char* reason);
 };
 
-/*
+/**
     Thrown by functions if they have not been implemneted
 
     Constructor:
@@ -82,7 +86,7 @@ class HNotImplementedException : public HException
         HNotImplementedException(const char* reason = "Not implemented");
 };
 
-/*
+/**
     Thrown if there is errors during writer i/o
 
     Constructor:
@@ -95,7 +99,7 @@ class HWriterIOException : public HException
         HWriterIOException(const char* reason);
 };
 
-/*
+/**
     Thrown if there is errors during converter i/o
 
     Constructor:
@@ -108,7 +112,7 @@ class HConverterIOException : public HException
         HConverterIOException(const char* reason);
 };
 
-/*
+/**
     Thrown if there is errors during filter i/o
 
     Constructor:
@@ -121,7 +125,7 @@ class HFilterIOException : public HException
         HFilterIOException(const char* reason);
 };
 
-/*
+/**
     Thrown if there is errors during filter initialization
 
     Constructor:

@@ -21,18 +21,18 @@ HTimer::HTimer(char* stop):
     _active(true)
 {
     _start = time(0);
-    _stop = parseDateTime(stop);
+    _stop = ParseDateTime(stop);
 }
 
 HTimer::HTimer(char* start, char* stop):
     _active(true)
 {
     // Start value
-    _start = parseDateTime(start);
-    _stop = parseDateTime(stop);
+    _start = ParseDateTime(start);
+    _stop = ParseDateTime(stop);
 }
 
-time_t HTimer::parseDateTime(char *datetime)
+time_t HTimer::ParseDateTime(char *datetime)
 {
     // Check that we know the datetime format
     if( strlen(datetime) != 5 && strlen(datetime) != 16 )
@@ -50,27 +50,27 @@ time_t HTimer::parseDateTime(char *datetime)
     if (!strptime(datetime, strlen(datetime) == 5 ? "%H:%M" : "%Y-%m-%d %H:%M", tm)) {
         HError("Incorrect datetime string %s", datetime);
     }
-    HLog("Datetime was %s, parsed time is %s", datetime, HTimer::asctime2(tm));
+    HLog("Datetime was %s, parsed time is %s", datetime, HTimer::Asctime2(tm));
 
     // Return timestamp
     time_t result = mktime(tm);
-    HLog("Returned timestamp is %s", HTimer::asctime2(localtime(&result)));
+    HLog("Returned timestamp is %s", HTimer::Asctime2(localtime(&result)));
     return result;
 }
 
-void HTimer::setStart(char *datetime)
+void HTimer::SetStart(char *datetime)
 {
-    _start = parseDateTime(datetime);
+    _start = ParseDateTime(datetime);
     _active = true;
 }
 
-void HTimer::setStop(char *datetime)
+void HTimer::SetStop(char *datetime)
 {
-    _stop = parseDateTime(datetime);
+    _stop = ParseDateTime(datetime);
     _active = true;
 }
 
-void HTimer::wait()
+void HTimer::Wait()
 {
     if( !_active )
     {
@@ -81,7 +81,7 @@ void HTimer::wait()
     if( time(0) < _start )
     {
         struct tm* tm = localtime(&_start);
-        HLog("Waiting untill %s", HTimer::asctime2(tm));
+        HLog("Waiting untill %s", HTimer::Asctime2(tm));
 
         std::chrono::seconds sleepDuration(1);
         while( _active && time(0) < _start )
@@ -90,7 +90,7 @@ void HTimer::wait()
         }
 
         tm = localtime(&_stop);
-        HLog("Wait finished, operation should run untill %s", HTimer::asctime2(tm));
+        HLog("Wait finished, operation should run untill %s", HTimer::Asctime2(tm));
     }
     else if( time(0) > _stop )
     {
@@ -102,7 +102,7 @@ void HTimer::wait()
     }
 }
 
-char *HTimer::asctime2(struct tm* tm)
+char *HTimer::Asctime2(struct tm* tm)
 {
     char *time = asctime(tm);
     #ifdef _WIN32
