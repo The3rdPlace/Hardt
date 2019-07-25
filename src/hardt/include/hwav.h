@@ -12,6 +12,15 @@
 #include <string>
 #include <unistd.h>
 
+/**
+    This class contains the basic description of a wav file, a generic header
+    and functions to map between an array of bytes and specific property names.
+
+    Please be aware that the current wav implementation only supports 1 and 2 channels
+    with 16 bit data.
+
+    You should never have to use this class directly!
+*/
 class HWav
 {
     private:
