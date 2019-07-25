@@ -6,7 +6,8 @@
 template <class T>
 HFirFilter<T>::HFirFilter(HWriter<T>* writer, float* coefficients, int length, size_t blocksize):
     HFilter<T>(writer, blocksize),
-    _length(length)
+    _length(length),
+    _firstLength(length)
 {
     HLog("HFirFilter(HWriter*)");
     Init(coefficients, length);
@@ -15,7 +16,8 @@ HFirFilter<T>::HFirFilter(HWriter<T>* writer, float* coefficients, int length, s
 template <class T>
 HFirFilter<T>::HFirFilter(HReader<T>* reader, float* coefficients, int length, size_t blocksize):
     HFilter<T>(reader, blocksize),
-    _length(length)
+    _length(length),
+    _firstLength(length)
 {
     HLog("HFirFilter(HReader*)");
     Init(coefficients, length);
@@ -27,7 +29,7 @@ void HFirFilter<T>::Init(float* coefficients, int length)
     HLog("Init(float*, %d)", length);
 
     _coefficients = new float[length];
-    memcpy(_coefficients, coefficients, length * sizeof(float));
+    SetCoefficients(coefficients, length);
     HLog("Copied filter coefficients");
 
     _taps = new T[length];
@@ -68,6 +70,20 @@ void HFirFilter<T>::Filter(T* src, T* dest, size_t blocksize)
         // Store result for 1 sample
         dest[i] = result;
     }
+}
+
+template <class T>
+void HFirFilter<T>::SetCoefficients(float* coefficients, int length)
+{
+    // Sanity check
+    if( length != _firstLength )
+    {
+        HError("It is not possible to assign a set of coefficients of different length than the length used at construction (%d)", _firstLength);
+        throw new HFilterInitializationException("Length of coefficients differs from construction length");
+    }
+
+    // Copy coefficients
+    memcpy(_coefficients, coefficients, length * sizeof(float));
 }
 
 /********************************************************************
@@ -137,5 +153,18 @@ void HFirFilter<int16_t>::Filter(int16_t* src, int16_t* dest, size_t blocksize);
 
 template
 void HFirFilter<int32_t>::Filter(int32_t* src, int32_t* dest, size_t blocksize);
+
+// SetCoefficients
+template
+void HFirFilter<int8_t>::SetCoefficients(float* coefficients, int length);
+
+template
+void HFirFilter<uint8_t>::SetCoefficients(float* coefficients, int length);
+
+template
+void HFirFilter<int16_t>::SetCoefficients(float* coefficients, int length);
+
+template
+void HFirFilter<int32_t>::SetCoefficients(float* coefficients, int length);
 
 #endif

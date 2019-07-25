@@ -11,6 +11,7 @@ class HFirFilter : public HFilter<T>
         float* _coefficients;
         int _length;
         T* _taps;
+        int _firstLength;
 
         void Init(float* coefficients, int length);
 
@@ -22,6 +23,8 @@ class HFirFilter : public HFilter<T>
         ~HFirFilter();
 
         void Filter(T* src, T* dest, size_t blocksize);
+
+        void SetCoefficients(float* coefficients, int length);
 
         std::vector<float> GetCoefficients()
         {

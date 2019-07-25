@@ -13,6 +13,7 @@ class HCascadedBiQuadFilter: public HReader<T>, public HWriter<T>
 
         HIirFilter<T>** _filters;
         int _filterCount;
+        int _firstLength;
 
         void Init(float* coefficients, int length);
 
@@ -28,6 +29,8 @@ class HCascadedBiQuadFilter: public HReader<T>, public HWriter<T>
 
         bool Start();
         bool Stop();
+
+        void SetCoefficients(float* coefficients, int length);
 
         static HCascadedBiQuadFilter<T>* Create(HWriter<T>* writer, size_t blocksize, char* coeffsFilename)
         {

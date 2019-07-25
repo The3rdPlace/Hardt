@@ -6,7 +6,8 @@
 template <class T>
 HIirFilter<T>::HIirFilter(HWriter<T>* writer, float* coefficients, int length, size_t blocksize):
     HFilter<T>(writer, blocksize),
-    _length(length / 2)
+    _length(length / 2),
+    _firstLength(length)
 {
     HLog("HIirFilter(HWriter*)");
     Init(coefficients, length);
@@ -15,7 +16,8 @@ HIirFilter<T>::HIirFilter(HWriter<T>* writer, float* coefficients, int length, s
 template <class T>
 HIirFilter<T>::HIirFilter(HReader<T>* reader, float* coefficients, int length, size_t blocksize):
     HFilter<T>(reader, blocksize),
-    _length(length / 2)
+    _length(length / 2),
+    _firstLength(length)
 {
     HLog("HIirFilter(HReader*)");
     Init(coefficients, length);
@@ -40,8 +42,7 @@ void HIirFilter<T>::Init(float* coefficients, int length)
     // already, so that the filter need only do a summation !!
     _aCoefficients = new float[_length];
     _bCoefficients = new float[_length + 1];
-    memcpy(_bCoefficients, coefficients, (_length + 1) * sizeof(float));
-    memcpy(_aCoefficients, &coefficients[_length + 1], _length * sizeof(float));
+    SetCoefficients(coefficients, length);
     HLog("Copied filter coefficients");
 
     _taps = new T[_length + 1];
@@ -104,6 +105,21 @@ void HIirFilter<T>::Filter(T* src, T* dest, size_t blocksize)
         // Store result for 1 sample
         dest[i] = result;
     }
+}
+
+template <class T>
+void HIirFilter<T>::SetCoefficients(float* coefficients, int length)
+{
+    // Sanity check
+    if( length != _firstLength )
+    {
+        HError("It is not possible to assign a set of coefficients of different length than the length used at construction (%d)", _firstLength);
+        throw new HFilterInitializationException("Length of coefficients differs from construction length");
+    }
+
+    // Copy coefficients
+    memcpy(_bCoefficients, coefficients, (_length + 1) * sizeof(float));
+    memcpy(_aCoefficients, &coefficients[_length + 1], _length * sizeof(float));
 }
 
 /********************************************************************
@@ -173,5 +189,18 @@ void HIirFilter<int16_t>::Filter(int16_t* src, int16_t* dest, size_t blocksize);
 
 template
 void HIirFilter<int32_t>::Filter(int32_t* src, int32_t* dest, size_t blocksize);
+
+// SetCoefficients
+template
+void HIirFilter<int8_t>::SetCoefficients(float* coefficients, int length);
+
+template
+void HIirFilter<uint8_t>::SetCoefficients(float* coefficients, int length);
+
+template
+void HIirFilter<int16_t>::SetCoefficients(float* coefficients, int length);
+
+template
+void HIirFilter<int32_t>::SetCoefficients(float* coefficients, int length);
 
 #endif

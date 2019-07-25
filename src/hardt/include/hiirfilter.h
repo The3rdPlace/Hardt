@@ -11,6 +11,7 @@ class HIirFilter : public HFilter<T>
         float* _aCoefficients;
         float* _bCoefficients;
         int _length;
+        int _firstLength;
         T* _taps;
         float* _output;
 
@@ -26,6 +27,8 @@ class HIirFilter : public HFilter<T>
         ~HIirFilter();
 
         virtual void Filter(T* src, T* dest, size_t blocksize);
+
+        void SetCoefficients(float* coefficients, int length);
 
         std::vector<float> GetCoefficients()
         {

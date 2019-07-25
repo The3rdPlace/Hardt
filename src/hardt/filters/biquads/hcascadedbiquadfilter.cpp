@@ -7,7 +7,8 @@ template <class T>
 HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(HWriter<T>* writer, float* coefficients, int length, size_t blocksize):
     _writer(writer),
     _reader(NULL),
-    _blocksize(blocksize)
+    _blocksize(blocksize),
+    _firstLength(length)
 {
     HLog("HCascadedBiQuadFilter(HWriter*)");
     if( length % 5 != 0 )
@@ -22,7 +23,8 @@ template <class T>
 HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(HReader<T>* reader, float* coefficients, int length, size_t blocksize):
     _writer(NULL),
     _reader(reader),
-    _blocksize(blocksize)
+    _blocksize(blocksize),
+    _firstLength(length)
 {
     HLog("HCascadedBiQuadFilter(HReader*)");
     if( length % 5 != 0 )
@@ -146,6 +148,22 @@ bool HCascadedBiQuadFilter<T>::Stop()
     return false;
 }
 
+template <class T>
+void HCascadedBiQuadFilter<T>::SetCoefficients(float* coefficients, int length)
+{
+    // Sanity check
+    if( length != _firstLength )
+    {
+        HError("It is not possible to assign a set of coefficients of different length than the length used at construction (%d)", _firstLength);
+        throw new HFilterInitializationException("Length of coefficients differs from construction length");
+    }
+
+    for( int i = 0; i < _filterCount; i++ )
+    {
+        _filters[i]->SetCoefficients(&coefficients[i * 5], 5);
+    }
+}
+
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
@@ -239,5 +257,18 @@ bool HCascadedBiQuadFilter<int16_t>::Stop();
 
 template
 bool HCascadedBiQuadFilter<int32_t>::Stop();
+
+// SetCoefficients()
+template
+void HCascadedBiQuadFilter<int8_t>::SetCoefficients(float* coefficients, int length);
+
+template
+void HCascadedBiQuadFilter<uint8_t>::SetCoefficients(float* coefficients, int length);
+
+template
+void HCascadedBiQuadFilter<int16_t>::SetCoefficients(float* coefficients, int length);
+
+template
+void HCascadedBiQuadFilter<int32_t>::SetCoefficients(float* coefficients, int length);
 
 #endif
