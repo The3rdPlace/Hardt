@@ -3,6 +3,9 @@
 
 #include <complex>
 
+/**
+    Holds the result of a number of dfft's
+*/
 struct HFftResults
 {
     double* Spectrum;
@@ -10,6 +13,11 @@ struct HFftResults
     int Size;
 };
 
+/**
+    Calculate a number of dfft's, if applicable then average the spectrum over
+    the number of dfft's, then write the calculated spectrum results to the
+    given writer (usually a HCustomWRiter)
+*/
 template <class T>
 class HFft : public HOutput<T, HFftResults>
 {

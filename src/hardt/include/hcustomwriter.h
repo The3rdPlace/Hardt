@@ -3,6 +3,24 @@
 
 #include <functional>
 
+/**
+    Provide a HWriter interface by wrapping a call to a function defined
+    by your code.
+
+    You must provide a std::function<T> object initialized with a function
+    with the signature 'int func(T* src, size_t blocksize)' where T is
+    the base integer type in use.
+
+    The easiest way to create a customwriter is to use one of the factory methods
+    Create(). They can either take a function pointer to a static (or global)
+    function, or a function pointer to a member function in a given object.
+
+    When used as a writer, each call to Write() will the call your local
+    'function()' with the input sample buffer and the number of input samples.
+    Your custom writer function must return the number of samples written
+    (or consumed).
+*/
+
 template <class T>
 class HCustomWriter : public HWriter<T>
 {

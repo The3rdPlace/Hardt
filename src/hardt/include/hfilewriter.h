@@ -4,6 +4,9 @@
 #include <stdio.h>
 #include <fstream>
 
+/**
+    Write to a file
+*/
 template <class T>
 class HFileWriter : public HWriter<T>
 {

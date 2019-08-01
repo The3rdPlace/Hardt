@@ -1,6 +1,14 @@
 #ifndef __HCOMBFILTER_H
 #define __HCOMBFILTER_H
 
+/**
+    Generic combfilter.
+
+    Given the sampling rate, a frequency and the alpha value,
+    creates a combfilter with notches or peaks at [freq., 2*freq, 3*freq, ... ]
+
+    The alpha value controls if the filter creates notches or peaks.
+*/
 template <class T>
 class HCombFilter : public HFilter<T>
 {

@@ -1,6 +1,24 @@
 #ifndef __HCASCADEDBIQUADFACTORY_H
 #define __HCASCADEDBIQUADFACTORY_H
 
+/**
+    A generic cascaded biquad filter (a number of biquads
+    cascaded efter each other).
+
+    Given a set of coefficients, usually calculated by a
+    filterdesign tool - but they can be taken from one or
+    several generic biquads (HHighpassBiQuad, HNotchBiQuad, etc.).
+
+    The parameters must be provided in the order:
+    b0,1  b1,1  b2,1  a1,1  a2,1
+    b0,2  b1,2  b2,2  a1,2  a2,2
+    b0,...  b1,...  b2,...  a1,...  a2,...
+    b0,N  b1,N  b2,N  a1,N  a2,N
+
+    The coefficients can either be defined as an array in the source code, or
+    come from a file - use the factory method Create() to read such coefficients.
+    (this is practical when you are finetuning a filter)
+*/
 template <class T>
 class HCascadedBiQuadFilter: public HReader<T>, public HWriter<T>
 {

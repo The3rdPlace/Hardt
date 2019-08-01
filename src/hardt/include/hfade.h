@@ -1,6 +1,10 @@
 #ifndef __HFADE_H
 #define __HFADE_H
 
+/**
+    Provides a component that will fade the signal level up or down
+    over a specified number of sample blocks.
+*/
 template <class T>
 class HFade : public HGain<T>
 {

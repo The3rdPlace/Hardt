@@ -1,12 +1,24 @@
 #ifndef __HGOERTZELFILTER_H
 #define __HGOERTZELFILTER_H
 
+/**
+    Holds the result of a single or more Goertzl filter
+    calculations over a set of samples.
+*/
 struct HGoertzelFilterResult
 {
     int Magnitude;
     int Phase;
 };
 
+/**
+    Calculate one or more Goertzl filter results over a set
+    of samples.
+
+    When the requested number of calculations has been performed,
+    the result object is written to the provided HWriter
+    (usualy a HCustomWriter)
+*/
 template <class T>
 class HGoertzelFilter : public HOutput<T, HGoertzelFilterResult>
 {

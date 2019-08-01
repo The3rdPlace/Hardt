@@ -1,6 +1,9 @@
 #ifndef __HGAIN_H
 #define __HGAIN_H
 
+/**
+    A filter providing gain (or attenuation)
+*/
 template <class T>
 class HGain : public HFilter<T>
 {

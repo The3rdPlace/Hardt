@@ -1,6 +1,16 @@
 #ifndef __HLOWSHELVINGBIQUAD_H
 #define __HLOWSHELVINGBIQUAD_H
 
+/**
+    Calculate the normalized coefficients for a generic low shelving biquad filter.
+
+    Given the required cutoff frequency, the sampling frequency and
+    the required quality and passband gain, calculates the coefficients
+    of a 2. order (biquad) IIR filter.
+
+    This is not a filter - use this type as the generic parameter BIQUAD
+    when creating a HBiQuadFilter.
+*/
 template <class T>
 class HLowShelvingBiQuad : public HBiQuad<T>
 {

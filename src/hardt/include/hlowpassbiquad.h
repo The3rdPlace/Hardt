@@ -1,6 +1,16 @@
 #ifndef __HLOWPASSBIQUAD_H
 #define __HLOWPASSBIQUAD_H
 
+/**
+    Calculate the normalized coefficients for a generic lowpass biquad filter.
+
+    Given the required cutoff frequency, the sampling frequency and
+    the required quality and passband gain, calculates the coefficients
+    of a 2. order (biquad) IIR filter.
+
+    This is not a filter - use this type as the generic parameter BIQUAD
+    when creating a HBiQuadFilter.
+*/
 template <class T>
 class HLowpassBiQuad : public HBiQuad<T>
 {

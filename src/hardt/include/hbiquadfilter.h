@@ -1,6 +1,12 @@
 #ifndef __HBIQUADFILTER_H
 #define __HBIQUADFILTER_H
 
+/**
+    A generic biquad filter. When created, give the
+    wanted biquad type (HHighpassBiquad, HLowpassBiQuad, etc.) and the base
+    datatype. Coefficients will be calculated by the specific biquad
+    implementation and used to initialize a 2. order IIR (biquad) filter.
+*/
 template <class BIQUAD, class T>
 class HBiQuadFilter: public HIirFilter<T>
 {

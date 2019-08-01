@@ -1,6 +1,13 @@
 #ifndef __HCHUNKWRITER_H
 #define __HCHUNKWRITER_H
 
+/**
+    Takes a block of samples and writes it to the next writer in smaller
+    chunks.
+
+    The chunksize must be an integral part of the incomming blocksize.
+    Ex: Write(data, 4096)  ==>  Write(data, 1024) + Write(data+1024, 1024) + ...
+*/
 template <class T>
 class HChunkWriter : public HWriter<T>
 {

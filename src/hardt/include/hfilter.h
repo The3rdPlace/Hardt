@@ -1,6 +1,13 @@
 #ifndef __HFILTER_H
 #define __HFILTER_H
 
+/**
+    Base class for filter implementations.
+    This class defines a pure virtual method, Filter(), which must be
+    implemented by classes inheriting this class.
+
+    The constructur is protected, this class cannot be instantianted directly.
+*/
 template <class T>
 class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>
 {
@@ -12,10 +19,12 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>
         int _blocksize;
         T* _buffer;
 
-    public:
+    protected:
 
         HFilter(HWriter<T>* writer, size_t blocksize);
         HFilter(HReader<T>* reader, size_t blocksize);
+
+    public:
 
         ~HFilter();
 
@@ -26,6 +35,8 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>
 
         bool Start();
         bool Stop();
+
+    public:
 
         static std::vector<float> ReadCoeffsFromFile(char* filename)
         {

@@ -3,6 +3,15 @@
 
 #include <fstream>
 
+/**
+    A generic FIR-type filter.
+
+    When created, a list of coefficients must be provided.
+    The coefficients is expected to be the normalized and
+    scaled coefficients.
+
+    Coefficients must be provided in the order a0, ..., aN
+*/
 template <class T>
 class HFirFilter : public HFilter<T>
 {

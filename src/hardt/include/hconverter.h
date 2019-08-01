@@ -1,10 +1,12 @@
 #ifndef __HCONVERTER_H
 #define __HCONVERTER_H
 
-// Note: This class is implemented fully in this header to allow any
-//       Tin <==> Tout conversion to be defined without the need for
-//       a huge number of explicisit instantiations
+/**
+    Base class for Converters that convert one type to another.
 
+    This class can not be instantiated directly but must be
+    inherited and the pure virtual function Convert() implemented.
+*/
 template <class Tin, class Tout>
 class HConverter : public HReader<Tout>, HWriter<Tin>
 {
@@ -29,7 +31,7 @@ class HConverter : public HReader<Tout>, HWriter<Tin>
             return (_reader != NULL ?_reader->Stop() : true) && (_writer != NULL ?_writer->Stop() : true);
         }
 
-    public:
+    protected:
 
         HConverter(HReader<Tin>* reader, size_t blocksize):
             _reader(reader),
@@ -46,6 +48,8 @@ class HConverter : public HReader<Tout>, HWriter<Tin>
         {
             _output = new Tout[blocksize];
         }
+
+    public:
 
         ~HConverter()
         {

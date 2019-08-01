@@ -8,6 +8,11 @@
 #include <math.h>
 #include <limits>
 
+/**
+    Base class for the signal generators.
+
+    If you need to write a special generator, inherit this class.
+*/
 template <class T>
 class HGenerator : public HReader<T>
 {
