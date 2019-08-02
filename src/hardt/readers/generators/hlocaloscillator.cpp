@@ -5,7 +5,7 @@
 
 template <class T>
 HLocalOscillator<T>::HLocalOscillator(H_SAMPLE_RATE rate, int frequency):
-    HGenerator<T>::HGenerator(rate, frequency, 1, M_PI / 2)
+    HVfo<T>::HVfo(rate, frequency, 1, M_PI / 2)
 {}
 
 /********************************************************************

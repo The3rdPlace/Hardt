@@ -3,10 +3,6 @@
 
 #include "hstreamprocessor.h"
 
-/********************************************************************
-Class implementation
-********************************************************************/
-
 template <class T>
 HStreamProcessor<T>::HStreamProcessor(HWriter<T>* writer, HReader<T>* reader, int blocksize, bool* terminationToken):
     HProcessor<T>(writer, reader, blocksize, terminationToken)

@@ -6,6 +6,16 @@
 #include "hnetworkreader.h"
 #include "hnetworkwriter.h"
 
+/**
+    A network enabled processor.
+
+    The processor will either read from a network connection and write to a local writer,
+    or read from a local reader and write to the a network connection.
+
+    If you use the constructors _without_ the 'address' variable, the processor acts like
+    the server and awaits connections, while using the constructor _with_ the address,
+    the processor will attempt to connect to that address and either read from it or write to it.
+*/
 template <class T>
 class HNetworkProcessor : public HProcessor<T>
 {

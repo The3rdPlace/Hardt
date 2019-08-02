@@ -5,6 +5,9 @@
 
 #include "hwriter.h"
 
+/**
+    Write to a network socket
+*/
 template <class T>
 class HNetworkWriter : public HWriter<T>
 {

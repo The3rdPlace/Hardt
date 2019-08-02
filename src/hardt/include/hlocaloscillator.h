@@ -1,8 +1,14 @@
 #ifndef __HLOCALOSCILLATOR_H
 #define __HLOCALOSCILLATOR_H
 
+/**
+    Signalgenerator that can be used where one needs an input
+    for mixers or other types of injection. The signal has
+    the amplitude [-1; 1] and thus mixes without producing unlinear
+    terms.
+*/
 template <class T>
-class HLocalOscillator : public HGenerator<T>
+class HLocalOscillator : public HVfo<T>
 {
     public:
 

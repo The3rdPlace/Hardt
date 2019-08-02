@@ -3,6 +3,15 @@
 
 #include "hcombfilter.h"
 
+/**
+    Filter that removes or reduces mains hum by combining
+    a comb filter with a lowpass filter in the feedback branch,
+    which gradually reduces the filter effect. The result is a
+    lowpass filter with extra notches at the mains frequency and
+    harmonics. By giving the hum frequency and a cutoff frequency,
+    you can adjust how aggressive the filter is and how far up
+    the lowpass effect reaches.
+*/
 template <class T>
 class HHumFilter : public HCombFilter<T>
 {

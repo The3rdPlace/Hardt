@@ -69,6 +69,13 @@ bool HMultiplier<T>::Stop()
     return _reader->Stop();
 }
 
+template <class T>
+void HMultiplier<T>::SetFrequency(int frequency)
+{
+    HLog("Setting frequency = %d", frequency);
+    _localOscillator->SetFrequency(frequency);
+}
+
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
@@ -137,5 +144,18 @@ bool HMultiplier<int16_t>::Stop();
 
 template
 bool HMultiplier<int32_t>::Stop();
+
+// SetFrequency
+template
+void HMultiplier<int8_t>::SetFrequency(int frequency);
+
+template
+void HMultiplier<uint8_t>::SetFrequency(int frequency);
+
+template
+void HMultiplier<int16_t>::SetFrequency(int frequency);
+
+template
+void HMultiplier<int32_t>::SetFrequency(int frequency);
 
 #endif

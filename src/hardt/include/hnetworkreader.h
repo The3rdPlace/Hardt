@@ -3,6 +3,9 @@
 
 #include <unistd.h>
 
+/**
+    Read from a network socket
+*/
 template <class T>
 class HNetworkReader : public HReader<T>
 {

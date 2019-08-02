@@ -3,6 +3,15 @@
 
 #include <fstream>
 
+/**
+    Generic IIR filter. The filter is implemented in the first direct form.
+
+    The coefficients for the filter must be given in the floating point
+    array, and the coefficients must be ordered this way:
+
+    b0, b1, b2, b..., bN, a1, a2, a..., aN
+*/
+
 template <class T>
 class HIirFilter : public HFilter<T>
 {

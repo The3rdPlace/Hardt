@@ -1,6 +1,9 @@
 #ifndef __HLINEARMIXER_H
 #define __HLINEARMIXER_H
 
+/**
+    Linear mixer that simply mixes (without level adjustment) two signals.
+*/
 template <class T>
 class HLinearMixer : public HReader<T>
 {
