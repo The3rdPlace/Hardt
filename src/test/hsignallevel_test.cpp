@@ -9,6 +9,7 @@ class HSignalLevel_Test: public Test
 
         void run()
         {
+            UNITTEST(test_min_max_avg);
             UNITTEST(test_signallevel_int8);
             UNITTEST(test_signallevel_uint8);
             UNITTEST(test_signallevel_int16);
@@ -23,13 +24,50 @@ class HSignalLevel_Test: public Test
     private:
 
         int Db;
+        //int AvgDb;
+        //int AvgS;
         int S;
+        //int Min;
+        //int Max;
+        //int Avg;
         int callback(HSignalLevelResult* result, size_t length)
         {
             Db = result->Db;
+            //AvgDb = result->AvgDb;
             S = result->S;
+            //AvgS = result->AvgS;
+
+            //Min = result->Min;
+            //Max = result->Max;
+            //Avg = result->Avg;
 
             return length;
+        }
+
+        void test_min_max_avg()
+        {
+            int8_t input[10] = { 2, 4, 6, 4, 2, -1, -3, -5, -3, -1 };
+
+            auto wr = HCustomWriter<HSignalLevelResult>::Create<HSignalLevel_Test>(this, &HSignalLevel_Test::callback);
+            HSignalLevel<int8_t> siglevel(wr, 0);
+
+            siglevel.Write(input, 10);
+            //ASSERT_IS_EQUAL(Min, 1);
+            //ASSERT_IS_EQUAL(Max, 6);
+            //ASSERT_IS_EQUAL(Avg, ?);
+            ASSERT_IS_EQUAL(Db, -27);
+            //ASSERT_IS_EQUAL(AvgDb, -27);
+
+            siglevel.Write(input, 10);
+            siglevel.Write(input, 10);
+            siglevel.Write(input, 10);
+            siglevel.Write(input, 10);
+            siglevel.Write(input, 10);
+            siglevel.Write(input, 10);
+            siglevel.Write(input, 10);
+            siglevel.Write(input, 10);
+            siglevel.Write(input, 10);
+            ASSERT_IS_EQUAL(Db, -27);
         }
 
         void test_signallevel_int8()
@@ -102,8 +140,6 @@ class HSignalLevel_Test: public Test
 
         void test_signallevel_uint8()
         {
-            //ASSERT_IGNORE("Generators does not handle uint8 correctly - enable this test when fixed");
-
             // Signal
             HSineGenerator<uint8_t> g(48000, 1000, 0);
             uint8_t input[1024];
