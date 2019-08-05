@@ -26,10 +26,12 @@ class HBiQuad
 
     protected:
 
+        /** Construct a new HBiQuad */
         HBiQuad(float fCutOff, float rate, float quality, float gain);
 
     public:
 
+        /** Calculate normalized coefficients */
         float* Calculate();
 };
 

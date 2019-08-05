@@ -17,9 +17,13 @@ class HObject
 
         HMetrics Metrics;
 
+        /** Construct a new HObject */
         HObject();
 
+        /** Get metrics details as a formatted output string */
         std::string GetMetrics(std::string id);
+
+        /** Reset all metrics */
         void ResetMetrics();
 };
 

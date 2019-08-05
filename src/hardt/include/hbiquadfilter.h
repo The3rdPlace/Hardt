@@ -12,22 +12,29 @@ class HBiQuadFilter: public HIirFilter<T>
 {
     public:
 
+        /** Construct a new HBiQuadFilter. The biquad type must be given together with the base
+            datatype and the filter specifications */
         HBiQuadFilter(HWriter<T>* writer, float fCutOff, float rate, float quality, float gain,  size_t blocksize):
             HIirFilter<T>(writer, (BIQUAD(fCutOff, rate, quality, gain)).Calculate(), 5, blocksize)
         {}
 
+        /** Construct a new HBiQuadFilter. The biquad type must be given together with the base
+            datatype and the filter specifications */
         HBiQuadFilter(HReader<T>* reader, float fCutOff, float rate, float quality, float gain,  size_t blocksize):
             HIirFilter<T>(reader, (BIQUAD(fCutOff, rate, quality, gain)).Calculate(), 5, blocksize)
         {}
 
+        /** Default destructor */
         ~HBiQuadFilter()
         {}
 
+        /** Called to run the IIR filter calculations on a block of samples */
         virtual void Filter(T* src, T* dest, size_t blocksize)
         {
             HIirFilter<T>::Filter(src, dest, blocksize);
         }
 
+        /** Set filter coefficients by providing filter specifications */
         void SetCoefficients(float fCutOff, float rate, float quality, float gain,  size_t blocksize)
         {
             this->SetCoefficients((BIQUAD(fCutOff, rate, quality, gain)).Calculate(), 5);
