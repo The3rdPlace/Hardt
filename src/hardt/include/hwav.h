@@ -84,8 +84,13 @@ class HWav
 
     protected:
 
+        /** Mapping of datafields in the wav header. Please see the wav specification
+            for detailed description of the fields..  It can be found here:
+            http://soundfile.sapp.org/doc/WaveFormat */
+        //! @cond Doxygen_Suppress
         struct WavHeader
         {
+
             uint8_t ChunkId[4];
             uint32_t ChunkSize;
             uint8_t Format[4];
@@ -101,27 +106,40 @@ class HWav
 
             uint8_t SubChunk_2_Id[4];
             uint32_t SubChunk_2_Size;
-        } _header;
+        };
+        //! @endcond
 
+        /** Contains the header data of the wav object */
+        WavHeader _header;
+
+        /** Construct a new wav object from another wav object */
         HWav(HWav const& wav):
             _header(wav._header),
             _filename(wav._filename)
         {}
 
+        /** Construct a new wav object with the given format, channels and samplerate */
         HWav(const char* filename, H_SAMPLE_FORMAT format, int channels, H_SAMPLE_RATE rate);
 
     public:
 
+        /** Return the sample format used by this object */
         H_SAMPLE_FORMAT GetFormat();
 
+        /** Return the number of channels used by this object */
         int GetChannels();
 
+        /** Return the samplerate used by this object */
         H_SAMPLE_RATE GetRate();
 
+        /** Get the size of the sample data contained by this object */
         size_t GetSize();
 
+        /** Get the name of the file from where the sample where read, or should
+            be written */
         const char* GetFilename();
 
+        /** Construct a new wav object from a local file */
         HWav(const char* filename);
 };
 

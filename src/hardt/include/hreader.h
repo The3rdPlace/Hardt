@@ -23,18 +23,22 @@ class HReader : public HObject
 {
     public:
 
+        /** Read a block of samples */
         virtual int Read(T* dest, size_t blocksize) = 0;
 
+        /** Initialize before first read */
         virtual bool Start()
         {
             return true;
         }
 
+        /** Cleanup after last read */
         virtual bool Stop()
         {
             return true;
         }
 
+        /** Returns a HReader* to this reader */
         HReader<T>* Reader()
         {
             return (HReader<T>*) this;
