@@ -24,22 +24,22 @@ class HSignalLevel_Test: public Test
     private:
 
         int Db;
-        //int AvgDb;
-        //int AvgS;
+        int AvgDb;
+        int AvgS;
         int S;
-        //int Min;
-        //int Max;
-        //int Avg;
+        int Min;
+        int Max;
+        int Avg;
         int callback(HSignalLevelResult* result, size_t length)
         {
             Db = result->Db;
-            //AvgDb = result->AvgDb;
+            AvgDb = result->AvgDb;
             S = result->S;
-            //AvgS = result->AvgS;
+            AvgS = result->AvgS;
 
-            //Min = result->Min;
-            //Max = result->Max;
-            //Avg = result->Avg;
+            Min = result->Min;
+            Max = result->Max;
+            Avg = result->Avg;
 
             return length;
         }
@@ -52,12 +52,13 @@ class HSignalLevel_Test: public Test
             HSignalLevel<int8_t> siglevel(wr, 0);
 
             siglevel.Write(input, 10);
-            //ASSERT_IS_EQUAL(Min, 1);
-            //ASSERT_IS_EQUAL(Max, 6);
-            //ASSERT_IS_EQUAL(Avg, ?);
+            ASSERT_IS_EQUAL(Min, 1);
+            ASSERT_IS_EQUAL(Max, 6);
+            ASSERT_IS_EQUAL(Avg, 0);
             ASSERT_IS_EQUAL(Db, -27);
-            //ASSERT_IS_EQUAL(AvgDb, -27);
+            ASSERT_IS_EQUAL(AvgDb, -54);
 
+            // This test assumes that the average is calculated over the last 10 blocks
             siglevel.Write(input, 10);
             siglevel.Write(input, 10);
             siglevel.Write(input, 10);
@@ -67,6 +68,7 @@ class HSignalLevel_Test: public Test
             siglevel.Write(input, 10);
             siglevel.Write(input, 10);
             siglevel.Write(input, 10);
+            ASSERT_IS_EQUAL(Avg, 6);
             ASSERT_IS_EQUAL(Db, -27);
         }
 
