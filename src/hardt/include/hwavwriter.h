@@ -1,6 +1,9 @@
 #ifndef __HWAVWRITER_H
 #define __HWAVWRITER_H
 
+/**
+    Write samples to a wav file
+*/
 template <class T>
 class HWavWriter : public HWav, public HFileWriter<T>
 {

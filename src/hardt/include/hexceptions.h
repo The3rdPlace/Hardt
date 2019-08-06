@@ -12,12 +12,15 @@ class HException : public std::exception
 {
     protected:
 
+        /** Contains the exception reason */
         const char* _why;
 
     public:
 
+        /** Construct a new HException object */
         HException(const char* reason);
 
+        /** Return the exception reason */
         const char* what() const throw();
 };
 
@@ -96,6 +99,7 @@ class HWriterIOException : public HException
 {
     public:
 
+        /** Construct a new HWriterIOException */
         HWriterIOException(const char* reason);
 };
 

@@ -7,6 +7,9 @@
 #define NUMBER_OF_BUFFERS 4
 #define DEFAULT_FRAMESIZE 1024
 
+/**
+    Send samples to a soundcard for audible output
+*/
 template <class T>
 class HSoundcardWriter : public HWriter<T>
 {

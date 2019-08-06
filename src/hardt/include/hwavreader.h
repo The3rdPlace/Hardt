@@ -1,6 +1,9 @@
 #ifndef __HWAVREADER_H
 #define __HWAVREADER_H
 
+/**
+    Read samples from a wav file
+*/
 template <class T>
 class HWavReader : public HWav, public HFileReader<T>
 {

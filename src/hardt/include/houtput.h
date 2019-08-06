@@ -3,6 +3,26 @@
 
 #include <functional>
 
+/**
+    The HOutput class is the base class for components that terminates a
+    chain, such as the output of an DFFT calculation or a signal level indicator.
+    An ouput may require a writer, but the data that the output writes is significant
+    different, to the input samples written to the output. An fft calculation
+    may require 4 blocks of 1024 samples, yet will only perform 1 write to a writer
+    after having calculated the fft's and the averaged spectrum. The writer will then
+    receive a write of length 1 and a pointer to the FFT result object.
+
+    For clarity, the HSoundcardWriter is _not_  an HOutput since it actually outputs -
+    allthough in a different physical form - the samples provided 1 to 1.
+
+    An HOutput class can be created with any writer, but very few writers will accept
+    any datatype other than sample values in an integer format, so the most common
+    way to use an output type is to provide a HCustomWWriter object which then calls
+    a locally defined handler.
+
+    Internally, HOutput implements the HChunkWriter, so writes will be chunked to a size
+    decided upon by the implementing class.
+*/
 template <class T, class O>
 class HOutput : public HChunkWriter<T>
 {

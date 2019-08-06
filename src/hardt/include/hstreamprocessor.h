@@ -4,6 +4,9 @@
 #include "hreader.h"
 #include "hwriter.h"
 
+/**
+    Read samples from a local reader and write them to a local writer
+*/
 template <class T>
 class HStreamProcessor : public HProcessor<T>
 {

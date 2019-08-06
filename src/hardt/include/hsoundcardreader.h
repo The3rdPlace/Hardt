@@ -7,6 +7,9 @@
 #define NUMBER_OF_BUFFERS 4
 #define DEFAULT_FRAMESIZE 1024
 
+/**
+    Read sound from a soundcard
+*/
 template <class T>
 class HSoundcardReader : public HReader<T>
 {

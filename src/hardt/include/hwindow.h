@@ -1,6 +1,9 @@
 #ifndef __HWINDOW_H
 #define __HWINDOW_H
 
+/**
+    Base class for windows
+*/
 template <class T>
 class HWindow
 {

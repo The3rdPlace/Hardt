@@ -1,6 +1,9 @@
 #ifndef __HWRITER_H
 #define __HWRITER_H
 
+/**
+    Base class for all writer types
+*/
 template <class T>
 class HWriter : public HObject
 {

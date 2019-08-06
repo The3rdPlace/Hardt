@@ -1,6 +1,10 @@
 #ifndef __HSPLITTER_H
 #define __HSPLITTER_H
 
+/**
+    Split a single chain of writers into two, so that samples can
+    go, simultaneously to two chains
+*/
 template <class T>
 class HSplitter : public HWriter<T>
 {
