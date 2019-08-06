@@ -9,18 +9,22 @@ class HWriter : public HObject
 {
     public:
 
+        /** Write a block of samples */
         virtual int Write(T* src, size_t blocksize) = 0;
 
+        /** Initialize before first write */
         virtual bool Start()
         {
             return true;
         }
 
+        /** Clean after last write */
         virtual bool Stop()
         {
             return true;
         }
 
+        /** Return a pointer to this instance as a HWriter* */
         HWriter<T>* Writer()
         {
             return (HWriter<T>*) this;

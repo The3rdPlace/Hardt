@@ -15,6 +15,7 @@ class HObject
 {
     public:
 
+        /** The metrics object */
         HMetrics Metrics;
 
         /** Construct a new HObject */
