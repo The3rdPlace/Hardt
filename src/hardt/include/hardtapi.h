@@ -10,6 +10,7 @@
 #include "htimer.h"
 
 #include "hwriter.h"
+#include "hwriterconsumer.h"
 #include "hcustomwriter.h"
 #include "hreader.h"
 #include "hprocessor.h"

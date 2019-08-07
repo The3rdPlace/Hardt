@@ -42,8 +42,10 @@ class HNetworkProcessor : public HProcessor<T>
     public:
 
         HNetworkProcessor(const char* address, int port, HWriter<T>* writer, int blocksize, bool* terminationToken);
+        HNetworkProcessor(const char* address, int port, int blocksize, bool* terminationToken);
         HNetworkProcessor(const char* address, int port, HReader<T>* reader, int blocksize, bool* terminationToken);
         HNetworkProcessor(int port, HWriter<T>* writer, int blocksize, bool* terminationToken);
+        HNetworkProcessor(int port, int blocksize, bool* terminationToken);
         HNetworkProcessor(int port, HReader<T>* reader, int blocksize, bool* terminationToken);
 
         ~HNetworkProcessor();

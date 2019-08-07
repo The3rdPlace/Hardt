@@ -11,6 +11,13 @@ HStreamProcessor<T>::HStreamProcessor(HWriter<T>* writer, HReader<T>* reader, in
 }
 
 template <class T>
+HStreamProcessor<T>::HStreamProcessor(HReader<T>* reader, int blocksize, bool* terminationToken):
+    HProcessor<T>(reader, blocksize, terminationToken)
+{
+    HLog("HStreamProcessor::HWriterConsumer(...), blocksize is %d", blocksize);
+}
+
+template <class T>
 void HStreamProcessor<T>::Run(long unsigned int blocks)
 {
     HProcessor<T>::Run(blocks);
@@ -35,6 +42,18 @@ HStreamProcessor<int16_t>::HStreamProcessor(HWriter<int16_t>* writer, HReader<in
 
 template
 HStreamProcessor<int32_t>::HStreamProcessor(HWriter<int32_t>* writer, HReader<int32_t>* reader, int blocksize, bool* terminationToken);
+
+template
+HStreamProcessor<int8_t>::HStreamProcessor(HReader<int8_t>* reader, int blocksize, bool* terminationToken);
+
+template
+HStreamProcessor<uint8_t>::HStreamProcessor(HReader<uint8_t>* reader, int blocksize, bool* terminationToken);
+
+template
+HStreamProcessor<int16_t>::HStreamProcessor(HReader<int16_t>* reader, int blocksize, bool* terminationToken);
+
+template
+HStreamProcessor<int32_t>::HStreamProcessor(HReader<int32_t>* reader, int blocksize, bool* terminationToken);
 
 // Run()
 template

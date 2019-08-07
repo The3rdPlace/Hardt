@@ -21,7 +21,7 @@
     set to true (especially usefull if you have multiple threads or does signal handling).
 */
 template <class T>
-class HProcessor : public HObject
+class HProcessor : public HWriterConsumer<T>
 {
     private:
 
@@ -37,11 +37,19 @@ class HProcessor : public HObject
 
         bool Stop();
 
+        void Init();
+
     protected:
 
         HProcessor(HWriter<T>* writer, HReader<T>* reader, size_t blocksize, bool* terminationToken);
+        HProcessor(HReader<T>* reader, size_t blocksize, bool* terminationToken);
 
         ~HProcessor();
+
+        void SetWriter(HWriter<T>* writer)
+        {
+            _writer = writer;
+        }
 
     public:
 
@@ -54,16 +62,6 @@ class HProcessor : public HObject
             Write directly to the associated writer
         */
         int Write(T* src, int blocksize);
-
-        /**
-            Set a (new) reader
-        */
-        void SetReader(HReader<T>* reader);
-
-        /**
-            Set a (new) writer
-        */
-        void SetWriter(HWriter<T>* writer);
 
         /**
             Get the associated reader

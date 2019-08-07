@@ -33,6 +33,21 @@ HNetworkProcessor<T>::HNetworkProcessor(const char* address, int port, HWriter<T
 }
 
 template <class T>
+HNetworkProcessor<T>::HNetworkProcessor(const char* address, int port, int blocksize, bool* terminationToken):
+    HProcessor<T>(&_networkReader, blocksize, terminationToken),
+    _isServer(false),
+    _isWriter(true),
+    _port(port),
+    _server(address),
+    _clientSocket(-1),
+    _serverSocket(-1),
+    _terminated(terminationToken)
+{
+    HLog("HNetworkProcessor(client)(address=%s, port=%d, terminationToken=%d), blocksize is %d", address, port, *terminationToken, blocksize);
+    InitClient();
+}
+
+template <class T>
 HNetworkProcessor<T>::HNetworkProcessor(const char* address, int port, HReader<T>* reader, int blocksize, bool* terminationToken):
     HProcessor<T>(&_networkWriter, reader, blocksize, terminationToken),
     _isServer(false),
@@ -59,6 +74,21 @@ HNetworkProcessor<T>::HNetworkProcessor(int port, HWriter<T>* writer, int blocks
     _terminated(terminationToken)
 {
     HLog("HNetworkProcessor(server)(port=%d, writer=*, terminationToken=%d), blocksize is %d", port, *terminationToken, blocksize);
+    InitServer();
+}
+
+template <class T>
+HNetworkProcessor<T>::HNetworkProcessor(int port, int blocksize, bool* terminationToken):
+    HProcessor<T>(&_networkReader, blocksize, terminationToken),
+    _isServer(true),
+    _isWriter(true),
+    _port(port),
+    _server(NULL),
+    _clientSocket(-1),
+    _serverSocket(-1),
+    _terminated(terminationToken)
+{
+    HLog("HNetworkProcessor(server)(port=%d, terminationToken=%d), blocksize is %d", port, *terminationToken, blocksize);
     InitServer();
 }
 
@@ -323,6 +353,18 @@ template
 HNetworkProcessor<int32_t>::HNetworkProcessor(const char* address, int port, HWriter<int32_t>* writer, int blocksize, bool* terminationToken);
 
 template
+HNetworkProcessor<int8_t>::HNetworkProcessor(const char* address, int port, int blocksize, bool* terminationToken);
+
+template
+HNetworkProcessor<uint8_t>::HNetworkProcessor(const char* address, int port, int blocksize, bool* terminationToken);
+
+template
+HNetworkProcessor<int16_t>::HNetworkProcessor(const char* address, int port, int blocksize, bool* terminationToken);
+
+template
+HNetworkProcessor<int32_t>::HNetworkProcessor(const char* address, int port, int blocksize, bool* terminationToken);
+
+template
 HNetworkProcessor<int8_t>::HNetworkProcessor(const char* address, int port, HReader<int8_t>* reader, int blocksize, bool* terminationToken);
 
 template
@@ -345,6 +387,18 @@ HNetworkProcessor<int16_t>::HNetworkProcessor(int port, HWriter<int16_t>* writer
 
 template
 HNetworkProcessor<int32_t>::HNetworkProcessor(int port, HWriter<int32_t>* writer, int blocksize, bool* terminationToken);
+
+template
+HNetworkProcessor<int8_t>::HNetworkProcessor(int port, int blocksize, bool* terminationToken);
+
+template
+HNetworkProcessor<uint8_t>::HNetworkProcessor(int port, int blocksize, bool* terminationToken);
+
+template
+HNetworkProcessor<int16_t>::HNetworkProcessor(int port, int blocksize, bool* terminationToken);
+
+template
+HNetworkProcessor<int32_t>::HNetworkProcessor(int port, int blocksize, bool* terminationToken);
 
 template
 HNetworkProcessor<int8_t>::HNetworkProcessor(int port, HReader<int8_t>* reader, int blocksize, bool* terminationToken);

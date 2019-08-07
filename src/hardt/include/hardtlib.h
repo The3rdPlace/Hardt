@@ -19,6 +19,7 @@ Abstract base classes with no, or little implementation
 ********************************************************************/
 
 #include "hwriter.h"
+#include "hwriterconsumer.h"
 #include "hcustomwriter.h"
 #include "hreader.h"
 #include "hprocessor.cpp"

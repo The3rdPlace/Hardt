@@ -12,13 +12,26 @@
     current focus area.
 */
 template <class T>
-class HNullWriter : public HWriter<T>
+class HNullWriter : public HWriter<T>, public HWriterConsumer<T>
 {
     public:
+
+        HNullWriter()
+        {}
+
+        HNullWriter(HWriterConsumer<T>* consumer)
+        {
+            consumer->SetWriter(this);
+        }
 
         int Write(T* src, size_t blocksize)
         {
             return blocksize;
+        }
+
+        void SetWriter(HWriter<T>* writer)
+        {
+            // Writing into empty space
         }
 };
 

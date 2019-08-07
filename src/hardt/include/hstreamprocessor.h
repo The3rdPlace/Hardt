@@ -18,6 +18,7 @@ class HStreamProcessor : public HProcessor<T>
     public:
 
         HStreamProcessor(HWriter<T>* writer, HReader<T>* reader, int blocksize, bool* terminationToken);
+        HStreamProcessor(HReader<T>* reader, int blocksize, bool* terminationToken);
 
         void Run(long unsigned int blocks = 0);
 };

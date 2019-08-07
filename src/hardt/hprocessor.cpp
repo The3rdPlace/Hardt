@@ -11,10 +11,17 @@ HProcessor<T>::HProcessor(HWriter<T>* writer, HReader<T>* reader, size_t blocksi
     _terminated(terminationToken)
 {
     HLog("HProcessor(...), blocksize is %d", _blocksize);
+    Init();
+}
 
-    // Allocate local buffer
-    _buffer = new T[_blocksize];
-    HLog("Allocated buffer for %d frames = %d bytes", _blocksize, _blocksize * sizeof(T));
+template <class T>
+HProcessor<T>::HProcessor(HReader<T>* reader, size_t blocksize, bool* terminationToken):
+    _reader(reader),
+    _blocksize(blocksize),
+    _terminated(terminationToken)
+{
+    HLog("HProcessor::HWriterConsumer(...), blocksize is %d", _blocksize);
+    Init();
 }
 
 template <class T>
@@ -67,18 +74,6 @@ template <class T>
 bool HProcessor<T>::Stop()
 {
     return _writer->Stop() && _reader->Stop();
-}
-
-template <class T>
-void HProcessor<T>::SetReader(HReader<T>* reader)
-{
-    _reader = reader;
-}
-
-template <class T>
-void HProcessor<T>::SetWriter(HWriter<T>* writer)
-{
-    _writer = writer;
 }
 
 template <class T>
@@ -177,6 +172,15 @@ HWriter<T>* HProcessor<T>::GetWriter()
     return _writer;
 }
 
+
+template <class T>
+void HProcessor<T>::Init()
+{
+    // Allocate local buffer
+    _buffer = new T[_blocksize];
+    HLog("Allocated buffer for %d frames = %d bytes", _blocksize, _blocksize * sizeof(T));
+}
+
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
@@ -193,6 +197,18 @@ HProcessor<int16_t>::HProcessor(HWriter<int16_t>* writer, HReader<int16_t>* read
 
 template
 HProcessor<int32_t>::HProcessor(HWriter<int32_t>* writer, HReader<int32_t>* reader, size_t blocksize, bool* terminationToken);
+
+template
+HProcessor<int8_t>::HProcessor(HReader<int8_t>* reader, size_t blocksize, bool* terminationToken);
+
+template
+HProcessor<uint8_t>::HProcessor(HReader<uint8_t>* reader, size_t blocksize, bool* terminationToken);
+
+template
+HProcessor<int16_t>::HProcessor(HReader<int16_t>* reader, size_t blocksize, bool* terminationToken);
+
+template
+HProcessor<int32_t>::HProcessor(HReader<int32_t>* reader, size_t blocksize, bool* terminationToken);
 
 // ~HProcessor
 template
@@ -310,5 +326,18 @@ HWriter<int16_t>* HProcessor<int16_t>::GetWriter();
 
 template
 HWriter<int32_t>* HProcessor<int32_t>::GetWriter();
+
+// Init()
+template
+void HProcessor<int8_t>::Init();
+
+template
+void HProcessor<uint8_t>::Init();
+
+template
+void HProcessor<int16_t>::Init();
+
+template
+void HProcessor<int32_t>::Init();
 
 #endif
