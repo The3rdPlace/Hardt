@@ -9,7 +9,7 @@
     The constructur is protected, this class cannot be instantianted directly.
 */
 template <class T>
-class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>//, HWriterConsumer<T>
+class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, HWriterConsumer<T>
 {
     private:
 
@@ -19,10 +19,18 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>//, H
         int _blocksize;
         T* _buffer;
 
+        void Init();
+
     protected:
 
         HFilter(HWriter<T>* writer, size_t blocksize);
+        HFilter(HWriterConsumer<T>* consumer, size_t blocksize);
         HFilter(HReader<T>* reader, size_t blocksize);
+
+        void SetWriter(HWriter<T>* writer)
+        {
+            _writer = writer;
+        }
 
     public:
 

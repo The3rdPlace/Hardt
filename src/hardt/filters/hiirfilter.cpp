@@ -14,6 +14,18 @@ HIirFilter<T>::HIirFilter(HWriter<T>* writer, float* coefficients, int length, s
 }
 
 template <class T>
+HIirFilter<T>::HIirFilter(HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize):
+    HFilter<T>(consumer, blocksize),
+    _length(length / 2),
+    _firstLength(length)
+{
+    HLog("HIirFilter(HWriterConsumer*)");
+    Init(coefficients, length);
+
+    consumer->SetWriter(this);
+}
+
+template <class T>
 HIirFilter<T>::HIirFilter(HReader<T>* reader, float* coefficients, int length, size_t blocksize):
     HFilter<T>(reader, blocksize),
     _length(length / 2),
@@ -138,6 +150,18 @@ HIirFilter<int16_t>::HIirFilter(HWriter<int16_t>* writer, float* coefficients, i
 
 template
 HIirFilter<int32_t>::HIirFilter(HWriter<int32_t>* writer, float* coefficients, int length, size_t blocksize);
+
+template
+HIirFilter<int8_t>::HIirFilter(HWriterConsumer<int8_t>* consumer, float* coefficients, int length, size_t blocksize);
+
+template
+HIirFilter<uint8_t>::HIirFilter(HWriterConsumer<uint8_t>* consumer, float* coefficients, int length, size_t blocksize);
+
+template
+HIirFilter<int16_t>::HIirFilter(HWriterConsumer<int16_t>* consumer, float* coefficients, int length, size_t blocksize);
+
+template
+HIirFilter<int32_t>::HIirFilter(HWriterConsumer<int32_t>* consumer, float* coefficients, int length, size_t blocksize);
 
 template
 HIirFilter<int8_t>::HIirFilter(HReader<int8_t>* reader, float* coefficients, int length, size_t blocksize);

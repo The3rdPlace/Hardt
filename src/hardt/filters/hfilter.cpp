@@ -13,9 +13,18 @@ HFilter<T>::HFilter(HWriter<T>* writer, size_t blocksize):
     _blocksize(blocksize)
 {
     HLog("HFilter(HWriter*)");
+    Init();
+}
 
-    _buffer = new T[blocksize];
-    HLog("Allocated %d as local buffer", blocksize * sizeof(T));
+template <class T>
+HFilter<T>::HFilter(HWriterConsumer<T>* consumer, size_t blocksize):
+    _reader(NULL),
+    _blocksize(blocksize)
+{
+    HLog("HFilter(HWriter*)");
+    Init();
+
+    consumer->SetWriter(this);
 }
 
 template <class T>
@@ -25,9 +34,7 @@ HFilter<T>::HFilter(HReader<T>* reader, size_t blocksize):
     _blocksize(blocksize)
 {
     HLog("HFilter(HReader*)");
-
-    _buffer = new T[blocksize];
-    HLog("Allocated %d as local buffer", blocksize * sizeof(T));
+    Init();
 }
 
 template <class T>
@@ -35,6 +42,13 @@ HFilter<T>::~HFilter()
 {
     HLog("~HFilter()");
     delete _buffer;
+}
+
+template <class T>
+void HFilter<T>::Init()
+{
+    _buffer = new T[_blocksize];
+    HLog("Allocated %d as local buffer", _blocksize * sizeof(T));
 }
 
 template <class T>
@@ -114,6 +128,18 @@ template
 HFilter<int32_t>::HFilter(HWriter<int32_t>* writer, size_t blocksize);
 
 template
+HFilter<int8_t>::HFilter(HWriterConsumer<int8_t>* consumer, size_t blocksize);
+
+template
+HFilter<uint8_t>::HFilter(HWriterConsumer<uint8_t>* consumer, size_t blocksize);
+
+template
+HFilter<int16_t>::HFilter(HWriterConsumer<int16_t>* consumer, size_t blocksize);
+
+template
+HFilter<int32_t>::HFilter(HWriterConsumer<int32_t>* consumer, size_t blocksize);
+
+template
 HFilter<int8_t>::HFilter(HReader<int8_t>* reader, size_t blocksize);
 
 template
@@ -189,5 +215,18 @@ bool HFilter<int16_t>::Stop();
 
 template
 bool HFilter<int32_t>::Stop();
+
+// Init()
+template
+void HFilter<int8_t>::Init();
+
+template
+void HFilter<uint8_t>::Init();
+
+template
+void HFilter<int16_t>::Init();
+
+template
+void HFilter<int32_t>::Init();
 
 #endif

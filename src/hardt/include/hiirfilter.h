@@ -31,6 +31,7 @@ class HIirFilter : public HFilter<T>
     public:
 
         HIirFilter(HWriter<T>* writer, float* coefficients, int length, size_t blocksize);
+        HIirFilter(HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize);
         HIirFilter(HReader<T>* reader, float* coefficients, int length, size_t blocksize);
 
         ~HIirFilter();

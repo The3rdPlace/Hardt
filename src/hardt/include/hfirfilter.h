@@ -27,6 +27,7 @@ class HFirFilter : public HFilter<T>
     public:
 
         HFirFilter(HWriter<T>* writer, float* coefficients, int length, size_t blocksize);
+        HFirFilter(HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize);
         HFirFilter(HReader<T>* reader, float* coefficients, int length, size_t blocksize);
 
         ~HFirFilter();

@@ -12,6 +12,15 @@ HGain<T>::HGain(HWriter<T>* writer, float gain, size_t blocksize):
 }
 
 template <class T>
+HGain<T>::HGain(HWriterConsumer<T>* consumer, float gain, size_t blocksize):
+    HFilter<T>(consumer, blocksize),
+    _gain(gain)
+{
+    HLog("HGain(HWriterConsumer*, %f, %d)", gain, blocksize);
+    consumer->SetWriter(this);
+}
+
+template <class T>
 HGain<T>::HGain(HReader<T>* reader, float gain, size_t blocksize):
     HFilter<T>(reader, blocksize),
     _gain(gain)
@@ -57,6 +66,18 @@ HGain<int16_t>::HGain(HWriter<int16_t>* writer, float gain, size_t blocksize);
 
 template
 HGain<int32_t>::HGain(HWriter<int32_t>* writer, float gain, size_t blocksize);
+
+template
+HGain<int8_t>::HGain(HWriterConsumer<int8_t>* consumer, float gain, size_t blocksize);
+
+template
+HGain<uint8_t>::HGain(HWriterConsumer<uint8_t>* consumer, float gain, size_t blocksize);
+
+template
+HGain<int16_t>::HGain(HWriterConsumer<int16_t>* consumer, float gain, size_t blocksize);
+
+template
+HGain<int32_t>::HGain(HWriterConsumer<int32_t>* consumer, float gain, size_t blocksize);
 
 template
 HGain<int8_t>::HGain(HReader<int8_t>* reader, float gain, size_t blocksize);
