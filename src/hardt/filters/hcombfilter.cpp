@@ -13,6 +13,17 @@ HCombFilter<T>::HCombFilter(HWriter<T>* writer, H_SAMPLE_RATE rate, int frequenc
 }
 
 template <class T>
+HCombFilter<T>::HCombFilter(HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize):
+    HFilter<T>(consumer, blocksize),
+    _alpha(alpha)
+{
+    HLog("HCombFilter(HWriterConsumer*, %d, %d, %f, %d)", rate, frequency, alpha, blocksize);
+    Init(rate, blocksize, frequency);
+
+    consumer->SetWriter(this);
+}
+
+template <class T>
 HCombFilter<T>::HCombFilter(HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize):
     HFilter<T>(reader, blocksize),
     _alpha(alpha)
@@ -163,6 +174,18 @@ HCombFilter<int16_t>::HCombFilter(HWriter<int16_t>* writer, H_SAMPLE_RATE rate, 
 
 template
 HCombFilter<int32_t>::HCombFilter(HWriter<int32_t>* writer, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize);
+
+template
+HCombFilter<int8_t>::HCombFilter(HWriterConsumer<int8_t>* consumer, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize);
+
+template
+HCombFilter<uint8_t>::HCombFilter(HWriterConsumer<uint8_t>* consumer, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize);
+
+template
+HCombFilter<int16_t>::HCombFilter(HWriterConsumer<int16_t>* consumer, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize);
+
+template
+HCombFilter<int32_t>::HCombFilter(HWriterConsumer<int32_t>* consumer, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize);
 
 template
 HCombFilter<int8_t>::HCombFilter(HReader<int8_t>* reader, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize);

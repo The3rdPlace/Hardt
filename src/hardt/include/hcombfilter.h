@@ -34,6 +34,7 @@ class HCombFilter : public HFilter<T>
     public:
 
         HCombFilter(HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize);
+        HCombFilter(HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize);
         HCombFilter(HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize);
 
         ~HCombFilter();

@@ -5,8 +5,8 @@
 
 template <class T>
 HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(HWriter<T>* writer, float* coefficients, int length, size_t blocksize):
-    _writer(writer),
-    _reader(NULL),
+    _isWriter(true),
+    _isReader(false),
     _blocksize(blocksize),
     _firstLength(length)
 {
@@ -17,12 +17,54 @@ HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(HWriter<T>* writer, float* coeff
         throw new HFilterInitializationException("Invalid number of coefficients in creation of a cascaded biquad filter");
     }
     Init(coefficients, length);
+
+    // Create filters
+    for( int i = _filterCount -1; i >= 0; i-- )
+    {
+        if( i == _filterCount - 1 )
+        {
+            _filters[i] = new HIirFilter<T>((HWriter<T>*) writer, &coefficients[i * 5], 5, 4096);
+        }
+        else
+        {
+            _filters[i] = new HIirFilter<T>((HWriter<T>*) _filters[i + 1], &coefficients[i * 5], 5, 4096);
+        }
+    }
+}
+
+template <class T>
+HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize):
+    _isWriter(true),
+    _isReader(false),
+    _blocksize(blocksize),
+    _firstLength(length)
+{
+    HLog("HCascadedBiQuadFilter(HWriterConsumer*)");
+    if( length % 5 != 0 )
+    {
+        HError("A cascaded biquad filter must consist of N sets of 5 coefficients");
+        throw new HFilterInitializationException("Invalid number of coefficients in creation of a cascaded biquad filter");
+    }
+    Init(coefficients, length);
+
+    // Create filters
+    for( int i = _filterCount -1; i >= 0; i-- )
+    {
+        if( i == _filterCount - 1 )
+        {
+            _filters[i] = new HIirFilter<T>((HWriterConsumer<T>*) consumer, &coefficients[i * 5], 5, 4096);
+        }
+        else
+        {
+            _filters[i] = new HIirFilter<T>((HWriterConsumer<T>*) _filters[i + 1], &coefficients[i * 5], 5, 4096);
+        }
+    }
 }
 
 template <class T>
 HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(HReader<T>* reader, float* coefficients, int length, size_t blocksize):
-    _writer(NULL),
-    _reader(reader),
+    _isWriter(false),
+    _isReader(true),
     _blocksize(blocksize),
     _firstLength(length)
 {
@@ -33,6 +75,19 @@ HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(HReader<T>* reader, float* coeff
         throw new HFilterInitializationException("Invalid number of coefficients in creation of a cascaded biquad filter");
     }
     Init(coefficients, length);
+
+    // Create filters
+    for( int i = 0; i < _filterCount; i++ )
+    {
+        if( i == 0 )
+        {
+            _filters[i] = new HIirFilter<T>((HReader<T>*) reader, &coefficients[i * 5], 5, 4096);
+        }
+        else
+        {
+            _filters[i] = new HIirFilter<T>((HReader<T>*) _filters[i - 1], &coefficients[i * 5], 5, 4096);
+        }
+    }
 }
 
 template <class T>
@@ -44,41 +99,6 @@ void HCascadedBiQuadFilter<T>::Init(float* coefficients, int length)
     // Allocate filter-list
     _filters = new HIirFilter<T>*[_filterCount];
     HLog("Allocated list for %d filters", _filterCount);
-
-    // Create filters
-    if( _reader != NULL )
-    {
-        for( int i = 0; i < _filterCount; i++ )
-        {
-            if( i == 0 )
-            {
-                _filters[i] = new HIirFilter<T>((HReader<T>*) _reader, &coefficients[i * 5], 5, 4096);
-            }
-            else
-            {
-                _filters[i] = new HIirFilter<T>((HReader<T>*) _filters[i - 1], &coefficients[i * 5], 5, 4096);
-            }
-        }
-    }
-    else if ( _writer != NULL )
-    {
-        for( int i = _filterCount -1; i >= 0; i-- )
-        {
-            if( i == _filterCount - 1 )
-            {
-                _filters[i] = new HIirFilter<T>((HWriter<T>*) _writer, &coefficients[i * 5], 5, 4096);
-            }
-            else
-            {
-                _filters[i] = new HIirFilter<T>((HWriter<T>*) _filters[i + 1], &coefficients[i * 5], 5, 4096);
-            }
-        }
-    }
-    else
-    {
-         HError("No reader or writer given");
-         throw new HFilterInitializationException("No reader or writer given when creating a cascaded biquad filter");
-    }
 }
 
 template <class T>
@@ -119,12 +139,12 @@ int HCascadedBiQuadFilter<T>::Read(T* dest, size_t blocksize)
 template <class T>
 bool HCascadedBiQuadFilter<T>::Start()
 {
-    if( _reader != NULL )
+    if( _isReader )
     {
         HLog("Calling Start() on last filter");
         return _filters[_filterCount - 1]->Start();
     }
-    if( _writer != NULL )
+    if( _isWriter )
     {
         HLog("Calling Start() on first filter");
         return _filters[0]->Start();
@@ -135,12 +155,12 @@ bool HCascadedBiQuadFilter<T>::Start()
 template <class T>
 bool HCascadedBiQuadFilter<T>::Stop()
 {
-    if( _reader != NULL )
+    if( _isReader )
     {
         HLog("Calling Stop() on last filter");
         return _filters[_filterCount - 1]->Stop();
     }
-    if( _writer != NULL )
+    if( _isWriter )
     {
         HLog("Calling Stop() on first filter");
         return _filters[0]->Stop();
@@ -180,6 +200,18 @@ HCascadedBiQuadFilter<int16_t>::HCascadedBiQuadFilter(HWriter<int16_t>* writer, 
 
 template
 HCascadedBiQuadFilter<int32_t>::HCascadedBiQuadFilter(HWriter<int32_t>* writer, float* coefficients, int length, size_t blocksize);
+
+template
+HCascadedBiQuadFilter<int8_t>::HCascadedBiQuadFilter(HWriterConsumer<int8_t>* consumer, float* coefficients, int length, size_t blocksize);
+
+template
+HCascadedBiQuadFilter<uint8_t>::HCascadedBiQuadFilter(HWriterConsumer<uint8_t>* consumer, float* coefficients, int length, size_t blocksize);
+
+template
+HCascadedBiQuadFilter<int16_t>::HCascadedBiQuadFilter(HWriterConsumer<int16_t>* consumer, float* coefficients, int length, size_t blocksize);
+
+template
+HCascadedBiQuadFilter<int32_t>::HCascadedBiQuadFilter(HWriterConsumer<int32_t>* consumer, float* coefficients, int length, size_t blocksize);
 
 template
 HCascadedBiQuadFilter<int8_t>::HCascadedBiQuadFilter(HReader<int8_t>* reader, float* coefficients, int length, size_t blocksize);

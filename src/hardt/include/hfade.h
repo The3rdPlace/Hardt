@@ -20,6 +20,7 @@ class HFade : public HGain<T>
 
         HFade(HReader<T>* reader, int initialLevel, int samples, bool fade, size_t blocksize);
         HFade(HWriter<T>* writer, int initialLevel, int samples, bool fade, size_t blocksize);
+        HFade(HWriterConsumer<T>* consumer, int initialLevel, int samples, bool fade, size_t blocksize);
 
         void Init();
 

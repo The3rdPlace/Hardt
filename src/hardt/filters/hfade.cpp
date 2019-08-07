@@ -28,6 +28,20 @@ HFade<T>::HFade(HWriter<T>* writer, int initialLevel, int samples, bool fade, si
 }
 
 template <class T>
+HFade<T>::HFade(HWriterConsumer<T>* consumer, int initialLevel, int samples, bool fade, size_t blocksize):
+    HGain<T>(consumer, 1, blocksize),
+    _level(initialLevel),
+    _samples(samples),
+    _direction(initialLevel >= 50), // if initial level is above 50, fade up, otherwise down
+    _fade(fade)
+{
+    HLog("HFade(HWriterConsumer*, %d, %d, %d)", initialLevel, samples, fade);
+    Init();
+
+    consumer->SetWriter(this);
+}
+
+template <class T>
 void HFade<T>::Init()
 {
     // Check initial fading
@@ -127,6 +141,18 @@ HFade<int16_t>::HFade(HWriter<int16_t>* writer, int initialLevel, int samples, b
 
 template
 HFade<int32_t>::HFade(HWriter<int32_t>* writer, int initialLevel, int samples, bool fade, size_t blocksize);
+
+template
+HFade<int8_t>::HFade(HWriterConsumer<int8_t>* consumer, int initialLevel, int samples, bool fade, size_t blocksize);
+
+template
+HFade<uint8_t>::HFade(HWriterConsumer<uint8_t>* consumer, int initialLevel, int samples, bool fade, size_t blocksize);
+
+template
+HFade<int16_t>::HFade(HWriterConsumer<int16_t>* consumer, int initialLevel, int samples, bool fade, size_t blocksize);
+
+template
+HFade<int32_t>::HFade(HWriterConsumer<int32_t>* consumer, int initialLevel, int samples, bool fade, size_t blocksize);
 
 template
 HFade<int8_t>::HFade(HReader<int8_t>* reader, int initialLevel, int samples, bool fade, size_t blocksize);

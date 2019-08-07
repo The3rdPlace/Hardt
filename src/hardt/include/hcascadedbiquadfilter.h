@@ -24,8 +24,8 @@ class HCascadedBiQuadFilter: public HReader<T>, public HWriter<T>
 {
     private:
 
-        HWriter<T>* _writer;
-        HReader<T>* _reader;
+        bool _isReader;
+        bool _isWriter;
 
         int _blocksize;
 
@@ -39,6 +39,9 @@ class HCascadedBiQuadFilter: public HReader<T>, public HWriter<T>
 
         /** Construct a new HCascadedBiQuadFilter */
         HCascadedBiQuadFilter(HWriter<T>* writer, float* coefficients, int length, size_t blocksize);
+
+        /** Construct a new HCascadedBiQuadFilter */
+        HCascadedBiQuadFilter(HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize);
 
         /** Construct a new HCascadedBiQuadFilter */
         HCascadedBiQuadFilter(HReader<T>* reader, float* coefficients, int length, size_t blocksize);
@@ -67,6 +70,14 @@ class HCascadedBiQuadFilter: public HReader<T>, public HWriter<T>
             std::vector<float> coeffs = HFilter<T>::ReadCoeffsFromFile(coeffsFilename);
 
             return new HCascadedBiQuadFilter<T>(writer, coeffs.data(), coeffs.size(), blocksize);
+        }
+
+        /** Factory method to create a new cascaded filter from the name of a file with coefficients */
+        static HCascadedBiQuadFilter<T>* Create(HWriterConsumer<T>* consumer, size_t blocksize, char* coeffsFilename)
+        {
+            std::vector<float> coeffs = HFilter<T>::ReadCoeffsFromFile(coeffsFilename);
+
+            return new HCascadedBiQuadFilter<T>(consumer, coeffs.data(), coeffs.size(), blocksize);
         }
 
         /** Factory method to create a new cascaded filter from the name of a file with coefficients */
