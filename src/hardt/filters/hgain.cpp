@@ -17,7 +17,6 @@ HGain<T>::HGain(HWriterConsumer<T>* consumer, float gain, size_t blocksize):
     _gain(gain)
 {
     HLog("HGain(HWriterConsumer*, %f, %d)", gain, blocksize);
-    consumer->SetWriter(this);
 }
 
 template <class T>

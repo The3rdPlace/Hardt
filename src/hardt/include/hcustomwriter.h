@@ -34,6 +34,12 @@ class HCustomWriter : public HWriter<T>
             _customWriteFunc(customWriteFunc)
         {}
 
+        HCustomWriter(std::function<int(T*, size_t)> customWriteFunc, HWriterConsumer<T>* consumer):
+            _customWriteFunc(customWriteFunc)
+        {
+            consumer->SetWriter(this);
+        }
+
         int Write(T* src, size_t blocksize)
         {
             return _customWriteFunc(src, blocksize);
@@ -56,14 +62,31 @@ class HCustomWriter : public HWriter<T>
             return new HCustomWriter<T>(func);
         }
 
+        static HCustomWriter<T>* Create(int(*customWriteFunc)(T*, size_t blocksize), HWriterConsumer<T>* consumer)
+        {
+            std::function<int(T*, size_t)> func = customWriteFunc;
+
+            return new HCustomWriter<T>(func, consumer);
+        }
+
         template <typename F>
         static HCustomWriter<T>* Create(F* customWriterObject, int (F::*customWriteFunc)(T*, size_t blocksize))
         {
             using std::placeholders::_1;
             using std::placeholders::_2;
-            std::function<int(T*, size_t)> func = std::bind( customWriteFunc, customWriterObject, _1, _2);;
+            std::function<int(T*, size_t)> func = std::bind( customWriteFunc, customWriterObject, _1, _2);
 
             return new HCustomWriter<T>(func);
+        }
+
+        template <typename F>
+        static HCustomWriter<T>* Create(F* customWriterObject, int (F::*customWriteFunc)(T*, size_t blocksize), HWriterConsumer<T>* consumer)
+        {
+            using std::placeholders::_1;
+            using std::placeholders::_2;
+            std::function<int(T*, size_t)> func = std::bind( customWriteFunc, customWriterObject, _1, _2);
+
+            return new HCustomWriter<T>(func, consumer);
         }
 };
 

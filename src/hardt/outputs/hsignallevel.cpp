@@ -126,6 +126,18 @@ HSignalLevel<int16_t>::HSignalLevel(HWriter<HSignalLevelResult>* writer, int ski
 template
 HSignalLevel<int32_t>::HSignalLevel(HWriter<HSignalLevelResult>* writer, int skip, int ref);
 
+template
+HSignalLevel<int8_t>::HSignalLevel(HWriterConsumer<int8_t>* consumer, int skip, int ref);
+
+template
+HSignalLevel<uint8_t>::HSignalLevel(HWriterConsumer<uint8_t>* consumer, int skip, int ref);
+
+template
+HSignalLevel<int16_t>::HSignalLevel(HWriterConsumer<int16_t>* consumer, int skip, int ref);
+
+template
+HSignalLevel<int32_t>::HSignalLevel(HWriterConsumer<int32_t>* consumer, int skip, int ref);
+
 // Output
 template
 int HSignalLevel<int8_t>::Output(int8_t* src, size_t size);

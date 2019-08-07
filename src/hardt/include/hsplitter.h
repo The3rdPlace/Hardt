@@ -31,12 +31,44 @@ class HSplitter : public HWriter<T>, public HWriterConsumer<T>
 
         bool Start()
         {
-            return _writer1->Start() && _writer2->Start();
+            if( _writer1 != NULL )
+            {
+                if( !_writer1->Start() )
+                {
+                    return false;
+                }
+            }
+
+            if( _writer2 != NULL )
+            {
+                if( !_writer2->Start() )
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         bool Stop()
         {
-            return _writer1->Stop() && _writer2->Stop();
+            if( _writer1 != NULL )
+            {
+                if( !_writer1->Stop() )
+                {
+                    return false;
+                }
+            }
+
+            if( _writer2 != NULL )
+            {
+                if( !_writer2->Stop() )
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         void SetWriter(HWriter<T>* writer)

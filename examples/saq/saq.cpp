@@ -37,7 +37,7 @@ int main(int argc, char** argv)
 {
     // Initialize the Hardt toolkit.
     // Set the last argument to 'true' to enable verbose output instead of logging to a local file
-    HInit(std::string("saq"), false);
+    HInit(std::string("saq"), true);
 
     // Show application name and and Hardt version.
     // This is not needed, just to have something on the screen
@@ -108,29 +108,42 @@ int main(int argc, char** argv)
     HGain<int16_t> volume(lowpass.Reader(), 200, BLOCKSIZE);
 
     // -------------------------------------------------------------------------------------
-    // Setup dsp chain for writers - last to first
+    // Setup dsp chain for writers - first to last
 
-    // Create a soundcard writer, to output the final decoded transmission
-    HSoundcardWriter<int16_t> soundcard(atoi(argv[2]), H_SAMPLE_RATE_48K, 1, H_SAMPLE_FORMAT_INT_16, BLOCKSIZE);
+    // Processor that reads from the last reader and writes to the first writer
+    bool terminated = false;
+    HStreamProcessor<int16_t> processor(volume.Reader(), BLOCKSIZE, &terminated);
+
+    // Create a splitter that splits the samples into two streams,
+    // one goes to the fader->soundcard and the other to the signallevel indicator
+    HSplitter<int16_t> splitter(processor.Consumer());
+
+    // Create a signal level writer so that we can show the current signal level.
+    // The signallevel writer needs a way to report results so we create a HCustomWriter that
+    // wraps a callback function defined in our code. We could also have implemented a writer
+    // that accepted the HSignalLevelResult as datatype locally - but the callback is simpler to use
+    HSignalLevel<int16_t> level(splitter.Consumer(), 2);
+    HCustomWriter<HSignalLevelResult>* result = HCustomWriter<HSignalLevelResult>::Create(callback, level.Consumer());
 
     // Create a fader that turns up the output volume when we begin to process samples.
     // This hides a naste "Click" in the beginning of the file, and other spurious noise
     // coming from filters that needs to stabilize
-    HFade<int16_t> fade(soundcard.Writer(), 0 , 1000, true, BLOCKSIZE);
+    // This writer registers as the second writer in the splitter
+    HFade<int16_t> fade(splitter.Consumer(), 0, 1000, true, BLOCKSIZE);
 
-    // Create a signal level writer so that we can show the current signal level
-    auto wr = HCustomWriter<HSignalLevelResult>::Create(callback);
-    HSignalLevel<int16_t> level(wr, 2);
-
-    // Create a splitter that splits the samples into two streams,
-    // one goes to the fader->soundcard and the other to the signallevel indicator
-    HSplitter<int16_t> splitter(&fade, &level);
+    // Create a soundcard writer, to output the final decoded transmission
+    HSoundcardWriter<int16_t> soundcard(atoi(argv[2]), H_SAMPLE_RATE_48K, 1, H_SAMPLE_FORMAT_INT_16, BLOCKSIZE, fade.Consumer());
 
     // -------------------------------------------------------------------------------------
-    // Create a processor that reads from the readers-chain and writes to the writers-chain
+    // Run untill end-of-file
 
-    // Read from last gain boost and write to the soundcard. Runs until EOF
-    bool terminated = false;
-    HStreamProcessor<int16_t> processor(&splitter, volume.Reader(), BLOCKSIZE, &terminated);
+    // Start the processor
     processor.Run();
+
+    // -------------------------------------------------------------------------------------
+    // Cleanup
+
+    // We dynamically allocated the custom result writer to output signal levels.
+    // Delete this resource
+    delete result;
 }

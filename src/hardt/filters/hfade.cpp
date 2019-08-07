@@ -37,8 +37,6 @@ HFade<T>::HFade(HWriterConsumer<T>* consumer, int initialLevel, int samples, boo
 {
     HLog("HFade(HWriterConsumer*, %d, %d, %d)", initialLevel, samples, fade);
     Init();
-
-    consumer->SetWriter(this);
 }
 
 template <class T>

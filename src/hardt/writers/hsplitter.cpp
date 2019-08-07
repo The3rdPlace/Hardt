@@ -6,18 +6,26 @@
 template <class T>
 int HSplitter<T>::Write(T* src, size_t blocksize)
 {
-    int written = _writer1->Write(src, blocksize);
-    if( written != blocksize )
+    if( _writer1 != NULL )
     {
-        HError("Incorrect write to writer 1 (%d blocks)", written);
-        return 0;
+        int written = _writer1->Write(src, blocksize);
+        if( written != blocksize )
+        {
+            HError("Incorrect write to writer 1 (%d blocks)", written);
+            return 0;
+        }
     }
-    written = _writer2->Write(src, blocksize);
-    if( written != blocksize )
+
+    if( _writer2 != NULL )
     {
-        HError("Incorrect write to writer 2 (%d blocks)", written);
-        return 0;
+        int written = _writer2->Write(src, blocksize);
+        if( written != blocksize )
+        {
+            HError("Incorrect write to writer 2 (%d blocks)", written);
+            return 0;
+        }
     }
+
     return blocksize;
 }
 

@@ -9,7 +9,7 @@
     The constructur is protected, this class cannot be instantianted directly.
 */
 template <class T>
-class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, HWriterConsumer<T>
+class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, public HWriterConsumer<T>
 {
     private:
 
