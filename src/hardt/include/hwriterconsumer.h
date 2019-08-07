@@ -9,14 +9,6 @@ class HWriterConsumer : public HObject
 {
     public:
 
-        HWriterConsumer()
-        {}
-
-        HWriterConsumer(HWriter<T>* writer)
-        {
-
-        }
-
         virtual void SetWriter(HWriter<T>* writer) = 0;
 
         HWriterConsumer<T>* Consumer()
