@@ -16,20 +16,42 @@
 */
 
 template <class T>
-class HDeMux : public HWriter<T>
+class HDeMux : public HWriter<T>, HWriterConsumer<T>
 {
     private:
 
         std::vector< HWriter<T>* > _writers;
         T** _buffers;
+        size_t _blocksize;
 
     public:
 
         HDeMux( std::vector< HWriter<T>* > writers, size_t blocksize);
+        HDeMux( HWriterConsumer<T>* consumer, size_t blocksize);
 
         ~HDeMux();
 
         int Write(T* src, size_t blocksize);
+
+        void SetWriter(HWriter<T>* writer)
+        {
+            if( _buffers != NULL )
+            {
+                for( int i = 0; i < _writers.size(); i++ )
+                {
+                    delete _buffers[i];
+                }
+                delete _buffers;
+            }
+
+            _writers.push_back(writer);
+
+            _buffers = new T*[_writers.size()];
+            for( int i = 0; i < _writers.size(); i++ )
+            {
+                _buffers[i] = new T[_blocksize / _writers.size()];
+            }
+        }
 };
 
 #endif

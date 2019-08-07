@@ -24,7 +24,7 @@
     decided upon by the implementing class.
 */
 template <class T, class O>
-class HOutput : public HChunkWriter<T>
+class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
 {
     private:
 
@@ -84,6 +84,16 @@ class HOutput : public HChunkWriter<T>
         {
         }
 
+        HOutput(HWriterConsumer<T>* consumer):
+            HChunkWriter<T>(),
+            _bufferReady(NULL),
+            _valueReady(NULL),
+            _ready(NULL),
+            _writer(NULL)
+        {
+            consumer->SetWriter(this);
+        }
+
         HOutput(std::function<void(O*, size_t)> ready):
             HChunkWriter<T>(),
             _bufferReady(ready),
@@ -91,6 +101,16 @@ class HOutput : public HChunkWriter<T>
             _ready(NULL),
             _writer(NULL)
         {
+        }
+
+        HOutput(std::function<void(O*, size_t)> ready, HWriterConsumer<T>* consumer):
+            HChunkWriter<T>(),
+            _bufferReady(ready),
+            _valueReady(NULL),
+            _ready(NULL),
+            _writer(NULL)
+        {
+            consumer->SetWriter(this);
         }
 
         HOutput(std::function<void(O)> ready):
@@ -102,6 +122,16 @@ class HOutput : public HChunkWriter<T>
         {
         }
 
+        HOutput(std::function<void(O)> ready, HWriterConsumer<T>* consumer):
+            HChunkWriter<T>(),
+            _bufferReady(NULL),
+            _valueReady(ready),
+            _ready(NULL),
+            _writer(NULL)
+        {
+            consumer->SetWriter(this);
+        }
+
         HOutput(std::function<void()> ready):
             HChunkWriter<T>(),
             _bufferReady(NULL),
@@ -109,6 +139,16 @@ class HOutput : public HChunkWriter<T>
             _ready(ready),
             _writer(NULL)
         {
+        }
+
+        HOutput(std::function<void()> ready, HWriterConsumer<T>* consumer):
+            HChunkWriter<T>(),
+            _bufferReady(NULL),
+            _valueReady(NULL),
+            _ready(ready),
+            _writer(NULL)
+        {
+            consumer->SetWriter(this);
         }
 
         HOutput(HWriter<O>* writer):
@@ -120,6 +160,16 @@ class HOutput : public HChunkWriter<T>
         {
         }
 
+        HOutput(HWriter<O>* writer, HWriterConsumer<T>* consumer):
+            HChunkWriter<T>(),
+            _bufferReady(NULL),
+            _valueReady(NULL),
+            _ready(NULL),
+            _writer(writer)
+        {
+            consumer->SetWriter(this);
+        }
+
         HOutput(int chunksize):
             HChunkWriter<T>(chunksize),
             _bufferReady(NULL),
@@ -127,6 +177,16 @@ class HOutput : public HChunkWriter<T>
             _ready(NULL),
             _writer(NULL)
         {
+        }
+
+        HOutput(int chunksize, HWriterConsumer<T>* consumer):
+            HChunkWriter<T>(chunksize),
+            _bufferReady(NULL),
+            _valueReady(NULL),
+            _ready(NULL),
+            _writer(NULL)
+        {
+            consumer->SetWriter(this);
         }
 
         HOutput(std::function<void(O*, size_t)> ready, int chunksize):
@@ -138,6 +198,16 @@ class HOutput : public HChunkWriter<T>
         {
         }
 
+        HOutput(std::function<void(O*, size_t)> ready, int chunksize, HWriterConsumer<T>* consumer):
+            HChunkWriter<T>(chunksize),
+            _bufferReady(ready),
+            _valueReady(NULL),
+            _ready(NULL),
+            _writer(NULL)
+        {
+            consumer->SetWriter(this);
+        }
+
         HOutput(std::function<void(O)> ready, int chunksize):
             HChunkWriter<T>(chunksize),
             _bufferReady(NULL),
@@ -147,12 +217,31 @@ class HOutput : public HChunkWriter<T>
         {
         }
 
+        HOutput(std::function<void(O)> ready, int chunksize, HWriterConsumer<T>* consumer):
+            HChunkWriter<T>(chunksize),
+            _bufferReady(NULL),
+            _valueReady(ready),
+            _ready(NULL),
+            _writer(NULL)
+        {
+            consumer->SetWriter(this);
+        }
+
         HOutput(std::function<void()> ready, int chunksize):
             HChunkWriter<T>(chunksize),
             _bufferReady(NULL),
             _valueReady(NULL),
             _ready(ready)
         {
+        }
+
+        HOutput(std::function<void()> ready, int chunksize, HWriterConsumer<T>* consumer):
+            HChunkWriter<T>(chunksize),
+            _bufferReady(NULL),
+            _valueReady(NULL),
+            _ready(ready)
+        {
+            consumer->SetWriter(this);
         }
 
         HOutput(HWriter<O>* writer, int chunksize):
@@ -164,12 +253,27 @@ class HOutput : public HChunkWriter<T>
         {
         }
 
+        HOutput(HWriter<O>* writer, int chunksize, HWriterConsumer<T>* consumer):
+            HChunkWriter<T>(chunksize),
+            _bufferReady(NULL),
+            _valueReady(NULL),
+            _ready(NULL),
+            _writer(writer)
+        {
+            consumer->SetWriter(this);
+        }
+
         int WriteChunk(T* src, size_t blocksize)
         {
             return Output(src, blocksize);
         }
 
         virtual int Output(T* src, size_t blocksize) = 0;
+
+        void SetWriter(HWriter<O>* writer)
+        {
+            _writer = writer;
+        }
 };
 
 #endif

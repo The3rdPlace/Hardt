@@ -60,19 +60,6 @@ int HWavWriter<T>::Write(T* dest, size_t blocksize)
 Explicit instantiation
 ********************************************************************/
 
-// HWavWriter()
-template
-HWavWriter<int8_t>::HWavWriter(const char* filename, H_SAMPLE_FORMAT format, int channels, H_SAMPLE_RATE rate);
-
-template
-HWavWriter<uint8_t>::HWavWriter(const char* filename, H_SAMPLE_FORMAT format, int channels, H_SAMPLE_RATE rate);
-
-template
-HWavWriter<int16_t>::HWavWriter(const char* filename, H_SAMPLE_FORMAT format, int channels, H_SAMPLE_RATE rate);
-
-template
-HWavWriter<int32_t>::HWavWriter(const char* filename, H_SAMPLE_FORMAT format, int channels, H_SAMPLE_RATE rate);
-
 // Start()
 template
 bool HWavWriter<int8_t>::Start();

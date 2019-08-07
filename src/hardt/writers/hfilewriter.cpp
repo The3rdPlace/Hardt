@@ -13,6 +13,13 @@ HFileWriter<T>::HFileWriter(const char* filename):
 {}
 
 template <class T>
+HFileWriter<T>::HFileWriter(const char* filename, HWriterConsumer<T>* consumer):
+    _filename(filename)
+{
+    consumer->SetWriter(this);
+}
+
+template <class T>
 int HFileWriter<T>::Write(T* src, size_t blocksize)
 {
     this->Metrics.Writes++;
@@ -72,6 +79,24 @@ HFileWriter<long>::HFileWriter(const char* path);
 
 template
 HFileWriter<double>::HFileWriter(const char* path);
+
+template
+HFileWriter<int8_t>::HFileWriter(const char* path, HWriterConsumer<int8_t>* consumer);
+
+template
+HFileWriter<uint8_t>::HFileWriter(const char* path, HWriterConsumer<uint8_t>* consumer);
+
+template
+HFileWriter<int16_t>::HFileWriter(const char* path, HWriterConsumer<int16_t>* consumer);
+
+template
+HFileWriter<int32_t>::HFileWriter(const char* path, HWriterConsumer<int32_t>* consumer);
+
+template
+HFileWriter<long>::HFileWriter(const char* path, HWriterConsumer<long>* consumer);
+
+template
+HFileWriter<double>::HFileWriter(const char* path, HWriterConsumer<double>* consumer);
 
 // Start()
 template

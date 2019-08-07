@@ -19,7 +19,23 @@ HSoundcardWriter<T>::HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channe
     _isStarted(false)
 {
     HLog("HSoundcardWriter(device=%d, rate=%d, channels=%d, format=%d, framesPerBuffer=%d)", device, rate, channels, format, framesPerBuffer);
+    Init(device, rate, channels, format, framesPerBuffer);
+}
 
+template <class T>
+HSoundcardWriter<T>::HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer, HWriterConsumer<T>* consumer):
+    _isInitialized(false),
+    _isStarted(false)
+{
+    HLog("HSoundcardWriter(device=%d, rate=%d, channels=%d, format=%d, framesPerBuffer=%d)", device, rate, channels, format, framesPerBuffer);
+    Init(device, rate, channels, format, framesPerBuffer);
+
+    consumer->SetWriter(this);
+}
+
+template <class T>
+void HSoundcardWriter<T>::Init(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer)
+{
     // Initialize resources used by the callback function
     _cbd.channels = channels;
     _cbd.framesize = framesPerBuffer;
@@ -238,16 +254,28 @@ Explicit instantiation
 
 // HSoundcardWriter()
 template
-HSoundcardWriter<int8_t>::HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer = DEFAULT_FRAMESIZE);
+HSoundcardWriter<int8_t>::HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer);
 
 template
-HSoundcardWriter<uint8_t>::HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer = DEFAULT_FRAMESIZE);
+HSoundcardWriter<uint8_t>::HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer);
 
 template
-HSoundcardWriter<int16_t>::HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer = DEFAULT_FRAMESIZE);
+HSoundcardWriter<int16_t>::HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer);
 
 template
-HSoundcardWriter<int32_t>::HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer = DEFAULT_FRAMESIZE);
+HSoundcardWriter<int32_t>::HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer);
+
+template
+HSoundcardWriter<int8_t>::HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer, HWriterConsumer<int8_t>* consumer);
+
+template
+HSoundcardWriter<uint8_t>::HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer, HWriterConsumer<uint8_t>* consumer);
+
+template
+HSoundcardWriter<int16_t>::HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer, HWriterConsumer<int16_t>* consumer);
+
+template
+HSoundcardWriter<int32_t>::HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer, HWriterConsumer<int32_t>* consumer);
 
 // ~HSoundcardWriter()
 template

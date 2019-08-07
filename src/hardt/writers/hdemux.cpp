@@ -5,7 +5,8 @@
 
 template <class T>
 HDeMux<T>::HDeMux( std::vector< HWriter<T>* > writers, size_t blocksize):
-    _writers(writers)
+    _writers(writers),
+    _blocksize(blocksize)
 {
     HLog("HDeMux(%d writers)", writers.size());
 
@@ -14,6 +15,16 @@ HDeMux<T>::HDeMux( std::vector< HWriter<T>* > writers, size_t blocksize):
     {
         _buffers[i] = new T[blocksize / writers.size()];
     }
+}
+
+template <class T>
+HDeMux<T>::HDeMux( HWriterConsumer<T>* consumer, size_t blocksize):
+    _buffers(NULL),
+    _blocksize(blocksize)
+{
+    HLog("HDeMux(consumer)");
+
+    consumer->SetWriter(this);
 }
 
 template <class T>
@@ -71,6 +82,18 @@ HDeMux<int16_t>::HDeMux( std::vector< HWriter<int16_t>* > writers, size_t blocks
 
 template
 HDeMux<int32_t>::HDeMux( std::vector< HWriter<int32_t>* > writers, size_t blocksize);
+
+template
+HDeMux<int8_t>::HDeMux( HWriterConsumer<int8_t>* consumer, size_t blocksize);
+
+template
+HDeMux<uint8_t>::HDeMux( HWriterConsumer<uint8_t>* consumer, size_t blocksize);
+
+template
+HDeMux<int16_t>::HDeMux( HWriterConsumer<int16_t>* consumer, size_t blocksize);
+
+template
+HDeMux<int32_t>::HDeMux( HWriterConsumer<int32_t>* consumer, size_t blocksize);
 
 // ~HDeMux()
 template

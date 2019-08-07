@@ -5,7 +5,6 @@
 #include <condition_variable>
 
 #define NUMBER_OF_BUFFERS 4
-#define DEFAULT_FRAMESIZE 1024
 
 /**
     Send samples to a soundcard for audible output
@@ -39,9 +38,12 @@ class HSoundcardWriter : public HWriter<T>
         bool Start();
         bool Stop();
 
+        void Init(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer);
+
     public:
 
-        HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer = DEFAULT_FRAMESIZE);
+        HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer);
+        HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer, HWriterConsumer<T>* consumer);
         ~HSoundcardWriter();
         int Write(T* src, size_t blocksize);
 

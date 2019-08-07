@@ -20,8 +20,37 @@ HGoertzelFilter<T>::HGoertzelFilter(int size, int average, float bin, HWriter<HG
 }
 
 template <class T>
+HGoertzelFilter<T>::HGoertzelFilter(int size, int average, float bin, HWriterConsumer<T>* consumer, HWindow<T>* window):
+    HOutput<T, HGoertzelFilterResult>(size, consumer),
+    _size(size),
+    _average(average),
+    _bin(bin),
+    _count(0),
+    _window(window),
+    _tempResult(0)
+{
+    HLog("HGoerzelFilter(%f, %d, %f, ...)", size, average, bin);
+    Init();
+}
+
+template <class T>
 HGoertzelFilter<T>::HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<HGoertzelFilterResult>* writer, HWindow<T>* window):
     HOutput<T, HGoertzelFilterResult>(writer, size),
+    _size(size),
+    _average(average),
+    _bin( (float) frequency / ((float) rate / (float) size) ),
+    _count(0),
+    _window(window),
+    _tempResult(0)
+{
+    HLog("HGoerzelFilter(%f, %d, %d, %d, ...)", size, average, rate, frequency);
+    HLog("Bin number set to %f for frequency %d", _bin, frequency);
+    Init();
+}
+
+template <class T>
+HGoertzelFilter<T>::HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriterConsumer<T>* consumer, HWindow<T>* window):
+    HOutput<T, HGoertzelFilterResult>(size, consumer),
     _size(size),
     _average(average),
     _bin( (float) frequency / ((float) rate / (float) size) ),
@@ -114,6 +143,18 @@ template
 HGoertzelFilter<int32_t>::HGoertzelFilter(int size, int average, float bin, HWriter<HGoertzelFilterResult>* writer, HWindow<int32_t>* window);
 
 template
+HGoertzelFilter<int8_t>::HGoertzelFilter(int size, int average, float bin, HWriterConsumer<int8_t>* consumer, HWindow<int8_t>* window);
+
+template
+HGoertzelFilter<uint8_t>::HGoertzelFilter(int size, int average, float bin, HWriterConsumer<uint8_t>* consumer, HWindow<uint8_t>* window);
+
+template
+HGoertzelFilter<int16_t>::HGoertzelFilter(int size, int average, float bin, HWriterConsumer<int16_t>* consumer, HWindow<int16_t>* window);
+
+template
+HGoertzelFilter<int32_t>::HGoertzelFilter(int size, int average, float bin, HWriterConsumer<int32_t>* consumer, HWindow<int32_t>* window);
+
+template
 HGoertzelFilter<int8_t>::HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<HGoertzelFilterResult>* writer, HWindow<int8_t>* window);
 
 template
@@ -124,6 +165,18 @@ HGoertzelFilter<int16_t>::HGoertzelFilter(int size, int average, H_SAMPLE_RATE r
 
 template
 HGoertzelFilter<int32_t>::HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<HGoertzelFilterResult>* writer, HWindow<int32_t>* window);
+
+template
+HGoertzelFilter<int8_t>::HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriterConsumer<int8_t>* consumer, HWindow<int8_t>* window);
+
+template
+HGoertzelFilter<uint8_t>::HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriterConsumer<uint8_t>* consumer, HWindow<uint8_t>* window);
+
+template
+HGoertzelFilter<int16_t>::HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriterConsumer<int16_t>* consumer, HWindow<int16_t>* window);
+
+template
+HGoertzelFilter<int32_t>::HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriterConsumer<int32_t>* consumer, HWindow<int32_t>* window);
 
 // Output
 template

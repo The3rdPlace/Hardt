@@ -12,7 +12,24 @@ HSignalLevel<T>::HSignalLevel(HWriter<HSignalLevelResult>* writer, int skip, int
     _avgPos(0)
 {
     HLog("HSignalLevel(...)");
+    Init();
+}
 
+template <class T>
+HSignalLevel<T>::HSignalLevel(HWriterConsumer<T>* consumer, int skip, int ref):
+    HOutput<T, HSignalLevelResult>(consumer),
+    _blocksReceived(0),
+    _skip(skip),
+    _ref(ref),
+    _avgPos(0)
+{
+    HLog("HSignalLevel(...)");
+    Init();
+}
+
+template <class T>
+void HSignalLevel<T>::Init()
+{
     _factor = (float) (std::numeric_limits<T>::is_signed ? std::numeric_limits<T>::max() : std::numeric_limits<T>::max() / 2) / 508;
     for( int i = 0; i < AVG_BUFFER_LENGTH; i++ )
     {

@@ -46,7 +46,9 @@ class HGoertzelFilter : public HOutput<T, HGoertzelFilterResult>
     public:
 
         HGoertzelFilter(int size, int average, float bin, HWriter<HGoertzelFilterResult>* writer, HWindow<T>* window);
+        HGoertzelFilter(int size, int average, float bin, HWriterConsumer<T>* consumer, HWindow<T>* window);
         HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<HGoertzelFilterResult>* writer, HWindow<T>* window);
+        HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriterConsumer<T>* consumer, HWindow<T>* window);
 
         ~HGoertzelFilter()
         {

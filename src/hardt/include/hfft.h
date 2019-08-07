@@ -34,9 +34,12 @@ class HFft : public HOutput<T, HFftResults>
 
         T* _buffer;
 
+        void Init();
+
     public:
 
         HFft(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* window);
+        HFft(int size, int average, HWriterConsumer<T>* consumer, HWindow<T>* window);
 
         ~HFft()
         {

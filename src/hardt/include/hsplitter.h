@@ -6,7 +6,7 @@
     go, simultaneously to two chains
 */
 template <class T>
-class HSplitter : public HWriter<T>
+class HSplitter : public HWriter<T>, public HWriterConsumer<T>
 {
     private:
 
@@ -20,6 +20,13 @@ class HSplitter : public HWriter<T>
             _writer2(writer2)
         {}
 
+        HSplitter(HWriterConsumer<T>* consumer):
+            _writer1(NULL),
+            _writer2(NULL)
+        {
+            consumer->SetWriter(this);
+        }
+
         int Write(T* src, size_t blocksize);
 
         bool Start()
@@ -30,6 +37,22 @@ class HSplitter : public HWriter<T>
         bool Stop()
         {
             return _writer1->Stop() && _writer2->Stop();
+        }
+
+        void SetWriter(HWriter<T>* writer)
+        {
+            if( _writer1 == NULL )
+            {
+                _writer1 = writer;
+            }
+            else if( _writer2 == NULL )
+            {
+                _writer2 = writer;
+            }
+            else
+            {
+                throw new HInitializationException("HSplitter already has two writers");
+            }
         }
 };
 

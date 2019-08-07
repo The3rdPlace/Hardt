@@ -20,6 +20,10 @@ class HFileWriter : public HWriter<T>
         /** Construct a new HFileWriter with the given filename */
         HFileWriter(const char* filename);
 
+        /** Construct a new HFileWriter with the given filename and register
+            with the given consumer */
+        HFileWriter(const char* filename, HWriterConsumer<T>* consumer);
+
         /** Write to the file */
         virtual int Write(T* src, size_t blocksize);
 

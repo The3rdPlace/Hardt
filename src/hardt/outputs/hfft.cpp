@@ -20,18 +20,35 @@ HFft<T>::HFft(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* w
     _window(window)
 {
     HLog("HFft(%d, %d, ...)", size, average);
+    Init();
+}
 
+template <class T>
+HFft<T>::HFft(int size, int average, HWriterConsumer<T>* consumer, HWindow<T>* window):
+    HOutput<T, HFftResults>(size, consumer),
+    _size(size),
+    _average(average),
+    _count(0),
+    _window(window)
+{
+    HLog("HFft(%d, %d, ...)", size, average);
+    Init();
+}
+
+template <class T>
+void HFft<T>::Init()
+{
     // Allocate a buffer for the spectrum and phase values
-    _spectrum = new double[size];
-    memset((void*) _spectrum, 0, size * sizeof(double));
-    _result = new Complex[size];
-    memset((void*) _result, 0, size * sizeof(Complex));
+    _spectrum = new double[_size];
+    memset((void*) _spectrum, 0, _size * sizeof(double));
+    _result = new Complex[_size];
+    memset((void*) _result, 0, _size * sizeof(Complex));
 
     // Allocate a buffer for intermediate results
-    _buffer = new T[size];
+    _buffer = new T[_size];
 
     // Set window size
-    _window->SetSize(size);
+    _window->SetSize(_size);
 }
 
 void fft(CArray& x)
@@ -128,6 +145,18 @@ HFft<int16_t>::HFft(int size, int average, HWriter<HFftResults>* writer, HWindow
 
 template
 HFft<int32_t>::HFft(int size, int average, HWriter<HFftResults>* writer, HWindow<int32_t>* window);
+
+template
+HFft<int8_t>::HFft(int size, int average, HWriterConsumer<int8_t>* consumer, HWindow<int8_t>* window);
+
+template
+HFft<uint8_t>::HFft(int size, int average, HWriterConsumer<uint8_t>* consumer, HWindow<uint8_t>* window);
+
+template
+HFft<int16_t>::HFft(int size, int average, HWriterConsumer<int16_t>* consumer, HWindow<int16_t>* window);
+
+template
+HFft<int32_t>::HFft(int size, int average, HWriterConsumer<int32_t>* consumer, HWindow<int32_t>* window);
 
 template
 int HFft<int8_t>::Output(int8_t* src, size_t size);

@@ -47,9 +47,12 @@ class HSignalLevel : public HOutput<T, HSignalLevelResult>
 
         float _factor;
 
+        void Init();
+
     public:
 
         HSignalLevel(HWriter<HSignalLevelResult>* writer, int skip, int ref = 54);
+        HSignalLevel(HWriterConsumer<T>* consumer, int skip, int ref = 54);
 
         int Output(T* src, size_t blocksize);
 };
