@@ -23,10 +23,16 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
 
     protected:
 
+        /** Construct a new HFilter that writes to a writer */
         HFilter(HWriter<T>* writer, size_t blocksize);
+
+        /** Construct a new HFilter that registers with an upstream writer */
         HFilter(HWriterConsumer<T>* consumer, size_t blocksize);
+
+        /** Construct a new HFilter that reads from a read */
         HFilter(HReader<T>* reader, size_t blocksize);
 
+        /** Implements HWriterConsumer::SetWriter() */
         void SetWriter(HWriter<T>* writer)
         {
             _writer = writer;
@@ -34,18 +40,27 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
 
     public:
 
+        /** Default destructor */
         ~HFilter();
 
+        /** Write a block of samples */
         int Write(T* src, size_t blocksize);
+
+        /** Read a block of samples */
         int Read(T* dest, size_t blocksize);
 
+        /** Run a block of samples through the filter */
         virtual void Filter(T* src, T* dest, size_t blocksize) = 0;
 
+        /** Initialize before first read/write */
         bool Start();
+
+        /** Cleanup after last read/write */
         bool Stop();
 
     public:
 
+        /** Utility function that reads a list of floating point coefficients from a file */
         static std::vector<float> ReadCoeffsFromFile(char* filename)
         {
             std::vector<float> coeffs;

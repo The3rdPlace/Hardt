@@ -28,15 +28,22 @@ class HMultiplier : public HReader<T>
 
     public:
 
+        /** Construct a new HMultiplier (frequency mixer) */
         HMultiplier(HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, size_t blocksize);
 
+        /** Default destructor */
         ~HMultiplier();
 
+        /** Read a block of samples */
         int Read(T* dest, size_t blocksize);
 
+        /** Initialize before first read */
         bool Start();
+
+        /** Cleanup after last read */
         bool Stop();
 
+        /** Set the frequency of the local oscillator that feeds one of the inputs of the mixer */
         void SetFrequency(int frequency);
 };
 

@@ -34,6 +34,7 @@ class HInitializationException : public HException
 {
     public:
 
+        /** Construct a new HInitializationException with a reason */
         HInitializationException(const char* reason);
 };
 
@@ -47,6 +48,7 @@ class HNetworkException : public HException
 {
     public:
 
+        /** Construct a new HNetworkException with a reason */
         HNetworkException(const char* reason);
 };
 
@@ -60,6 +62,7 @@ class HFileIOException : public HException
 {
     public:
 
+        /** Construct a new HFileIOException with a reason */
         HFileIOException(const char* reason);
 };
 
@@ -73,6 +76,7 @@ class HAudioIOException : public HException
 {
     public:
 
+        /** Construct a new HAudioIOException with a reason */
         HAudioIOException(const char* reason);
 };
 
@@ -114,6 +118,7 @@ class HConverterIOException : public HException
 {
     public:
 
+        /** Construct a new HConverterIOException */
         HConverterIOException(const char* reason);
 };
 
@@ -127,6 +132,7 @@ class HFilterIOException : public HException
 {
     public:
 
+        /** Construct a new HFilterIOException with a reason */
         HFilterIOException(const char* reason);
 };
 
@@ -140,6 +146,7 @@ class HFilterInitializationException : public HException
 {
     public:
 
+        // Construct a new HFilterInitializationException with a reason */
         HFilterInitializationException(const char* reason);
 };
 

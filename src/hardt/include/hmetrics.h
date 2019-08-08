@@ -14,11 +14,22 @@
 */
 struct HMetrics
 {
+    /** Bytes (not samples) written */
     unsigned long BytesOut;
+
+    /** Bytes (not samples) read */
     unsigned long BytesIn;
+
+    /** Blocks written */
     unsigned long BlocksOut;
+
+    /** Blocks read */
     unsigned long BlocksIn;
+
+    /** Writes */
     unsigned long Writes;
+
+    /** Reads */
     unsigned long Reads;
 };
 

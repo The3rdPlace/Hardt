@@ -18,13 +18,19 @@ class HLinearMixer : public HReader<T>
 
     public:
 
+        /** Construt a new HLinearMixer */
         HLinearMixer(HReader<T>* reader_1, HReader<T>* reader_2, size_t blocksize);
 
+        /** Default destructor */
         ~HLinearMixer();
 
+        /* Read a block of samples */
         int Read(T* dest, size_t blocksize);
 
+        /** Initialize before first read */
         bool Start();
+
+        /** Cleanup after last read */
         bool Stop();
 };
 

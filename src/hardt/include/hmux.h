@@ -24,10 +24,13 @@ class HMux : public HReader<T>
 
     public:
 
+        /** Construct a new HMux */
         HMux( std::vector< HReader<T>* > readers, size_t blocksize);
 
+        /** Default destructor */
         ~HMux();
 
+        /** Read a block of samples */
         int Read(T* dest, size_t blocksize);
 };
 
