@@ -14,7 +14,6 @@ class HSoundcardWriter : public HWriter<T>
 {
     private:
 
-        // Data accessed by the (static) callback function
         struct CallbackData
         {
             int channels;
@@ -26,15 +25,11 @@ class HSoundcardWriter : public HWriter<T>
             std::condition_variable lock;
         } _cbd;
 
-        // The sample stream from the soundcard
         PaStream *_stream;
         bool _isStarted;
 
-        // Housekeeping
         bool _isInitialized;
 
-        // Implement Start() and Stop() so that we can start sampling whe
-        // data is needed, and stop again when the reader is no longer active
         bool Start();
         bool Stop();
 
@@ -42,11 +37,19 @@ class HSoundcardWriter : public HWriter<T>
 
     public:
 
+        /** Construct a new HSoundcardWriter */
         HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer);
+
+        /** Construct a new HSoundcardWriter and let it register with the upstream writer using the HWriterConsumer scheme */
         HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer, HWriterConsumer<T>* consumer);
+
+        /** Default destructor */
         ~HSoundcardWriter();
+
+        /** Write a block of samples to the soundcard */
         int Write(T* src, size_t blocksize);
 
+        /** Callback method, should only be called by the PortAudio layer */
         static int callback( const void *inputBuffer, void *outputBuffer,
                                    unsigned long framesPerBuffer,
                                    const PaStreamCallbackTimeInfo* timeInfo,

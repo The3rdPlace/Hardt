@@ -41,9 +41,13 @@ class HProcessor : public HWriterConsumer<T>
 
     protected:
 
+        /** Construct a new HProcessor */
         HProcessor(HWriter<T>* writer, HReader<T>* reader, size_t blocksize, bool* terminationToken);
+
+        /** Construct a new HProcessor */
         HProcessor(HReader<T>* reader, size_t blocksize, bool* terminationToken);
 
+        /** Default destructor */
         ~HProcessor();
 
         void SetWriter(HWriter<T>* writer)

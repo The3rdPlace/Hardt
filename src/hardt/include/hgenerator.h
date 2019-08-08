@@ -32,12 +32,18 @@ class HGenerator : public HReader<T>
 
     protected:
 
+        /** Construct a new HGenerator */
         HGenerator(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase = 0);
+
+        /** Default destructor */
         ~HGenerator();
 
     public:
 
+        /** Read samples from the generator */
         int Read(T* dest, size_t blocksize);
+
+        /** Calculate and fill generator sample lookup table */
         void Calculate(int frequency, T amplitude, float phase);
 
 };

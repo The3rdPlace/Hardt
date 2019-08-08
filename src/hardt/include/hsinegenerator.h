@@ -10,6 +10,7 @@ class HSineGenerator : public HGenerator<T>
 {
     public:
 
+        /** Construct a new sine generator with the given frequency and amplitude */
         HSineGenerator(H_SAMPLE_RATE rate, int frequency, T amplitude);
 };
 

@@ -21,12 +21,25 @@
 */
 struct HSignalLevelResult
 {
+    /** Highest sample value seen in the processed block(s) */
     int Max;
+
+    /** Smallest sample value seen in the processed block(s) */
     int Min;
+
+    /** Average value of highest sample value seen in the lsat 10 processed blocks */
     int Avg;
+
+    /** The highest sample value, in DB */
     int Db;
+
+    /** The average sample value over 10 blocks, in DB */
     int AvgDb;
+
+    /** The highest sample value, in S degrees */
     int S;
+
+    /** The average sample value over 10 blocks, in S degress */
     int AvgS;
 };
 
@@ -51,9 +64,14 @@ class HSignalLevel : public HOutput<T, HSignalLevelResult>
 
     public:
 
+        /** Construct a new HSignalLevel object */
         HSignalLevel(HWriter<HSignalLevelResult>* writer, int skip, int ref = 54);
+
+        /** Construct a new HSignalLevel object and register with the upstream writer by the
+            HWriterConsumer scheme */
         HSignalLevel(HWriterConsumer<T>* consumer, int skip, int ref = 54);
 
+        /** Process a block of samples */
         int Output(T* src, size_t blocksize);
 };
 

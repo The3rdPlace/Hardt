@@ -41,10 +41,16 @@ class HSoundcardReader : public HReader<T>
 
     public:
 
+        /** Construct a new HSoundcardReader */
         HSoundcardReader(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer = DEFAULT_FRAMESIZE);
+
+        /** Default destructor */
         ~HSoundcardReader();
+
+        /** Read a block of samples from the soundcard */
         int Read(T* dest, size_t blocksize);
 
+        /** Callback method, should only be called by the PortAudio layer */
         static int callback( const void *inputBuffer, void *outputBuffer,
                                    unsigned long framesPerBuffer,
                                    const PaStreamCallbackTimeInfo* timeInfo,

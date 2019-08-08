@@ -9,8 +9,10 @@ class HWriterConsumer : public HObject
 {
     public:
 
+        /** This function must be implemented if you inherit this interface */
         virtual void SetWriter(HWriter<T>* writer) = 0;
 
+        /** Return a pointer to this consumer */
         HWriterConsumer<T>* Consumer()
         {
             return (HWriterConsumer<T>*) this;

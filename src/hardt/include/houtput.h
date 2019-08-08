@@ -35,6 +35,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
 
     public:
 
+        /** A result is ready, buffer has the result and the length of the result is given by blocksize */
         void Ready(O* buffer, size_t blocksize)
         {
             if( _bufferReady != NULL )
@@ -47,6 +48,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
             }
         }
 
+        /** A result is ready, the result has the value given by value */
         void Ready(O value)
         {
             if( _valueReady != NULL )
@@ -55,6 +57,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
             }
         }
 
+        /** A result is ready, but no data is available (this behaves more like an event) */
         void Ready()
         {
             if( _ready != NULL )
@@ -63,11 +66,13 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
             }
         }
 
+        /** Initialize before first write */
         bool Start()
         {
             return _writer != NULL ?_writer->Start() : true;
         }
 
+        /** Cleanup after last write */
         bool Stop()
         {
             return _writer != NULL ?_writer->Stop() : true;
@@ -75,6 +80,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
 
     public:
 
+        /** Construct a new HOutput */
         HOutput():
             HChunkWriter<T>(),
             _bufferReady(NULL),
@@ -84,6 +90,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
         {
         }
 
+        /** Construct a new HOutput that registers with an upstream writer */
         HOutput(HWriterConsumer<T>* consumer):
             HChunkWriter<T>(),
             _bufferReady(NULL),
@@ -94,6 +101,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
             consumer->SetWriter(this);
         }
 
+        /** Construct a new HOutput that calls a function with a result pointer and the length of the result */
         HOutput(std::function<void(O*, size_t)> ready):
             HChunkWriter<T>(),
             _bufferReady(ready),
@@ -103,6 +111,8 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
         {
         }
 
+        /** Construct a new HOutput that calls a function with a result pointer and the length of the result.
+            The HOutput registers with the upstream writer */
         HOutput(std::function<void(O*, size_t)> ready, HWriterConsumer<T>* consumer):
             HChunkWriter<T>(),
             _bufferReady(ready),
@@ -113,6 +123,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
             consumer->SetWriter(this);
         }
 
+        /** Construct a new HOutput that calls a function with an int value */
         HOutput(std::function<void(O)> ready):
             HChunkWriter<T>(),
             _bufferReady(NULL),
@@ -122,6 +133,8 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
         {
         }
 
+        /** Construct a new HOutput that calls a function with an int value.
+            The HOutput registers with the upstream writer */
         HOutput(std::function<void(O)> ready, HWriterConsumer<T>* consumer):
             HChunkWriter<T>(),
             _bufferReady(NULL),
@@ -132,6 +145,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
             consumer->SetWriter(this);
         }
 
+        /** Construct a new HOutput that calls a function */
         HOutput(std::function<void()> ready):
             HChunkWriter<T>(),
             _bufferReady(NULL),
@@ -141,6 +155,8 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
         {
         }
 
+        /** Construct a new HOutput that calls a function.
+            The HOutput registers with the upstream writer */
         HOutput(std::function<void()> ready, HWriterConsumer<T>* consumer):
             HChunkWriter<T>(),
             _bufferReady(NULL),
@@ -151,6 +167,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
             consumer->SetWriter(this);
         }
 
+        /** Construct a new HOutput */
         HOutput(HWriter<O>* writer):
             HChunkWriter<T>(),
             _bufferReady(NULL),
@@ -160,6 +177,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
         {
         }
 
+        /** Construct a new HOutput */
         HOutput(HWriter<O>* writer, HWriterConsumer<T>* consumer):
             HChunkWriter<T>(),
             _bufferReady(NULL),
@@ -170,6 +188,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
             consumer->SetWriter(this);
         }
 
+        /** Construct a new HOutput */
         HOutput(int chunksize):
             HChunkWriter<T>(chunksize),
             _bufferReady(NULL),
@@ -179,6 +198,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
         {
         }
 
+        /** Construct a new HOutput */
         HOutput(int chunksize, HWriterConsumer<T>* consumer):
             HChunkWriter<T>(chunksize),
             _bufferReady(NULL),
@@ -189,6 +209,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
             consumer->SetWriter(this);
         }
 
+        /** Construct a new HOutput */
         HOutput(std::function<void(O*, size_t)> ready, int chunksize):
             HChunkWriter<T>(chunksize),
             _bufferReady(ready),
@@ -198,6 +219,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
         {
         }
 
+        /** Construct a new HOutput */
         HOutput(std::function<void(O*, size_t)> ready, int chunksize, HWriterConsumer<T>* consumer):
             HChunkWriter<T>(chunksize),
             _bufferReady(ready),
@@ -208,6 +230,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
             consumer->SetWriter(this);
         }
 
+        /** Construct a new HOutput */
         HOutput(std::function<void(O)> ready, int chunksize):
             HChunkWriter<T>(chunksize),
             _bufferReady(NULL),
@@ -217,6 +240,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
         {
         }
 
+        /** Construct a new HOutput */
         HOutput(std::function<void(O)> ready, int chunksize, HWriterConsumer<T>* consumer):
             HChunkWriter<T>(chunksize),
             _bufferReady(NULL),
@@ -227,6 +251,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
             consumer->SetWriter(this);
         }
 
+        /** Construct a new HOutput */
         HOutput(std::function<void()> ready, int chunksize):
             HChunkWriter<T>(chunksize),
             _bufferReady(NULL),
@@ -235,6 +260,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
         {
         }
 
+        /** Construct a new HOutput */
         HOutput(std::function<void()> ready, int chunksize, HWriterConsumer<T>* consumer):
             HChunkWriter<T>(chunksize),
             _bufferReady(NULL),
@@ -244,6 +270,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
             consumer->SetWriter(this);
         }
 
+        /** Construct a new HOutput */
         HOutput(HWriter<O>* writer, int chunksize):
             HChunkWriter<T>(chunksize),
             _bufferReady(NULL),
@@ -253,6 +280,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
         {
         }
 
+        /** Construct a new HOutput */
         HOutput(HWriter<O>* writer, int chunksize, HWriterConsumer<T>* consumer):
             HChunkWriter<T>(chunksize),
             _bufferReady(NULL),
@@ -263,13 +291,16 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
             consumer->SetWriter(this);
         }
 
+        /** Write a chunk of samples */
         int WriteChunk(T* src, size_t blocksize)
         {
             return Output(src, blocksize);
         }
 
+        /** Process this chunk of samples */
         virtual int Output(T* src, size_t blocksize) = 0;
 
+        /** Implements HWriterConsumer::SetWriter */
         void SetWriter(HWriter<O>* writer)
         {
             _writer = writer;

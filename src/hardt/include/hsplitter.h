@@ -15,11 +15,14 @@ class HSplitter : public HWriter<T>, public HWriterConsumer<T>
 
     public:
 
+        /** Construct a new HSplitter */
         HSplitter(HWriter<T>* writer1, HWriter<T>* writer2):
             _writer1(writer1),
             _writer2(writer2)
         {}
 
+        /** Construct a new HSplitter which will later receive its
+            writers via the HWriterConsumer scheme */
         HSplitter(HWriterConsumer<T>* consumer):
             _writer1(NULL),
             _writer2(NULL)
@@ -27,8 +30,10 @@ class HSplitter : public HWriter<T>, public HWriterConsumer<T>
             consumer->SetWriter(this);
         }
 
+        /** Write a block of samples */
         int Write(T* src, size_t blocksize);
 
+        /** Initialize before first write */
         bool Start()
         {
             if( _writer1 != NULL )
@@ -50,6 +55,7 @@ class HSplitter : public HWriter<T>, public HWriterConsumer<T>
             return true;
         }
 
+        /** Cleanup after last write */
         bool Stop()
         {
             if( _writer1 != NULL )
@@ -71,6 +77,7 @@ class HSplitter : public HWriter<T>, public HWriterConsumer<T>
             return true;
         }
 
+        /** Implements HWriterConsumer::SetWriter. Register writers for the splitter */
         void SetWriter(HWriter<T>* writer)
         {
             if( _writer1 == NULL )
