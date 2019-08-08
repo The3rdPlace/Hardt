@@ -167,7 +167,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
             consumer->SetWriter(this);
         }
 
-        /** Construct a new HOutput */
+        /** Construct a new HOutput that writes a result to a writer */
         HOutput(HWriter<O>* writer):
             HChunkWriter<T>(),
             _bufferReady(NULL),
@@ -177,7 +177,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
         {
         }
 
-        /** Construct a new HOutput */
+        /** Construct a new HOutput that writes to a writer and registers with the upstream writer */
         HOutput(HWriter<O>* writer, HWriterConsumer<T>* consumer):
             HChunkWriter<T>(),
             _bufferReady(NULL),
@@ -188,7 +188,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
             consumer->SetWriter(this);
         }
 
-        /** Construct a new HOutput */
+        /** Construct a new HOutput that processes input in chunks */
         HOutput(int chunksize):
             HChunkWriter<T>(chunksize),
             _bufferReady(NULL),
@@ -198,7 +198,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
         {
         }
 
-        /** Construct a new HOutput */
+        /** Construct a new HOutput that processes input in chunks and registers with the upstream writer*/
         HOutput(int chunksize, HWriterConsumer<T>* consumer):
             HChunkWriter<T>(chunksize),
             _bufferReady(NULL),
@@ -209,7 +209,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
             consumer->SetWriter(this);
         }
 
-        /** Construct a new HOutput */
+        /** Construct a new HOutput that processes input in chunks, then calls a function with a result object and the size of the object */
         HOutput(std::function<void(O*, size_t)> ready, int chunksize):
             HChunkWriter<T>(chunksize),
             _bufferReady(ready),
@@ -219,7 +219,8 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
         {
         }
 
-        /** Construct a new HOutput */
+        /** Construct a new HOutput that processes input in chunks, then calls a function with a result object and the size of the object.
+            The output registers with the upstream writer */
         HOutput(std::function<void(O*, size_t)> ready, int chunksize, HWriterConsumer<T>* consumer):
             HChunkWriter<T>(chunksize),
             _bufferReady(ready),
@@ -230,7 +231,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
             consumer->SetWriter(this);
         }
 
-        /** Construct a new HOutput */
+        /** Construct a new HOutput that processes input in chunks, then calls a function with a value */
         HOutput(std::function<void(O)> ready, int chunksize):
             HChunkWriter<T>(chunksize),
             _bufferReady(NULL),
@@ -240,7 +241,8 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
         {
         }
 
-        /** Construct a new HOutput */
+        /** Construct a new HOutput that processes input in chunks, then calls a function with a value.
+            The output registers with the upstream writer */
         HOutput(std::function<void(O)> ready, int chunksize, HWriterConsumer<T>* consumer):
             HChunkWriter<T>(chunksize),
             _bufferReady(NULL),
@@ -251,7 +253,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
             consumer->SetWriter(this);
         }
 
-        /** Construct a new HOutput */
+        /** Construct a new HOutput the processes input in chunks, then calls a function */
         HOutput(std::function<void()> ready, int chunksize):
             HChunkWriter<T>(chunksize),
             _bufferReady(NULL),
@@ -260,7 +262,8 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
         {
         }
 
-        /** Construct a new HOutput */
+        /** Construct a new HOutput that processes input in chunks, then calls a function.
+            The output registers with the upstream writer */
         HOutput(std::function<void()> ready, int chunksize, HWriterConsumer<T>* consumer):
             HChunkWriter<T>(chunksize),
             _bufferReady(NULL),
@@ -270,7 +273,7 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
             consumer->SetWriter(this);
         }
 
-        /** Construct a new HOutput */
+        /** Construct a new HOutput that processes input in chunks and writes the result to a writer */
         HOutput(HWriter<O>* writer, int chunksize):
             HChunkWriter<T>(chunksize),
             _bufferReady(NULL),
@@ -280,7 +283,8 @@ class HOutput : public HChunkWriter<T>, public HWriterConsumer<O>
         {
         }
 
-        /** Construct a new HOutput */
+        /** Construct a new HOutput that processes input in chunks and writes the result to a writer.
+            The output registers with the upstream writer */
         HOutput(HWriter<O>* writer, int chunksize, HWriterConsumer<T>* consumer):
             HChunkWriter<T>(chunksize),
             _bufferReady(NULL),

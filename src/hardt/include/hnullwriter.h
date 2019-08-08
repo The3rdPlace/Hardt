@@ -16,19 +16,23 @@ class HNullWriter : public HWriter<T>, public HWriterConsumer<T>
 {
     public:
 
+        /** Construct a new HNullWriter */
         HNullWriter()
         {}
 
+        /** Construct a new HNullWriter that registers with the upstream writer */
         HNullWriter(HWriterConsumer<T>* consumer)
         {
             consumer->SetWriter(this);
         }
 
+        /** Write a block of samples */
         int Write(T* src, size_t blocksize)
         {
             return blocksize;
         }
 
+        /** Implements HWriterConsumer::SetWriter() */
         void SetWriter(HWriter<T>* writer)
         {
             // Writing into empty space

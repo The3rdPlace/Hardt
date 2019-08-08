@@ -17,11 +17,16 @@ class HNetworkWriter : public HWriter<T>
 
     public:
 
+        /** Construct a new HNetworkWriter */
         HNetworkWriter();
+
+        /** Construct a new HNetworkWriter with an initialized socket */
         HNetworkWriter(int socket);
 
+        /** Set the socket to use for writes */
         void SetSocket(int socket);
 
+        /** Write a block of samples */
         int Write(T* src, size_t blocksize);
 };
 

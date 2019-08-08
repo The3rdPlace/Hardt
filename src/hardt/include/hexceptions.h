@@ -86,6 +86,7 @@ class HNotImplementedException : public HException
 {
     public:
 
+        /** Construct a new HNotImplementedException with a resason */
         HNotImplementedException(const char* reason = "Not implemented");
 };
 

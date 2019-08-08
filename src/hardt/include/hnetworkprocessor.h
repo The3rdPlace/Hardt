@@ -41,16 +41,33 @@ class HNetworkProcessor : public HProcessor<T>
 
     public:
 
+        /** Construct a new HNetworkProcessor that acts as a client, writing samples to the remote endpoint */
         HNetworkProcessor(const char* address, int port, HWriter<T>* writer, int blocksize, bool* terminationToken);
+
+        /** Construct a new HNetworkProcessor that acts as a client, writing samples to the remote endpoint.
+            A downstream writer must register with this processor */
         HNetworkProcessor(const char* address, int port, int blocksize, bool* terminationToken);
+
+        /** Construct a new HNetworkProcessor that acts as a client, reading samples from the remote endpoint */
         HNetworkProcessor(const char* address, int port, HReader<T>* reader, int blocksize, bool* terminationToken);
+
+        /** Construct a new HNetworkProcessor that acts as a server, writing samples to the remote endpoint */
         HNetworkProcessor(int port, HWriter<T>* writer, int blocksize, bool* terminationToken);
+
+        /** Construct a new HNetworkProcessor that acts as a server, writing samples to the remote endpoint.
+            A downstream writer must register with this processor */
         HNetworkProcessor(int port, int blocksize, bool* terminationToken);
+
+        /** Construct a new HNetworkProcessor that acts as a server, reading samples from the remote endpoint */
         HNetworkProcessor(int port, HReader<T>* reader, int blocksize, bool* terminationToken);
 
+        /** Default destructor */
         ~HNetworkProcessor();
 
+        /** Run the processor */
         void Run(long unsigned int blocks = 0);
+
+        /** Halt the processor. This will set the associated terminationToken to true */
         void Halt();
 };
 

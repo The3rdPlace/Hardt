@@ -15,11 +15,16 @@ class HNetworkReader : public HReader<T>
 
     public:
 
+        /** Construct a new HNetworkReader */
         HNetworkReader();
+
+        /** Construct a new HNetworkReader with an initialized socket */
         HNetworkReader(int socket);
 
+        /** Set the socket to use for reading */
         void SetSocket(int socket);
 
+        /** Read a block of samples from the network */
         int Read(T* dest, size_t blocksize);
 };
 
