@@ -33,12 +33,19 @@ class HCombFilter : public HFilter<T>
 
     public:
 
+        /** Construct a new HCombFilter that writes to a writer */
         HCombFilter(HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize);
+
+        /** Construct a new HCombFilter that registers with an upstream writer */
         HCombFilter(HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize);
+
+        /** Constructs a new HCombFilter that reads from a reader */
         HCombFilter(HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize);
 
+        /** Default destructor */
         ~HCombFilter();
 
+        /** Run a block of samples through the filter
         virtual void Filter(T* src, T* dest, size_t blocksize);
 };
 

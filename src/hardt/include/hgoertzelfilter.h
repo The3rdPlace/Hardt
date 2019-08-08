@@ -7,7 +7,10 @@
 */
 struct HGoertzelFilterResult
 {
+    /** Calculated magnitude of the selected frequency bin for a block of samples */
     int Magnitude;
+
+    /** Calculated phase of the selected frequency bin for a block of samples */
     int Phase;
 };
 
@@ -45,16 +48,25 @@ class HGoertzelFilter : public HOutput<T, HGoertzelFilterResult>
 
     public:
 
+        /** Construct a new HGoertzelFilter, with a given frequency bin, that writes to a writer */
         HGoertzelFilter(int size, int average, float bin, HWriter<HGoertzelFilterResult>* writer, HWindow<T>* window);
+
+        /** Construct a new HGoertzelFilter, with a given frequency bin, that registers with an upstream writer */
         HGoertzelFilter(int size, int average, float bin, HWriterConsumer<T>* consumer, HWindow<T>* window);
+
+        /** Construct a new HGoertzelFilter, from the sample rate and a frequency, that writes to a writer */
         HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<HGoertzelFilterResult>* writer, HWindow<T>* window);
+
+        /** Construct a new HGoertzelFilter, from the sample rate and a frequency, that registers with an upstream writer */
         HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriterConsumer<T>* consumer, HWindow<T>* window);
 
+        /** Default destructor */
         ~HGoertzelFilter()
         {
             delete _buffer;
         }
 
+        /** Generate output from a block of samples */
         int Output(T* src, size_t size);
 };
 
