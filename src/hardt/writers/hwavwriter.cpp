@@ -59,6 +59,7 @@ int HWavWriter<T>::Write(T* dest, size_t blocksize)
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // Start()
 template
@@ -99,4 +100,5 @@ int HWavWriter<int16_t>::Write(int16_t* dest, size_t blocksize);
 template
 int HWavWriter<int32_t>::Write(int32_t* dest, size_t blocksize);
 
+//! @endcond
 #endif

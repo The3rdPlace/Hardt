@@ -32,6 +32,7 @@ int HSplitter<T>::Write(T* src, size_t blocksize)
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // Write()
 template
@@ -46,4 +47,5 @@ int HSplitter<int16_t>::Write(int16_t* src, size_t blocksize);
 template
 int HSplitter<int32_t>::Write(int32_t* src, size_t blocksize);
 
+//! @endcond
 #endif

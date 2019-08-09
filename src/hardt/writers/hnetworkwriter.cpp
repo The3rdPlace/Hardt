@@ -41,6 +41,7 @@ int HNetworkWriter<T>::Write(T* src, size_t blocksize)
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HNetworkWriter
 template
@@ -80,4 +81,5 @@ int HNetworkWriter<int16_t>::Write(int16_t* src, size_t blocksize);
 template
 int HNetworkWriter<int32_t>::Write(int32_t* src, size_t blocksize);
 
+//! @endcond
 #endif

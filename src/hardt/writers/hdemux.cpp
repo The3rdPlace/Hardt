@@ -69,6 +69,7 @@ int HDeMux<T>::Write(T* src, size_t blocksize)
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HDeMux
 template
@@ -121,4 +122,5 @@ int HDeMux<int16_t>::Write(int16_t* src, size_t blocksize);
 template
 int HDeMux<int32_t>::Write(int32_t* src, size_t blocksize);
 
+//! @endcond
 #endif

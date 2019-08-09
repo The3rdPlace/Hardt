@@ -251,6 +251,7 @@ bool HSoundcardWriter<T>::Stop()
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HSoundcardWriter()
 template
@@ -303,4 +304,5 @@ int HSoundcardWriter<int16_t>::Write(int16_t* dest, size_t blocksize);
 template
 int HSoundcardWriter<int32_t>::Write(int32_t* dest, size_t blocksize);
 
+//! @endcond
 #endif

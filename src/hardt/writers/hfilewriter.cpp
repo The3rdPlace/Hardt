@@ -60,6 +60,7 @@ bool HFileWriter<T>::Stop()
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HFileWriter()
 template
@@ -155,4 +156,5 @@ int HFileWriter<long>::Write(long* src, size_t blocksize);
 template
 int HFileWriter<double>::Write(double* src, size_t blocksize);
 
+//! @endcond
 #endif
