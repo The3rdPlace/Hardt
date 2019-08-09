@@ -30,31 +30,41 @@ class HCustomWriter : public HWriter<T>
 
     public:
 
+        /** Construct a HCustomWriter that wraps a function
+            "int func(T* data, size_t size){}" by use of std::function */
         HCustomWriter(std::function<int(T*, size_t)> customWriteFunc):
             _customWriteFunc(customWriteFunc)
         {}
 
+        /** Construct a new HCustomWriter that wraps a function
+            "int func(T* data, size_t size){}" by use of std::function
+            and registers with an upstream writer */
         HCustomWriter(std::function<int(T*, size_t)> customWriteFunc, HWriterConsumer<T>* consumer):
             _customWriteFunc(customWriteFunc)
         {
             consumer->SetWriter(this);
         }
 
+        /** Write a block of data */
         int Write(T* src, size_t blocksize)
         {
             return _customWriteFunc(src, blocksize);
         }
 
+        /** Initialize before first write */
         bool Start()
         {
             return true;
         }
 
+        /** Cleanup after last write */
         bool Stop()
         {
             return true;
         }
 
+        /** Factory function to create a new HCustomWriter by wrapping a static
+            function "int func(T* data, size_t size){}" */
         static HCustomWriter<T>* Create(int(*customWriteFunc)(T*, size_t blocksize))
         {
             std::function<int(T*, size_t)> func = customWriteFunc;
@@ -62,6 +72,8 @@ class HCustomWriter : public HWriter<T>
             return new HCustomWriter<T>(func);
         }
 
+        /** Factory function to create a new HCustomWriter by wrapping a static
+            function "int func(T* data, size_t size){}" and register with an upstream writer */
         static HCustomWriter<T>* Create(int(*customWriteFunc)(T*, size_t blocksize), HWriterConsumer<T>* consumer)
         {
             std::function<int(T*, size_t)> func = customWriteFunc;
@@ -69,6 +81,8 @@ class HCustomWriter : public HWriter<T>
             return new HCustomWriter<T>(func, consumer);
         }
 
+        /** Factory function to create a new HCustomWriter by wrapping a member function
+            function "int F::func(T* data, size_t size){}" */
         template <typename F>
         static HCustomWriter<T>* Create(F* customWriterObject, int (F::*customWriteFunc)(T*, size_t blocksize))
         {
@@ -79,6 +93,8 @@ class HCustomWriter : public HWriter<T>
             return new HCustomWriter<T>(func);
         }
 
+        /** Factory function to create a new HCustomWriter by wrapping a member function
+            function "int F::func(T* data, size_t size){}" and register with an upstream writer */
         template <typename F>
         static HCustomWriter<T>* Create(F* customWriterObject, int (F::*customWriteFunc)(T*, size_t blocksize), HWriterConsumer<T>* consumer)
         {

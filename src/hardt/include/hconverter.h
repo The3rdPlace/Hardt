@@ -8,7 +8,7 @@
     inherited and the pure virtual function Convert() implemented.
 */
 template <class Tin, class Tout>
-class HConverter : public HReader<Tout>, HWriter<Tin>
+class HConverter : public HReader<Tout>, HWriter<Tin>, HWriterConsumer<Tout>
 {
     private:
 
@@ -21,11 +21,13 @@ class HConverter : public HReader<Tout>, HWriter<Tin>
 
     public:
 
+        /** Initialize before first read or write */
         bool Start()
         {
             return (_reader != NULL ? _reader->Start() : true) && (_writer != NULL ? _writer->Start() : true);
         }
 
+        /** Cleanup after last read or write */
         bool Stop()
         {
             return (_reader != NULL ?_reader->Stop() : true) && (_writer != NULL ?_writer->Stop() : true);
@@ -33,6 +35,7 @@ class HConverter : public HReader<Tout>, HWriter<Tin>
 
     protected:
 
+        /** Construct a new HConverter that reads from a reader */
         HConverter(HReader<Tin>* reader, size_t blocksize):
             _reader(reader),
             _blocksize(blocksize),
@@ -41,6 +44,7 @@ class HConverter : public HReader<Tout>, HWriter<Tin>
             _input = new Tin[blocksize];
         }
 
+        /** Construct a new HConverter that writes to a writer */
         HConverter(HWriter<Tout>* writer, size_t blocksize):
             _writer(writer),
             _blocksize(blocksize),
@@ -49,8 +53,18 @@ class HConverter : public HReader<Tout>, HWriter<Tin>
             _output = new Tout[blocksize];
         }
 
+        /** Construct a new HConverter that registers with an upstream writer */
+        HConverter(HWriterConsumer<Tin>* consumer, size_t blocksize):
+            _blocksize(blocksize),
+            _input(NULL)
+        {
+            _output = new Tout[blocksize];
+            consumer->SetWriter(this);
+        }
+
     public:
 
+        /** Default destructor */
         ~HConverter()
         {
             if( _input != NULL )
@@ -63,6 +77,7 @@ class HConverter : public HReader<Tout>, HWriter<Tin>
             }
         }
 
+        /** Read a block of converted samples */
         int Read(Tout* dest, size_t blocksize) {
             if( blocksize != _blocksize )
             {
@@ -87,6 +102,7 @@ class HConverter : public HReader<Tout>, HWriter<Tin>
             return blocksize;
         };
 
+        /** Write a block of samples to convert */
         int Write(Tin* src, size_t blocksize) {
             if( blocksize != _blocksize )
             {
@@ -111,7 +127,14 @@ class HConverter : public HReader<Tout>, HWriter<Tin>
             return blocksize;
         }
 
+        /** Convert a block of samples */
         virtual int Convert(Tin* src, Tout* dest, size_t blocksize) = 0;
+
+        /** Implements HWriterConsumer::SetWriter() */
+        void SetWriter(HWriter<Tout>* writer)
+        {
+            _writer = writer;
+        }
 };
 
 #endif

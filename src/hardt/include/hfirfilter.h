@@ -26,16 +26,25 @@ class HFirFilter : public HFilter<T>
 
     public:
 
+        /** Construct a new HFirFilter that writes to a writer */
         HFirFilter(HWriter<T>* writer, float* coefficients, int length, size_t blocksize);
+
+        /** Construct a new HFirFilter that registers with an upstream writer */
         HFirFilter(HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize);
+
+        /** Construct a new HFirFilter that reads from a reader */
         HFirFilter(HReader<T>* reader, float* coefficients, int length, size_t blocksize);
 
+        /** Default destructor */
         ~HFirFilter();
 
+        /** Run a block of samples through the filter */
         void Filter(T* src, T* dest, size_t blocksize);
 
+        /** Set the filter coefficients */
         void SetCoefficients(float* coefficients, int length);
 
+        /** Get the filter coefficients */
         std::vector<float> GetCoefficients()
         {
             std::vector<float> coefficients;
@@ -46,6 +55,7 @@ class HFirFilter : public HFilter<T>
             return coefficients;
         }
 
+        /** Factory function to create a new HFirFilter that writes to a  writer */
         static HFirFilter<T>* Create(HWriter<T>* writer, size_t blocksize, char* coeffsFilename)
         {
             std::vector<float> coeffs = HFilter<T>::ReadCoeffsFromFile(coeffsFilename);
@@ -53,6 +63,15 @@ class HFirFilter : public HFilter<T>
             return new HFirFilter<T>(writer, coeffs.data(), coeffs.size(), blocksize);
         }
 
+        /** Factory function to create a new HFirFilter that registers with an upstream writer */
+        static HFirFilter<T>* Create(HWriterConsumer<T>* consumer, size_t blocksize, char* coeffsFilename)
+        {
+            std::vector<float> coeffs = HFilter<T>::ReadCoeffsFromFile(coeffsFilename);
+
+            return new HFirFilter<T>(consumer, coeffs.data(), coeffs.size(), blocksize);
+        }
+
+        /** Factory function to create a new HFirFilter that reads from a reader */
         static HFirFilter<T>* Create(HReader<T>* reader, size_t blocksize, char* coeffsFilename)
         {
             std::vector<float> coeffs = HFilter<T>::ReadCoeffsFromFile(coeffsFilename);

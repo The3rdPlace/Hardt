@@ -19,6 +19,7 @@ class HFilterBase
 {
     public:
 
+        /** Run a block of samples through the filter */
         virtual void Filter(T* src, T* dest, size_t blocksize) = 0;
 };
 

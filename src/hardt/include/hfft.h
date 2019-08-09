@@ -8,8 +8,13 @@
 */
 struct HFftResults
 {
+    /** The calculated/measured spectrum */
     double* Spectrum;
+
+    /** The complex spectrum, in case you need to do phase calculations */
     std::complex<double>* Result;
+
+    /** Size of spectrum (bins) */
     int Size;
 };
 
@@ -38,15 +43,20 @@ class HFft : public HOutput<T, HFftResults>
 
     public:
 
+        /** Create a new HFft output that writes to a writer */
         HFft(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* window);
+
+        /** Create a new HFft output that registers with an upstream writer */
         HFft(int size, int average, HWriterConsumer<T>* consumer, HWindow<T>* window);
 
+        /** Default destructor */
         ~HFft()
         {
             delete _spectrum;
             delete _buffer;
         }
 
+        /** Process a block of samples */
         int Output(T* src, size_t size);
 };
 

@@ -146,7 +146,7 @@ class HFilterInitializationException : public HException
 {
     public:
 
-        // Construct a new HFilterInitializationException with a reason */
+        /** Construct a new HFilterInitializationException with a reason */
         HFilterInitializationException(const char* reason);
 };
 

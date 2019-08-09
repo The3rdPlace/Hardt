@@ -26,13 +26,19 @@ class HDeMux : public HWriter<T>, HWriterConsumer<T>
 
     public:
 
+        /** Construct a new HDemux object that writes to a writer */
         HDeMux( std::vector< HWriter<T>* > writers, size_t blocksize);
+
+        /** Construct a new HDemux object that registers with an upstream writer */
         HDeMux( HWriterConsumer<T>* consumer, size_t blocksize);
 
+        /** Default destructor */
         ~HDeMux();
 
+        /** Write a block of samples */
         int Write(T* src, size_t blocksize);
 
+        /** Implements HWriterConsumer::SetWriter() */
         void SetWriter(HWriter<T>* writer)
         {
             if( _buffers != NULL )

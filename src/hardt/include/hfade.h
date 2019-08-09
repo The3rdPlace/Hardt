@@ -16,18 +16,26 @@ class HFade : public HGain<T>
         int _samples;
         int _counter;
 
-    public:
-
-        HFade(HReader<T>* reader, int initialLevel, int samples, bool fade, size_t blocksize);
-        HFade(HWriter<T>* writer, int initialLevel, int samples, bool fade, size_t blocksize);
-        HFade(HWriterConsumer<T>* consumer, int initialLevel, int samples, bool fade, size_t blocksize);
-
         void Init();
 
+    public:
+
+        /** Construct a new HFade object that reads from a reader */
+        HFade(HReader<T>* reader, int initialLevel, int samples, bool fade, size_t blocksize);
+
+        /** Construct a new HFade object that writes to a writer */
+        HFade(HWriter<T>* writer, int initialLevel, int samples, bool fade, size_t blocksize);
+
+        /** Construct a new HFade object that registers with an upstream writer */
+        HFade(HWriterConsumer<T>* consumer, int initialLevel, int samples, bool fade, size_t blocksize);
+
+        /** Default destructor */
         ~HFade();
 
+        /** Run a block of samples through the fading filter */
         virtual void Filter(T* src, T* dest, size_t blocksize);
 
+        /** Fade up */
         void Up()
         {
             _direction = true;
@@ -35,6 +43,7 @@ class HFade : public HGain<T>
             _fade = true;
         }
 
+        /** Fade down */
         void Down()
         {
             _direction = false;
