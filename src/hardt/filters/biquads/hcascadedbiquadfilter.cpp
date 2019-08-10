@@ -187,6 +187,7 @@ void HCascadedBiQuadFilter<T>::SetCoefficients(float* coefficients, int length)
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HCascadedBiQuadFilter
 template
@@ -303,4 +304,5 @@ void HCascadedBiQuadFilter<int16_t>::SetCoefficients(float* coefficients, int le
 template
 void HCascadedBiQuadFilter<int32_t>::SetCoefficients(float* coefficients, int length);
 
+//! @endcond
 #endif

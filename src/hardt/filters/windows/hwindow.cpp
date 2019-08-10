@@ -57,6 +57,7 @@ void HWindow<T>::Apply(T* src, T* dest, size_t blocksize)
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HWindow
 template
@@ -110,4 +111,5 @@ void HWindow<int16_t>::Apply(int16_t* src, int16_t* dest, size_t blocksize);
 template
 void HWindow<int32_t>::Apply(int32_t* src, int32_t* dest, size_t blocksize);
 
+//! @endcond
 #endif

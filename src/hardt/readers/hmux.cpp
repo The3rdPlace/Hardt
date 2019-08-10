@@ -58,6 +58,7 @@ int HMux<T>::Read(T* dest, size_t blocksize)
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HMux
 template
@@ -98,4 +99,5 @@ int HMux<int16_t>::Read(int16_t* dest, size_t blocksize);
 template
 int HMux<int32_t>::Read(int32_t* dest, size_t blocksize);
 
+//! @endcond
 #endif

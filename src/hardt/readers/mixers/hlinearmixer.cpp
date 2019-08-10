@@ -88,6 +88,7 @@ bool HLinearMixer<T>::Stop()
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HLinearMixer
 template
@@ -154,4 +155,5 @@ bool HLinearMixer<int16_t>::Stop();
 template
 bool HLinearMixer<int32_t>::Stop();
 
+//! @endcond
 #endif

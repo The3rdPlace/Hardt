@@ -128,6 +128,7 @@ int HGoertzelFilter<T>::Output(T* src, size_t size)
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HGoertzelFilter
 template
@@ -204,4 +205,5 @@ void HGoertzelFilter<int16_t>::Init();
 template
 void HGoertzelFilter<int32_t>::Init();
 
+//! @endcond
 #endif

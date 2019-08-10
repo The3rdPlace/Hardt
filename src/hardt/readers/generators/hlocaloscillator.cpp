@@ -11,6 +11,7 @@ HLocalOscillator<T>::HLocalOscillator(H_SAMPLE_RATE rate, int frequency):
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HLocalOscilator
 template
@@ -19,4 +20,5 @@ HLocalOscillator<float>::HLocalOscillator(H_SAMPLE_RATE rate, int frequency);
 template
 HLocalOscillator<double>::HLocalOscillator(H_SAMPLE_RATE rate, int frequency);
 
+//! @endcond
 #endif

@@ -50,6 +50,7 @@ int HNetworkReader<T>::Read(T* dest, size_t blocksize)
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HNetworkReader
 template
@@ -102,4 +103,5 @@ int HNetworkReader<int16_t>::Read(int16_t* dest, size_t blocksize);
 template
 int HNetworkReader<int32_t>::Read(int32_t* dest, size_t blocksize);
 
+//! @endcond
 #endif

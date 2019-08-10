@@ -29,6 +29,7 @@ void HStreamProcessor<T>::Run(long unsigned int blocks)
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HStreamProcessor()
 template
@@ -68,4 +69,5 @@ void HStreamProcessor<int16_t>::Run(long unsigned int blocks);
 template
 void HStreamProcessor<int32_t>::Run(long unsigned int blocks);
 
+//! @endcond
 #endif

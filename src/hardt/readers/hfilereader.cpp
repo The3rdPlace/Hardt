@@ -61,6 +61,7 @@ bool HFileReader<T>::Stop()
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HFileReader()
 template
@@ -114,4 +115,5 @@ int HFileReader<int16_t>::Read(int16_t* dest, size_t blocksize);
 template
 int HFileReader<int32_t>::Read(int32_t* dest, size_t blocksize);
 
+//! @endcond
 #endif

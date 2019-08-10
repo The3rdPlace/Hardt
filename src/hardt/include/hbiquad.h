@@ -1,12 +1,11 @@
 #ifndef __HBIQUAD_H
 #define __HBIQUAD_H
 
-/*
+/**
     Biquads are defined by standard equations, the specific biquads based on this generic class
     has been defined using a nicely compiled list provided på Apogee Technology, inc.
     http://www.apogeebio.com/ddx/PDFs/AN-06.pdf
 */
-
 template <class T>
 class HBiQuad
 {

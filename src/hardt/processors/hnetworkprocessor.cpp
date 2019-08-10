@@ -338,6 +338,7 @@ void HNetworkProcessor<T>::Halt()
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HNetworkProcessor()
 template
@@ -451,4 +452,5 @@ void HNetworkProcessor<int16_t>::Halt();
 template
 void HNetworkProcessor<int32_t>::Halt();
 
+//! @endcond
 #endif

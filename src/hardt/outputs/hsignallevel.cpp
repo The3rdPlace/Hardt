@@ -112,6 +112,7 @@ int HSignalLevel<T>::Output(T* src, size_t blocksize)
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HGoertzelFilter
 template
@@ -151,4 +152,5 @@ int HSignalLevel<int16_t>::Output(int16_t* src, size_t size);
 template
 int HSignalLevel<int32_t>::Output(int32_t* src, size_t size);
 
+//! @endcond
 #endif

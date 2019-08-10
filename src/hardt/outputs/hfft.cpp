@@ -133,6 +133,7 @@ int HFft<T>::Output(T* src, size_t size)
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 template
 HFft<int8_t>::HFft(int size, int average, HWriter<HFftResults>* writer, HWindow<int8_t>* window);
@@ -169,4 +170,6 @@ int HFft<int16_t>::Output(int16_t* src, size_t size);
 
 template
 int HFft<int32_t>::Output(int32_t* src, size_t size);
+
+//! @endcond
 #endif

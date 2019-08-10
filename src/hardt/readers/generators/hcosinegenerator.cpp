@@ -11,6 +11,7 @@ HCosineGenerator<T>::HCosineGenerator(H_SAMPLE_RATE rate, int frequency, T ampli
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HCosineGenerator
 template
@@ -25,4 +26,5 @@ HCosineGenerator<int16_t>::HCosineGenerator(H_SAMPLE_RATE rate, int frequency, i
 template
 HCosineGenerator<int32_t>::HCosineGenerator(H_SAMPLE_RATE rate, int frequency, int32_t amplitude);
 
+//! @endcond
 #endif

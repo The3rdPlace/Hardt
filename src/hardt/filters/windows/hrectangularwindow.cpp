@@ -12,6 +12,7 @@ float HRectangularWindow<T>::ValueAt(int N, int n)
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 template
 float HRectangularWindow<int8_t>::ValueAt(int N, int n);
@@ -25,4 +26,5 @@ float HRectangularWindow<int16_t>::ValueAt(int N, int n);
 template
 float HRectangularWindow<int32_t>::ValueAt(int N, int n);
 
+//! @endcond
 #endif

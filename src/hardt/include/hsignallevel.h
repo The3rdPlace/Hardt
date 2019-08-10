@@ -45,6 +45,7 @@ struct HSignalLevelResult
 
 #define AVG_BUFFER_LENGTH 10
 
+/** Reports signallevel for a sampled signal */
 template <class T>
 class HSignalLevel : public HOutput<T, HSignalLevelResult>
 {

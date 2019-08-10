@@ -52,6 +52,7 @@ void HGain<T>::SetGain(float gain)
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HGain
 template
@@ -129,4 +130,5 @@ void HGain<int16_t>::SetGain(float gain);
 template
 void HGain<int32_t>::SetGain(float gain);
 
+//! @endcond
 #endif

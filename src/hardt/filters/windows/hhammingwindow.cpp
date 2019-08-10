@@ -21,6 +21,7 @@ float HHammingWindow<T>::ValueAt(int N, int n)
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 template
 float HHammingWindow<int8_t>::ValueAt(int N, int n);
@@ -34,4 +35,5 @@ float HHammingWindow<int16_t>::ValueAt(int N, int n);
 template
 float HHammingWindow<int32_t>::ValueAt(int N, int n);
 
+//! @endcond
 #endif

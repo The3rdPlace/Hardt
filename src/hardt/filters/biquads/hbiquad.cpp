@@ -63,6 +63,7 @@ float* HBiQuad<T>::Calculate()
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // Initialize
 template
@@ -103,4 +104,5 @@ float* HBiQuad<int16_t>::Calculate();
 template
 float* HBiQuad<int32_t>::Calculate();
 
+//! @endcond
 #endif

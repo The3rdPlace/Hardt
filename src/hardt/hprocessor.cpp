@@ -184,6 +184,7 @@ void HProcessor<T>::Init()
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HProcessor()
 template
@@ -340,4 +341,5 @@ void HProcessor<int16_t>::Init();
 template
 void HProcessor<int32_t>::Init();
 
+//! @endcond
 #endif

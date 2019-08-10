@@ -21,6 +21,7 @@ void HVfo<T>::SetFrequency(int frequency, float phase)
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HVfo
 template
@@ -61,4 +62,5 @@ void HVfo<int16_t>::SetFrequency(int frequency, float phase);
 template
 void HVfo<int32_t>::SetFrequency(int frequency, float phase);
 
+//! @endcond
 #endif

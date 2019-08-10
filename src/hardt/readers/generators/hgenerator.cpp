@@ -406,6 +406,7 @@ void HGenerator<T>::Calculate(int frequency, T amplitude, float phase)
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HGenerator
 template
@@ -464,4 +465,5 @@ int HGenerator<float>::Read(float* dest, size_t blocksize);
 template
 int HGenerator<double>::Read(double* dest, size_t blocksize);
 
+//! @endcond
 #endif

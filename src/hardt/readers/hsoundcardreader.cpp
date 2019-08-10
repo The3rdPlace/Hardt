@@ -239,6 +239,7 @@ bool HSoundcardReader<T>::Stop()
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HSoundcardReader()
 template
@@ -279,4 +280,5 @@ int HSoundcardReader<int16_t>::Read(int16_t* dest, size_t blocksize);
 template
 int HSoundcardReader<int32_t>::Read(int32_t* dest, size_t blocksize);
 
+//! @endcond
 #endif

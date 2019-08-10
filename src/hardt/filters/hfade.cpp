@@ -126,6 +126,7 @@ void HFade<T>::Filter(T* src, T* dest, size_t blocksize)
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HFade
 template
@@ -190,4 +191,5 @@ void HFade<int16_t>::Filter(int16_t* src, int16_t* dest, size_t blocksize);
 template
 void HFade<int32_t>::Filter(int32_t* src, int32_t* dest, size_t blocksize);
 
+//! @endcond
 #endif

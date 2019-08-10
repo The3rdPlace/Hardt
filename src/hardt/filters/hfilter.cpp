@@ -113,6 +113,7 @@ bool HFilter<T>::Stop()
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HFilter
 template
@@ -229,4 +230,5 @@ void HFilter<int16_t>::Init();
 template
 void HFilter<int32_t>::Init();
 
+//! @endcond
 #endif

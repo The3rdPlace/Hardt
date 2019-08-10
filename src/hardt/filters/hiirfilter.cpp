@@ -137,6 +137,7 @@ void HIirFilter<T>::SetCoefficients(float* coefficients, int length)
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HIirFilter
 template
@@ -227,4 +228,5 @@ void HIirFilter<int16_t>::SetCoefficients(float* coefficients, int length);
 template
 void HIirFilter<int32_t>::SetCoefficients(float* coefficients, int length);
 
+//! @endcond
 #endif

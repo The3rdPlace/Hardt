@@ -37,7 +37,11 @@ int main(int argc, char **argv)
     {
         if( Test::execute() )
         {
-            std::cout << "One or more tests failed!!" << std::endl;
+            std::cout << std::endl;
+            std::cout << "******************************" << std::endl;
+            std::cout << "!! ONE OR MORE TESTS FAILED !!" << std::endl;
+            std::cout << "******************************" << std::endl;
+            std::cout << std::endl;
             return 2;
         }
     }

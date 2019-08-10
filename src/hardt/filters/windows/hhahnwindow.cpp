@@ -20,6 +20,7 @@ float HHahnWindow<T>::ValueAt(int N, int n)
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 template
 float HHahnWindow<int8_t>::ValueAt(int N, int n);
@@ -33,4 +34,5 @@ float HHahnWindow<int16_t>::ValueAt(int N, int n);
 template
 float HHahnWindow<int32_t>::ValueAt(int N, int n);
 
+//! @endcond
 #endif

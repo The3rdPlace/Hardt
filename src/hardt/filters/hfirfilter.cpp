@@ -101,6 +101,7 @@ void HFirFilter<T>::SetCoefficients(float* coefficients, int length)
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HFirFilter
 template
@@ -191,4 +192,5 @@ void HFirFilter<int16_t>::SetCoefficients(float* coefficients, int length);
 template
 void HFirFilter<int32_t>::SetCoefficients(float* coefficients, int length);
 
+//! @endcond
 #endif

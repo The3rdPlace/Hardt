@@ -18,6 +18,7 @@ bool HWavReader<T>::Start()
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HWavReader()
 template
@@ -45,4 +46,5 @@ bool HWavReader<int16_t>::Start();
 template
 bool HWavReader<int32_t>::Start();
 
+//! @endcond
 #endif

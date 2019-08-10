@@ -11,6 +11,7 @@ HSineGenerator<T>::HSineGenerator(H_SAMPLE_RATE rate, int frequency, T amplitude
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HSineGenerator
 template
@@ -25,4 +26,5 @@ HSineGenerator<int16_t>::HSineGenerator(H_SAMPLE_RATE rate, int frequency, int16
 template
 HSineGenerator<int32_t>::HSineGenerator(H_SAMPLE_RATE rate, int frequency, int32_t amplitude);
 
+//! @endcond
 #endif

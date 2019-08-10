@@ -79,6 +79,7 @@ void HMultiplier<T>::SetFrequency(int frequency)
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
+//! @cond Doxygen_Suppress
 
 // HMultiplier
 template
@@ -158,4 +159,5 @@ void HMultiplier<int16_t>::SetFrequency(int frequency);
 template
 void HMultiplier<int32_t>::SetFrequency(int frequency);
 
+//! @endcond
 #endif
