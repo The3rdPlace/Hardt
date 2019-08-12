@@ -34,3 +34,8 @@ else()
     message("You must install Doxygen and Graphviz to generate the documentation")
 
 endif()
+
+# Package into debian package
+ADD_CUSTOM_TARGET( dist
+	COMMAND -E echo_append "Building Debian package")
+COMMAN 
