@@ -10,12 +10,11 @@ set (Hardt_VERSION Hardt_VERSION_MAJOR + "." + HARDT_VERSION_MINOR + "." + HARDT
 set(CMAKE_CXX_COMPILER "clang++")
 
 configure_file (
-  "${PROJECT_SOURCE_DIR}/src/hardt/hardt.h.in"
-  "${PROJECT_BINARY_DIR}/src/hardt/hardt.h"
+  "${PROJECT_SOURCE_DIR}/hardt/libhardt/hardt.h.in"
+  "${PROJECT_BINARY_DIR}/hardt/libhardt/hardt.h"
 )
 
-add_subdirectory (src)
-add_subdirectory (examples)
+add_subdirectory (hardt)
 
 # Generate documentation from in-source documentation and structure
 find_package(Doxygen REQUIRED dot)
@@ -37,5 +36,6 @@ endif()
 
 # Package into debian package
 ADD_CUSTOM_TARGET( dist
-	COMMAND -E echo_append "Building Debian package")
-COMMAN 
+	COMMAND ${CMAKE_COMMAND} -E echo_append "Building Debian package"
+	COMMAND tar --exclude='.././build' --exclude='.././.git' -c -v -f 'hardt_${Hardt_VERSION_MAJOR}.${Hardt_VERSION_MINOR}.orig.tar.gz' -z '../.')
+
