@@ -3,4 +3,8 @@
 	dh $@
 
 override_dh_auto_install:
-        $(MAKE) DESTDIR=$$(pwd)/debian/hardt prefix=/usr/local install
+	ls
+	cmake ../../.
+	make
+	$(MAKE) DESTDIR=$$(pwd)/debian/hardt prefix=/usr/local install
+	#dh_auto_install

@@ -45,6 +45,8 @@ src/hardt/hardt.h
 src/hardt/hardt.pc
 
 build
+dist
+docs
 
 # Doxygen
 doxygen.conf.in

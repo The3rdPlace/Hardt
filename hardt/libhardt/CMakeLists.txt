@@ -15,7 +15,7 @@ target_sources(hardt
         htimer.cpp
 )
 
-include_directories("${PROJECT_BINARY_DIR}/src/hardt/")
+include_directories("${PROJECT_BINARY_DIR}/hardt/libhardt")
 
 set_target_properties(hardt PROPERTIES PUBLIC_HEADER include/hardtapi.h)
 

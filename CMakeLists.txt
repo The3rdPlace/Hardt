@@ -36,6 +36,15 @@ endif()
 
 # Package into debian package
 ADD_CUSTOM_TARGET( dist
-	COMMAND ${CMAKE_COMMAND} -E echo_append "Building Debian package"
-	COMMAND tar --exclude='.././build' --exclude='.././.git' -c -v -f 'hardt_${Hardt_VERSION_MAJOR}.${Hardt_VERSION_MINOR}.orig.tar.gz' -z '../.')
+	COMMAND sudo rm -r -f dist
+	COMMAND mkdir -p dist/hardt
+	COMMAND cp -r hardt/debian dist/hardt/.
+	COMMAND tar -c -v -f 'dist/hardt_${Hardt_VERSION_MAJOR}.${Hardt_VERSION_MINOR}.orig.tar.gz' -z 'CMakeLists.txt' 'hardt' 'docs'
+	COMMAND cd dist/hardt && debuild -us -uc --root-command=sudo
+	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+#	COMMAND ${CMAKE_COMMAND} -E echo "Building Debian package"
+#	COMMAND 
+#	COMMAND debuild -us -uc --root-command=sudo
+#	WORKING_DIRECTORY ../)
+
 
