@@ -14,6 +14,11 @@ configure_file (
   "${PROJECT_BINARY_DIR}/hardt/libhardt/hardt.h"
 )
 
+configure_file (
+  "${PROJECT_SOURCE_DIR}/hardt/hardt.pc.in"
+  "${PROJECT_BINARY_DIR}/hardt/hardt.pc"
+)
+
 add_subdirectory (hardt)
 
 # Generate documentation from in-source documentation and structure
@@ -42,9 +47,5 @@ ADD_CUSTOM_TARGET( dist
 	COMMAND tar -c -v -f 'dist/hardt_${Hardt_VERSION_MAJOR}.${Hardt_VERSION_MINOR}.orig.tar.gz' -z 'CMakeLists.txt' 'hardt' 'docs'
 	COMMAND cd dist/hardt && debuild -us -uc --root-command=sudo
 	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-#	COMMAND ${CMAKE_COMMAND} -E echo "Building Debian package"
-#	COMMAND 
-#	COMMAND debuild -us -uc --root-command=sudo
-#	WORKING_DIRECTORY ../)
 
 
