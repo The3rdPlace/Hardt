@@ -15,8 +15,8 @@ configure_file (
 )
 
 configure_file (
-  "${PROJECT_SOURCE_DIR}/hardt/hardt.pc.in"
-  "${PROJECT_BINARY_DIR}/hardt/hardt.pc"
+  "${PROJECT_SOURCE_DIR}/hardt.pc.in"
+  "${PROJECT_BINARY_DIR}/hardt.pc"
 )
 
 add_subdirectory (hardt)
@@ -32,6 +32,8 @@ if(DOXYGEN_FOUND)
         COMMAND ${CMAKE_COMMAND} -E echo_append "Building API Documentation..."
         COMMAND ${DOXYGEN_EXECUTABLE}
         COMMAND ${CMAKE_COMMAND} -E echo "Done.")
+
+    install(DIRECTORY ${CMAKE_SOURCE_DIR}/docs/html/ DESTINATION share/doc/hardt)
 
 else()
 
