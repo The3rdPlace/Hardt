@@ -15,7 +15,7 @@ target_sources(hardt
         htimer.cpp
 )
 
-include_directories("${PROJECT_BINARY_DIR}/hardt/libhardt")
+include_directories("${PROJECT_BINARY_DIR}/hardt/libhardt/include")
 
 set_target_properties(hardt PROPERTIES PUBLIC_HEADER include/hardtapi.h)
 
@@ -28,3 +28,4 @@ install(TARGETS hardt
 
 install(FILES ${CMAKE_BINARY_DIR}/hardt.pc DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig)
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/hardt/libhardt/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hardt)
+install(FILES ${CMAKE_BINARY_DIR}/hardt/libhardt/include/hardt.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hardt)

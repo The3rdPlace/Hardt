@@ -10,8 +10,8 @@ set (Hardt_VERSION Hardt_VERSION_MAJOR + "." + HARDT_VERSION_MINOR + "." + HARDT
 set(CMAKE_CXX_COMPILER "clang++")
 
 configure_file (
-  "${PROJECT_SOURCE_DIR}/hardt/libhardt/hardt.h.in"
-  "${PROJECT_BINARY_DIR}/hardt/libhardt/hardt.h"
+  "${PROJECT_SOURCE_DIR}/hardt/libhardt/include/hardt.h.in"
+  "${PROJECT_BINARY_DIR}/hardt/libhardt/include/hardt.h"
 )
 
 configure_file (
