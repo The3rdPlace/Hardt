@@ -2,10 +2,16 @@ cmake_minimum_required (VERSION 2.6)
 
 project (Hardt)
 
+# Set the framework major and minor version here
 set (Hardt_VERSION_MAJOR 1)
 set (Hardt_VERSION_MINOR 2)
-set (Hardt_VERSION_BUILD 3)
-set (Hardt_VERSION Hardt_VERSION_MAJOR + "." + HARDT_VERSION_MINOR + "." + HARDT_VERSION_BUILD)
+
+# When setting the debian package version, do not forget to add a changelog
+# entry in hardt/debian/changelog
+set (Hardt_VERSION_DEB_PACKAGE 3)
+
+
+set (Hardt_VERSION Hardt_VERSION_MAJOR + "." + HARDT_VERSION_MINOR + "." + HARDT_VERSION_DEP_PACKAGE)
 
 set(CMAKE_CXX_COMPILER "clang++")
 
@@ -30,8 +36,11 @@ if(DOXYGEN_FOUND)
 
     ADD_CUSTOM_TARGET(documentation ALL
         COMMAND ${CMAKE_COMMAND} -E echo_append "Building API Documentation..."
-        COMMAND ${DOXYGEN_EXECUTABLE}
-        COMMAND ${CMAKE_COMMAND} -E echo "Done.")
+        #COMMAND ${DOXYGEN_EXECUTABLE}
+        COMMAND ${CMAKE_COMMAND} -E echo "Done."
+	COMMAND mkdir -p ${CMAKE_CURRENT_SOURCE_DIR}/docs/examples
+	COMMAND sh -c 'ls -d ${CMAKE_CURRENT_SOURCE_DIR}/hardt/examples/*/ | rev | cut -d "/" -f 2 | rev | xargs -I % mkdir -p ${CMAKE_CURRENT_SOURCE_DIR}/docs/examples/%'
+        COMMAND sh -c 'ls -d ${CMAKE_CURRENT_SOURCE_DIR}/hardt/examples/*/ | rev | cut -d "/" -f 2 | rev | xargs -I % sh -c "cp ${CMAKE_CURRENT_SOURCE_DIR}/hardt/examples/%/* ${CMAKE_CURRENT_SOURCE_DIR}/docs/examples/%/." ')
 
     install(DIRECTORY ${CMAKE_SOURCE_DIR}/docs/html/ DESTINATION share/doc/hardt)
 

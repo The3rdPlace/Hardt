@@ -1,6 +1,6 @@
 #define MAJORVERSION @Hardt_VERSION_MAJOR@
 #define MINORVERSION @Hardt_VERSION_MINOR@
-#define BUILDNO @Hardt_VERSION_BUILD@
+#define BUILDNO @Hardt_VERSION_DEB_PACKAGE@
 
 #ifndef __HARDT_H
 #define __HARDT_H
