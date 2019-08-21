@@ -30,7 +30,6 @@
 *.exe
 *.out
 *.app
-dspcmd
 hardt_test
 
 .idea
