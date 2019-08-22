@@ -1,0 +1,17 @@
+# Config file for the Hardt package
+# It defines the following variables
+#  Hardt_INCLUDE_DIRS - include directories for Hardt
+#  Hardt_LIBRARIES - libraries to link against 
+
+get_filename_component(Hardt_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH) 
+set(Hardt_INCLUDE_DIRS "/usr/local/include/hardt")
+
+# Our library dependencies (contains definitions for IMPORTED targets)
+#if(NOT TARGET Hardt AND NOT FooBar_BINARY_DIR)
+#  include("${FOOBAR_CMAKE_DIR}/FooBarTargets.cmake") endif()
+# These are IMPORTED targets created by FooBarTargets.cmake
+
+set(Hardt_LIBRARIES hardt)
+
+# Extra flags, we would like - as a minimum - C++11
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11 ")
