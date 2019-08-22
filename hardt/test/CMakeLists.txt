@@ -47,5 +47,5 @@ include_directories("${PROJECT_SOURCE_DIR}/hardt/test"
 
 target_include_directories(hardt_test PRIVATE . include)
 
-ADD_CUSTOM_TARGET(run_unittests ALL COMMAND hardt_test ${CMAKE_CURRENT_SOURCE_DIR} > test.log || cat test.log)
+ADD_CUSTOM_TARGET(unittests ALL COMMAND hardt_test ${CMAKE_CURRENT_SOURCE_DIR} > test.log || cat test.log)
 ADD_CUSTOM_TARGET(integrationtest COMMAND hardt_test ${CMAKE_CURRENT_SOURCE_DIR} -it)
