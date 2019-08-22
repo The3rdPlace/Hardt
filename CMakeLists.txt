@@ -36,13 +36,14 @@ if(DOXYGEN_FOUND)
 
     ADD_CUSTOM_TARGET(documentation ALL
         COMMAND ${CMAKE_COMMAND} -E echo_append "Building API Documentation..."
-        #COMMAND ${DOXYGEN_EXECUTABLE}
+        COMMAND ${DOXYGEN_EXECUTABLE}
         COMMAND ${CMAKE_COMMAND} -E echo "Done."
 	COMMAND mkdir -p ${CMAKE_CURRENT_SOURCE_DIR}/docs/examples
 	COMMAND sh -c 'ls -d ${CMAKE_CURRENT_SOURCE_DIR}/hardt/examples/*/ | rev | cut -d "/" -f 2 | rev | xargs -I % mkdir -p ${CMAKE_CURRENT_SOURCE_DIR}/docs/examples/%'
         COMMAND sh -c 'ls -d ${CMAKE_CURRENT_SOURCE_DIR}/hardt/examples/*/ | rev | cut -d "/" -f 2 | rev | xargs -I % sh -c "cp ${CMAKE_CURRENT_SOURCE_DIR}/hardt/examples/%/* ${CMAKE_CURRENT_SOURCE_DIR}/docs/examples/%/." ')
 
-    install(DIRECTORY ${CMAKE_SOURCE_DIR}/docs/html/ DESTINATION share/doc/hardt)
+    install(DIRECTORY ${CMAKE_SOURCE_DIR}/docs/html/ DESTINATION share/doc/hardt/html)
+    install(DIRECTORY ${CMAKE_SOURCE_DIR}/docs/examples/ DESTINATION share/doc/hardt/examples)
 
 else()
 
@@ -57,6 +58,8 @@ ADD_CUSTOM_TARGET( dist
 	COMMAND cp -r hardt/debian dist/hardt/.
 	COMMAND tar -c -v -f 'dist/hardt_${Hardt_VERSION_MAJOR}.${Hardt_VERSION_MINOR}.orig.tar.gz' -z 'CMakeLists.txt' 'hardt' 'docs'
 	COMMAND cd dist/hardt && debuild -us -uc --root-command=sudo
+	COMMAND sudo rm -r -f dist/hardt
+	COMMAND sudo chown -R $ENV{USER} dist
 	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 
 
