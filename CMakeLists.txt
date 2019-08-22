@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 3.7)
 
 project (Hardt)
 
@@ -23,6 +23,18 @@ configure_file (
 configure_file (
   "${PROJECT_SOURCE_DIR}/hardt.pc.in"
   "${PROJECT_BINARY_DIR}/hardt.pc"
+)
+
+configure_file(
+  "HardtConfig.cmake.in"
+  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/HardtConfig.cmake" @ONLY
+)
+
+# Install the FooBarConfig.cmake
+install(
+  FILES
+    "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/HardtConfig.cmake"
+  DESTINATION "lib/cmake/Hardt" COMPONENT dev
 )
 
 add_subdirectory (hardt)

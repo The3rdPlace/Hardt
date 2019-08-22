@@ -1,8 +1,14 @@
-include_directories("hardt")
+cmake_minimum_required(VERSION 3.7)
+
+if (NOT Hardt_VERSION)
+  find_package(Hardt CONFIG)
+endif()
+
+# Include directories
+include_directories(${Hardt_INCLUDE_DIRS})
 
 # Add the executable
 add_executable (saq saq.cpp)
-target_link_libraries (saq hardt)
 
-# Extra flags, we would like - as a minimum - C++11
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
+# Libraries
+target_link_libraries (saq ${Hardt_LIBRARIES})
