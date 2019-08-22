@@ -4,6 +4,9 @@ add_library(hardt SHARED "")
 target_link_libraries(hardt m portaudio)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
+set_target_properties( hardt PROPERTIES
+	VERSION ${Hardt_VERSION_MAJOR}.${Hardt_VERSION_MINOR}
+	SOVERSION ${Hardt_VERSION_MAJOR} )
 
 target_sources(hardt
     PRIVATE
@@ -24,7 +27,7 @@ target_include_directories(hardt PRIVATE . include writers readers readers/gener
 include(GNUInstallDirs)
 install(TARGETS hardt
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hardt)
 
 install(FILES ${CMAKE_BINARY_DIR}/hardt.pc DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig)
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/hardt/libhardt/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hardt)
