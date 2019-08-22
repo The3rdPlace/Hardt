@@ -1,11 +1,9 @@
-# Config file for the Hardt package
+# Local config file for the Hardt package during build
 # It defines the following variables
 #  Hardt_INCLUDE_DIRS - include directories for Hardt
-#  Hardt_LIBRARIES - libraries to link against 
+#  Hardt_LIBRARIES - libraries to link against
 
-get_filename_component(Hardt_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH) 
-
-set(Hardt_INCLUDE_DIRS "/usr/local/include/hardt")
+set(Hardt_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/hardt/include/hardt  ${PROJECT_BINARY_DIR}/hardt/include/hardt)
 
 set(Hardt_LIBRARIES hardt)
 
