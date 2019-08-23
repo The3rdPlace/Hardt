@@ -147,3 +147,8 @@ int main(int argc, char** argv)
     // Delete this resource
     delete result;
 }
+
+/**
+    \example saq.cpp
+    SAQ/Grimeton 17.2KHz receiver
+ */

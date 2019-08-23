@@ -1,3 +1,16 @@
+/**
+	\mainpage Hardt introduction
+
+	\section intro_sec Introduction section
+	This is Hardt version @Hardt_VERSION_MAJRO@.@Hardt_VERSION_MINOR@.@Hardt_VERSION_DEB_PACKAGE@
+
+	\section install_sec Installation section
+ 
+	\subsection step1 Step 1: Opening the box
+
+	Welcome..
+*/
+
 #define MAJORVERSION @Hardt_VERSION_MAJOR@
 #define MINORVERSION @Hardt_VERSION_MINOR@
 #define BUILDNO @Hardt_VERSION_DEB_PACKAGE@
