@@ -1,3 +1,5 @@
 set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
+set( CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR})
+set( Hardt_DIR ${PROJECT_SOURCE_DIR})
 
 add_subdirectory (saq)
