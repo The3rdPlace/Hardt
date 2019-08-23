@@ -12,7 +12,7 @@
     hum filtering and amplification. So instead of using a wavfile reader, one could
     easily use a soundcard reader instead and the receiver would be 'Live'
 
-    For fun, you could use the dspcmd application to inspect the spectrum if the
+    For fun, you could use the dspcmd application to inspect the spectrum of the
     input data "dspcmd -if saq_tuneup.wav -fmgp 1024 -pr 16000 19000", can you spot the
     signal? (hint: no, its not the big spike close to 17.2KHz)
 

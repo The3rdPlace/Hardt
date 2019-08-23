@@ -1,14 +1,38 @@
 /**
-	\mainpage Hardt introduction
+	\mainpage An introduction to DSP programming with Hardt
 
-	\section intro_sec Introduction section
-	This is Hardt version @Hardt_VERSION_MAJRO@.@Hardt_VERSION_MINOR@.@Hardt_VERSION_DEB_PACKAGE@
 
-	\section install_sec Installation section
- 
-	\subsection step1 Step 1: Opening the box
+	\section download_section Install Hardt
+	Current version of Hardt is @Hardt_VERSION_MAJOR@.@Hardt_VERSION_MINOR@-@Hardt_VERSION_DEB_PACKAGE@.
+	The newest package can be downloaded here http://hardttoolkit.org/hardt_@Hardt_VERSION_MAJOR@.@Hardt_VERSION_MINOR@-@Hardt_VERSION_DEB_PACKAGE@.deb
 
-	Welcome..
+	Archived older versions can be found here: http://hardttoolkit.org/archive
+
+	Install the package with the command "dpkg -i hardt_@Hardt_VERSION_MAJOR@.@Hardt_VERSION_MINOR@-@Hardt_VERSION_DEB_PACKAGE@.deb
+	
+
+	\section introduction_section Introduction
+ 	Hardt is a Digital Signal Processing framework for C++ applications. It provides building blocks for quickly putting a DSP application together
+	and testing it.
+
+	It is not the fastest, nor the most advanced DSP framework available, but for inital work in the field, or quick and dirty applications to
+	do help with a project or learning about digial signal processing - it might just be what you need.
+
+
+	\subsection architecture_section Readers and writers
+	Hardt is based on a very simpel architectural scheme where you chain multiple readers and writers together
+	to form a processing chain.
+
+	You start with a reader, say a HSoundcardReader, then add a couple of filters. Then you terminate the input part
+	of the chain with a HProcessor that, when started (by calling the run() function), will continue to read samples
+	from the input chain. 
+
+	To the processor, you then attach a similar chain of writers, could be a mixer and more filters, and then finally
+	a HSoundcardWriter. 
+
+	When you are done defining your chain, you call run() on the processor and off we go.
+	(take a look on the "saq" example, it is the most clear cut example on how to build a somewhat complex processing
+	chain and running it)
 */
 
 #define MAJORVERSION @Hardt_VERSION_MAJOR@
