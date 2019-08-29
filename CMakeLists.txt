@@ -5,7 +5,7 @@ project (Hardt)
 
 # Set the framework major and minor version here
 set (Hardt_VERSION_MAJOR 1)
-set (Hardt_VERSION_MINOR 2)
+set (Hardt_VERSION_MINOR 0)
 
 # When setting the debian package version, do not forget to add a changelog
 # entry in hardt/debian/changelog
@@ -78,4 +78,4 @@ ADD_CUSTOM_TARGET( dist
 	COMMAND sudo chown -R $ENV{USER} dist
 	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 
-add_dependencies( dist integrationtest )
+add_dependencies( dist integrationtest documentation )

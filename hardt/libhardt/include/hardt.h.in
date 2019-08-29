@@ -4,12 +4,14 @@
 
 	\section download_section Install Hardt
 	Current version of Hardt is @Hardt_VERSION_MAJOR@.@Hardt_VERSION_MINOR@-@Hardt_VERSION_DEB_PACKAGE@.
-	The newest package can be downloaded here http://hardttoolkit.org/hardt_@Hardt_VERSION_MAJOR@.@Hardt_VERSION_MINOR@-@Hardt_VERSION_DEB_PACKAGE@.deb
+	The newest package can be downloaded here: http://hardttoolkit.org/hardt_@Hardt_VERSION_MAJOR@.@Hardt_VERSION_MINOR@-@Hardt_VERSION_DEB_PACKAGE@_amd64.deb
 
 	Archived older versions can be found here: http://hardttoolkit.org/archive
 
-	Install the package with the command "dpkg -i hardt_@Hardt_VERSION_MAJOR@.@Hardt_VERSION_MINOR@-@Hardt_VERSION_DEB_PACKAGE@.deb
+	Install the package with the command "dpkg -i hardt_@Hardt_VERSION_MAJOR@.@Hardt_VERSION_MINOR@-@Hardt_VERSION_DEB_PACKAGE@_amd64.deb
 	
+	If you want the source, it is available here:  http://hardttoolkit.org/hardt_@Hardt_VERSION_MAJOR@.@Hardt_VERSION_MINOR@.orig.tar.gz 
+
 
 	\section introduction_section Introduction
 	Hardt is a Digital Signal Processing framework for C++ applications. It provides building blocks for quickly putting a DSP application together
