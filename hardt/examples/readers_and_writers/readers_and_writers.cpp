@@ -28,7 +28,60 @@ int main(int argc, char** argv)
     // reduced by large blocksizes since more data has to be moved between buffers
     const int BLOCKSIZE = 4096;
 
-    // Todo: add more code
+    // -------------------------------------------------------------------------------------
+    // Setup dsp chain for readers
+    //
+    // Readers are created the expected way, first to last.
+    // Each reader requires a pointer to the previous reader to be passed as one of
+    // the arguments.. In many cases you can just pass in a pointer
+    // to the previous reader object and let the compiler resolve the object type.
+    // However, this does not always work, so in that case you have two options:
+    // - use a normal cast: gain( (HReader<int16_t>) generator, ... );
+    // - use a helper method: gain( generator.Reader(), ... );
+
+    // Create a sinus generator running at 1KHz
+    HSineGenerator<int16_t> generator(H_SAMPLE_RATE_48K, 1000, 50);
+
+    // Increase the generator amplitude (just to add some readers)
+    HGain<int16_t> gain(generator.Reader(), 2, BLOCKSIZE);
+
+    // Mix with a 500Hz tone
+    // ==> 1000Hz - 500Hz = 500Hz
+    // ==> 1000Hz + 500Hz = 1500Hz
+    HMultiplier<int16_t> multiplier(gain.Reader(), H_SAMPLE_RATE_48K, 500, BLOCKSIZE);
+
+    // General highpass filtering after mixing to make the 1500Hz tone the dominant
+    HBiQuadFilter<HHighpassBiQuad<int16_t>, int16_t> highpass(multiplier.Reader(), 1000, H_SAMPLE_RATE_48K, 0.7071f, 1, BLOCKSIZE);    // -------------------------------------------------------------------------------------
+
+    // Setup dsp chain for writers
+    //
+    // When you create writers without using the HWriterConsumer interface, you can must create the writers
+    // from last to first since each writer must know where to write.
+    //
+    // Since the compiler are not always able to correctly cast the given HWriter (or
+    // processor) pointer to a Hwriter*, you have two options:
+    // - use a normal cast: splitter( (HWriter<int16_t>*) processor, ... );
+    // - use a helper method: splitter( processor.Writer(), ... );
+    //
+    // Allthough this is the simplest scheme to get the writers connected, I find it very confusing
+    // having to read 'from the bottom up'. Have a look on the 'readers_and_consumers' example to see
+    // how it can be done in reverse.
+
+    // Create a soundcard writer, to output the 500Hz + 1500Hz signal
+    HSoundcardWriter<int16_t> soundcard(atoi(argv[2]), H_SAMPLE_RATE_48K, 1, H_SAMPLE_FORMAT_INT_16, BLOCKSIZE);
+
+    // Create a fader that turns up the output volume when we begin to process samples.
+    HFade<int16_t> fade(soundcard.Writer(), 0, 1000, true, BLOCKSIZE);
+
+    // Processor that reads from the last reader and writes to the first writer
+    bool terminated = false;
+    HStreamProcessor<int16_t> processor(fade.Writer(), highpass.Reader(), BLOCKSIZE, &terminated);
+
+    // -------------------------------------------------------------------------------------
+    // Run
+
+    // Start the processor and run 1000 blocks
+    processor.Run(1000);
 }
 
 /**
