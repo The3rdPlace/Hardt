@@ -49,6 +49,7 @@ int main(int argc, char** argv)
     {
         std::cout << "Usage: saq 'filename' 'output-sound-device-number'" << std::endl;
         std::cout << "Use 'dspcmd -a' to get a list of your sound device numbers" << std::endl;
+        return 1;
     }
 
     // Decide on a block size to use - how many samples to pass into the chain on every

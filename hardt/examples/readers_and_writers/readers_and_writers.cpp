@@ -1,5 +1,5 @@
 /*
-	Todo: add example
+    Example showing how to connect several readers and writers
 */
 
 #include <iostream>
@@ -17,10 +17,11 @@ int main(int argc, char** argv)
     std::cout << "readers_and_writers: using Hardt " + getversion() << std::endl;
 
     // Check that we got the required input parameters
-    if( argc < 3 )
+    if( argc < 2 )
     {
         std::cout << "Usage: readers_and_writers 'output-sound-device-number'" << std::endl;
         std::cout << "Use 'dspcmd -a' to get a list of your sound device numbers" << std::endl;
+        return 1;
     }
 
     // Decide on a block size to use - how many samples to pass into the chain on every
@@ -40,7 +41,7 @@ int main(int argc, char** argv)
     // - use a helper method: gain( generator.Reader(), ... );
 
     // Create a sinus generator running at 1KHz
-    HSineGenerator<int16_t> generator(H_SAMPLE_RATE_48K, 1000, 50);
+    HSineGenerator<int16_t> generator(H_SAMPLE_RATE_48K, 1000, 10000);
 
     // Increase the generator amplitude (just to add some readers)
     HGain<int16_t> gain(generator.Reader(), 2, BLOCKSIZE);
@@ -68,10 +69,10 @@ int main(int argc, char** argv)
     // how it can be done in reverse.
 
     // Create a soundcard writer, to output the 500Hz + 1500Hz signal
-    HSoundcardWriter<int16_t> soundcard(atoi(argv[2]), H_SAMPLE_RATE_48K, 1, H_SAMPLE_FORMAT_INT_16, BLOCKSIZE);
+    HSoundcardWriter<int16_t> soundcard(atoi(argv[1]), H_SAMPLE_RATE_48K, 1, H_SAMPLE_FORMAT_INT_16, BLOCKSIZE);
 
     // Create a fader that turns up the output volume when we begin to process samples.
-    HFade<int16_t> fade(soundcard.Writer(), 0, 1000, true, BLOCKSIZE);
+    HFade<int16_t> fade(soundcard.Writer(), 0, 3000, true, BLOCKSIZE);
 
     // Processor that reads from the last reader and writes to the first writer
     bool terminated = false;
@@ -80,11 +81,11 @@ int main(int argc, char** argv)
     // -------------------------------------------------------------------------------------
     // Run
 
-    // Start the processor and run 1000 blocks
-    processor.Run(1000);
+    // Start the processor and run 100 blocks
+    processor.Run(100);
 }
 
 /**
     \example readers_and_writers.cpp
-    How to link HReaders and HWriters in a chain
+    How to link multiple HReaders and HWriters in a chain
  */

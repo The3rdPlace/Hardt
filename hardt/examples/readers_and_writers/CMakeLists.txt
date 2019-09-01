@@ -5,5 +5,5 @@ find_package(Hardt CONFIG)
 add_executable (readers_and_writers readers_and_writers.cpp)
 
 include_directories(${Hardt_INCLUDE_DIRS})
-target_link_libraries (saq ${Hardt_LIBRARIES})
+target_link_libraries (readers_and_writers ${Hardt_LIBRARIES})
 
