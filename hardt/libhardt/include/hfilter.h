@@ -6,7 +6,7 @@
     This class defines a pure virtual method, Filter(), which must be
     implemented by classes inheriting this class.
 
-    The constructur is protected, this class cannot be instantianted directly.
+    The constructor is protected, this class cannot be instantianted directly.
 */
 template <class T>
 class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, public HWriterConsumer<T>

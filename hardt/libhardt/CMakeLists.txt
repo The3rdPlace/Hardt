@@ -22,7 +22,7 @@ include_directories("${PROJECT_BINARY_DIR}/hardt/libhardt/include")
 
 set_target_properties(hardt PROPERTIES PUBLIC_HEADER include/hardtapi.h)
 
-target_include_directories(hardt PRIVATE . include writers readers readers/generators readers/mixers processors converters outputs filters filters/windows filters/biquads)
+target_include_directories(hardt PRIVATE . include writers readers readers/generators readers/mixers processors converters outputs filters filters/windows filters/biquads components)
 
 include(GNUInstallDirs)
 install(TARGETS hardt

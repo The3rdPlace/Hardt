@@ -65,5 +65,6 @@
 #include "hsignallevel.h"
 #include "hdemux.h"
 #include "hmux.h"
+#include "hswitch.h"
 
 #endif

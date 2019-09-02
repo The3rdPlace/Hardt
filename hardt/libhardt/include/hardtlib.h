@@ -77,5 +77,6 @@ Include api function declarations
 #include "hsignallevel.cpp"
 #include "hdemux.cpp"
 #include "hmux.cpp"
+#include "hswitch.cpp"
 
 #endif
