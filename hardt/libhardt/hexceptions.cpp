@@ -34,6 +34,10 @@ HWriterIOException::HWriterIOException(const char* reason):
     HException(reason)
 {}
 
+HReaderIOException::HReaderIOException(const char* reason):
+    HException(reason)
+{}
+
 HConverterIOException::HConverterIOException(const char* reason):
     HException(reason)
 {}
@@ -43,5 +47,9 @@ HFilterIOException::HFilterIOException(const char* reason):
 {}
 
 HFilterInitializationException::HFilterInitializationException(const char* reason):
+    HException(reason)
+{}
+
+HInvalidArgumentException::HInvalidArgumentException(const char* reason):
     HException(reason)
 {}

@@ -29,7 +29,7 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
         /** Construct a new HFilter that registers with an upstream writer */
         HFilter(HWriterConsumer<T>* consumer, size_t blocksize);
 
-        /** Construct a new HFilter that reads from a read */
+        /** Construct a new HFilter that reads from a reader */
         HFilter(HReader<T>* reader, size_t blocksize);
 
         /** Implements HWriterConsumer::SetWriter() */

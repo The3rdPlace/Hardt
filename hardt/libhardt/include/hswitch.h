@@ -13,12 +13,19 @@
     which all writes or reads are passed through directly
 */
 template <class T>
-class HSwitch: public HReader<T>, public HWriter<T>
+class HSwitch: public HReader<T>, public HWriter<T>, HWriterConsumer<T>
 {
     private:
 
         HWriter<T>* _writer;
         HReader<T>* _reader;
+        size_t _blocksize;
+
+        T* _buffer;
+
+        bool _isWriter;
+        bool _isWriterConsumer;
+        bool _isReader;
 
         int _position;
 
@@ -27,19 +34,16 @@ class HSwitch: public HReader<T>, public HWriter<T>
     public:
 
         /** Construct a new HSwitch that handle writers */
-        HSwitch(HWriter<T>* writer);
+        HSwitch(HWriter<T>* writer, size_t blocksize);
 
-        /** Construct a new HSwitch that handle writers and registers with an upstream writer */
-        HSwitch(HWriterConsumer<T>* consumer);
+        /** Construct a new HSwitch that handle writer consumers */
+        HSwitch(HWriterConsumer<T>* consumer, size_t blocksize);
 
-        /** Construct a new HFilter that handle readers */
-        HSwitch(HReader<T>* reader);
+        /** Construct a new HSwitch that handle readers */
+        HSwitch(HReader<T>* reader, size_t blocksize);
 
         /** Implements HWriterConsumer::SetWriter() */
-        void SetWriter(HWriter<T>* writer)
-        {
-            _writer = writer;
-        }
+        void SetWriter(HWriter<T>* writer);
 
     public:
 
@@ -63,6 +67,10 @@ class HSwitch: public HReader<T>, public HWriter<T>
 
         /** Add writer */
         void Add(HWriter<T>* writer);
+
+        /** Add writer backed by the HWriterConsumer interface */
+        void Add(HWriterConsumer<T>* writer);
+
 };
 
 #endif

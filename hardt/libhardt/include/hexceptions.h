@@ -109,6 +109,20 @@ class HWriterIOException : public HException
 };
 
 /**
+    Thrown if there is errors during reader i/o
+
+    Constructor:
+        HReaderIOException(reason)
+*/
+class HReaderIOException : public HException
+{
+    public:
+
+        /** Construct a new HWriterIOException */
+        HReaderIOException(const char* reason);
+};
+
+/**
     Thrown if there is errors during converter i/o
 
     Constructor:
@@ -148,6 +162,20 @@ class HFilterInitializationException : public HException
 
         /** Construct a new HFilterInitializationException with a reason */
         HFilterInitializationException(const char* reason);
+};
+
+/**
+    Thrown if an invalid argument is given
+
+    Constructor:
+        HInvalidArgumentException(reason)
+*/
+class HInvalidArgumentException : public HException
+{
+    public:
+
+        /** Construct a new HInvalidArgumentException with a reason */
+        HInvalidArgumentException(const char* reason);
 };
 
 #endif
