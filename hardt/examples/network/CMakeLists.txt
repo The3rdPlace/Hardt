@@ -5,5 +5,5 @@ find_package(Hardt CONFIG)
 add_executable (network network.cpp)
 
 include_directories(${Hardt_INCLUDE_DIRS})
-target_link_libraries (network ${Hardt_LIBRARIES})
+target_link_libraries (network ${Hardt_LIBRARIES} pthread)
 
