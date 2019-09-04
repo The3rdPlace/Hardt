@@ -171,6 +171,52 @@ void HSwitch<T>::SetWriter(HWriter<T>* writer)
     }
 }
 
+template <class T>
+bool HSwitch<T>::Start()
+{
+    for (auto& component: _components)
+    {
+        if( _isWriter)
+        {
+            if( !((HWriter<T>*) component)->Start() )
+            {
+                return false;
+            }
+        }
+        if( _isReader)
+        {
+            if( !((HReader<T>*) component)->Start() )
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+template <class T>
+bool HSwitch<T>::Stop()
+{
+    for (auto& component: _components)
+    {
+        if( _isWriter)
+        {
+            if( !((HWriter<T>*) component)->Stop() )
+            {
+                return false;
+            }
+        }
+        if( _isReader)
+        {
+            if( !((HReader<T>*) component)->Stop() )
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
@@ -315,6 +361,32 @@ void HSwitch<int16_t>::SetWriter(HWriter<int16_t>* writer);
 
 template
 void HSwitch<int32_t>::SetWriter(HWriter<int32_t>* writer);
+
+// Start()
+template
+bool HSwitch<int8_t>::Start();
+
+template
+bool HSwitch<uint8_t>::Start();
+
+template
+bool HSwitch<int16_t>::Start();
+
+template
+bool HSwitch<int32_t>::Start();
+
+// Stop()
+template
+bool HSwitch<int8_t>::Stop();
+
+template
+bool HSwitch<uint8_t>::Stop();
+
+template
+bool HSwitch<int16_t>::Stop();
+
+template
+bool HSwitch<int32_t>::Stop();
 
 //! @endcond
 #endif

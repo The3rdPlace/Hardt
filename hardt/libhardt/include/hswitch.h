@@ -11,6 +11,13 @@
 
     The switch also has a zero-position called "bypass" (index 0), in
     which all writes or reads are passed through directly
+
+    Allthough you can warp the intended usage pattern by supplying
+    output- or nullwriters , this component is really meant to be used as a
+    pass-through device with filters or other types of sample-manipulating
+    objects.
+
+    If you are looking for an on-off switch, use the HMute class.
 */
 template <class T>
 class HSwitch: public HReader<T>, public HWriter<T>, HWriterConsumer<T>
@@ -71,6 +78,11 @@ class HSwitch: public HReader<T>, public HWriter<T>, HWriterConsumer<T>
         /** Add writer backed by the HWriterConsumer interface */
         void Add(HWriterConsumer<T>* writer);
 
+        /** Call Start() on all known components */
+        bool Start();
+
+        /** Call Stop() on all known components */
+        bool Stop();
 };
 
 #endif
