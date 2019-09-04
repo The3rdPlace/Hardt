@@ -78,5 +78,6 @@ Include api function declarations
 #include "hdemux.cpp"
 #include "hmux.cpp"
 #include "hswitch.cpp"
+#include "hmute.cpp"
 
 #endif
