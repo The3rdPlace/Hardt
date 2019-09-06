@@ -1,42 +1,39 @@
 /**
-	\mainpage An introduction to DSP programming with Hardt
+	\mainpage DSP programming with Hardt
+
+
+	\section introduction_section What is it?
+	Hardt is a simple framework around (mostly) standard DSP concepts in use when you want to play around with digital sampled
+	sound (or RF). The framework provides building blocks such as generators, filter and soundcard in- and output. 
+
+	By combining a set of building blocks, one can construct a DSP chain to perform almost any task imaginable. However, the 
+	simplicity of the framework has a prize!..  There will be a performance hit since many operations could be combined and
+	optimized if you where to design a production-quality application that performs. This performance hit is never the less by
+	design since the framework is aimed mostly at experimenting, fixing small one-time jobs or writing smaller applications that
+	do not need to perform to the highest level.
+
+
+	\section architecture_section Architecture / Concept
+	Hardt is based on a Readers and Writers concept, so that the (very) general architecture of a DSP chain implemented using 
+	Hardt would be <code>(input)reader -> reader -> processor -> writer -> writer(output)</code>. The processor being the
+	"motor" driving samples through the chain (no reader ever pushes data, nor does any writer unless written to).
+
+	All you have to do is to construct a chain that could look something like this:
+	<code>HSoundcardReader -> HFilter -> HFilter -> HGain -> HStreamProcessor -> HMultiplier -> HFilter -> HGain -> HSoundcardWriter</code>
+	Look into the examples section where you will find a few very simple examples demonstrating how to construct such a chain. There
+	are also an example on how to transfer samples over the network, and a bit larger example showing how one could construct a receiver
+	for the SAQ/Grimeton VLF transmitter.
 
 
 	\section download_section Install Hardt
 	Current version of Hardt is @Hardt_VERSION_MAJOR@.@Hardt_VERSION_MINOR@-@Hardt_VERSION_DEB_PACKAGE@.
 	The newest package can be downloaded here: http://hardttoolkit.org/hardt_@Hardt_VERSION_MAJOR@.@Hardt_VERSION_MINOR@-@Hardt_VERSION_DEB_PACKAGE@_amd64.deb
-
-	Archived older versions can be found here: http://hardttoolkit.org/archive
-
 	Install the package with the command "dpkg -i hardt_@Hardt_VERSION_MAJOR@.@Hardt_VERSION_MINOR@-@Hardt_VERSION_DEB_PACKAGE@_amd64.deb
 	
 	If you want the source, it is available here:  http://hardttoolkit.org/hardt_@Hardt_VERSION_MAJOR@.@Hardt_VERSION_MINOR@.orig.tar.gz 
 
+	Archived older versions can be found here: http://hardttoolkit.org/archive
 
-	\section introduction_section Introduction
-	Hardt is a Digital Signal Processing framework for C++ applications. It provides building blocks for quickly putting a DSP application together
-	and testing it.
-
-	It is not the fastest, nor the most advanced DSP framework available, but for inital work in the field, or quick and dirty applications to
-	help with a project or learning about digial signal processing - it might just be what you need.
-
-
-	\subsection architecture_section Readers and writers
-	Hardt is based on a very simpel architectural scheme where you chain multiple readers and writers together
-	to form a processing chain.
-
-	You start with a reader, say a HSoundcardReader, then add a couple of filters. Then you terminate the input part
-	of the chain with a HProcessor that, when started (by calling the run() function), will continue to read samples
-	from the input chain. 
-
-	To the processor, you then attach a similar chain of writers, could be a mixer and more filters, and then finally
-	a HSoundcardWriter. 
-
-	When you are done defining your chain, you call run() on the processor and off we go.
-	
-	Take a look on the "readers_and_writers" example, it is the most clear cut example on how to build a somewhat complex processing
-	chain and running it. You may also have a quick look on the "readers_and_consumers" examle which shows how to build the chain 
-	without having to think "in reverse" when you define the writers. 
 
 	/subsection classes_section Classes
 	Hardt provides the most commonly needed building blocks for DSP applications. That is in- and output from soundcards or files (pcm or wav format),
@@ -44,19 +41,18 @@
 
 	Should you need something that is not provided by Hardt, you just pick a class that is the closest match, inherit it and extend it
 
+
 	\section future_section Current state and the future
 	Hardt is a quit new framework so it is not complete.! Basic audio DSP processing is covered but there is no modulators/demodulators, rtty-generators or
-	FT8 support. 
+	FT8 support. Also input from the RTL dongles is very high on the wishlist, but not yet available.
 
-	After having stabilized the framework, getting data from some of the RTL dongles and processing that is the next step - this would open op Hardt for 
-	use with more advanced dongle receivers. Further down the road is some loose plans for getting some sort of errorcorrecting code encoding/decoding 
-	and possibly FT4/FT8/JT65 generators.
 
 	\section tools_section Tools
 	During development of a DSP application, you may want to test your parameters for the filters, checking the output spectrum at various stages and so forth.
 	A good tip is to start with a small sample of the signal you wish to process, then use a HFileReader (for PCM) or HWavReader (for wav files) as the
 	input, and then a corresponding HfileWriter og HWavWriter as the output, then use the "dspcmd" tool to check the spectrum of the output file.
 	Run the command "dspcmd -h" to get help on how to use the dspcmd tool - it can do a lot of things.
+
 
 	\section contact_section Contact
 	Finally, if you need a piece of advice, or wants to reports problems with the toolkit, please contact me at <henrik@hardttoolkit.org>. Also, I would
