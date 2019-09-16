@@ -4,6 +4,8 @@
 #include "hreader.h"
 #include "hwriter.h"
 
+#include <vector>
+
 /**
     Implements a switch that can hold a number of object that can be switched
     between, say 3 filters where the switch position determines which filter

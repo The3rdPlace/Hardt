@@ -6,7 +6,7 @@
 template <class T>
 HSwitch<T>::HSwitch(HWriter<T>* writer, size_t blocksize):
     _isReader(false),
-    _isWriter(false),
+    _isWriter(true),
     _isWriterConsumer(false),
     _position(0),
     _blocksize(blocksize),
@@ -20,8 +20,8 @@ HSwitch<T>::HSwitch(HWriter<T>* writer, size_t blocksize):
 template <class T>
 HSwitch<T>::HSwitch(HWriterConsumer<T>* consumer, size_t blocksize):
     _isReader(false),
-    _isWriter(false),
-    _isWriterConsumer(false),
+    _isWriter(true),
+    _isWriterConsumer(true),
     _position(0),
     _blocksize(blocksize),
     _writer((HWriter<T>*) consumer),
@@ -35,7 +35,7 @@ HSwitch<T>::HSwitch(HWriterConsumer<T>* consumer, size_t blocksize):
 
 template <class T>
 HSwitch<T>::HSwitch(HReader<T>* reader, size_t blocksize):
-    _isReader(false),
+    _isReader(true),
     _isWriter(false),
     _isWriterConsumer(false),
     _position(0),
