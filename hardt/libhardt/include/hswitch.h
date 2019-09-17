@@ -22,7 +22,7 @@
     If you are looking for an on-off switch, use the HMute class.
 */
 template <class T>
-class HSwitch: public HReader<T>, public HWriter<T>, HWriterConsumer<T>
+class HSwitch: public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
 {
     private:
 
@@ -76,9 +76,6 @@ class HSwitch: public HReader<T>, public HWriter<T>, HWriterConsumer<T>
 
         /** Add writer */
         void Add(HWriter<T>* writer);
-
-        /** Add writer backed by the HWriterConsumer interface */
-        void Add(HWriterConsumer<T>* writer);
 
         /** Call Start() on all known components */
         bool Start();

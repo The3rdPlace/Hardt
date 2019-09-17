@@ -145,20 +145,6 @@ void HSwitch<T>::Add(HWriter<T>* writer)
 }
 
 template <class T>
-void HSwitch<T>::Add(HWriterConsumer<T>* writer)
-{
-	if( _isReader && !_isWriter )
-	{
-	    HError("A HWriter(consumer) can not be added to a HSwitch initialized with HReader's");
-        throw new HInitializationException("A HWriter(consumer) can not be added to a HSwitch initialized with HReader's");
-	}
-	_isWriter = true;
-	_isWriterConsumer = true;
-	((HWriter<T>*) writer)->SetWriter(_writer);
-	_components.push_back(writer);
-}
-
-template <class T>
 void HSwitch<T>::SetWriter(HWriter<T>* writer)
 {
 	if( !_isWriterConsumer )
@@ -166,8 +152,19 @@ void HSwitch<T>::SetWriter(HWriter<T>* writer)
 	    HError("It is not possible to set a writer on a HSwitch initialized with HReader's or HWriter's (hint: use a HWriterConsumer*)");
         throw new HInitializationException("It is not possible to set a writer on a HSwitch initialized with HReader's or HWriter's (hint: use a HWriterConsumer*)");
 	}
-	for (auto& component: _components) {
-	    ((HWriterConsumer<T>*) component)->SetWriter(writer);
+
+	if( writer != this )
+	{
+	    HLog("Writer is upstream (we hope), setting new writer");
+        _writer = writer;
+        for (auto& component: _components)
+        {
+            ((HWriterConsumer<T>*) component)->SetWriter(writer);
+        }
+    }
+    else
+    {
+        HLog("Upstream writer is THIS writer, ignoring SetWriter()");
     }
 }
 
