@@ -46,7 +46,7 @@ install(
 add_subdirectory (hardt)
 
 # Generate documentation from in-source documentation and structure
-find_package(Doxygen REQUIRED dot)
+find_package(Doxygen COMPONENTS dot)
 if(DOXYGEN_FOUND)
 
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
@@ -61,21 +61,23 @@ if(DOXYGEN_FOUND)
     install(DIRECTORY ${CMAKE_BINARY_DIR}/docs/html/ DESTINATION share/doc/hardt/html)
     install(DIRECTORY ${CMAKE_BINARY_DIR}/docs/examples/ DESTINATION share/doc/hardt/examples)
 
+    # Package into debian package
+    if(UNIX AND NOT APPLE)
+    	ADD_CUSTOM_TARGET( dist
+	    COMMAND sudo rm -r -f dist
+	    COMMAND mkdir -p dist/hardt
+	    COMMAND cp -r hardt/debian dist/hardt/.
+	    COMMAND tar -c -v -f 'dist/hardt_${Hardt_VERSION_MAJOR}.${Hardt_VERSION_MINOR}.orig.tar.gz' -z 'CMakeLists.txt' 'hardt'
+	    COMMAND cd dist/hardt && debuild -us -uc --root-command=sudo
+	    COMMAND sudo rm -r -f dist/hardt
+	    COMMAND sudo chown -R $ENV{USER} dist
+	    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+
+    	add_dependencies( dist integrationtest documentation )
+    endif()
+
 else()
 
     message("You must install Doxygen and Graphviz to generate the documentation")
 
 endif()
-
-# Package into debian package
-ADD_CUSTOM_TARGET( dist
-	COMMAND sudo rm -r -f dist
-	COMMAND mkdir -p dist/hardt
-	COMMAND cp -r hardt/debian dist/hardt/.
-	COMMAND tar -c -v -f 'dist/hardt_${Hardt_VERSION_MAJOR}.${Hardt_VERSION_MINOR}.orig.tar.gz' -z 'CMakeLists.txt' 'hardt'
-	COMMAND cd dist/hardt && debuild -us -uc --root-command=sudo
-	#COMMAND sudo rm -r -f dist/hardt
-	COMMAND sudo chown -R $ENV{USER} dist
-	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-
-add_dependencies( dist integrationtest documentation )
