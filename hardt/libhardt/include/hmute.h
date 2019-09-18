@@ -9,8 +9,8 @@
     up- or downstream writer or reader. And when unmuted, Start()
     will be called.
 
-    Start() or Stop() will NOT be called when setting the initial
-    state during creation or setting a writer.
+    A call to Start() or Stop() will only be propagated if the muted state
+    is 'not muted' (false).
 */
 template <class T>
 class HMute : public HFilter<T>
@@ -38,6 +38,12 @@ class HMute : public HFilter<T>
 
         /** Set state */
         void SetMuted(bool muted);
+
+         /** Initialize before first write */
+        bool Start();
+
+        /** Cleanup after last write */
+        bool Stop();
 };
 
 #endif

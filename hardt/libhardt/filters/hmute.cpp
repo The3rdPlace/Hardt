@@ -56,8 +56,46 @@ void HMute<T>::Filter(T* src, T* dest, size_t blocksize)
 template <class T>
 void HMute<T>::SetMuted(bool muted)
 {
-    _muted = muted;
+    if( muted && !_muted )
+    {
+        HLog("Sending Stop() to reader/writer");
+        _muted = muted;
+        HFilter<T>::Stop();
+    }
+    else if( !muted && _muted )
+    {
+        HLog("Sending Start() to reader/writer");
+        _muted = muted;
+        HFilter<T>::Start();
+    }
 }
+
+template <class T>
+bool HMute<T>::Start()
+{
+    if( !_muted )
+    {
+        HLog("Propagating Start() to reader/writer");
+        return HFilter<T>::Start();
+    }
+
+    HLog("Discarding Start() to reader/writer");
+    return true;
+}
+
+template <class T>
+bool HMute<T>::Stop()
+{
+    if( !_muted )
+    {
+        HLog("Propagating Stop() to reader/writer");
+        HFilter<T>::Stop();
+    }
+
+    HLog("Discarding Stop() to reader/writer");
+    return true;
+}
+
 
 /********************************************************************
 Explicit instantiation
@@ -139,6 +177,32 @@ void HMute<int16_t>::SetMuted(bool muted);
 
 template
 void HMute<int32_t>::SetMuted(bool muted);
+
+// Start()
+template
+bool HMute<int8_t>::Start();
+
+template
+bool HMute<uint8_t>::Start();
+
+template
+bool HMute<int16_t>::Start();
+
+template
+bool HMute<int32_t>::Start();
+
+// Stop()
+template
+bool HMute<int8_t>::Stop();
+
+template
+bool HMute<uint8_t>::Stop();
+
+template
+bool HMute<int16_t>::Stop();
+
+template
+bool HMute<int32_t>::Stop();
 
 //! @endcond
 #endif
