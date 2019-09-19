@@ -72,7 +72,7 @@ int HSwitch<T>::Write(T* src, size_t blocksize)
         return _writer->Write(src, blocksize);
     }
 
-    return ((HWriter<T>*) _components.at(_position - 1))->Write(src, blocksize);
+    return _components.at(_position - 1).Writer->Write(src, blocksize);
 }
 
 template <class T>
@@ -94,7 +94,7 @@ int HSwitch<T>::Read(T* dest, size_t blocksize)
         return _reader->Read(dest, blocksize);
     }
 
-    return ((HReader<T>*) _components.at(_position - 1))->Read(dest, blocksize);
+    return _components.at(_position - 1).Reader->Read(dest, blocksize);
 }
 
 template <class T>
@@ -129,7 +129,7 @@ void HSwitch<T>::Add(HReader<T>* reader)
         throw new HInitializationException("A HWriter can not be added to a HSwitch initialized with HWriter's");
 	}
 	_isReader = true;
-	_components.push_back(reader);
+	_components.push_back(ComponentPtr(reader));
 }
 
 template <class T>
@@ -141,7 +141,7 @@ void HSwitch<T>::Add(HWriter<T>* writer)
         throw new HInitializationException("A HWriter can not be added to a HSwitch initialized with HReader's");
 	}
 	_isWriter = true;
-	_components.push_back(writer);
+	_components.push_back(HSwitch<T>::ComponentPtr(writer));
 }
 
 template <class T>
@@ -153,19 +153,8 @@ void HSwitch<T>::SetWriter(HWriter<T>* writer)
         throw new HInitializationException("It is not possible to set a writer on a HSwitch initialized with HReader's or HWriter's (hint: use a HWriterConsumer*)");
 	}
 
-	if( writer != this )
-	{
-	    HLog("Writer is upstream (we hope), setting new writer");
-        _writer = writer;
-        for (auto& component: _components)
-        {
-            ((HWriterConsumer<T>*) component)->SetWriter(writer);
-        }
-    }
-    else
-    {
-        HLog("Upstream writer is THIS writer, ignoring SetWriter()");
-    }
+    HLog("Writer is upstream (we hope), setting new writer");
+    _writer = writer;
 }
 
 template <class T>
@@ -175,14 +164,14 @@ bool HSwitch<T>::Start()
     {
         if( _isWriter)
         {
-            if( !((HWriter<T>*) component)->Start() )
+            if( !component.Writer->Start() )
             {
                 return false;
             }
         }
         if( _isReader)
         {
-            if( !((HReader<T>*) component)->Start() )
+            if( !component.Reader->Start() )
             {
                 return false;
             }
@@ -198,14 +187,14 @@ bool HSwitch<T>::Stop()
     {
         if( _isWriter)
         {
-            if( !((HWriter<T>*) component)->Stop() )
+            if( !component.Writer->Stop() )
             {
                 return false;
             }
         }
         if( _isReader)
         {
-            if( !((HReader<T>*) component)->Stop() )
+            if( !component.Reader->Stop() )
             {
                 return false;
             }

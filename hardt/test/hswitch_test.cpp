@@ -207,21 +207,23 @@ class HSwitch_Test: public Test
             int8_t zero[] = {0, 0, 0, 0, 0};
             int8_t received[5];
 
+            // Upstream writer
             TestThroughputWriter<int8_t> upstream;
 
+            // The switch
             HSwitch<int8_t> sw(upstream.Consumer(), 5);
-
-            HGain<int8_t> wr1(sw.Consumer(), 2, 5);
-            HGain<int8_t> wr2(sw.Consumer(), 3, 5);
-            HGain<int8_t> wr3(sw.Consumer(), 4, 5);
-
-            sw.Add(wr1.Writer());
-            sw.Add(wr2.Writer());
-            sw.Add(wr3.Writer());
 
             // Downstream writer, simulate the consumer interface pattern
             TestWriter<int8_t> downstream(received); // bypass (position 0)
             sw.SetWriter(&downstream);
+
+            // Add writers to the switch
+            HGain<int8_t> wr1(&downstream, 2, 5);
+            sw.Add(wr1.Writer());
+            HGain<int8_t> wr2(&downstream, 3, 5);
+            sw.Add(wr2.Writer());
+            HGain<int8_t> wr3(&downstream, 4, 5);
+            sw.Add(wr3.Writer());
 
             // Initial position should be bypass mode
             memset((void*) received, 0, 5 * sizeof(int8_t));

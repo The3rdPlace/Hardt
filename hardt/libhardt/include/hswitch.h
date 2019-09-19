@@ -24,6 +24,24 @@
 template <class T>
 class HSwitch: public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
 {
+    public:
+
+        union ComponentPtr
+        {
+            HReader<T>* Reader;
+            HWriter<T>* Writer;
+
+            ComponentPtr(HReader<T>* reader)
+            {
+                Reader = reader;
+            }
+
+            ComponentPtr(HWriter<T>* writer)
+            {
+                Writer = writer;
+            }
+        };
+
     private:
 
         HWriter<T>* _writer;
@@ -38,7 +56,7 @@ class HSwitch: public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
 
         int _position;
 
-        std::vector<HObject*> _components;
+        std::vector<ComponentPtr> _components;
 
     public:
 
