@@ -104,10 +104,10 @@ void HIirFilter<T>::Filter(T* src, T* dest, size_t blocksize)
 
         // Sum all taps
         float result = 0;
-        result += _taps[0] * _bCoefficients[0];
+        result += ((float) _taps[0]) * _bCoefficients[0];
         for( int j = 1; j < _length + 1; j++ )
         {
-            result += _taps[j] * _bCoefficients[j];
+            result += ((float) _taps[j]) * _bCoefficients[j];
             result += _output[j] * _aCoefficients[j - 1];
         }
 
@@ -115,7 +115,7 @@ void HIirFilter<T>::Filter(T* src, T* dest, size_t blocksize)
         _output[0] = result;
 
         // Store result for 1 sample
-        dest[i] = result;
+        dest[i] = (T) result;
     }
 }
 
