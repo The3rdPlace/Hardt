@@ -37,6 +37,7 @@ class Test
                 catch(std::exception* e)
                 {
                     std::cout << "EXCEPTION: " << e->what() << std::endl;
+                    partialFailed++;
                 }
             }
             std::cout << "====================================================================" << std::endl;
