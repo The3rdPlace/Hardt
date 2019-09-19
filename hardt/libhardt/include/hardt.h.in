@@ -3,8 +3,8 @@
 
 
 	\section introduction_section What is it?
-	Hardt is a simple framework around (mostly) standard DSP concepts in use when you want to play around with digital sampled
-	sound (or RF). The framework provides building blocks such as generators, filter and soundcard in- and output. 
+	Hardt is a simple framework that encapsulates standard DSP concepts in use when you want to play around with digital sampled
+	sound (or RF). The framework provides building blocks such as generators, filters and soundcard in- and output.
 
 	By combining a set of building blocks, one can construct a DSP chain to perform almost any task imaginable. However, the 
 	simplicity of the framework has a prize!..  There will be a performance hit since many operations could be combined and
@@ -27,25 +27,25 @@
 
 	\section download_section Install Hardt
 	Current version of Hardt is @Hardt_VERSION_MAJOR@.@Hardt_VERSION_MINOR@-@Hardt_VERSION_DEB_PACKAGE@.
-	The newest package can be downloaded here: http://hardttoolkit.org/hardt_@Hardt_VERSION_MAJOR@.@Hardt_VERSION_MINOR@-@Hardt_VERSION_DEB_PACKAGE@_amd64.deb
+
+	A prebuild Debian package can be downloaded here: http://hardttoolkit.org/hardt_@Hardt_VERSION_MAJOR@.@Hardt_VERSION_MINOR@-@Hardt_VERSION_DEB_PACKAGE@_amd64.deb
 	Install the package with the command "dpkg -i hardt_@Hardt_VERSION_MAJOR@.@Hardt_VERSION_MINOR@-@Hardt_VERSION_DEB_PACKAGE@_amd64.deb
 	
 	If you want the source, it is available here:  http://hardttoolkit.org/hardt_@Hardt_VERSION_MAJOR@.@Hardt_VERSION_MINOR@.orig.tar.gz 
-
-	You can also clone the source directly from Github: https://github.com/The3rdPlace/Hardt
+    or on Gitub: https://github.com/The3rdPlace/Hardt
 
 	Archived older versions can be found here: http://hardttoolkit.org/archive
 
 
-	/subsection classes_section Classes
+	/section classes_section Classes
 	Hardt provides the most commonly needed building blocks for DSP applications. That is in- and output from soundcards or files (pcm or wav format),
 	filters, generators (sine/cosine), gain/attenuation and some utility classes such as FFT spectrum calculation, signallevel monitor and splitters.
 
-	Should you need something that is not provided by Hardt, you just pick a class that is the closest match, inherit it and extend it
+	Should you need something that is not provided by Hardt, you just pick a class that is the closest match, inherit and extend it
 
 
 	\section future_section Current state and the future
-	Hardt is a quit new framework so it is not complete.! Basic audio DSP processing is covered but there is no modulators/demodulators, rtty-generators or
+	Hardt is a quite new framework so it is not complete.! Basic audio DSP processing is covered but there is no modulators/demodulators, rtty-generators or
 	FT8 support. Also input from the RTL dongles is very high on the wishlist, but not yet available.
 
 
@@ -57,7 +57,7 @@
 
 
 	\section contact_section Contact
-	Finally, if you need a piece of advice, or wants to reports problems with the toolkit, please contact me at <henrik@hardttoolkit.org>. Also, I would
+	Finally, if you need advice or have a problem you want to report, please contact me at <henrik@hardttoolkit.org>. Also, I would
 	love to present a list of projects using this framework, so please let me know If you have a project that uses Hardt.
 */
 
