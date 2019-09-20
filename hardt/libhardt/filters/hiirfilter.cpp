@@ -100,8 +100,8 @@ void HIirFilter<T>::Filter(T* src, T* dest, size_t blocksize)
     for( int i = 0; i < blocksize; i++ )
     {
         // Advance delay lines 1 sample
-        memcpy((void*) &_taps[1], (void*) _taps, (_length + 1) * sizeof(T));
-        memcpy((void*) &_output[1], (void*) _output, (_length + 1) * sizeof(float));
+        memmove((void*) &_taps[1], (void*) _taps, (_length ) * sizeof(T));
+        memmove((void*) &_output[1], (void*) _output, (_length ) * sizeof(float));
 
         // Add new sample
         _taps[0] = src[i];

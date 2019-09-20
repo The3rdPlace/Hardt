@@ -77,7 +77,7 @@ void HFirFilter<T>::Filter(T* src, T* dest, size_t blocksize)
     for( int i = 0; i < blocksize; i++ )
     {
         // Advance delay line 1 sample
-        memcpy((void*) &_taps[1], (void*) _taps, (_length - 1) * sizeof(T));
+        memmove((void*) &_taps[1], (void*) _taps, (_length - 1) * sizeof(T));
 
         // Add new sample
         _taps[0] = src[i];
