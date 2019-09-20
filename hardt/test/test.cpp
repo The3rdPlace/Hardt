@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 
     std::cout << "Running unittests using Hardt " + getversion() << ", sources is at '" << argv[1] << "'" << std::endl;
     Test::sourceDir = argv[1];
-    HInit("hardt_test", true);
+    HInit("hardt_test", false);
 
     try
     {
