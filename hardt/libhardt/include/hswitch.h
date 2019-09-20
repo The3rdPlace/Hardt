@@ -26,16 +26,22 @@ class HSwitch: public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
 {
     public:
 
+	/** Contains either a reader or a writer */
         union ComponentPtr
         {
+            /** A reader */
             HReader<T>* Reader;
+
+            /** A writer */
             HWriter<T>* Writer;
 
+            /** Create a new ComponentPtr containing a reader */
             ComponentPtr(HReader<T>* reader)
             {
                 Reader = reader;
             }
 
+            /** Create a new ComponentPtr containing a writer */
             ComponentPtr(HWriter<T>* writer)
             {
                 Writer = writer;
