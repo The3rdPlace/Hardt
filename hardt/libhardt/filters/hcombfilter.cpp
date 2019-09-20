@@ -153,7 +153,7 @@ void HCombFilter<T>::Filter(T* src, T* dest, size_t blocksize)
         dest[i] = src[i] + ( _alpha * (float) _taps[_length - 1]);
 
         // Feedback
-        memcpy((void*) &_taps[1], (void*) _taps, delayLength);
+        memmove((void*) &_taps[1], (void*) _taps, delayLength);
         _taps[0] = FeedBack(feedback + i);
     }
 }
