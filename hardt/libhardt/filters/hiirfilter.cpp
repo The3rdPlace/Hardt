@@ -96,6 +96,7 @@ template <class T>
 void HIirFilter<T>::Filter(T* src, T* dest, size_t blocksize)
 {
     // Run IIR filter
+    _output[0] = 0.0;
     for( int i = 0; i < blocksize; i++ )
     {
         // Advance delay lines 1 sample
@@ -109,7 +110,7 @@ void HIirFilter<T>::Filter(T* src, T* dest, size_t blocksize)
         for( int tap = 0; tap < _length + 1; tap++ )
         {
             HLog("_taps[%d]: %d", tap, _taps[tap]);
-            HLog("_output[%d]: %d", tap, _output[tap]);
+            HLog("_output[%d]: %f", tap, _output[tap]);
         }
         #endif
 
@@ -127,7 +128,7 @@ void HIirFilter<T>::Filter(T* src, T* dest, size_t blocksize)
             #endif
             result += _output[j] * _aCoefficients[j - 1];
             #ifdef DEEP_DEBUG
-            HLog("result + _taps[%d] * a%d = %f", j, j, result);
+            HLog("result + _output[%d] * a%d = %f", j, j, result);
             #endif
         }
 
