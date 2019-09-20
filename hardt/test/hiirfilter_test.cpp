@@ -73,6 +73,36 @@ class HIirFilter_Test: public Test
                 Expected = 23 -15
          */
 
+        /*
+            ** We expect this to be correct, not the above **
+
+            Length = 3
+            Initial taps buffer: 0 0
+            Initial output buffer: 0 0
+            coefficients: b0=1, b1=2, a0=3
+
+            First write:
+
+                1 0 = (1 * 1  +  0 * 2)  +  (0 * 3)  =  1
+                2 1 = (2 * 1  +  1 * 2)  +  (1 * 3)  =  7
+                4 2 = (4 * 1  +  2 * 2)  +  (7 * 3)  = 29
+                8 4 = (8 * 1  +  4 * 2)  +  (29 * 3) = 103
+                16 8 = (16 * 1  +  8 * 2)  +  (103 * 3) = 341
+                32 16 = (32 * 1  +  16 * 2)  + (341 * 3) = 1087
+
+
+                Expected = 1 7 29 103 341 1087
+
+            Second write:
+
+                Initial taps buffer: 32 16
+
+                1 32 = (1 * 1  +  32  * 2)  +  (1087 * 3 = 3326
+                2 1 = (2 * 1  +  1 * 2)  +  (3326 * 3) = 9982
+
+                Expected = 3326 9982
+        */
+
         // b and a coefficients are reversed in the list - most designers return the list
         // of coefficients this way!
         float coeefs[5] = { 1.0, 2.0, 3.0, -1.0, -2.0 };

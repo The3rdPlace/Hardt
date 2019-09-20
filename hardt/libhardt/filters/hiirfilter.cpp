@@ -3,6 +3,8 @@
 
 #include "hiirfilter.h"
 
+#define DEEP_DEBUG
+
 template <class T>
 HIirFilter<T>::HIirFilter(HWriter<T>* writer, float* coefficients, int length, size_t blocksize):
     HFilter<T>(writer, blocksize),
@@ -10,6 +12,7 @@ HIirFilter<T>::HIirFilter(HWriter<T>* writer, float* coefficients, int length, s
     _firstLength(length)
 {
     HLog("HIirFilter(HWriter*)");
+    HLog("_length = %d, _firstLength = %d", _length, _firstLength);
     Init(coefficients, length);
 }
 
@@ -20,6 +23,7 @@ HIirFilter<T>::HIirFilter(HWriterConsumer<T>* consumer, float* coefficients, int
     _firstLength(length)
 {
     HLog("HIirFilter(HWriterConsumer*)");
+    HLog("_length = %d, _firstLength = %d", _length, _firstLength);
     Init(coefficients, length);
 
     consumer->SetWriter(this);
@@ -32,6 +36,7 @@ HIirFilter<T>::HIirFilter(HReader<T>* reader, float* coefficients, int length, s
     _firstLength(length)
 {
     HLog("HIirFilter(HReader*)");
+    HLog("_length = %d, _firstLength = %d", _length, _firstLength);
     Init(coefficients, length);
 }
 
@@ -75,8 +80,6 @@ void HIirFilter<T>::Init(float* coefficients, int length)
     {
         HLog("a%d = %f", i + 1, _aCoefficients[i]);
     }
-
-
 }
 
 template <class T>
@@ -102,13 +105,30 @@ void HIirFilter<T>::Filter(T* src, T* dest, size_t blocksize)
         // Add new sample
         _taps[0] = src[i];
 
+        #ifdef DEEP_DEBUG
+        for( int tap = 0; tap < _length + 1; tap++ )
+        {
+            HLog("_taps[%d]: %d", tap, _taps[tap]);
+            HLog("_output[%d]: %d", tap, _output[tap]);
+        }
+        #endif
+
         // Sum all taps
         float result = 0;
         result += ((float) _taps[0]) * _bCoefficients[0];
+        #ifdef DEEP_DEBUG
+        HLog("_taps[0] * b0 = %f", result);
+        #endif
         for( int j = 1; j < _length + 1; j++ )
         {
             result += ((float) _taps[j]) * _bCoefficients[j];
+            #ifdef DEEP_DEBUG
+            HLog("result + _taps[%d] * b%d = %f", j, j, result);
+            #endif
             result += _output[j] * _aCoefficients[j - 1];
+            #ifdef DEEP_DEBUG
+            HLog("result + _taps[%d] * a%d = %f", j, j, result);
+            #endif
         }
 
         // Add output to the feedback delay line
@@ -116,6 +136,9 @@ void HIirFilter<T>::Filter(T* src, T* dest, size_t blocksize)
 
         // Store result for 1 sample
         dest[i] = (T) result;
+        #ifdef DEEP_DEBUG
+        HLog("dest[%d] = %d", i, (T) result);
+        #endif
     }
 }
 

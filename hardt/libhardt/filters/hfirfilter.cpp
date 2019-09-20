@@ -3,6 +3,8 @@
 
 #include "hfirfilter.h"
 
+#define DEEP_DEBUG
+
 template <class T>
 HFirFilter<T>::HFirFilter(HWriter<T>* writer, float* coefficients, int length, size_t blocksize):
     HFilter<T>(writer, blocksize),
@@ -10,6 +12,7 @@ HFirFilter<T>::HFirFilter(HWriter<T>* writer, float* coefficients, int length, s
     _firstLength(length)
 {
     HLog("HFirFilter(HWriter*)");
+    HLog("_length = %d, _firstLength = %d", _length, _firstLength);
     Init(coefficients, length);
 }
 
@@ -20,6 +23,7 @@ HFirFilter<T>::HFirFilter(HWriterConsumer<T>* consumer, float* coefficients, int
     _firstLength(length)
 {
     HLog("HFirFilter(HWriterConsumer*)");
+    HLog("_length = %d, _firstLength = %d", _length, _firstLength);
     Init(coefficients, length);
 
     consumer->SetWriter(this);
@@ -32,6 +36,7 @@ HFirFilter<T>::HFirFilter(HReader<T>* reader, float* coefficients, int length, s
     _firstLength(length)
 {
     HLog("HFirFilter(HReader*)");
+    HLog("_length = %d, _firstLength = %d", _length, _firstLength);
     Init(coefficients, length);
 }
 
@@ -50,6 +55,11 @@ void HFirFilter<T>::Init(float* coefficients, int length)
         _taps[i] = 0;
     }
     HLog("Allocated and initialized delay buffer for %d taps", length);
+
+    for( int i = 0; i < length + 1; i++ )
+    {
+        HLog("a%d = %f", i, _coefficients[i]);
+    }
 }
 
 template <class T>
@@ -72,15 +82,28 @@ void HFirFilter<T>::Filter(T* src, T* dest, size_t blocksize)
         // Add new sample
         _taps[0] = src[i];
 
+        #ifdef DEEP_DEBUG
+        for( int tap = 0; tap < _length; tap++ )
+        {
+            HLog("_taps[%d]: %d", tap, _taps[tap]);
+        }
+        #endif
+
         // Sum all taps
         float result = 0;
         for( int j = 0; j < _length; j++ )
         {
             result += _taps[j] * _coefficients[j];
+            #ifdef DEEP_DEBUG
+            HLog("result + _taps[%d] * a%d = %f", j, j, result);
+            #endif
         }
 
         // Store result for 1 sample
         dest[i] = result;
+        #ifdef DEEP_DEBUG
+        HLog("dest[%d] = %d", i, (T) result);
+        #endif
     }
 }
 
