@@ -3,8 +3,6 @@
 
 #include "hiirfilter.h"
 
-#define DEEP_DEBUG
-
 template <class T>
 HIirFilter<T>::HIirFilter(HWriter<T>* writer, float* coefficients, int length, size_t blocksize):
     HFilter<T>(writer, blocksize),
