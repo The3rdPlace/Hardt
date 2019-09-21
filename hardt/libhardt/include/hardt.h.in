@@ -7,7 +7,7 @@
 	sound (or RF). The framework provides building blocks such as generators, filters and soundcard in- and output.
 
 	By combining a set of building blocks, one can construct a DSP chain to perform almost any task imaginable. However, the 
-	simplicity of the framework has a prize!..  There will be a performance hit since many operations could be combined and
+	simplicity of the framework comes with a price!..  There will be a performance hit since many operations could be combined and
 	optimized if you where to design a production-quality application that performs. This performance hit is never the less by
 	design since the framework is aimed mostly at experimenting, fixing small one-time jobs or writing smaller applications that
 	do not need to perform to the highest level.
