@@ -96,7 +96,6 @@ template <class T>
 void HIirFilter<T>::Filter(T* src, T* dest, size_t blocksize)
 {
     // Run IIR filter
-    _output[0] = 0.0;
     for( int i = 0; i < blocksize; i++ )
     {
         // Advance delay lines 1 sample

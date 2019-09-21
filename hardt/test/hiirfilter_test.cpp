@@ -21,86 +21,56 @@ class HIirFilter_Test: public Test
     private:
 
         /*
+            ** We expect this to be correct, not the above **
+
+            Length = 3
+            Initial taps buffer: 0 0 0
+            Initial output buffer: 0 0 0
+            coefficients: b0=1, b1=2, b2=3, a0=-1, a1=-2
+
             First write:
 
-                Initial taps buffer: 0 0 0
-                Initial output buffer: 0 0 0
+                1 0 0
+                0 0 0
+                (1 * 1  +  0 * 2  +  0 * 3)  -  (0 * 1  +  0 * 2)  =  1
 
-                1 0 0 = 1 0 0 + 0 0 = 1
+                2 1 0
+                0 1 0
+                (2 * 1  +  1 * 2  +  0 * 3)  -  (1 * 1  +  0 * 2)  =  3
 
-                    taps = 1 0 0 => 0 1 0
-                    output = 1 0 0 => 0 1 0
+                4 2 1
+                0 3 1
+                (4 * 1  +  2 * 2  +  1 * 3)  -  (3 * 1  +  1 * 2)  = 6
 
-                2 1 0 = 2 2 0 - 1 0 = 3
+                8 4 2
+                0 6 3
+                (8 * 1  +  4 * 2  +  2 * 3)  -  (6 * 1  +  3 * 2) = 10
 
-                    taps = 2 1 0 => 0 2 1
-                    output = 3 1 0 => 0 3 1
+                16 8 4
+                0 10 6
+                (16 * 1  +  8 * 2  +  4 * 3)  -  (10 * 1  +  6 * 2) = 22
 
-                4 2 1 = 4 4 3 - 3 2 = 6
-
-                    taps = 4 2 1 => 0 4 2
-                    output = 6 3 1 => 0 6 3
-
-                8 4 2 = 8 8 6 - 6 6 = 10
-
-                    taps = 8 4 2 => 0 8 4
-                    output = 10 6 3 => 0 10 6
-
-                16 8 4 = 16 16 12 - 10 12 = 22
-
-                    taps = 16 8 4 => 0 16 8
-                    output = 22 10 6 => 0 22 10
-
-                32 16 8 = 32 32 24 - 22 20 = 46
+                32 16 8
+                0 22 10
+                (32 * 1  +  16 * 2  + 8 * 3)  -  (22 * 1  +  10 * 2) = 46
 
                 Expected = 1 3 6 10 22 46
 
             Second write:
 
-                Initial taps buffer: 32 16 8
-                Initial output buffer: 46 22 10
+            Initial taps buffer: 32 16 8
+            Initial output buffer: 46 22 10
+            coefficients: b0=1, b1=2, b2=3, a0=-1, a1=-2
 
-                    taps = 32 16 8 => 0 32 16
-                    output = 46 22 10 => 0 46 22
+                1 32 16
+                0 46 22
+                (1 * 1  +  32  * 2  +  16 * 3)  -  (46 * 1  +  22 * 2) = 23
 
-                1 32 16 = 1 64 48 - 46 44 = 23
-
-                    taps = 1 32 16 => 0 1 32
-                    output = 23 46 22 => 0 23 46
-
-                2 1 32 = 2 2 96 - 23 92 = -15
+                2 1 32
+                0 23 46
+                (2 * 1  +  1 * 2  +  32 * 3)  -  (23 * 1  +  46 * 2) = -15
 
                 Expected = 23 -15
-         */
-
-        /*
-            ** We expect this to be correct, not the above **
-
-            Length = 3
-            Initial taps buffer: 0 0
-            Initial output buffer: 0 0
-            coefficients: b0=1, b1=2, a0=3
-
-            First write:
-
-                1 0 = (1 * 1  +  0 * 2)  +  (0 * 3)  =  1
-                2 1 = (2 * 1  +  1 * 2)  +  (1 * 3)  =  7
-                4 2 = (4 * 1  +  2 * 2)  +  (7 * 3)  = 29
-                8 4 = (8 * 1  +  4 * 2)  +  (29 * 3) = 103
-                16 8 = (16 * 1  +  8 * 2)  +  (103 * 3) = 341
-                32 16 = (32 * 1  +  16 * 2)  + (341 * 3) = 1087
-
-
-                Expected = 1 7 29 103 341 1087
-
-            Second write:
-
-                Initial taps buffer: 32 16
-
-                1 32 = (1 * 1  +  32  * 2)  +  (1087 * 3 = 3326
-                2 1 = (2 * 1  +  1 * 2)  +  (3326 * 3) = 9982
-
-                Expected = 3326 9982
         */
 
         // b and a coefficients are reversed in the list - most designers return the list
