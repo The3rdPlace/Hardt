@@ -69,7 +69,7 @@ if(DOXYGEN_FOUND)
 	    COMMAND cp -r hardt/debian dist/hardt/.
 	    COMMAND tar -c -v -f 'dist/hardt_${Hardt_VERSION_MAJOR}.${Hardt_VERSION_MINOR}.orig.tar.gz' -z 'CMakeLists.txt' 'hardt'
 	    COMMAND cd dist/hardt && debuild -us -uc --root-command=sudo
-	    COMMAND sudo rm -r -f dist/hardt
+	    #COMMAND sudo rm -r -f dist/hardt
 	    COMMAND sudo chown -R $ENV{USER} dist
 	    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 
