@@ -34,10 +34,14 @@
 	If you want the source, it is available here:  http://hardttoolkit.org/hardt_@Hardt_VERSION_MAJOR@.@Hardt_VERSION_MINOR@.orig.tar.gz 
     or on Gitub: https://github.com/The3rdPlace/Hardt
 
+    Hardt builds on Linux, RaspBerry (raspian) and MacOS (you need to brew clang and cmake). Windows is in the pipeline but not there yet.
+    Unpack the sources, run cmake and then make.  I prefer out-of-source builds, so for me, that would be:
+    "mkdir build; cd build; cmake ../.; make" and optionally "make install"
+
 	Archived older versions can be found here: http://hardttoolkit.org/archive
 
 
-	/section classes_section Classes
+	\section classes_section Classes
 	Hardt provides the most commonly needed building blocks for DSP applications. That is in- and output from soundcards or files (pcm or wav format),
 	filters, generators (sine/cosine), gain/attenuation and some utility classes such as FFT spectrum calculation, signallevel monitor and splitters.
 
