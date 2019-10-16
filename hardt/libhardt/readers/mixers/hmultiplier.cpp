@@ -30,7 +30,7 @@ HMultiplier<T>::HMultiplier(HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, in
     _writer(NULL),
     _blocksize(blocksize)
 {
-    HLog("HMultiplier(HWriter*, %d, %d, %d)", rate, frequency, blocksize);
+    HLog("HMultiplier(HWriterConsumer*, %d, %d, %d)", rate, frequency, blocksize);
     Init(rate, frequency, blocksize);
 
     consumer->SetWriter(this);
