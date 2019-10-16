@@ -14,11 +14,12 @@
     clicks or noise (check if it is a problem in your actual case)
 */
 template <class T>
-class HMultiplier : public HReader<T>
+class HMultiplier : public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
 {
     private:
 
         HReader<T>* _reader;
+        HWriter<T>* _writer;
         T* _buffer;
 
         int _blocksize;
@@ -31,11 +32,29 @@ class HMultiplier : public HReader<T>
         /** Construct a new HMultiplier (frequency mixer) */
         HMultiplier(HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, size_t blocksize);
 
+        /** Construct a new HMultiplier (frequency mixer) */
+        HMultiplier(HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, size_t blocksize);
+
+        /** Construct a new HMultiplier (frequency mixer) */
+        HMultiplier(HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int frequency, size_t blocksize);
+
         /** Default destructor */
         ~HMultiplier();
 
+        /** Common initialization tasks */
+        void Init(H_SAMPLE_RATE rate, int frequency, size_t blocksize);
+
         /** Read a block of samples */
         int Read(T* dest, size_t blocksize);
+
+        /** Write a block of samples */
+        int Write(T* src, size_t blocksize);
+
+        /** Set writer */
+        void SetWriter(HWriter<T>* writer)
+        {
+            _writer = writer;
+        }
 
         /** Initialize before first read */
         bool Start();
@@ -45,6 +64,9 @@ class HMultiplier : public HReader<T>
 
         /** Set the frequency of the local oscillator that feeds one of the inputs of the mixer */
         void SetFrequency(int frequency);
+
+        /** Mix two signals */
+        void Mix(T* src, T* dest, size_t blocksize);
 };
 
 #endif
