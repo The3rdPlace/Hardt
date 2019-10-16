@@ -131,8 +131,15 @@ bool HLinearMixer<T>::Start()
     {
         return false;
     }
-    HLog("Calling Start() on reader 2");
-    return _reader_2->Start();
+    if( _reader_2 != NULL ) {
+        HLog("Calling Start() on reader 2");
+        return _reader_2->Start();
+    }
+    if( _writer != NULL ) {
+        HLog("Calling Start() on writer");
+        return _writer->Start();
+    }
+    return false;
 }
 
 template <class T>
@@ -143,8 +150,15 @@ bool HLinearMixer<T>::Stop()
     {
         return false;
     }
-    HLog("Calling Stop() on reader 2");
-    return _reader_2->Stop();
+    if( _reader_2 != NULL ) {
+        HLog("Calling Stop() on reader 2");
+        return _reader_2->Stop();
+    }
+    if( _writer != NULL ) {
+        HLog("Calling Stop() on writer");
+        return _writer->Stop();
+    }
+    return false;
 }
 
 /********************************************************************
