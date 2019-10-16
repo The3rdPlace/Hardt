@@ -20,7 +20,7 @@
     (this is practical when you are finetuning a filter)
 */
 template <class T>
-class HCascadedBiQuadFilter: public HReader<T>, public HWriter<T>
+class HCascadedBiQuadFilter: public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
 {
     private:
 
@@ -34,6 +34,8 @@ class HCascadedBiQuadFilter: public HReader<T>, public HWriter<T>
         int _firstLength;
 
         void Init(float* coefficients, int length);
+
+        void SetWriter(HWriter<T>* writer);
 
     public:
 

@@ -184,6 +184,12 @@ void HCascadedBiQuadFilter<T>::SetCoefficients(float* coefficients, int length)
     }
 }
 
+template <class T>
+void HCascadedBiQuadFilter<T>::SetWriter(HWriter<T>* writer)
+{
+    _filters[_filterCount - 1]->Consumer()->SetWriter(writer);
+}
+
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
@@ -303,6 +309,18 @@ void HCascadedBiQuadFilter<int16_t>::SetCoefficients(float* coefficients, int le
 
 template
 void HCascadedBiQuadFilter<int32_t>::SetCoefficients(float* coefficients, int length);
+
+template
+void HCascadedBiQuadFilter<int8_t>::SetWriter(HWriter<int8_t>* writer);
+
+template
+void HCascadedBiQuadFilter<uint8_t>::SetWriter(HWriter<uint8_t>* writer);
+
+template
+void HCascadedBiQuadFilter<int16_t>::SetWriter(HWriter<int16_t>* writer);
+
+template
+void HCascadedBiQuadFilter<int32_t>::SetWriter(HWriter<int32_t>* writer);
 
 //! @endcond
 #endif
