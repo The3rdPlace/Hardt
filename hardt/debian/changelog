@@ -1,6 +1,6 @@
-hardt (1.0-2) UNRELEASED; urgency=medium
+hardt (1.0-3) UNRELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
-  * Make writing to mixers possible (Closes: #XXXXXX)
+  * Fix problem in HSplitter when the same writer was added multiple times
 
- -- <henrik@hardttoolkit.org>  Thu, 17 Oct 2019 21:32:02 +0200
+ -- DBC4457 <hwha@DBC4457.dbc.dk>  Fri, 18 Oct 2019 00:30:52 +0200
