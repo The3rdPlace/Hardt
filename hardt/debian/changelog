@@ -1,5 +1,6 @@
-hardt (1.0-1) UNRELEASED; urgency=medium
+hardt (1.0-2) UNRELEASED; urgency=medium
 
-  * Initial release. (Closes: #XXXXXX)
+  [ Henrik Witt-Hansen ]
+  * Make writing to mixers possible (Closes: #XXXXXX)
 
- -- Henrik Witt-Hansen <henrik@hardttoolkit.org>  Sat, 21 Sep 2019 18:18:18 +0200
+ -- <henrik@hardttoolkit.org>  Thu, 17 Oct 2019 21:32:02 +0200
