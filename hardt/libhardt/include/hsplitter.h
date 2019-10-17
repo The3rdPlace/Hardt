@@ -19,7 +19,9 @@ class HSplitter : public HWriter<T>, public HWriterConsumer<T>
         HSplitter(HWriter<T>* writer1, HWriter<T>* writer2):
             _writer1(writer1),
             _writer2(writer2)
-        {}
+        {
+            HLog("HSplitter(HWriter*, HWriter*)");
+        }
 
         /** Construct a new HSplitter which will later receive its
             writers via the HWriterConsumer scheme */
@@ -27,6 +29,7 @@ class HSplitter : public HWriter<T>, public HWriterConsumer<T>
             _writer1(NULL),
             _writer2(NULL)
         {
+            HLog("HSplitter(HWriterConsumer*)");
             consumer->SetWriter(this);
         }
 
@@ -36,22 +39,30 @@ class HSplitter : public HWriter<T>, public HWriterConsumer<T>
         /** Initialize before first write */
         bool Start()
         {
+            HLog("Starting splitter writers");
             if( _writer1 != NULL )
             {
+                HLog("Writer 1 is not null");
                 if( !_writer1->Start() )
                 {
+                    HLog("Writer 1 failed to Start()");
                     return false;
                 }
+                HLog("Writer 1 started");
             }
 
             if( _writer2 != NULL )
             {
+                HLog("Writer 2 is not null");
                 if( !_writer2->Start() )
                 {
+                    HLog("Writer 2 failed to Start()");
                     return false;
                 }
+                HLog("Writer 2 started");
             }
 
+            HLog("Done");
             return true;
         }
 
@@ -80,12 +91,19 @@ class HSplitter : public HWriter<T>, public HWriterConsumer<T>
         /** Implements HWriterConsumer::SetWriter. Register writers for the splitter */
         void SetWriter(HWriter<T>* writer)
         {
+            HLog("HSplitter::SetWriter(HWriter*)");
+            if( writer == _writer1 || writer == _writer2 ) {
+                HLog("Writer is already registered, ignoring");
+                return;
+            }
             if( _writer1 == NULL )
             {
+                HLog("Setting writer as writer 1");
                 _writer1 = writer;
             }
             else if( _writer2 == NULL )
             {
+                HLog("Setting writer as writer 2");
                 _writer2 = writer;
             }
             else
