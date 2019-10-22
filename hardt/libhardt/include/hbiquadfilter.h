@@ -43,7 +43,7 @@ class HBiQuadFilter: public HIirFilter<T>
         /** Set filter coefficients by providing filter specifications */
         void SetCoefficients(float fCutOff, float rate, float quality, float gain,  size_t blocksize)
         {
-            this->SetCoefficients((BIQUAD(fCutOff, rate, quality, gain)).Calculate(), 5);
+            HIirFilter<int16_t>::SetCoefficients((BIQUAD(fCutOff, rate, quality, gain)).Calculate(), 5);
         }
 };
 

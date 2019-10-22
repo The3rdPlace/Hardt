@@ -1,6 +1,6 @@
-hardt (1.0-3) UNRELEASED; urgency=medium
+hardt (1.0-4) UNRELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
-  * Fix problem in HSplitter when the same writer was added multiple times
+  * Fix problem with HBiquadFilter::SetCoefficients (Closes: #XXXXXX)
 
  -- DBC4457 <hwha@DBC4457.dbc.dk>  Fri, 18 Oct 2019 00:30:52 +0200
