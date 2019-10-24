@@ -23,7 +23,7 @@ configure_file (
   "${PROJECT_BINARY_DIR}/hardt/libhardt/include/hardt.h"
 )
 
-# Configure the hardt.pc file 
+# Configure the hardt.pc file
 configure_file (
   "${PROJECT_SOURCE_DIR}/hardt.pc.in"
   "${PROJECT_BINARY_DIR}/hardt.pc"
@@ -52,7 +52,7 @@ if(DOXYGEN_FOUND)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
 
     ADD_CUSTOM_TARGET(documentation ALL
-	COMMAND rm -r -f ${CMAKE_CURRENT_BINARY_DIR}/docs
+	COMMAND sudo rm -r -f ${CMAKE_CURRENT_BINARY_DIR}/docs
         COMMAND ${DOXYGEN_EXECUTABLE}
 	COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/docs/examples
 	COMMAND sh -c 'ls -d ${CMAKE_CURRENT_SOURCE_DIR}/hardt/examples/*/ | rev | cut -d "/" -f 2 | rev | xargs -I % mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/docs/examples/%'
@@ -69,11 +69,14 @@ if(DOXYGEN_FOUND)
 	    COMMAND cp -r hardt/debian dist/hardt/.
 	    COMMAND tar -c -v -f 'dist/hardt_${Hardt_VERSION_MAJOR}.${Hardt_VERSION_MINOR}.orig.tar.gz' -z 'CMakeLists.txt' 'hardt'
 	    COMMAND cd dist/hardt && debuild -us -uc --root-command=sudo
-	    #COMMAND sudo rm -r -f dist/hardt
 	    COMMAND sudo chown -R $ENV{USER} dist
 	    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 
     	add_dependencies( dist integrationtest documentation )
+
+ 	ADD_CUSTOM_TARGET( publish
+            COMMAND ../publish.sh)
+
     endif()
 
 else()
