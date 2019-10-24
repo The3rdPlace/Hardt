@@ -38,8 +38,6 @@
     Unpack the sources, run cmake and then make.  I prefer out-of-source builds, so for me, that would be:
     "mkdir build; cd build; cmake ../.; make" and optionally "make install"
 
-	Archived older versions can be found here: http://hardttoolkit.org/archive
-
 
 	\section classes_section Classes
 	Hardt provides the most commonly needed building blocks for DSP applications. That is in- and output from soundcards or files (pcm or wav format),
