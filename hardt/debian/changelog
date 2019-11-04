@@ -1,6 +1,6 @@
-hardt (1.0-4) UNRELEASED; urgency=medium
+hardt (1.0-5) UNRELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
-  * Fix problem with HBiquadFilter::SetCoefficients (Closes: #XXXXXX)
+  * Add virtual destructors to HReader and HWriter (Closes: #XXXXXX)
 
- -- DBC4457 <hwha@DBC4457.dbc.dk>  Fri, 18 Oct 2019 00:30:52 +0200
+ -- Mackie <henrik@hardttoolkit.org>  Mon, 04 Nov 2019 23:08:00 +0200
