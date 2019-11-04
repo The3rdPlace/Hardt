@@ -23,6 +23,9 @@ class HReader : public HObject
 {
     public:
 
+        /** Virtual destructor enabling delete on derived objects */
+        virtual ~HReader() = default;
+
         /** Read a block of samples */
         virtual int Read(T* dest, size_t blocksize) = 0;
 
