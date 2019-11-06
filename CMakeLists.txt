@@ -52,7 +52,6 @@ if(DOXYGEN_FOUND)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
 
     ADD_CUSTOM_TARGET(documentation ALL
-	COMMAND sudo rm -r -f ${CMAKE_CURRENT_BINARY_DIR}/docs
         COMMAND ${DOXYGEN_EXECUTABLE}
 	COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/docs/examples
 	COMMAND sh -c 'ls -d ${CMAKE_CURRENT_SOURCE_DIR}/hardt/examples/*/ | rev | cut -d "/" -f 2 | rev | xargs -I % mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/docs/examples/%'
@@ -76,6 +75,12 @@ if(DOXYGEN_FOUND)
 
  	ADD_CUSTOM_TARGET( publish
             COMMAND ../publish.sh)
+
+    	ADD_CUSTOM_TARGET( distclean
+	    COMMAND sudo rm -r -f ../dist
+	    COMMAND sudo rm -r -f docs
+	    COMMAND sudo rm -r -f hardt
+	    WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 
     endif()
 
