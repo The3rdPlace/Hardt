@@ -76,6 +76,8 @@ if(DOXYGEN_FOUND)
  	ADD_CUSTOM_TARGET( publish
             COMMAND ../publish.sh)
 
+	add_dependencies( publish dist )
+
     	ADD_CUSTOM_TARGET( distclean
 	    COMMAND sudo rm -r -f ../dist
 	    COMMAND sudo rm -r -f docs
