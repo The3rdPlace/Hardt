@@ -39,7 +39,12 @@ class HMute : public HFilter<T>
         /** Set state */
         void SetMuted(bool muted);
 
-         /** Initialize before first write */
+        /** Get state */
+	bool GetMuted() {
+	    return _muted;
+	}
+
+        /** Initialize before first write */
         bool Start();
 
         /** Cleanup after last write */
