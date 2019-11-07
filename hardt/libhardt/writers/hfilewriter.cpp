@@ -9,12 +9,24 @@ Class implementation
 
 template <class T>
 HFileWriter<T>::HFileWriter(const char* filename):
-    _filename(filename)
+    _filename(std::string(filename))
+{}
+
+template <class T>
+HFileWriter<T>::HFileWriter(const std::string filename):
+        _filename(filename)
 {}
 
 template <class T>
 HFileWriter<T>::HFileWriter(const char* filename, HWriterConsumer<T>* consumer):
-    _filename(filename)
+    _filename(std::string(filename))
+{
+    consumer->SetWriter(this);
+}
+
+template <class T>
+HFileWriter<T>::HFileWriter(const std::string filename, HWriterConsumer<T>* consumer):
+        _filename(filename)
 {
     consumer->SetWriter(this);
 }
@@ -38,11 +50,11 @@ void HFileWriter<T>::Seek(int bytes)
 template <class T>
 bool HFileWriter<T>::Start()
 {
-    HLog("Trying to open stream for %s", _filename);
-    _stream.open(_filename, std::ios::out | std::ios::binary | std::ios::trunc);
+    HLog("Trying to open stream for %s", _filename.c_str());
+    _stream.open(_filename.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
     if( !_stream.is_open())
     {
-        HError("Failed to open file %s", _filename);
+        HError("Failed to open file %s", _filename.c_str());
         return false;
     }
     HLog("Stream is open");
@@ -82,6 +94,24 @@ template
 HFileWriter<double>::HFileWriter(const char* path);
 
 template
+HFileWriter<int8_t>::HFileWriter(const std::string path);
+
+template
+HFileWriter<uint8_t>::HFileWriter(const std::string path);
+
+template
+HFileWriter<int16_t>::HFileWriter(const std::string path);
+
+template
+HFileWriter<int32_t>::HFileWriter(const std::string path);
+
+template
+HFileWriter<long>::HFileWriter(const std::string path);
+
+template
+HFileWriter<double>::HFileWriter(const std::string path);
+
+template
 HFileWriter<int8_t>::HFileWriter(const char* path, HWriterConsumer<int8_t>* consumer);
 
 template
@@ -98,6 +128,24 @@ HFileWriter<long>::HFileWriter(const char* path, HWriterConsumer<long>* consumer
 
 template
 HFileWriter<double>::HFileWriter(const char* path, HWriterConsumer<double>* consumer);
+
+template
+HFileWriter<int8_t>::HFileWriter(const std::string path, HWriterConsumer<int8_t>* consumer);
+
+template
+HFileWriter<uint8_t>::HFileWriter(const std::string path, HWriterConsumer<uint8_t>* consumer);
+
+template
+HFileWriter<int16_t>::HFileWriter(const std::string path, HWriterConsumer<int16_t>* consumer);
+
+template
+HFileWriter<int32_t>::HFileWriter(const std::string path, HWriterConsumer<int32_t>* consumer);
+
+template
+HFileWriter<long>::HFileWriter(const std::string path, HWriterConsumer<long>* consumer);
+
+template
+HFileWriter<double>::HFileWriter(const std::string path, HWriterConsumer<double>* consumer);
 
 // Start()
 template

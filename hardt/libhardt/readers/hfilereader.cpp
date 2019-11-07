@@ -9,6 +9,11 @@ Class implementation
 
 template <class T>
 HFileReader<T>::HFileReader(const char* filename):
+    _filename(std::string(filename))
+{}
+
+template <class T>
+HFileReader<T>::HFileReader(const std::string filename):
     _filename(filename)
 {}
 
@@ -39,11 +44,11 @@ void HFileReader<T>::Seek(int bytes)
 template <class T>
 bool HFileReader<T>::Start()
 {
-    HLog("Trying to open stream for %s", _filename);
-    _stream.open(_filename, std::ios::binary);
+    HLog("Trying to open stream for %s", _filename.c_str());
+    _stream.open(_filename.c_str(), std::ios::binary);
     if( !_stream.is_open())
     {
-        HError("Failed to open file %s", _filename);
+        HError("Failed to open file %s", _filename.c_str());
         return false;
     }
     HLog("Stream is open");
@@ -75,6 +80,18 @@ HFileReader<int16_t>::HFileReader(const char* path);
 
 template
 HFileReader<int32_t>::HFileReader(const char* path);
+
+template
+HFileReader<int8_t>::HFileReader(const std::string path);
+
+template
+HFileReader<uint8_t>::HFileReader(const std::string path);
+
+template
+HFileReader<int16_t>::HFileReader(const std::string path);
+
+template
+HFileReader<int32_t>::HFileReader(const std::string path);
 
 // Start()
 template

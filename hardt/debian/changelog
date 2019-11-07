@@ -1,6 +1,6 @@
-hardt (1.0-6) UNRELEASED; urgency=medium
+hardt (1.0-7) UNRELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
-  * Add getter for field _muted in HMute (Closes: #XXXXXX)
+  * Modify file reader and writer classes to store a std::string (Closes: #XXXXXX)
 
- -- Mackie <henrik@hardttoolkit.org>  Mon, 06 Nov 2019 13:53:00 +0200
+ -- Mackie <henrik@hardttoolkit.org>  Mon, 07 Nov 2019 17:29:00 +0200

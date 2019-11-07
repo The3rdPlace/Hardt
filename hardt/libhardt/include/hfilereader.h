@@ -10,12 +10,15 @@ class HFileReader : public HReader<T>
     private:
 
         std::ifstream _stream;
-        const char* _filename;
+        const std::string _filename;
 
     public:
 
         /** Construct a new HFileReader */
         HFileReader(const char* filename);
+
+        /** Construct a new HFileReader */
+        HFileReader(const std::string filename);
 
         /** Read a block of samples */
         virtual int Read(T* dest, size_t blocksize);

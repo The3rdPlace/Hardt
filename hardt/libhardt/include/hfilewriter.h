@@ -13,18 +13,25 @@ class HFileWriter : public HWriter<T>
     private:
 
         std::ofstream _stream;
-        const char* _filename;
+        const std::string _filename;
 
     public:
 
         /** Construct a new HFileWriter with the given filename */
         HFileWriter(const char* filename);
 
+        /** Construct a new HFileWriter with the given filename */
+        HFileWriter(const std::string filename);
+
         /** Construct a new HFileWriter with the given filename and register
             with the given consumer */
         HFileWriter(const char* filename, HWriterConsumer<T>* consumer);
 
-        /** Write to the file */
+        /** Construct a new HFileWriter with the given filename and register
+            with the given consumer */
+        HFileWriter(const std::string filename, HWriterConsumer<T>* consumer);
+
+    /** Write to the file */
         virtual int Write(T* src, size_t blocksize);
 
         /** Initialize before first write */
