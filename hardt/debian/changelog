@@ -1,6 +1,6 @@
-hardt (1.0-7) UNRELEASED; urgency=medium
+hardt (1.0-8) UNRELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
-  * Modify file reader and writer classes to store a std::string (Closes: #XXXXXX)
+  * Change HSplitter to operate on a list of writers (Closes: #XXXXXX)
 
- -- Mackie <henrik@hardttoolkit.org>  Mon, 07 Nov 2019 17:29:00 +0200
+ -- Mackie <henrik@hardttoolkit.org>  Mon, 08 Nov 2019 23:48:00 +0200

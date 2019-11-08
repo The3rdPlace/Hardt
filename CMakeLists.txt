@@ -9,7 +9,7 @@ set (Hardt_VERSION_MINOR 0)
 
 # When setting the debian package version, do not forget to add a changelog
 # entry in hardt/debian/changelog
-set (Hardt_VERSION_DEB_PACKAGE 7)
+set (Hardt_VERSION_DEB_PACKAGE 8)
 
 # Define the version string
 set (Hardt_VERSION Hardt_VERSION_MAJOR + "." + HARDT_VERSION_MINOR + "." + HARDT_VERSION_DEP_PACKAGE)
@@ -73,16 +73,10 @@ if(DOXYGEN_FOUND)
 
     	add_dependencies( dist integrationtest documentation )
 
- 	ADD_CUSTOM_TARGET( publish
+     	ADD_CUSTOM_TARGET( publish
             COMMAND ../publish.sh)
 
-	add_dependencies( publish dist )
-
-    	ADD_CUSTOM_TARGET( distclean
-	    COMMAND sudo rm -r -f ../dist
-	    COMMAND sudo rm -r -f docs
-	    COMMAND sudo rm -r -f hardt
-	    WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+	    add_dependencies( publish dist )
 
     endif()
 
@@ -91,3 +85,9 @@ else()
     message("You must install Doxygen and Graphviz to generate the documentation")
 
 endif()
+
+ADD_CUSTOM_TARGET( distclean
+COMMAND sudo rm -r -f ../dist
+COMMAND sudo rm -r -f docs
+COMMAND sudo rm -r -f hardt
+WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
