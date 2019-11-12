@@ -43,8 +43,6 @@ struct HSignalLevelResult
     int AvgS;
 };
 
-#define AVG_BUFFER_LENGTH 10
-
 /** Reports signallevel for a sampled signal */
 template <class T>
 class HSignalLevel : public HOutput<T, HSignalLevelResult>
@@ -52,11 +50,10 @@ class HSignalLevel : public HOutput<T, HSignalLevelResult>
     private:
 
         HSignalLevelResult _result;
-        int _blocksReceived;
-        int _skip;
         int _ref;
 
-        T _avg[AVG_BUFFER_LENGTH];
+        int _avgCount;
+        T* _avg;
         int _avgPos;
 
         float _factor;
@@ -66,11 +63,14 @@ class HSignalLevel : public HOutput<T, HSignalLevelResult>
     public:
 
         /** Construct a new HSignalLevel object */
-        HSignalLevel(HWriter<HSignalLevelResult>* writer, int skip, int ref = 54);
+        HSignalLevel(HWriter<HSignalLevelResult>* writer, int average, int ref = 54);
 
         /** Construct a new HSignalLevel object and register with the upstream writer by the
             HWriterConsumer scheme */
-        HSignalLevel(HWriterConsumer<T>* consumer, int skip, int ref = 54);
+        HSignalLevel(HWriterConsumer<T>* consumer, int average, int ref = 54);
+
+        /** Destruct a HSignalLevel object */
+        ~HSignalLevel();
 
         /** Process a block of samples */
         int Output(T* src, size_t blocksize);

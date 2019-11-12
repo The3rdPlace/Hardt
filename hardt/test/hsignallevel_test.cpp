@@ -49,14 +49,14 @@ class HSignalLevel_Test: public Test
             int8_t input[10] = { 2, 4, 6, 4, 2, -1, -3, -5, -3, -1 };
 
             auto wr = HCustomWriter<HSignalLevelResult>::Create<HSignalLevel_Test>(this, &HSignalLevel_Test::callback);
-            HSignalLevel<int8_t> siglevel(wr, 0);
+            HSignalLevel<int8_t> siglevel(wr, 1);
 
             siglevel.Write(input, 10);
             ASSERT_IS_EQUAL(Min, 1);
             ASSERT_IS_EQUAL(Max, 6);
-            ASSERT_IS_EQUAL(Avg, 0);
+            ASSERT_IS_EQUAL(Avg, 6);
             ASSERT_IS_EQUAL(Db, -27);
-            ASSERT_IS_EQUAL(AvgDb, -54);
+            ASSERT_IS_EQUAL(AvgDb, -27);
 
             // This test assumes that the average is calculated over the last 10 blocks
             siglevel.Write(input, 10);
