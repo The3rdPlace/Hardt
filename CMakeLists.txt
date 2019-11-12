@@ -9,7 +9,7 @@ set (Hardt_VERSION_MINOR 0)
 
 # When setting the debian package version, do not forget to add a changelog
 # entry in hardt/debian/changelog
-set (Hardt_VERSION_DEB_PACKAGE 8)
+set (Hardt_VERSION_DEB_PACKAGE 9)
 
 # Define the version string
 set (Hardt_VERSION Hardt_VERSION_MAJOR + "." + HARDT_VERSION_MINOR + "." + HARDT_VERSION_DEP_PACKAGE)
