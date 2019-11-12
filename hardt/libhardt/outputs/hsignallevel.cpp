@@ -4,9 +4,10 @@
 #include "hsignallevel.h"
 
 template <class T>
-HSignalLevel<T>::HSignalLevel(HWriter<HSignalLevelResult>* writer, int average, int ref):
+HSignalLevel<T>::HSignalLevel(HWriter<HSignalLevelResult>* writer, int average, int ref, int scale):
     HOutput<T, HSignalLevelResult>(writer),
     _ref(ref),
+    _scale(scale),
     _avg(NULL),
     _avgPos(0),
     _avgCount(average > 0 ? average : 1)
@@ -16,9 +17,10 @@ HSignalLevel<T>::HSignalLevel(HWriter<HSignalLevelResult>* writer, int average, 
 }
 
 template <class T>
-HSignalLevel<T>::HSignalLevel(HWriterConsumer<T>* consumer, int average, int ref):
+HSignalLevel<T>::HSignalLevel(HWriterConsumer<T>* consumer, int average, int ref, int scale):
     HOutput<T, HSignalLevelResult>(consumer),
     _ref(ref),
+    _scale(scale),
     _avg(NULL),
     _avgPos(0),
     _avgCount(average > 0 ? average : 1)
@@ -51,8 +53,8 @@ int HSignalLevel<T>::Output(T* src, size_t blocksize)
     // Analyze block - disable warnings about using abs() for unsigned types
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wabsolute-value"
-    T max = 0;
-    T min = std::numeric_limits<T>::max();
+    int max = 0;
+    int min = std::numeric_limits<T>::max();
     for( int i = 0; i < blocksize; i++ )
     {
         if( abs(src[i]) > max )
@@ -65,6 +67,10 @@ int HSignalLevel<T>::Output(T* src, size_t blocksize)
         }
     }
     #pragma GCC diagnostic pop
+
+    // Scaling
+    max *= _scale;
+    min *= _scale;
 
     // Adjust min and max for unsigned types
     if( !std::numeric_limits<T>::is_signed )
@@ -79,7 +85,7 @@ int HSignalLevel<T>::Output(T* src, size_t blocksize)
     // If we have seen enough samples, calculate the average and execute the callback
     if( _avgPos >= _avgCount )
     {
-        T avg = 0;
+        int avg = 0;
         for( int i = 0; i < _avgCount; i++ )
         {
             avg += _avg[i];
@@ -93,7 +99,7 @@ int HSignalLevel<T>::Output(T* src, size_t blocksize)
 
         // Calculate signal level
         _result.Db = 20 * log10((float) ceil((_result.Max == 0 ? 0.25 : _result.Max) / (float) _factor));
-        _result.AvgDb = 20 * log10((float) ceil((_result.Avg == 0 ? 0.25 : _result.Avg) / (float) _factor));
+        _result.AvgDb = 20 * log10((float) ceil((avg == 0 ? 0.25 : avg) / (float) _factor));
         _result.S = ((_result.Db) / 6);
         _result.AvgS = ((_result.AvgDb) / 6);
 
@@ -119,28 +125,28 @@ Explicit instantiation
 
 // HGoertzelFilter
 template
-HSignalLevel<int8_t>::HSignalLevel(HWriter<HSignalLevelResult>* writer, int skip, int ref);
+HSignalLevel<int8_t>::HSignalLevel(HWriter<HSignalLevelResult>* writer, int skip, int ref, int scale);
 
 template
-HSignalLevel<uint8_t>::HSignalLevel(HWriter<HSignalLevelResult>* writer, int skip, int ref);
+HSignalLevel<uint8_t>::HSignalLevel(HWriter<HSignalLevelResult>* writer, int skip, int ref, int scale);
 
 template
-HSignalLevel<int16_t>::HSignalLevel(HWriter<HSignalLevelResult>* writer, int skip, int ref);
+HSignalLevel<int16_t>::HSignalLevel(HWriter<HSignalLevelResult>* writer, int skip, int ref, int scale);
 
 template
-HSignalLevel<int32_t>::HSignalLevel(HWriter<HSignalLevelResult>* writer, int skip, int ref);
+HSignalLevel<int32_t>::HSignalLevel(HWriter<HSignalLevelResult>* writer, int skip, int ref, int scale);
 
 template
-HSignalLevel<int8_t>::HSignalLevel(HWriterConsumer<int8_t>* consumer, int skip, int ref);
+HSignalLevel<int8_t>::HSignalLevel(HWriterConsumer<int8_t>* consumer, int skip, int ref, int scale);
 
 template
-HSignalLevel<uint8_t>::HSignalLevel(HWriterConsumer<uint8_t>* consumer, int skip, int ref);
+HSignalLevel<uint8_t>::HSignalLevel(HWriterConsumer<uint8_t>* consumer, int skip, int ref, int scale);
 
 template
-HSignalLevel<int16_t>::HSignalLevel(HWriterConsumer<int16_t>* consumer, int skip, int ref);
+HSignalLevel<int16_t>::HSignalLevel(HWriterConsumer<int16_t>* consumer, int skip, int ref, int scale);
 
 template
-HSignalLevel<int32_t>::HSignalLevel(HWriterConsumer<int32_t>* consumer, int skip, int ref);
+HSignalLevel<int32_t>::HSignalLevel(HWriterConsumer<int32_t>* consumer, int skip, int ref, int scale);
 
 // ~HSignalLevel
 template

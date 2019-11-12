@@ -51,6 +51,7 @@ class HSignalLevel : public HOutput<T, HSignalLevelResult>
 
         HSignalLevelResult _result;
         int _ref;
+        int _scale;
 
         int _avgCount;
         T* _avg;
@@ -63,11 +64,11 @@ class HSignalLevel : public HOutput<T, HSignalLevelResult>
     public:
 
         /** Construct a new HSignalLevel object */
-        HSignalLevel(HWriter<HSignalLevelResult>* writer, int average, int ref = 54);
+        HSignalLevel(HWriter<HSignalLevelResult>* writer, int average, int ref = 54, int scale = 1);
 
         /** Construct a new HSignalLevel object and register with the upstream writer by the
             HWriterConsumer scheme */
-        HSignalLevel(HWriterConsumer<T>* consumer, int average, int ref = 54);
+        HSignalLevel(HWriterConsumer<T>* consumer, int average, int ref = 54, int scale = 1);
 
         /** Destruct a HSignalLevel object */
         ~HSignalLevel();
