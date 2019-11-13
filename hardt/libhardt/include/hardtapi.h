@@ -67,5 +67,6 @@
 #include "hmux.h"
 #include "hswitch.h"
 #include "hmute.h"
+#include "hnullreader.h"
 
 #endif
