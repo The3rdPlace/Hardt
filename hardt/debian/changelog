@@ -1,7 +1,6 @@
-hardt (1.0-9) UNRELEASED; urgency=medium
+hardt (1.0-10) UNRELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
-  * Added scaling factor to the signallevel component (Closes: #XXXXXX)
-  * Fixed overrun problems in the signallevel component (Closes: #XXXXXX)
+  * Added new HNullReader component (Closes: #XXXXXX)
 
- -- Mackie <henrik@hardttoolkit.org>  Tue, 12 Nov 2019 23:04:00 +0200
+ -- Mackie <henrik@hardttoolkit.org>  Tue, 13 Nov 2019 14:58:00 +0200
