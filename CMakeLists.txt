@@ -53,8 +53,8 @@ if(DOXYGEN_FOUND)
 
     ADD_CUSTOM_TARGET(documentation ALL
         COMMAND ${DOXYGEN_EXECUTABLE}
-	COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/docs/examples
-	COMMAND sh -c 'ls -d ${CMAKE_CURRENT_SOURCE_DIR}/hardt/examples/*/ | rev | cut -d "/" -f 2 | rev | xargs -I % mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/docs/examples/%'
+	    COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/docs/examples
+	    COMMAND sh -c 'ls -d ${CMAKE_CURRENT_SOURCE_DIR}/hardt/examples/*/ | rev | cut -d "/" -f 2 | rev | xargs -I % mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/docs/examples/%'
         COMMAND sh -c 'ls -d ${CMAKE_CURRENT_SOURCE_DIR}/hardt/examples/*/ | rev | cut -d "/" -f 2 | rev | xargs -I % sh -c "cp ${CMAKE_CURRENT_SOURCE_DIR}/hardt/examples/%/* ${CMAKE_CURRENT_BINARY_DIR}/docs/examples/%/." ')
 
     install(DIRECTORY ${CMAKE_BINARY_DIR}/docs/html/ DESTINATION share/doc/hardt/html)
@@ -62,12 +62,30 @@ if(DOXYGEN_FOUND)
 
     # Package into debian package
     if(UNIX AND NOT APPLE)
+
     	ADD_CUSTOM_TARGET( dist
 	    COMMAND sudo rm -r -f dist
 	    COMMAND mkdir -p dist/hardt
 	    COMMAND cp -r hardt/debian dist/hardt/.
 	    COMMAND tar -c -v -f 'dist/hardt_${Hardt_VERSION_MAJOR}.${Hardt_VERSION_MINOR}.orig.tar.gz' -z 'CMakeLists.txt' 'hardt'
 	    COMMAND cd dist/hardt && debuild -us -uc --root-command=sudo
+	    COMMAND sudo chown -R $ENV{USER} dist
+	    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+
+    	add_dependencies( dist integrationtest documentation )
+
+     	ADD_CUSTOM_TARGET( publish
+            COMMAND ../publish.sh)
+
+	    add_dependencies( publish dist )
+
+    else()
+
+    	ADD_CUSTOM_TARGET( dist
+	    COMMAND sudo rm -r -f dist
+	    COMMAND mkdir -p dist/hardt
+	    COMMAND cp -r hardt/debian dist/hardt/.
+	    COMMAND tar -c -v -f 'dist/hardt_${Hardt_VERSION_MAJOR}.${Hardt_VERSION_MINOR}.orig.tar.gz' -z 'CMakeLists.txt' 'hardt'
 	    COMMAND sudo chown -R $ENV{USER} dist
 	    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 

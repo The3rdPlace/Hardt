@@ -17,8 +17,10 @@ MINOR=$(cat hardt/libhardt/include/hardt.h | grep MINORVERSION | cut -d ' ' -f 3
 BUILD=$(cat hardt/libhardt/include/hardt.h | grep BUILDNO | cut -d ' ' -f 3)
 
 # Archives
-ncftpput -u $PUBUSER -p $PUBPASS $PUBHOST $PUBROOT/. ../dist/hardt_${MAJOR}.${MINOR}-${BUILD}_amd64.deb
+if [ -f ../dist/hardt_${MAJOR}.${MINOR}-${BUILD}_amd64.deb ]; then
+  ncftpput -u $PUBUSER -p $PUBPASS $PUBHOST $PUBROOT/. ../dist/hardt_${MAJOR}.${MINOR}-${BUILD}_amd64.deb
+fi
 ncftpput -u $PUBUSER -p $PUBPASS $PUBHOST $PUBROOT/. ../dist/hardt_${MAJOR}.${MINOR}.orig.tar.gz
 
 # Documentation
-ncftpput -u $PUBUSER -p  $PUBPASS -R $PUBHOST $PUBROOT/. ../dist/hardt/docs/html/*
+ncftpput -u $PUBUSER -p  $PUBPASS -R $PUBHOST $PUBROOT/. docs/html/*
