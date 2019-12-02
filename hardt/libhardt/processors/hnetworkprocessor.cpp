@@ -10,6 +10,7 @@
 #include <signal.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <netdb.h>
 
 #include "hnetworkprocessor.h"
 
@@ -169,6 +170,18 @@ void HNetworkProcessor<T>::InitClient()
         throw new HInitializationException("Failed to create client socket");
     }
 
+    // Convert the server hostname (or address) to a true ip address
+    HLog("Attempting lookup of server hostname: %s", _server);
+    hostent* record = gethostbyname(_server);
+	if(record == NULL)
+	{
+	    HError("Unknown hostname: %s", _address);
+	    throw new HInitializationException("Unknown hostname");
+	}
+	in_addr* address = (in_addr*) record->h_addr;
+	_server = inet_ntoa(*address);
+    HLog("Server hostname = %s", _server);
+
     // Server address
     memset(&_address, '0', sizeof(_address));
     _address.sin_family = AF_INET;
@@ -182,7 +195,7 @@ void HNetworkProcessor<T>::InitClient()
     }
 
     // Connect
-    HLog("Trying to connect");
+    HLog("Trying to connect to %s:%d", _server, _port);
     if (connect(_clientSocket, (struct sockaddr *)&_address, sizeof(_address)) < 0)
     {
         HError("Failed to connect to server %s", _server);
