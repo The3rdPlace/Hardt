@@ -10,4 +10,8 @@ target_link_libraries (dspcmd hardt pthread)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
 
 include(GNUInstallDirs)
-install(FILES ${CMAKE_BINARY_DIR}/hardt/dspcmd/dspcmd DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(
+    FILES ${CMAKE_BINARY_DIR}/hardt/dspcmd/dspcmd
+    PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ
+    DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
