@@ -1,3 +1,10 @@
+hardt (1.0-11) UNRELEASED; urgency=medium
+
+  [ Henrik Witt-Hansen ]
+  * HNetworkProcessor can lookup hostnames (Closes: #XXXXXX)
+
+ -- Mackie <henrik@hardttoolkit.org>  Tue, 02 Dec 2019 21:31:00 +0200
+
 hardt (1.0-10) UNRELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
