@@ -5,21 +5,24 @@
 #include "hreader.h"
 #include "hfilterbase.h"
 #include "hfilter.h"
+#include "hprobe.h"
 
 template <class T>
-HFilter<T>::HFilter(HWriter<T>* writer, size_t blocksize):
+HFilter<T>::HFilter(HWriter<T>* writer, size_t blocksize, HProbe<T>* probe):
     _writer(writer),
     _reader(NULL),
-    _blocksize(blocksize)
+    _blocksize(blocksize),
+    _probe(probe)
 {
     HLog("HFilter(HWriter*)");
     Init();
 }
 
 template <class T>
-HFilter<T>::HFilter(HWriterConsumer<T>* consumer, size_t blocksize):
+HFilter<T>::HFilter(HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe):
     _reader(NULL),
-    _blocksize(blocksize)
+    _blocksize(blocksize),
+    _probe(probe)
 {
     HLog("HFilter(HWriter*)");
     Init();
@@ -28,10 +31,11 @@ HFilter<T>::HFilter(HWriterConsumer<T>* consumer, size_t blocksize):
 }
 
 template <class T>
-HFilter<T>::HFilter(HReader<T>* reader, size_t blocksize):
+HFilter<T>::HFilter(HReader<T>* reader, size_t blocksize, HProbe<T>* probe):
     _writer(NULL),
     _reader(reader),
-    _blocksize(blocksize)
+    _blocksize(blocksize),
+    _probe(probe)
 {
     HLog("HFilter(HReader*)");
     Init();
@@ -61,7 +65,16 @@ int HFilter<T>::Write(T* src, size_t blocksize)
     }
 
     Filter(src, _buffer, blocksize);
-    return _writer->Write(_buffer, blocksize);
+    int written = _writer->Write(_buffer, blocksize);
+
+    ((HFilterBase<T>*) this)->Metrics.Writes++;
+    ((HFilterBase<T>*) this)->Metrics.BytesOut += blocksize * sizeof(T);
+    if( _probe != NULL )
+    {
+        _probe->Write(_buffer, blocksize);
+    }
+
+    return written;
 }
 
 template <class T>
@@ -75,6 +88,14 @@ int HFilter<T>::Read(T* dest, size_t blocksize)
 
     int received = _reader->Read(_buffer, blocksize);
     Filter(_buffer, dest, received);
+
+    ((HFilterBase<T>*) this)->Metrics.Reads++;
+    ((HFilterBase<T>*) this)->Metrics.BytesIn += blocksize * sizeof(T);
+    if( _probe != NULL )
+    {
+        _probe->Write(_buffer, blocksize);
+    }
+
     return received;
 }
 
@@ -117,40 +138,40 @@ Explicit instantiation
 
 // HFilter
 template
-HFilter<int8_t>::HFilter(HWriter<int8_t>* writer, size_t blocksize);
+HFilter<int8_t>::HFilter(HWriter<int8_t>* writer, size_t blocksize, HProbe<int8_t>* probe);
 
 template
-HFilter<uint8_t>::HFilter(HWriter<uint8_t>* writer, size_t blocksize);
+HFilter<uint8_t>::HFilter(HWriter<uint8_t>* writer, size_t blocksize, HProbe<uint8_t>* probe);
 
 template
-HFilter<int16_t>::HFilter(HWriter<int16_t>* writer, size_t blocksize);
+HFilter<int16_t>::HFilter(HWriter<int16_t>* writer, size_t blocksize, HProbe<int16_t>* probe);
 
 template
-HFilter<int32_t>::HFilter(HWriter<int32_t>* writer, size_t blocksize);
+HFilter<int32_t>::HFilter(HWriter<int32_t>* writer, size_t blocksize, HProbe<int32_t>* probe);
 
 template
-HFilter<int8_t>::HFilter(HWriterConsumer<int8_t>* consumer, size_t blocksize);
+HFilter<int8_t>::HFilter(HWriterConsumer<int8_t>* consumer, size_t blocksize, HProbe<int8_t>* probe);
 
 template
-HFilter<uint8_t>::HFilter(HWriterConsumer<uint8_t>* consumer, size_t blocksize);
+HFilter<uint8_t>::HFilter(HWriterConsumer<uint8_t>* consumer, size_t blocksize, HProbe<uint8_t>* probe);
 
 template
-HFilter<int16_t>::HFilter(HWriterConsumer<int16_t>* consumer, size_t blocksize);
+HFilter<int16_t>::HFilter(HWriterConsumer<int16_t>* consumer, size_t blocksize, HProbe<int16_t>* probe);
 
 template
-HFilter<int32_t>::HFilter(HWriterConsumer<int32_t>* consumer, size_t blocksize);
+HFilter<int32_t>::HFilter(HWriterConsumer<int32_t>* consumer, size_t blocksize, HProbe<int32_t>* probe);
 
 template
-HFilter<int8_t>::HFilter(HReader<int8_t>* reader, size_t blocksize);
+HFilter<int8_t>::HFilter(HReader<int8_t>* reader, size_t blocksize, HProbe<int8_t>* probe);
 
 template
-HFilter<uint8_t>::HFilter(HReader<uint8_t>* reader, size_t blocksize);
+HFilter<uint8_t>::HFilter(HReader<uint8_t>* reader, size_t blocksize, HProbe<uint8_t>* probe);
 
 template
-HFilter<int16_t>::HFilter(HReader<int16_t>* reader, size_t blocksize);
+HFilter<int16_t>::HFilter(HReader<int16_t>* reader, size_t blocksize, HProbe<int16_t>* probe);
 
 template
-HFilter<int32_t>::HFilter(HReader<int32_t>* reader, size_t blocksize);
+HFilter<int32_t>::HFilter(HReader<int32_t>* reader, size_t blocksize, HProbe<int32_t>* probe);
 
 // ~HFilter()
 template

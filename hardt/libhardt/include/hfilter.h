@@ -1,6 +1,8 @@
 #ifndef __HFILTER_H
 #define __HFILTER_H
 
+#include "hprobe.h"
+
 /**
     Base class for filter implementations.
     This class defines a pure virtual method, Filter(), which must be
@@ -16,6 +18,8 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
         HWriter<T>* _writer;
         HReader<T>* _reader;
 
+        HProbe<T>* _probe;
+
         int _blocksize;
         T* _buffer;
 
@@ -24,13 +28,13 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
     protected:
 
         /** Construct a new HFilter that writes to a writer */
-        HFilter(HWriter<T>* writer, size_t blocksize);
+        HFilter(HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HFilter that registers with an upstream writer */
-        HFilter(HWriterConsumer<T>* consumer, size_t blocksize);
+        HFilter(HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HFilter that reads from a reader */
-        HFilter(HReader<T>* reader, size_t blocksize);
+        HFilter(HReader<T>* reader, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Implements HWriterConsumer::SetWriter() */
         void SetWriter(HWriter<T>* writer)
