@@ -31,7 +31,7 @@ class HFileWriter : public HWriter<T>
             with the given consumer */
         HFileWriter(const std::string filename, HWriterConsumer<T>* consumer);
 
-    /** Write to the file */
+        /** Write to the file */
         virtual int Write(T* src, size_t blocksize);
 
         /** Initialize before first write */

@@ -69,4 +69,6 @@
 #include "hmute.h"
 #include "hnullreader.h"
 
+#include "hprobe.h"
+
 #endif

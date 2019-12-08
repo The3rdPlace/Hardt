@@ -81,4 +81,10 @@ Include api function declarations
 #include "hmute.cpp"
 #include "hnullreader.cpp"
 
+/********************************************************************
+Debug and diagnostics
+********************************************************************/
+
+#include "hprobe.h"
+
 #endif
