@@ -1,3 +1,10 @@
+hardt (1.0-12) UNRELEASED; urgency=medium
+
+  [ Henrik Witt-Hansen ]
+  * Added probe attachment support (Closes: #XXXXXX)
+
+ -- Mackie <henrik@hardttoolkit.org>  Mon, 09 Dec 2019 22:29:00 +0200
+
 hardt (1.0-11) UNRELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
