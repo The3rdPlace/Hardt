@@ -80,6 +80,7 @@ Include api function declarations
 #include "hswitch.cpp"
 #include "hmute.cpp"
 #include "hnullreader.cpp"
+#include "hpassthrough.cpp"
 
 /********************************************************************
 Debug and diagnostics

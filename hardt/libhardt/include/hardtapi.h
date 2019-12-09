@@ -68,6 +68,7 @@
 #include "hswitch.h"
 #include "hmute.h"
 #include "hnullreader.h"
+#include "hpassthrough.h"
 
 #include "hprobe.h"
 
