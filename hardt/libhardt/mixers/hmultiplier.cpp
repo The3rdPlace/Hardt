@@ -5,30 +5,33 @@
 #include "hmultiplier.h"
 
 template <class T>
-HMultiplier<T>::HMultiplier(HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, size_t blocksize):
+HMultiplier<T>::HMultiplier(HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, size_t blocksize, HProbe<T>* probe):
     _reader(reader),
     _writer(NULL),
-    _blocksize(blocksize)
+    _blocksize(blocksize),
+    _probe(probe)
 {
     HLog("HMultiplier(HReader*, %d, %d, %d)", rate, frequency, blocksize);
     Init(rate, frequency, blocksize);
 }
 
 template <class T>
-HMultiplier<T>::HMultiplier(HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, size_t blocksize):
+HMultiplier<T>::HMultiplier(HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, size_t blocksize, HProbe<T>* probe):
     _reader(NULL),
     _writer(writer),
-    _blocksize(blocksize)
+    _blocksize(blocksize),
+    _probe(probe)
 {
     HLog("HMultiplier(HWriter*, %d, %d, %d)", rate, frequency, blocksize);
     Init(rate, frequency, blocksize);
 }
 
 template <class T>
-HMultiplier<T>::HMultiplier(HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int frequency, size_t blocksize):
+HMultiplier<T>::HMultiplier(HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int frequency, size_t blocksize, HProbe<T>* probe):
     _reader(NULL),
     _writer(NULL),
-    _blocksize(blocksize)
+    _blocksize(blocksize),
+    _probe(probe)
 {
     HLog("HMultiplier(HWriterConsumer*, %d, %d, %d)", rate, frequency, blocksize);
     Init(rate, frequency, blocksize);
@@ -76,6 +79,14 @@ int HMultiplier<T>::Read(T* dest, size_t blocksize)
 
     // Mix signals
     Mix(_buffer, dest, blocksize);
+
+    ((HReader<T>*) this)->Metrics.Reads++;
+    ((HReader<T>*) this)->Metrics.BytesIn += blocksize * sizeof(T);
+    if( _probe != NULL )
+    {
+        _probe->Write(dest, blocksize);
+    }
+
     return blocksize;
 }
 
@@ -98,6 +109,14 @@ int HMultiplier<T>::Write(T* src, size_t blocksize)
         HLog("Zero write to writer, stopping");
         return 0;
     }
+
+    ((HWriter<T>*) this)->Metrics.Writes++;
+    ((HWriter<T>*) this)->Metrics.BytesOut += blocksize * sizeof(T);
+    if( _probe != NULL )
+    {
+        _probe->Write(_buffer, blocksize);
+    }
+
     return blocksize;
 }
 
@@ -156,40 +175,40 @@ Explicit instantiation
 
 // HMultiplier
 template
-HMultiplier<int8_t>::HMultiplier(HReader<int8_t>* reader_1, H_SAMPLE_RATE rate, int frequency, size_t blocksize);
+HMultiplier<int8_t>::HMultiplier(HReader<int8_t>* reader_1, H_SAMPLE_RATE rate, int frequency, size_t blocksize, HProbe<int8_t>* probe);
 
 template
-HMultiplier<uint8_t>::HMultiplier(HReader<uint8_t>* reader_1, H_SAMPLE_RATE rate, int frequency, size_t blocksize);
+HMultiplier<uint8_t>::HMultiplier(HReader<uint8_t>* reader_1, H_SAMPLE_RATE rate, int frequency, size_t blocksize, HProbe<uint8_t>* probe);
 
 template
-HMultiplier<int16_t>::HMultiplier(HReader<int16_t>* reader_1, H_SAMPLE_RATE rate, int frequency, size_t blocksize);
+HMultiplier<int16_t>::HMultiplier(HReader<int16_t>* reader_1, H_SAMPLE_RATE rate, int frequency, size_t blocksize, HProbe<int16_t>* probe);
 
 template
-HMultiplier<int32_t>::HMultiplier(HReader<int32_t>* reader_1, H_SAMPLE_RATE rate, int frequency, size_t blocksize);
+HMultiplier<int32_t>::HMultiplier(HReader<int32_t>* reader_1, H_SAMPLE_RATE rate, int frequency, size_t blocksize, HProbe<int32_t>* probe);
 
 template
-HMultiplier<int8_t>::HMultiplier(HWriter<int8_t>* writer, H_SAMPLE_RATE rate, int frequency, size_t blocksize);
+HMultiplier<int8_t>::HMultiplier(HWriter<int8_t>* writer, H_SAMPLE_RATE rate, int frequency, size_t blocksize, HProbe<int8_t>* probe);
 
 template
-HMultiplier<uint8_t>::HMultiplier(HWriter<uint8_t>* writer, H_SAMPLE_RATE rate, int frequency, size_t blocksize);
+HMultiplier<uint8_t>::HMultiplier(HWriter<uint8_t>* writer, H_SAMPLE_RATE rate, int frequency, size_t blocksize, HProbe<uint8_t>* probe);
 
 template
-HMultiplier<int16_t>::HMultiplier(HWriter<int16_t>* writer, H_SAMPLE_RATE rate, int frequency, size_t blocksize);
+HMultiplier<int16_t>::HMultiplier(HWriter<int16_t>* writer, H_SAMPLE_RATE rate, int frequency, size_t blocksize, HProbe<int16_t>* probe);
 
 template
-HMultiplier<int32_t>::HMultiplier(HWriter<int32_t>* writer, H_SAMPLE_RATE rate, int frequency, size_t blocksize);
+HMultiplier<int32_t>::HMultiplier(HWriter<int32_t>* writer, H_SAMPLE_RATE rate, int frequency, size_t blocksize, HProbe<int32_t>* probe);
 
 template
-HMultiplier<int8_t>::HMultiplier(HWriterConsumer<int8_t>* consumer, H_SAMPLE_RATE rate, int frequency, size_t blocksize);
+HMultiplier<int8_t>::HMultiplier(HWriterConsumer<int8_t>* consumer, H_SAMPLE_RATE rate, int frequency, size_t blocksize, HProbe<int8_t>* probe);
 
 template
-HMultiplier<uint8_t>::HMultiplier(HWriterConsumer<uint8_t>* consumer, H_SAMPLE_RATE rate, int frequency, size_t blocksize);
+HMultiplier<uint8_t>::HMultiplier(HWriterConsumer<uint8_t>* consumer, H_SAMPLE_RATE rate, int frequency, size_t blocksize, HProbe<uint8_t>* probe);
 
 template
-HMultiplier<int16_t>::HMultiplier(HWriterConsumer<int16_t>* consumer, H_SAMPLE_RATE rate, int frequency, size_t blocksize);
+HMultiplier<int16_t>::HMultiplier(HWriterConsumer<int16_t>* consumer, H_SAMPLE_RATE rate, int frequency, size_t blocksize, HProbe<int16_t>* probe);
 
 template
-HMultiplier<int32_t>::HMultiplier(HWriterConsumer<int32_t>* consumer, H_SAMPLE_RATE rate, int frequency, size_t blocksize);
+HMultiplier<int32_t>::HMultiplier(HWriterConsumer<int32_t>* consumer, H_SAMPLE_RATE rate, int frequency, size_t blocksize, HProbe<int32_t>* probe);
 
 // ~HMultiplier()
 template

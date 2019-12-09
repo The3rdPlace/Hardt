@@ -40,13 +40,13 @@ class HCascadedBiQuadFilter: public HReader<T>, public HWriter<T>, public HWrite
     public:
 
         /** Construct a new HCascadedBiQuadFilter */
-        HCascadedBiQuadFilter(HWriter<T>* writer, float* coefficients, int length, size_t blocksize);
+        HCascadedBiQuadFilter(HWriter<T>* writer, float* coefficients, int length, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HCascadedBiQuadFilter */
-        HCascadedBiQuadFilter(HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize);
+        HCascadedBiQuadFilter(HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HCascadedBiQuadFilter */
-        HCascadedBiQuadFilter(HReader<T>* reader, float* coefficients, int length, size_t blocksize);
+        HCascadedBiQuadFilter(HReader<T>* reader, float* coefficients, int length, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Default destructor */
         ~HCascadedBiQuadFilter();

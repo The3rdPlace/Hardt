@@ -27,16 +27,18 @@ class HMultiplier : public HReader<T>, public HWriter<T>, public HWriterConsumer
         HLocalOscillator<float>* _localOscillator;
         float* _oscillatorBuffer;
 
+        HProbe<T>* _probe;
+
     public:
 
         /** Construct a new HMultiplier (frequency mixer) */
-        HMultiplier(HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, size_t blocksize);
+        HMultiplier(HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HMultiplier (frequency mixer) */
-        HMultiplier(HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, size_t blocksize);
+        HMultiplier(HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HMultiplier (frequency mixer) */
-        HMultiplier(HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int frequency, size_t blocksize);
+        HMultiplier(HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int frequency, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Default destructor */
         ~HMultiplier();

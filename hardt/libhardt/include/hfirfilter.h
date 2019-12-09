@@ -27,13 +27,13 @@ class HFirFilter : public HFilter<T>
     public:
 
         /** Construct a new HFirFilter that writes to a writer */
-        HFirFilter(HWriter<T>* writer, float* coefficients, int length, size_t blocksize);
+        HFirFilter(HWriter<T>* writer, float* coefficients, int length, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HFirFilter that registers with an upstream writer */
-        HFirFilter(HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize);
+        HFirFilter(HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HFirFilter that reads from a reader */
-        HFirFilter(HReader<T>* reader, float* coefficients, int length, size_t blocksize);
+        HFirFilter(HReader<T>* reader, float* coefficients, int length, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Default destructor */
         ~HFirFilter();

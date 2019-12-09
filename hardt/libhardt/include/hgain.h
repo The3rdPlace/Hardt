@@ -14,13 +14,13 @@ class HGain : public HFilter<T>
     public:
 
         /** Construct a new HGain object that writes to a writer */
-        HGain(HWriter<T>* writer, float gain, size_t blocksize);
+        HGain(HWriter<T>* writer, float gain, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HGain object that registers with an upstream writer */
-        HGain(HWriterConsumer<T>* consumer, float gain, size_t blocksize);
+        HGain(HWriterConsumer<T>* consumer, float gain, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HGain object that reads from a reader */
-        HGain(HReader<T>* reader, float gain, size_t blocksize);
+        HGain(HReader<T>* reader, float gain, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Default destructor */
         ~HGain();

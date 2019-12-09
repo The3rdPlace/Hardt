@@ -5,33 +5,36 @@
 #include "hlinearmixer.h"
 
 template <class T>
-HLinearMixer<T>::HLinearMixer(HReader<T>* reader_1, HReader<T>* reader_2, size_t blocksize):
+HLinearMixer<T>::HLinearMixer(HReader<T>* reader_1, HReader<T>* reader_2, size_t blocksize, HProbe<T>* probe):
     _reader_1(reader_1),
     _reader_2(reader_2),
     _writer(NULL),
-    _blocksize(blocksize)
+    _blocksize(blocksize),
+    _probe(probe)
 {
     HLog("Hlinearmixer(HReader*, HReader*)");
     Init(blocksize);
 }
 
 template <class T>
-HLinearMixer<T>::HLinearMixer(HReader<T>* reader, HWriter<T>* writer, size_t blocksize):
+HLinearMixer<T>::HLinearMixer(HReader<T>* reader, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe):
     _reader_1(reader),
     _reader_2(NULL),
     _writer(writer),
-    _blocksize(blocksize)
+    _blocksize(blocksize),
+    _probe(probe)
 {
     HLog("Hlinearmixer(HReader*, HWriter*)");
     Init(blocksize);
 }
 
 template <class T>
-HLinearMixer<T>::HLinearMixer(HReader<T>* reader, HWriterConsumer<T>* consumer, size_t blocksize):
+HLinearMixer<T>::HLinearMixer(HReader<T>* reader, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe):
     _reader_1(reader),
     _reader_2(NULL),
     _writer(NULL),
-    _blocksize(blocksize)
+    _blocksize(blocksize),
+    _probe(probe)
 {
     HLog("Hlinearmixer(HReader*, HWriterConsumer*)");
     Init(blocksize);
@@ -87,6 +90,14 @@ int HLinearMixer<T>::Read(T* dest, size_t blocksize)
     {
         dest[i] = _buffer_1[i] + _buffer_2[i];
     }
+
+    ((HReader<T>*) this)->Metrics.Reads++;
+    ((HReader<T>*) this)->Metrics.BytesIn += blocksize * sizeof(T);
+    if( _probe != NULL )
+    {
+        _probe->Write(dest, blocksize);
+    }
+
     return blocksize;
 }
 
@@ -120,6 +131,14 @@ int HLinearMixer<T>::Write(T* src, size_t blocksize)
         HError("Short write to writer, stopping %d", written);
         return 0;
     }
+
+    ((HWriter<T>*) this)->Metrics.Writes++;
+    ((HWriter<T>*) this)->Metrics.BytesOut += blocksize * sizeof(T);
+    if( _probe != NULL )
+    {
+        _probe->Write(_buffer_2, blocksize);
+    }
+
     return blocksize;
 }
 
@@ -168,40 +187,40 @@ Explicit instantiation
 
 // HLinearMixer
 template
-HLinearMixer<int8_t>::HLinearMixer(HReader<int8_t>* reader_1, HReader<int8_t>* reader_2, size_t blocksize);
+HLinearMixer<int8_t>::HLinearMixer(HReader<int8_t>* reader_1, HReader<int8_t>* reader_2, size_t blocksize, HProbe<int8_t>* probe);
 
 template
-HLinearMixer<uint8_t>::HLinearMixer(HReader<uint8_t>* reader_1, HReader<uint8_t>* reader_2, size_t blocksize);
+HLinearMixer<uint8_t>::HLinearMixer(HReader<uint8_t>* reader_1, HReader<uint8_t>* reader_2, size_t blocksize, HProbe<uint8_t>* probe);
 
 template
-HLinearMixer<int16_t>::HLinearMixer(HReader<int16_t>* reader_1, HReader<int16_t>* reader_2, size_t blocksize);
+HLinearMixer<int16_t>::HLinearMixer(HReader<int16_t>* reader_1, HReader<int16_t>* reader_2, size_t blocksize, HProbe<int16_t>* probe);
 
 template
-HLinearMixer<int32_t>::HLinearMixer(HReader<int32_t>* reader_1, HReader<int32_t>* reader_2, size_t blocksize);
+HLinearMixer<int32_t>::HLinearMixer(HReader<int32_t>* reader_1, HReader<int32_t>* reader_2, size_t blocksize, HProbe<int32_t>* probe);
 
 template
-HLinearMixer<int8_t>::HLinearMixer(HReader<int8_t>* reader, HWriter<int8_t>* writer, size_t blocksize);
+HLinearMixer<int8_t>::HLinearMixer(HReader<int8_t>* reader, HWriter<int8_t>* writer, size_t blocksize, HProbe<int8_t>* probe);
 
 template
-HLinearMixer<uint8_t>::HLinearMixer(HReader<uint8_t>* reader, HWriter<uint8_t>* writer, size_t blocksize);
+HLinearMixer<uint8_t>::HLinearMixer(HReader<uint8_t>* reader, HWriter<uint8_t>* writer, size_t blocksize, HProbe<uint8_t>* probe);
 
 template
-HLinearMixer<int16_t>::HLinearMixer(HReader<int16_t>* reader, HWriter<int16_t>* writer, size_t blocksize);
+HLinearMixer<int16_t>::HLinearMixer(HReader<int16_t>* reader, HWriter<int16_t>* writer, size_t blocksize, HProbe<int16_t>* probe);
 
 template
-HLinearMixer<int32_t>::HLinearMixer(HReader<int32_t>* reader, HWriter<int32_t>* writer, size_t blocksize);
+HLinearMixer<int32_t>::HLinearMixer(HReader<int32_t>* reader, HWriter<int32_t>* writer, size_t blocksize, HProbe<int32_t>* probe);
 
 template
-HLinearMixer<int8_t>::HLinearMixer(HReader<int8_t>* reader, HWriterConsumer<int8_t>* consumer, size_t blocksize);
+HLinearMixer<int8_t>::HLinearMixer(HReader<int8_t>* reader, HWriterConsumer<int8_t>* consumer, size_t blocksize, HProbe<int8_t>* probe);
 
 template
-HLinearMixer<uint8_t>::HLinearMixer(HReader<uint8_t>* reader, HWriterConsumer<uint8_t>* consumer, size_t blocksize);
+HLinearMixer<uint8_t>::HLinearMixer(HReader<uint8_t>* reader, HWriterConsumer<uint8_t>* consumer, size_t blocksize, HProbe<uint8_t>* probe);
 
 template
-HLinearMixer<int16_t>::HLinearMixer(HReader<int16_t>* reader, HWriterConsumer<int16_t>* consumer, size_t blocksize);
+HLinearMixer<int16_t>::HLinearMixer(HReader<int16_t>* reader, HWriterConsumer<int16_t>* consumer, size_t blocksize, HProbe<int16_t>* probe);
 
 template
-HLinearMixer<int32_t>::HLinearMixer(HReader<int32_t>* reader, HWriterConsumer<int32_t>* consumer, size_t blocksize);
+HLinearMixer<int32_t>::HLinearMixer(HReader<int32_t>* reader, HWriterConsumer<int32_t>* consumer, size_t blocksize, HProbe<int32_t>* probe);
 
 // ~HLinearMixer()
 template

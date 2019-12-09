@@ -4,24 +4,24 @@
 #include "hgain.h"
 
 template <class T>
-HGain<T>::HGain(HWriter<T>* writer, float gain, size_t blocksize):
-    HFilter<T>(writer, blocksize),
+HGain<T>::HGain(HWriter<T>* writer, float gain, size_t blocksize, HProbe<T>* probe):
+    HFilter<T>(writer, blocksize, probe),
     _gain(gain)
 {
     HLog("HGain(HWriter*, %f, %d)", gain, blocksize);
 }
 
 template <class T>
-HGain<T>::HGain(HWriterConsumer<T>* consumer, float gain, size_t blocksize):
-    HFilter<T>(consumer, blocksize),
+HGain<T>::HGain(HWriterConsumer<T>* consumer, float gain, size_t blocksize, HProbe<T>* probe):
+    HFilter<T>(consumer, blocksize, probe),
     _gain(gain)
 {
     HLog("HGain(HWriterConsumer*, %f, %d)", gain, blocksize);
 }
 
 template <class T>
-HGain<T>::HGain(HReader<T>* reader, float gain, size_t blocksize):
-    HFilter<T>(reader, blocksize),
+HGain<T>::HGain(HReader<T>* reader, float gain, size_t blocksize, HProbe<T>* probe):
+    HFilter<T>(reader, blocksize, probe),
     _gain(gain)
 {
     HLog("HGain(HReader*, %f, %d)", gain, blocksize);
@@ -56,40 +56,40 @@ Explicit instantiation
 
 // HGain
 template
-HGain<int8_t>::HGain(HWriter<int8_t>* writer, float gain, size_t blocksize);
+HGain<int8_t>::HGain(HWriter<int8_t>* writer, float gain, size_t blocksize, HProbe<int8_t>* probe);
 
 template
-HGain<uint8_t>::HGain(HWriter<uint8_t>* writer, float gain, size_t blocksize);
+HGain<uint8_t>::HGain(HWriter<uint8_t>* writer, float gain, size_t blocksize, HProbe<uint8_t>* probe);
 
 template
-HGain<int16_t>::HGain(HWriter<int16_t>* writer, float gain, size_t blocksize);
+HGain<int16_t>::HGain(HWriter<int16_t>* writer, float gain, size_t blocksize, HProbe<int16_t>* probe);
 
 template
-HGain<int32_t>::HGain(HWriter<int32_t>* writer, float gain, size_t blocksize);
+HGain<int32_t>::HGain(HWriter<int32_t>* writer, float gain, size_t blocksize, HProbe<int32_t>* probe);
 
 template
-HGain<int8_t>::HGain(HWriterConsumer<int8_t>* consumer, float gain, size_t blocksize);
+HGain<int8_t>::HGain(HWriterConsumer<int8_t>* consumer, float gain, size_t blocksize, HProbe<int8_t>* probe);
 
 template
-HGain<uint8_t>::HGain(HWriterConsumer<uint8_t>* consumer, float gain, size_t blocksize);
+HGain<uint8_t>::HGain(HWriterConsumer<uint8_t>* consumer, float gain, size_t blocksize, HProbe<uint8_t>* probe);
 
 template
-HGain<int16_t>::HGain(HWriterConsumer<int16_t>* consumer, float gain, size_t blocksize);
+HGain<int16_t>::HGain(HWriterConsumer<int16_t>* consumer, float gain, size_t blocksize, HProbe<int16_t>* probe);
 
 template
-HGain<int32_t>::HGain(HWriterConsumer<int32_t>* consumer, float gain, size_t blocksize);
+HGain<int32_t>::HGain(HWriterConsumer<int32_t>* consumer, float gain, size_t blocksize, HProbe<int32_t>* probe);
 
 template
-HGain<int8_t>::HGain(HReader<int8_t>* reader, float gain, size_t blocksize);
+HGain<int8_t>::HGain(HReader<int8_t>* reader, float gain, size_t blocksize, HProbe<int8_t>* probe);
 
 template
-HGain<uint8_t>::HGain(HReader<uint8_t>* reader, float gain, size_t blocksize);
+HGain<uint8_t>::HGain(HReader<uint8_t>* reader, float gain, size_t blocksize, HProbe<uint8_t>* probe);
 
 template
-HGain<int16_t>::HGain(HReader<int16_t>* reader, float gain, size_t blocksize);
+HGain<int16_t>::HGain(HReader<int16_t>* reader, float gain, size_t blocksize, HProbe<int16_t>* probe);
 
 template
-HGain<int32_t>::HGain(HReader<int32_t>* reader, float gain, size_t blocksize);
+HGain<int32_t>::HGain(HReader<int32_t>* reader, float gain, size_t blocksize, HProbe<int32_t>* probe);
 
 // ~HGain()
 template
