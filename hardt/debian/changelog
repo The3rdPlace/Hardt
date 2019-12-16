@@ -1,18 +1,25 @@
-hardt (1.0-12) UNRELEASED; urgency=medium
+hardt (1.0-13) UNRELEASED; urgency=medium
+
+  [ Henrik Witt-Hansen ]
+  * Added probe tests (Closes: #XXXXXX)
+
+ -- Mackie <henrik@hardttoolkit.org>  Mon, 16 Dec 2019 22:56:00 +0200
+
+hardt (1.0-12) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
   * Added probe attachment support (Closes: #XXXXXX)
 
  -- Mackie <henrik@hardttoolkit.org>  Mon, 09 Dec 2019 22:29:00 +0200
 
-hardt (1.0-11) UNRELEASED; urgency=medium
+hardt (1.0-11) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
   * HNetworkProcessor can lookup hostnames (Closes: #XXXXXX)
 
  -- Mackie <henrik@hardttoolkit.org>  Tue, 02 Dec 2019 21:31:00 +0200
 
-hardt (1.0-10) UNRELEASED; urgency=medium
+hardt (1.0-10) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
   * Added new HNullReader component (Closes: #XXXXXX)
