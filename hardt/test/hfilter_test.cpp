@@ -11,6 +11,7 @@ class HFilter_Test: public Test
         {
             UNITTEST(test_filter_as_writer);
             UNITTEST(test_filter_as_reader);
+            UNITTEST(test_filter_with_probe);
         }
 
         const char* name()
@@ -67,12 +68,12 @@ class HFilter_Test: public Test
 
             public:
 
-                TestFilter(HWriter<T>* writer, size_t blocksize):
-                    HFilter<T>(writer, blocksize)
+                TestFilter(HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL):
+                    HFilter<T>(writer, blocksize, probe)
                 {}
 
-                TestFilter(HReader<T>* reader, size_t blocksize):
-                    HFilter<T>(reader, blocksize)
+                TestFilter(HReader<T>* reader, size_t blocksize, HProbe<T>* probe = NULL):
+                    HFilter<T>(reader, blocksize, probe)
                 {}
         };
 
@@ -123,4 +124,21 @@ class HFilter_Test: public Test
                 ASSERT_FAIL("Expected HFilterIOException, but got other type");
             }
         }
+
+        void test_filter_with_probe()
+        {
+            TestWriter<int8_t> wr;
+            TestFilter<int8_t> filter(&wr, 6);
+            HProbe<int8_t> probe("hfilter_test", true);
+
+            int8_t input[8] = {1, 2, 4, 8, 16, 32, 0, 0};
+            ASSERT_IS_EQUAL(filter.Write(input, 6), 6);
+            ASSERT_IS_EQUAL(memcmp((void*) wr.received, (void*) expected, 6 * sizeof(int8_t)), 0);
+
+            std::ifstream resultfile("PROBE_hfilter_test.pcm", std::ios::in | std::ios::binary | std::ios::ate);
+            if( !resultfile.is_open() ) {
+                ASSERT_FAIL("No probe file found");
+            }
+        }
+
 } hfilter_test;
