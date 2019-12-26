@@ -24,8 +24,8 @@ class HMultiplier : public HReader<T>, public HWriter<T>, public HWriterConsumer
 
         int _blocksize;
 
-        HLocalOscillator<float>* _localOscillator;
-        float* _oscillatorBuffer;
+        HLocalOscillator<T>* _localOscillator;
+        T* _oscillatorBuffer;
 
         HProbe<T>* _probe;
 

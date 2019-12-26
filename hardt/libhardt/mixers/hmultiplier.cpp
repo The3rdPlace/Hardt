@@ -53,10 +53,10 @@ template <class T>
 void HMultiplier<T>::Init(H_SAMPLE_RATE rate, int frequency, size_t blocksize)
 {
     _buffer = new T[blocksize];
-    _oscillatorBuffer = new float[blocksize];
+    _oscillatorBuffer = new T[blocksize];
     HLog("Allocated 2 X %d as local buffers", blocksize * sizeof(T));
 
-    _localOscillator = new HLocalOscillator<float>(rate, frequency);
+    _localOscillator = new HLocalOscillator<T>(rate, frequency);
     HLog("Create local oscilator");
 }
 
