@@ -33,7 +33,7 @@ class HCascadedBiQuadFilter: public HReader<T>, public HWriter<T>, public HWrite
         int _filterCount;
         int _firstLength;
 
-        void Init(float* coefficients, int length);
+        void Init(int length);
 
         void SetWriter(HWriter<T>* writer);
 
@@ -47,6 +47,15 @@ class HCascadedBiQuadFilter: public HReader<T>, public HWriter<T>, public HWrite
 
         /** Construct a new HCascadedBiQuadFilter */
         HCascadedBiQuadFilter(HReader<T>* reader, float* coefficients, int length, size_t blocksize, HProbe<T>* probe = NULL);
+
+        /** Construct a new HCascadedBiQuadFilter */
+        HCascadedBiQuadFilter(HWriter<T>* writer, std::vector<float*> biquadCoefficients, size_t blocksize, HProbe<T>* probe = NULL);
+
+        /** Construct a new HCascadedBiQuadFilter */
+        HCascadedBiQuadFilter(HWriterConsumer<T>* consumer, std::vector<float*> biquadCoefficients, size_t blocksize, HProbe<T>* probe = NULL);
+
+        /** Construct a new HCascadedBiQuadFilter */
+        HCascadedBiQuadFilter(HReader<T>* reader, std::vector<float*> biquadCoefficients, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Default destructor */
         ~HCascadedBiQuadFilter();
