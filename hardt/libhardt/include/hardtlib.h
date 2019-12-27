@@ -81,6 +81,7 @@ Include api function declarations
 #include "hmute.cpp"
 #include "hnullreader.cpp"
 #include "hpassthrough.cpp"
+#include "hagc.cpp"
 
 /********************************************************************
 Debug and diagnostics

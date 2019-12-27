@@ -30,6 +30,12 @@ class HGain : public HFilter<T>
 
         /** Set gain */
         void SetGain(float gain);
+
+        /** Get gain */
+        float GetGain()
+        {
+            return _gain;
+        }
 };
 
 #endif
