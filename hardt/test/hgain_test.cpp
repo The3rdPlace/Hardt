@@ -22,7 +22,7 @@ class HGain_Test: public Test
 
         int8_t expected_2[6] = {2, 4, 6, 8, 10, 12};
         int8_t expected_0_5[6] = {0, 1, 1, 2, 2, 3};
-        int8_t expected_neg2[6] = {-2, -4, -6, -8, -10, -12};
+        int8_t expected_neg2[6] = {0, 0, 0, 0, 0, 0};
 
         template <class T>
         class TestWriter : public HWriter<T>

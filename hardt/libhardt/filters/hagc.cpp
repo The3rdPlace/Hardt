@@ -4,33 +4,27 @@
 #include "hagc.h"
 
 template <class T>
-HAgc<T>::HAgc(HWriter<T>* writer, T upper, T limit, float rate, size_t blocksize, HProbe<T>* probe):
+HAgc<T>::HAgc(HWriter<T>* writer, T limit, size_t blocksize, HProbe<T>* probe):
     HGain<T>(writer, 1, blocksize, probe),
-    _upper(upper),
-    _limit(limit),
-    _rate(rate)
+    _limit(limit)
 {
-    HLog("HAgc(HWriter*, %d, %d, %f, %d)", upper, limit, rate, blocksize);
+    HLog("HAgc(HWriter*, %d, %d)", limit, blocksize);
 }
 
 template <class T>
-HAgc<T>::HAgc(HWriterConsumer<T>* consumer, T upper, T limit, float rate, size_t blocksize, HProbe<T>* probe):
+HAgc<T>::HAgc(HWriterConsumer<T>* consumer, T limit, size_t blocksize, HProbe<T>* probe):
     HGain<T>(consumer, 1, blocksize, probe),
-    _upper(upper),
-    _limit(limit),
-    _rate(rate)
+    _limit(limit)
 {
-    HLog("HAgc(HWriterConsumer*, %d, %d, %f, %d)", upper, limit, rate, blocksize);
+    HLog("HAgc(HWriterConsumer*, %d, %d)", limit, blocksize);
 }
 
 template <class T>
-HAgc<T>::HAgc(HReader<T>* reader, T upper, T limit, float rate, size_t blocksize, HProbe<T>* probe):
+HAgc<T>::HAgc(HReader<T>* reader, T limit, size_t blocksize, HProbe<T>* probe):
     HGain<T>(reader, 1, blocksize, probe),
-    _upper(upper),
-    _limit(limit),
-    _rate(rate)
+    _limit(limit)
 {
-    HLog("HAgc(HReader*, %d, %d, %f, %d)", upper, limit, rate, blocksize);
+    HLog("HAgc(HReader*, %d, %d)", limit, blocksize);
 }
 
 template <class T>
@@ -45,13 +39,36 @@ void HAgc<T>::Filter(T* src, T* dest, size_t blocksize)
     HGain<T>::Filter(src, dest, blocksize);
 
     T max = *std::max_element(dest, dest + blocksize);
-    if( max < _upper && this->GetGain() < _limit )
+    if( max < _limit )
     {
-        this->SetGain(this->GetGain() + _rate);
+        float currentGain = this->GetGain();
+        if( currentGain < 1 ) {
+            this->SetGain(currentGain + 0.1);
+        }
+        else
+        {
+            this->SetGain(currentGain + 1);
+        }
+
+        HLog("max=%d + = %f", max, this->GetGain());
     }
-    if( max > _upper && this->GetGain() > 0)
+    if( max > _limit )
     {
-        this->SetGain(this->GetGain() - _rate);
+        float currentGain = this->GetGain();
+        if (currentGain == 0.1 )
+        {
+            // Overflow, dont reduce gain anymore
+            HLog("HAgc overflow. Gain cannot be reduced anymore");
+        }
+        else if( currentGain <= 1 ) {
+            this->SetGain(currentGain - 0.1);
+        }
+        else
+        {
+            this->SetGain(currentGain - 1);
+        }
+
+        HLog("max=%d - = %f", max, this->GetGain());
     }
 }
 
@@ -62,40 +79,40 @@ Explicit instantiation
 
 // HAgc
 template
-HAgc<int8_t>::HAgc(HWriter<int8_t>* writer, int8_t upper, int8_t limit, float rate, size_t blocksize, HProbe<int8_t>* probe);
+HAgc<int8_t>::HAgc(HWriter<int8_t>* writer, int8_t limit, size_t blocksize, HProbe<int8_t>* probe);
 
 template
-HAgc<uint8_t>::HAgc(HWriter<uint8_t>* writer, uint8_t upper, uint8_t limit, float rate, size_t blocksize, HProbe<uint8_t>* probe);
+HAgc<uint8_t>::HAgc(HWriter<uint8_t>* writer, uint8_t limit, size_t blocksize, HProbe<uint8_t>* probe);
 
 template
-HAgc<int16_t>::HAgc(HWriter<int16_t>* writer, int16_t upper, int16_t limit, float rate, size_t blocksize, HProbe<int16_t>* probe);
+HAgc<int16_t>::HAgc(HWriter<int16_t>* writer, int16_t limit, size_t blocksize, HProbe<int16_t>* probe);
 
 template
-HAgc<int32_t>::HAgc(HWriter<int32_t>* writer, int32_t upper, int32_t limit, float rate, size_t blocksize, HProbe<int32_t>* probe);
+HAgc<int32_t>::HAgc(HWriter<int32_t>* writer, int32_t limit, size_t blocksize, HProbe<int32_t>* probe);
 
 template
-HAgc<int8_t>::HAgc(HWriterConsumer<int8_t>* consumer, int8_t upper, int8_t limit, float rate, size_t blocksize, HProbe<int8_t>* probe);
+HAgc<int8_t>::HAgc(HWriterConsumer<int8_t>* consumer, int8_t limit, size_t blocksize, HProbe<int8_t>* probe);
 
 template
-HAgc<uint8_t>::HAgc(HWriterConsumer<uint8_t>* consumer, uint8_t upper, uint8_t limit, float rate, size_t blocksize, HProbe<uint8_t>* probe);
+HAgc<uint8_t>::HAgc(HWriterConsumer<uint8_t>* consumer, uint8_t limit, size_t blocksize, HProbe<uint8_t>* probe);
 
 template
-HAgc<int16_t>::HAgc(HWriterConsumer<int16_t>* consumer, int16_t upper, int16_t limit, float rate, size_t blocksize, HProbe<int16_t>* probe);
+HAgc<int16_t>::HAgc(HWriterConsumer<int16_t>* consumer, int16_t limit, size_t blocksize, HProbe<int16_t>* probe);
 
 template
-HAgc<int32_t>::HAgc(HWriterConsumer<int32_t>* consumer, int32_t upper, int32_t limit, float rate, size_t blocksize, HProbe<int32_t>* probe);
+HAgc<int32_t>::HAgc(HWriterConsumer<int32_t>* consumer, int32_t limit, size_t blocksize, HProbe<int32_t>* probe);
 
 template
-HAgc<int8_t>::HAgc(HReader<int8_t>* reader, int8_t upper, int8_t limit, float rate, size_t blocksize, HProbe<int8_t>* probe);
+HAgc<int8_t>::HAgc(HReader<int8_t>* reader, int8_t limit, size_t blocksize, HProbe<int8_t>* probe);
 
 template
-HAgc<uint8_t>::HAgc(HReader<uint8_t>* reader, uint8_t upper, uint8_t limit, float rate, size_t blocksize, HProbe<uint8_t>* probe);
+HAgc<uint8_t>::HAgc(HReader<uint8_t>* reader, uint8_t limit, size_t blocksize, HProbe<uint8_t>* probe);
 
 template
-HAgc<int16_t>::HAgc(HReader<int16_t>* reader, int16_t upper, int16_t limit, float rate, size_t blocksize, HProbe<int16_t>* probe);
+HAgc<int16_t>::HAgc(HReader<int16_t>* reader, int16_t limit, size_t blocksize, HProbe<int16_t>* probe);
 
 template
-HAgc<int32_t>::HAgc(HReader<int32_t>* reader, int32_t upper, int32_t limit, float rate, size_t blocksize, HProbe<int32_t>* probe);
+HAgc<int32_t>::HAgc(HReader<int32_t>* reader, int32_t limit, size_t blocksize, HProbe<int32_t>* probe);
 
 // ~HAgc()
 template

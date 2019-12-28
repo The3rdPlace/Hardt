@@ -3,6 +3,7 @@ hardt (1.0-13) UNRELEASED; urgency=medium
   [ Henrik Witt-Hansen ]
   * Added probe tests (Closes: #XXXXXX)
   * Changed internal use of localoscillator in the multiplier (Closes: #XXXXXX)
+  * Added AGC component (Closes: #XXXXXX)
 
  -- Mackie <henrik@hardttoolkit.org>  Mon, 16 Dec 2019 22:56:00 +0200
 

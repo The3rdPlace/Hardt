@@ -9,20 +9,18 @@ class HAgc : public HGain<T>
 {
     private:
 
-        T _upper;
         T _limit;
-        float _rate;
 
     public:
 
         /** Construct a new HAgc object that writes to a writer */
-        HAgc(HWriter<T>* writer, T upper, T limit, float rate, size_t blocksize, HProbe<T>* probe = NULL);
+        HAgc(HWriter<T>* writer, T limit, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HAgc object that registers with an upstream writer */
-        HAgc(HWriterConsumer<T>* consumer, T upper, T limit, float rate, size_t blocksize, HProbe<T>* probe = NULL);
+        HAgc(HWriterConsumer<T>* consumer, T limit, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HAgc object that reads from a reader */
-        HAgc(HReader<T>* reader, T upper, T limit, float rate, size_t blocksize, HProbe<T>* probe = NULL);
+        HAgc(HReader<T>* reader, T limit, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Default destructor */
         ~HAgc();
@@ -31,15 +29,9 @@ class HAgc : public HGain<T>
         virtual void Filter(T* src, T* dest, size_t blocksize);
 
         /** Set bounds */
-        void SetBounds(T upper, T lower)
+        void SetLimit(T limit)
         {
-            _upper = upper;
             _limit = limit;
-        }
-
-        void SetRate(float rate)
-        {
-            _rate = rate;
         }
 };
 

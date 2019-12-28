@@ -46,7 +46,7 @@ void HGain<T>::Filter(T* src, T* dest, size_t blocksize)
 template <class T>
 void HGain<T>::SetGain(float gain)
 {
-    _gain = gain;
+    _gain = gain >= 0 ? gain : 0;
 }
 
 /********************************************************************

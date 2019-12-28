@@ -43,7 +43,7 @@ class HAgc_Test: public Test
             int8_t expected_8[6] = {8, 8, 8, 8, 8, 8};
             int8_t expected_56[6] = {56, 56, 56, 56, 56, 56};
             int8_t expected_16[6] = {16, 16, 16, 16, 16, 16};
-            HAgc<int8_t> agc(&wr, 8, 2, 1, 6);
+            HAgc<int8_t> agc(&wr, 8, 6);
 
             ASSERT_IS_EQUAL(agc.Write(input_low, 6), 6);
             ASSERT_IS_EQUAL(agc.Write(input_low, 6), 6);
