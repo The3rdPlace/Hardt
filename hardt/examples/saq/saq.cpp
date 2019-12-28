@@ -84,7 +84,7 @@ int main(int argc, char** argv)
 
     // Mix down to the output frequency.
     // 17200Hz - 16160Hz = 1040Hz  (place it somewhere inside the bandpass filter pass region)
-    HMultiplier<int16_t> multiplier(highpass.Reader(), H_SAMPLE_RATE_48K, LOCAL_OSCILATOR, BLOCKSIZE);
+    HMultiplier<int16_t> multiplier(highpass.Reader(), H_SAMPLE_RATE_48K, LOCAL_OSCILATOR, 10, BLOCKSIZE);
 
     // Narrow butterworth bandpass filter, bandwidth 100Hz around 1000-1100. 4th. order, 4 biquads cascaded
     // Removes (almost) anything but the mixed down signal from SAQ (Grimeton)

@@ -74,11 +74,11 @@ class HMultiplier_Test: public Test
         void test_multiplier_with_readers()
         {
             TestReader<int8_t> reader;
-            HLocalOscillator<float> localOscillator(8000, 1000);
-            HMultiplier<int8_t> multiplier(&reader, 8000, 1000, 5);
+            HLocalOscillator<int8_t> localOscillator(8000, 1000, 10);
+            HMultiplier<int8_t> multiplier(&reader, 8000, 1000, 10, 5);
 
             int8_t output[5];
-            float oscillator[5];
+            int8_t oscillator[5];
             ASSERT_IS_EQUAL(multiplier.Read(output, 5), 5);
             ASSERT_IS_EQUAL(localOscillator.Read(oscillator, 5), 5);
 
@@ -92,7 +92,7 @@ class HMultiplier_Test: public Test
         {
             TestWriter<int8_t> writer;
             HLocalOscillator<float> localOscillator(8000, 1000);
-            HMultiplier<int8_t> multiplier(&writer, 8000, 1000, 5);
+            HMultiplier<int8_t> multiplier(&writer, 8000, 1000, 10, 5);
 
             int8_t input[5] = {0, 1, 2, 3, 4};
             float oscillator[5];

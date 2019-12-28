@@ -584,7 +584,7 @@ int RunMultiplier()
     }
 
     // Create  multiplier
-    HMultiplier<T> multiplier(rd, Config.Rate, Config.Frequency, Config.Blocksize);
+    HMultiplier<T> multiplier(rd, Config.Rate, Config.Frequency, 10, Config.Blocksize);
 
     // Create processor
     HStreamProcessor<T> proc(wr, (HReader<T>*) &multiplier, Config.Blocksize, &terminated);

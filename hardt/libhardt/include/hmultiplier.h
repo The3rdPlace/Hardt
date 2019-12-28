@@ -32,19 +32,19 @@ class HMultiplier : public HReader<T>, public HWriter<T>, public HWriterConsumer
     public:
 
         /** Construct a new HMultiplier (frequency mixer) */
-        HMultiplier(HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, size_t blocksize, HProbe<T>* probe = NULL);
+        HMultiplier(HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HMultiplier (frequency mixer) */
-        HMultiplier(HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, size_t blocksize, HProbe<T>* probe = NULL);
+        HMultiplier(HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HMultiplier (frequency mixer) */
-        HMultiplier(HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int frequency, size_t blocksize, HProbe<T>* probe = NULL);
+        HMultiplier(HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Default destructor */
         ~HMultiplier();
 
         /** Common initialization tasks */
-        void Init(H_SAMPLE_RATE rate, int frequency, size_t blocksize);
+        void Init(H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
         /** Read a block of samples */
         int Read(T* dest, size_t blocksize);

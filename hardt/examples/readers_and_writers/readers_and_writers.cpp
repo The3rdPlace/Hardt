@@ -49,11 +49,12 @@ int main(int argc, char** argv)
     // Mix with a 500Hz tone
     // ==> 1000Hz - 500Hz = 500Hz
     // ==> 1000Hz + 500Hz = 1500Hz
-    HMultiplier<int16_t> multiplier(gain.Reader(), H_SAMPLE_RATE_48K, 500, BLOCKSIZE);
+    HMultiplier<int16_t> multiplier(gain.Reader(), H_SAMPLE_RATE_48K, 500, 10, BLOCKSIZE);
 
     // General highpass filtering after mixing to make the 1500Hz tone the dominant
-    HBiQuadFilter<HHighpassBiQuad<int16_t>, int16_t> highpass(multiplier.Reader(), 1000, H_SAMPLE_RATE_48K, 0.7071f, 1, BLOCKSIZE);    // -------------------------------------------------------------------------------------
+    HBiQuadFilter<HHighpassBiQuad<int16_t>, int16_t> highpass(multiplier.Reader(), 1000, H_SAMPLE_RATE_48K, 0.7071f, 1, BLOCKSIZE);
 
+    // -------------------------------------------------------------------------------------
     // Setup dsp chain for writers
     //
     // When you create writers without using the HWriterConsumer interface, you can must create the writers

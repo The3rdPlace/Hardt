@@ -4,8 +4,9 @@ hardt (1.0-13) UNRELEASED; urgency=medium
   * Added probe tests (Closes: #XXXXXX)
   * Changed internal use of localoscillator in the multiplier (Closes: #XXXXXX)
   * Added AGC component (Closes: #XXXXXX)
+  * Add optional localoscillator amplitude parameter to the localoscillator (Closes: #XXXXXX)
 
- -- Mackie <henrik@hardttoolkit.org>  Mon, 16 Dec 2019 22:56:00 +0200
+ -- Mackie <henrik@hardttoolkit.org>  Sat, 28 Dec 2019 23:25:00 +0100
 
 hardt (1.0-12) RELEASED; urgency=medium
 
