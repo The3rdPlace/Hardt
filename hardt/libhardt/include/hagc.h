@@ -15,6 +15,8 @@ class HAgc : public HGain<T>
         int _average;
         T *_averageBuffer;
         int _averagePtr;
+        int _lock;
+        int _locked;
 
         void Init()
         {
@@ -33,13 +35,13 @@ class HAgc : public HGain<T>
     public:
 
         /** Construct a new HAgc object that writes to a writer */
-        HAgc(HWriter<T>* writer, T lower, T upper, int average, size_t blocksize, HProbe<T>* probe = NULL);
+        HAgc(HWriter<T>* writer, T lower, T upper, int average, int lock, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HAgc object that registers with an upstream writer */
-        HAgc(HWriterConsumer<T>* consumer, T lower, T upper, int average, size_t blocksize, HProbe<T>* probe = NULL);
+        HAgc(HWriterConsumer<T>* consumer, T lower, T upper, int average, int lock, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HAgc object that reads from a reader */
-        HAgc(HReader<T>* reader, T lower, T upper, int average, size_t blocksize, HProbe<T>* probe = NULL);
+        HAgc(HReader<T>* reader, T lower, T upper, int average, int lock, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Default destructor */
         ~HAgc();
