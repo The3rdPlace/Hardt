@@ -117,6 +117,8 @@ class HAgc_Test: public Test
             ASSERT_IS_EQUAL(memcmp((void*) wr.received, (void*) expected_16, 6 * sizeof(int8_t)), 0);
 
             // Now write in a low signal, check that the lock is holding for 2+1 blocks
+            // (holds 2 blocks, then 3.rd write releases the lock and increases the gain _after_
+            // the output has been calculated)
             ASSERT_IS_EQUAL(agc.Write(input_low, 6), 6);
             ASSERT_IS_EQUAL(agc.Write(input_low, 6), 6);
             ASSERT_IS_EQUAL(agc.Write(input_low, 6), 6);
@@ -130,5 +132,14 @@ class HAgc_Test: public Test
             ASSERT_IS_EQUAL(agc.Write(input_low, 6), 6);
             ASSERT_IS_EQUAL(agc.Write(input_low, 6), 6);
             ASSERT_IS_EQUAL(memcmp((void*) wr.received, (void*) expected_14, 6 * sizeof(int8_t)), 0);
+
+            // Keep writing, output should stabilize on the requested level (16)
+            ASSERT_IS_EQUAL(agc.Write(input_low, 6), 6);
+            ASSERT_IS_EQUAL(agc.Write(input_low, 6), 6);
+            ASSERT_IS_EQUAL(agc.Write(input_low, 6), 6);
+            ASSERT_IS_EQUAL(agc.Write(input_low, 6), 6);
+            ASSERT_IS_EQUAL(agc.Write(input_low, 6), 6);
+            ASSERT_IS_EQUAL(agc.Write(input_low, 6), 6);
+            ASSERT_IS_EQUAL(memcmp((void*) wr.received, (void*) expected_16, 6 * sizeof(int8_t)), 0);
         }
 } hagc_test;

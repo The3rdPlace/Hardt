@@ -64,22 +64,18 @@ void HAgc<T>::Filter(T* src, T* dest, size_t blocksize)
     _averagePtr = _averagePtr >= _average ? 0 : _averagePtr;
     T average = std::accumulate(_averageBuffer, _averageBuffer + _average, 0) / _average;
 
-    if( max == _lower && _lock > 0 )
+    if( max >= _lower && _lock > 0 )
     {
-        std::cout << "max = lower  " << this->GetGain() << std::endl;
-
         _locked = _lock;
     }
     else if( _locked > 0 )
     {
-        std::cout << "LOCKED (" << _locked << ")  " << this->GetGain() << std::endl;
-
         _locked--;
+        return;
     }
-    else if( max < _lower )
-    {
-        std::cout << "max < upper  " << this->GetGain() << std::endl;
 
+    if( max < _lower )
+    {
         float currentGain = this->GetGain();
         if( currentGain < 1 ) {
             this->SetGain(currentGain + 0.1);
@@ -91,8 +87,6 @@ void HAgc<T>::Filter(T* src, T* dest, size_t blocksize)
     }
     else if( average > _upper )
     {
-        std::cout << "average > upper  " << this->GetGain() << std::endl;
-
         float currentGain = this->GetGain();
         if (currentGain == 0.1 )
         {
