@@ -74,6 +74,34 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
             {
                 try
                 {
+                    std::string line;
+                    std::string washed;
+                    bool skip = false;
+
+                    while (coeffsFile >> line)
+                    {
+                        std::cout << "LINE " << line << std::endl;
+
+                        for( int i = 0; i < line.length(); i++ )
+                        {
+                            std::cout << line[i];
+                        }
+                    }
+                }
+                catch( std::exception* ex )
+                {
+                    HError("Caught exception while reading coefficients file: %s", ex->what());
+                    throw new HFilterInitializationException("Exception while reading coefficients from file");
+                }
+                catch( ... )
+                {
+                    HError("Caught unknown exception while reading coefficients file");
+                    throw new HFilterInitializationException("Exception while reading coefficients from file");
+                }
+
+
+                /*try
+                {
                     float a;
                     while (coeffsFile >> a)
                     {
@@ -89,7 +117,7 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
                 {
                     HError("Caught unknown exception while reading coefficients file");
                     throw new HFilterInitializationException("Exception while reading coefficients from file");
-                }
+                }*/
             }
             else
             {
@@ -97,6 +125,7 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
                 throw new HFilterInitializationException("Coefficients file not found");
             }
             coeffsFile.close();
+            exit(0);
             return coeffs;
         }
 
