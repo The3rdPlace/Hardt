@@ -64,20 +64,188 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
 
     public:
 
-        /** Utility function that reads a list of floating point coefficients from a file */
+        /** Utility function that reads a list of floating point coefficients from a file
+
+            It can handle files with one parameter on each line or several parameters on each line
+            separated by comma, blankspace or semicolon. It will ignore other junk (characters) and
+            terminates a line on a c-style single line comment ('//') */
+        static std::vector<float> ReadCoeffsFromFile(std::string filename)
+        {
+            char name[filename.length() + 1];
+            strcpy(name, filename.c_str());
+
+            return ReadCoeffsFromFile(name);
+        }
+
+        /** Utility function that reads a list of floating point coefficients from a file
+
+            It can handle files with one parameter on each line or several parameters on each line
+            separated by comma, blankspace or semicolon. It will ignore other junk (characters) and
+            terminates a line on a c-style single line comment ('//') */
         static std::vector<float> ReadCoeffsFromFile(char* filename)
         {
             std::vector<float> coeffs;
+
+            #define BEGIN 0
+            #define DIGIT 1
+            #define SEPARATOR 2
+            #define JUNK 3
+            #define COMMENT_BEGIN 4
+            #define COMMENT 5
 
             std::ifstream coeffsFile(filename);
             if (coeffsFile.is_open())
             {
                 try
                 {
-                    float a;
-                    while (coeffsFile >> a)
+                    std::string block;
+
+                    while( !coeffsFile.eof() )
                     {
-                        coeffs.push_back(a);
+                        std::getline(coeffsFile, block);
+
+                        int state = BEGIN;
+                        std::string washed = "";
+                        for( int i = 0; i < block.length(); i++ )
+                        {
+                            switch(state)
+                            {
+                                case BEGIN:
+                                    switch(block[i])
+                                    {
+                                        case '0':
+                                        case '1':
+                                        case '2':
+                                        case '3':
+                                        case '4':
+                                        case '5':
+                                        case '6':
+                                        case '7':
+                                        case '8':
+                                        case '9':
+                                        case '-':
+                                        case '+':
+                                            state = DIGIT;
+                                            washed += block[i];
+                                            break;
+                                        case ' ':
+                                        case ',':
+                                        case ';':
+                                            state = SEPARATOR;
+                                            break;
+                                        case '/':
+                                            state = COMMENT_BEGIN;
+                                            break;
+                                        default:
+                                            state = JUNK;
+                                            break;
+                                    }
+                                    break;
+
+                                case DIGIT:
+                                    switch(block[i]) {
+                                        case '0':
+                                        case '1':
+                                        case '2':
+                                        case '3':
+                                        case '4':
+                                        case '5':
+                                        case '6':
+                                        case '7':
+                                        case '8':
+                                        case '9':
+                                        case '.':
+                                            state = DIGIT;
+                                            washed += block[i];
+                                            break;
+                                        case ' ':
+                                        case ',':
+                                        case ';':
+                                            if( washed.length() > 0 ) {
+                                                coeffs.push_back(std::stof(washed));
+                                                washed = "";
+                                            }
+                                            state = SEPARATOR;
+                                            break;
+                                        case '/':
+                                            if( washed.length() > 0 ) {
+                                                coeffs.push_back(std::stof(washed));
+                                                washed = "";
+                                            }
+                                            state = COMMENT_BEGIN;
+                                            break;
+                                        default:
+                                            if( washed.length() > 0 ) {
+                                                coeffs.push_back(std::stof(washed));
+                                                washed = "";
+                                            }
+                                            state = JUNK;
+                                            break;
+                                    }
+                                    break;
+
+                                case SEPARATOR:
+                                    switch(block[i]) {
+                                        case '0':
+                                        case '1':
+                                        case '2':
+                                        case '3':
+                                        case '4':
+                                        case '5':
+                                        case '6':
+                                        case '7':
+                                        case '8':
+                                        case '9':
+                                        case '-':
+                                        case '+':
+                                            state = DIGIT;
+                                            washed += block[i];
+                                            break;
+                                        case ' ':
+                                        case ',':
+                                        case ';':
+                                            state = SEPARATOR;
+                                            break;
+                                        default:
+                                            state = JUNK;
+                                            break;
+                                    }
+                                    break;
+
+                                case JUNK:
+                                    switch(block[i])
+                                    {
+                                        case ' ':
+                                        case ',':
+                                        case ';':
+                                            state = SEPARATOR;
+                                            break;
+                                        default:
+                                            state = JUNK;
+                                            break;
+                                    }
+
+                                case COMMENT_BEGIN:
+                                    switch(block[i]) {
+                                        case '/':
+                                            state = COMMENT;
+                                            break;
+                                        default:
+                                            state = JUNK;
+                                            break;
+                                    }
+                                    break;
+
+                                case COMMENT:
+                                    state = COMMENT;
+                            }
+                        }
+
+                        // Add remaining digits, if we are still reading digits
+                        if( state == DIGIT && washed.length() > 0 )
+                        {
+                            coeffs.push_back(std::stof(washed));
+                        }
                     }
                 }
                 catch( std::exception* ex )
@@ -97,6 +265,7 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
                 throw new HFilterInitializationException("Coefficients file not found");
             }
             coeffsFile.close();
+
             return coeffs;
         }
 

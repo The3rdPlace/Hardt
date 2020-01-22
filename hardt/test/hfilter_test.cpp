@@ -12,6 +12,9 @@ class HFilter_Test: public Test
             UNITTEST(test_filter_as_writer);
             UNITTEST(test_filter_as_reader);
             UNITTEST(test_filter_with_probe);
+            UNITTEST(test_read_coeffs_single_line);
+            UNITTEST(test_read_coeffs_separators);
+            UNITTEST(test_read_coeffs_mixed);
         }
 
         const char* name()
@@ -138,6 +141,105 @@ class HFilter_Test: public Test
             std::ifstream resultfile("PROBE_hfilter_test.pcm", std::ios::in | std::ios::binary | std::ios::ate);
             if( !resultfile.is_open() ) {
                 ASSERT_FAIL("No probe file found");
+            }
+        }
+
+        void test_read_coeffs_single_line()
+        {
+            std::string source(Test::sourceDir);
+            source += "/resources/hfilter_coeffs_single_line.dat";
+            std::vector<float> coeffs = HFilter<int16_t>::ReadCoeffsFromFile(source);
+            ASSERT_IS_EQUAL((int) coeffs.size(), 20);
+
+            std::vector<float> expected;
+            expected.push_back(0.06318758096656742);
+            expected.push_back(-0.12637516193313483);
+            expected.push_back(0.06318758096656742);
+            expected.push_back(1.9822798942156608);
+            expected.push_back(-0.9928732078139422);
+            expected.push_back(0.0625);
+            expected.push_back(-0.125);
+            expected.push_back(0.0625);
+            expected.push_back(1.986908612864604);
+            expected.push_back(-0.9971024098670853);
+            expected.push_back(0.000244140625);
+            expected.push_back(0.00048828125);
+            expected.push_back(0.000244140625);
+            expected.push_back(1.9814486970269125);
+            expected.push_back(-0.9926669567470747);
+            expected.push_back(0.000244140625);
+            expected.push_back(0.00048828125);
+            expected.push_back(0.000244140625);
+            expected.push_back(1.9851881609275535);
+            expected.push_back(-0.996895491657892);
+            for(int i = 0; i < expected.size(); i++ ) {
+                ASSERT_IS_EQUAL(expected.at(i), coeffs.at(i));
+            }
+        }
+
+        void test_read_coeffs_separators()
+        {
+            std::string source(Test::sourceDir);
+            source += "/resources/hfilter_coeffs_separators.dat";
+            std::vector<float> coeffs = HFilter<int16_t>::ReadCoeffsFromFile(source);
+            ASSERT_IS_EQUAL((int) coeffs.size(), 20);
+
+            std::vector<float> expected;
+            expected.push_back(0.06318758096656742);
+            expected.push_back(-0.12637516193313483);
+            expected.push_back(0.06318758096656742);
+            expected.push_back(1.9822798942156608);
+            expected.push_back(-0.9928732078139422);
+            expected.push_back(0.0625);
+            expected.push_back(-0.125);
+            expected.push_back(0.0625);
+            expected.push_back(1.986908612864604);
+            expected.push_back(-0.9971024098670853);
+            expected.push_back(0.000244140625);
+            expected.push_back(0.00048828125);
+            expected.push_back(0.000244140625);
+            expected.push_back(1.9814486970269125);
+            expected.push_back(-0.9926669567470747);
+            expected.push_back(0.000244140625);
+            expected.push_back(0.00048828125);
+            expected.push_back(0.000244140625);
+            expected.push_back(1.9851881609275535);
+            expected.push_back(-0.996895491657892);
+            for(int i = 0; i < expected.size(); i++ ) {
+                ASSERT_IS_EQUAL(expected.at(i), coeffs.at(i));
+            }
+        }
+
+        void test_read_coeffs_mixed()
+        {
+            std::string source(Test::sourceDir);
+            source += "/resources/hfilter_coeffs_mixed.dat";
+            std::vector<float> coeffs = HFilter<int16_t>::ReadCoeffsFromFile(source);
+            ASSERT_IS_EQUAL((int) coeffs.size(), 20);
+
+            std::vector<float> expected;
+            expected.push_back(0.06318758096656742);
+            expected.push_back(-0.12637516193313483);
+            expected.push_back(0.06318758096656742);
+            expected.push_back(1.9822798942156608);
+            expected.push_back(-0.9928732078139422);
+            expected.push_back(0.0625);
+            expected.push_back(-0.125);
+            expected.push_back(0.0625);
+            expected.push_back(1.986908612864604);
+            expected.push_back(-0.9971024098670853);
+            expected.push_back(0.000244140625);
+            expected.push_back(0.00048828125);
+            expected.push_back(0.000244140625);
+            expected.push_back(1.9814486970269125);
+            expected.push_back(-0.9926669567470747);
+            expected.push_back(0.000244140625);
+            expected.push_back(0.00048828125);
+            expected.push_back(0.000244140625);
+            expected.push_back(1.9851881609275535);
+            expected.push_back(-0.996895491657892);
+            for(int i = 0; i < expected.size(); i++ ) {
+                ASSERT_IS_EQUAL(expected.at(i), coeffs.at(i));
             }
         }
 
