@@ -1,7 +1,6 @@
 /**
 	\mainpage DSP programming with Hardt
 
-
 	\section introduction_section What is it?
 	Hardt is a simple framework that encapsulates standard DSP concepts in use when you want to play around with digital sampled
 	sound (or RF). The framework provides building blocks such as generators, filters and soundcard in- and output.
