@@ -224,7 +224,7 @@ bool parseArguments(int argc, char** argv)
             std::cout << std::endl;
 
             std::cout << "-bq name Fcutoff Q G       Create biquad filter, dump coefficients and run sweep" << std::endl;
-            std::cout << "-bgt name Fcutoff Q G      Create biquad filter and run file through the filter" << std::endl;
+            std::cout << "-bqt name Fcutoff Q G      Create biquad filter and run file through the filter" << std::endl;
             std::cout << std::endl;
 
             std::cout << "-bqc coeffs                Create biquad filter, dump coefficients and run sweep" << std::endl;
