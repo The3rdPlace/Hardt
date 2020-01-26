@@ -1,9 +1,9 @@
-hardt (1.0-15) UNRELEASED; urgency=medium
+hardt (1.0-15) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
-  * ... (Closes: #XXXXXX)
+  * Add documentation for dspcmd options (Closes: #XXXXXX)
 
- -- Mackie <henrik@hardttoolkit.org>  xxx, xx xxx xxxx xx:xx:00 +0100
+ -- Mackie <henrik@hardttoolkit.org>  Sun, 26 Jan 2020 21:53:00 +0100
 
 hardt (1.0-14) RELEASED; urgency=medium
 

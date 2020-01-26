@@ -386,7 +386,7 @@ int RunFFTMagnitudePlot()
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFft<T> fft(Config.FFTSize, 4, &fftWriter, new HHahnWindow<T>());
+    HFft<T> fft(Config.FFTSize, Config.Average, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.FFTSize / 2];

@@ -2,12 +2,17 @@
     \page dspcmd
 
 	\section introduction_section_dspcmd About dspcmd
-	todo
+	Dspcmd is a tool that allows you to test how individual parts of Hardt operates with
+	a given dataset. You can test various filters and filter coefficients. Plot spectrum
+	for the input and output, generate testfile with sinus signals etc.
 
+	Some of the operations exists mostly to help developing and testing hardt, but
+	there are several key features that will help you get through the dsp design
+	such as spectrum plotting.
 
-	\section overview_section_dspcmd Overview
-	todo
-
+	Check the individual options listed here and read the detailed specification for how
+	to use it.
+	
 
 	\section options_section_dspcmd Options	
     Usage: dspcmd [option [value...]]
@@ -228,11 +233,38 @@
 
     Run as network client, reading from the network and writing to a local writer
 
+    'Server' is the server name, or ip address, and 'port' is the tcp port on which the
+    server listens.
+
+    This allows you to read samples from a soundcard on a remote host and then transfer
+    the data to you local host. For example from a dedicated Raspberry Pi located in your
+    basement or outside in a weathersealed box near an antenna.
+
+    There are no special protocol overlay, no errorchecking and no commands flowing, just
+    a stream of pcm data - which makes this method fast, but also a bit prone to network errors
+    or timeouts. Despite these risks, the way of reading data from a remote soundcard is much faster
+    and with less overhead than using a soundserver and with a minimum (none) of configuration needed
+    on both ends.
+
 
     \page ns
     Syntax: dspcmd -ns port
 
     Run as network server, reading from a local reader and writing to the network
+
+   'port' is the tcp port on which the server listens. Reading starts when a client connets and
+   stops again when the client disconnets (or the connection drops). There can only be a single
+   client connection at a time.
+
+    This allows you to read samples from a soundcard on a remote host and then transfer
+    the data to you local host. For example from a dedicated Raspberry Pi located in your
+    basement or outside in a weathersealed box near an antenna.
+
+    There are no special protocol overlay, no errorchecking and no commands flowing, just
+    a stream of pcm data - which makes this method fast, but also a bit prone to network errors
+    or timeouts. Despite these risks, the way of reading data from a remote soundcard is much faster
+    and with less overhead than using a soundserver and with a minimum (none) of configuration needed
+    on both ends.
 
 
     \page rf
@@ -240,11 +272,21 @@
 
     Record file
 
+    Read samples from the given input audio device (or file) and write them to the given output file
+    in the selected output format.
+    (see -id, -if, -of -ff)
+
+    Recording starts immediately, or at a scheduled start time if given, and continues untill you stop
+    by pressing ctrl+c, or if a scheduled stop time is reached.
+
 
     \page pf
     Syntax: dspcmd -pf
 
     Play file
+
+    Read from the file given by -if with the format given by -ff and write to the selected output
+    device or output file (-od, -of)
 
 
     \page fmp
@@ -252,11 +294,22 @@
 
     Run FFT on a file and plot the magnitude spectrum on screen
 
+    The FFT is calculated for the number of bins given by the choosen blocksize (-bs), samples
+    are read from the file given by the -if parameter.
+
+    The spectrum is plotted in textmode, which will be a very rough estimated spectrum. Most likely,
+    you are looking for the -fmgp option instead. This option will plot the spectrum using GnuPlot
+
 
     \page fmgp
     Syntax: dspcmd -fmgp size
 
     Run FFT on a file and plot the magnitude spectrum on screen using GnuPlot
+
+    The FFT is calculated for the number of bins given by the choosen blocksize (-bs), samples
+    are read from the file given by the -if parameter.
+
+    You need GnuPlot on your system for this option to work.
 
 
     \page avg
@@ -264,11 +317,25 @@
 
     Take 'number' FFT's and return the average spectrum
 
+    Specify the number of ffts calculated before returning an averaged spectrum. If you do
+    not give a number, then the result is returned for each block of samples.
+
+    For any file, the FFT is being calculated for the entire input file, so the only difference
+    you will find by setting a higher average, is a tiny performance boost, and you may get a little
+    smother rounding of spectrum spikes.
+
 
     \page pr
     Syntax: dspcmd -pr xmin xmax [ymin ymax]
 
-    Set minimum and maximum on the x-axis when plotting (only GnuPlot)
+    Set minimum and maximum on the x- and y-axis when plotting (only GnuPlot)
+
+    When plotting a spectrum using GnuPlot, this sets the minimum and maximum displayed x values.
+    If you only need to see the bottom 2KHz, then use "-pr 0 2000'. THis will give you a plot faster,
+    and if you at the same time raise the blocksize, you will get a more detailed plot (more bins within
+    the same frequency range).
+
+    You must provide the two x values, but you need to specify the y values.
 
 
     \page fc
@@ -276,11 +343,22 @@
 
     Convert input file format to output file format (same as in -ff)
 
+    Read the file given by the -if option and rewrite it to the file given by the -of option
+    in the format selected (say, converting from pcm to wav or reverse).
+
+    You can also use this function to write a file in the same format if you have a wav file with
+    a damaged header. Just make sure you dont try to read from, and write to the same file.
+
 
     \page mx
     Syntax: dspcmd -mx file1 file2
 
     Mix (linear) file1 and file2
+
+    Read the file given y 'file1' and mix it using a linear mixer (as by mixing two microphone inputs
+    in a PA mixer to produce a combined output signal).
+
+    The output is written to the file given by the -of option
 
 
     \page mp
@@ -288,11 +366,31 @@
 
     Multiply (mix nonlinear) with localoscilator signal running at frequency
 
+    Read the file given by the -if option and run it through a nonlinear mixer to produce a number
+    of sum- and difference frequencies. The output is written to the file given by the -of option.
+
+    'frequency' is the localoscillator frequency, so if you have a file containing a 10KHz sinus signal,
+    and run it through the nonlinear mixer with a localoscillator at 9KHz, you will get the two sum-
+    and difference frequencies 1KHz and 19KHz, as well as some nonlinear components. The file must be
+    run through a filter to remove the unwanted components.
+
+    The oscillator amplitude is fixed at '10', so you need to make sure that the input is not
+    exceeding values that multiplied by 10 will produce a number larger than what you selected
+    sample format supports. If you use 16 bit signed, then make sure the input amplitude do not
+    exceed 3276 (3276 * 10 = 32.760 = 65536/2)
+
 
     \page flt
     Syntax: dspcmd -flt name coeffs
 
     Read coefficients from coeffs and run file through filter name
+
+    Read a set of filter coefficients from the file 'coeffs', build a filter of type 'name' and
+    then run the samples in the file given with the -if parameter through the filter. The output
+    is written to the file given with the -of parameter.
+
+    'name' is ghe object name from Hardt for either a iir or fir filter. 'HFirFilter' builds a Fir
+     filter and HIirFilter builds an IIR filter.
 
 
     \page flp
@@ -300,11 +398,17 @@
 
     Read coefficients from coeffs and plot filter response for filter name
 
+    Read a set of filter coefficients from the file 'coeffs', build a filter of type 'name' and
+    then sweep the filter from 0 to samplerate/2 Hz. Then plot the filter response.
+
 
     \page flgp
     Syntax: dspcmd -flgp name coeffs
 
     Read coefficients from coeffs and plot filter response for filter name using GnuPlot
+
+    Read a set of filter coefficients from the file 'coeffs', build a filter of type 'name' and
+    then sweep the filter from 0 to samplerate/2 Hz. Then plot the filter response using GnuPlot
 
 
     \page bq
@@ -312,11 +416,28 @@
 
     Create biquad filter, dump coefficients and run sweep
 
+    Create a biquad filter of type 'name', where name is of one:
+    'HLowpassBiQuad', 'HHighpassBiQuad', 'HBandpassBiQuad', 'HNotchBiQuad',
+    'HAllpassBiQuad', 'HPeakingEQBiQuad', 'HLowShelvingBiQuad', 'HHighShelvingBiQuad'.
+    Then dump the coefficients to the file given by the -of parameter (in case you want
+    to build a IIR filter directly or simulate the filter in other programs).
+
+    Finally, sweep the biquad and plot the response with GnuPlot.
+
 
     \page bqt
     Syntax: dspcmd -bqt name Fcutoff Q G
 
     Create biquad filter and run file through the filter
+
+    Create a biquad filter of type 'name', where name is of one:
+    'HLowpassBiQuad', 'HHighpassBiQuad', 'HBandpassBiQuad', 'HNotchBiQuad',
+    'HAllpassBiQuad', 'HPeakingEQBiQuad', 'HLowShelvingBiQuad', 'HHighShelvingBiQuad'.
+    Then dump the coefficients to the file given by the -of parameter (in case you want
+    to build a IIR filter directly or simulate the filter in other programs).
+
+    Finally, run samples from the file given with the -if parameter through the filter and
+    write the result to the file given with the -of parameter
 
 
     \page bqc
@@ -324,11 +445,19 @@
 
     Create biquad filter, dump coefficients and run sweep
 
+    Create a biquad filter from the coefficients in the file 'coeffs'. Then dump the
+    coefficients to the file given with the -of parameter (so that you can check that the
+    coefficients are being read correctly), then sweep the biquad and plot the response with gnuPlot
+
 
     \page bgct
     Syntax: dspcmd -bqct coeffs
 
     Create biquad filter and run file through the filter
+
+    Create a biquad filter from the coefficients in the file 'coeffs', then run the samples from the file
+    given with the -if parameter through the filter and write the results to the file given
+    with the -of parameter.
 
 
     \page g
@@ -336,11 +465,18 @@
 
     Run file through gain filter
 
+    Read sampes from the file given with the -if parameter and run them through a gain
+    filter with gain 'gain' (integer number). Write the results to the file given with
+    the -of parameter.
+
 
     \page cb
     Syntax: dspcmd -cb fBase alpha
 
     Sweep a comb filter with base frequency fBase and alpha (gain)
+
+    Create a comb filter with base frequency 'fBase' and alpha 'alpha', then
+    sweep the filter and plot the response using GnuPlot.
 
 
     \page cbt
@@ -348,24 +484,40 @@
 
     Run a file through a comb filter with base frequency fBase and alpha (gain)
 
+    Create a comb filter with base frequency 'fbase' and alpha 'alpha', then run
+    the samples from the file given with the -if parameter through the filter and
+    write them to the file given with the -of parameter
+
 
     \page hm
     Syntax: dspcmd -hm fBase fCutoff
 
     Sweep a hum filter with base frequency fBase and cutoff frequency fCutoff
 
+    Create a hum filter (HHumFilter) with base frequency 'fBase' and upper cutoff
+    frequency 'fCutoff'. Then sweep the filter and plot the response with GnuPlot.
+
 
     \page hmt
-    Syntax: dspcmd -hmt fBase F G Q
+    Syntax: dspcmd -hmt fBase fCutoff
 
     Run a file through a hum filter with base frequency fBase and cutoff frequency fCutoff
+
+    Create a hum filter (HHumFilter) with base frequency 'fBase' and upper cutoff frequency
+    'fCutoff'. Then run the samples from the file given with the -if parameter through the
+    filter and write them to the file given with the -of parameter
 
 
     \page gz
     Syntax: dspcmd -gq
 
     Sweep a file by running the individual bins through a Goertzl filter
-	
+
+    Run samples from the file given with the -if parameter and sweep each block of
+    samples through goertzl filters, then add to a final average result plot giving
+    the average output for a goertzl filter at each frequency.
+
+    Show the plot using GnuPlot
 */
 
 #ifndef __DSPCMD_H
