@@ -12,7 +12,7 @@
 
 	Check the individual options listed here and read the detailed specification for how
 	to use it.
-	
+
 
 	\section options_section_dspcmd Options	
     Usage: dspcmd [option [value...]]

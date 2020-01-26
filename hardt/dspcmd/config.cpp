@@ -180,11 +180,9 @@ bool parseArguments(int argc, char** argv)
             std::cout << "-h                         Show this help" << std::endl;
             std::cout << "-v                         Be verbose, dont write to logfiles but to stdout" << std::endl;
             std::cout << std::endl;
-            std::cout << std::endl;
             std::cout << "Get further help for each option below in the documentation which is installed" << std::endl;
             std::cout << "locally here: /usr/local/share/doc/hardt/html/index.html, or on the Hardt website" << std::endl;
             std::cout << "found at http://hardttoolkit.org/dspcmd.html" << std::endl;
-            std::cout << std::endl;
             std::cout << std::endl;
             std::cout << "-bs blocksize              Blocksize used by readers and writers (default = 1024)" << std::endl;
             std::cout << "-f format                  Sample format (" << H_SAMPLE_FORMAT_INT_8 << "=Int8, " << H_SAMPLE_FORMAT_UINT_8 << "=UInt8, " << H_SAMPLE_FORMAT_INT_16 << "=Int16, " /*<< H_SAMPLE_FORMAT_INT_24 << "=Int24, "*/ << H_SAMPLE_FORMAT_INT_32 << "=Int32) (default " << H_SAMPLE_FORMAT_INT_16 << " = Int16)" << std::endl;
