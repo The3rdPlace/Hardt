@@ -53,6 +53,12 @@ class HLinearMixer : public HReader<T>, public HWriter<T>
         {
             _writer = writer;
         }
+
+        /** Execute or carry through a command */
+        bool Command(HCommand* command) {
+            // No ruther propagation of commands
+            return true;
+        }
 };
 
 #endif

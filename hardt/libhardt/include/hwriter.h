@@ -1,6 +1,8 @@
 #ifndef __HWRITER_H
 #define __HWRITER_H
 
+#include "hcommand.h"
+
 /**
     Base class for all writer types
 */
@@ -32,6 +34,14 @@ class HWriter : public HObject
         {
             return (HWriter<T>*) this;
         }
+
+	    /** Receive, handle and propagate command
+
+	        Returns:
+		    True if the command was executed correctly
+		    False otherwise. Errors is written to the error log
+	    */
+	    virtual bool Command(HCommand* command) = 0;
 };
 
 #endif

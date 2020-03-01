@@ -166,6 +166,98 @@ class Test
 
     public:
 
+        template <class T>
+        class TestWriter2 : public HWriter<T>, public HWriterConsumer<T>
+        {
+            private:
+                HWriter<T>* _writer;
+
+            public:
+
+                T* Received;
+                int Writes;
+                int Samples;
+                int Started;
+                int Stopped;
+
+
+                TestWriter2(size_t blocksize):
+                    Writes(0),
+                    Samples(0),
+                    _writer(nullptr),
+                    Started(0),
+                    Stopped(0)
+                {
+                    Received = new T[blocksize];
+                    memset((void*) Received, 0, blocksize * sizeof(T));
+                }
+
+                TestWriter2(HWriter<T>* writer, size_t blocksize):
+                        Writes(0),
+                        Samples(0),
+                        _writer(writer),
+                        Started(0),
+                        Stopped(0)
+                {
+                    Received = new T[blocksize];
+                    memset((void*) Received, 0, blocksize * sizeof(T));
+                }
+
+                TestWriter2(HWriterConsumer<T>* consumer, size_t blocksize):
+                        Writes(0),
+                        Samples(0),
+                        _writer(nullptr),
+                        Started(0),
+                        Stopped(0)
+                {
+                    Received = new T[blocksize];
+                    memset((void*) Received, 0, blocksize * sizeof(T));
+                    consumer->SetWriter(this->Writer());
+                }
+
+                ~TestWriter2()
+                {
+                    delete[] Received;
+                }
+
+                int Write(T* src, size_t blocksize)
+                {
+                    memcpy((void*) Received, (void*) src, blocksize * sizeof(T));
+                    Writes++;
+                    Samples += blocksize;
+                    if( _writer != nullptr ) {
+                        _writer->Write(src, blocksize);
+                    }
+                    return blocksize;
+                }
+
+                void SetWriter(HWriter<T>* writer)
+                {
+                    _writer = writer;
+                }
+
+                bool Start()
+                {
+                    Started++;
+                    return true;
+                }
+
+                bool Stop()
+                {
+                    Stopped++;
+                    return true;
+                }
+
+                /** Execute or carry through a command */
+                bool Command(HCommand* command) {
+                    // No further propagation of commands
+                    return true;
+                }
+        };
+
+
+    public:
+
         virtual void run() = 0;
         virtual const char* name() = 0;
 };

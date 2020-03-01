@@ -48,6 +48,12 @@ class HSplitter_Test: public Test
                 }
 
                 void SetWriter(HWriter<T>* writer) {}
+
+            /** Execute or carry through a command */
+            bool Command(HCommand* command) {
+                // No ruther propagation of commands
+                return true;
+            }
         };
 
         void test_write()

@@ -69,6 +69,12 @@ class HMultiplier : public HReader<T>, public HWriter<T>, public HWriterConsumer
 
         /** Mix two signals */
         void Mix(T* src, T* dest, size_t blocksize);
+
+        /** Execute or carry through a command */
+        bool Command(HCommand* command) {
+            // No ruther propagation of commands
+            return true;
+        }
 };
 
 #endif

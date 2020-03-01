@@ -62,6 +62,17 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
         /** Cleanup after last read/write */
         bool Stop();
 
+        /** Execute or carry through a command */
+        bool Command(HCommand* command) {
+            if( _writer != nullptr ) {
+                return _writer->Command(command);
+            } else if( _reader != nullptr ) {
+                // Todo: enable reader commands
+                //return _reader->Command(command);
+            }
+            return true;
+        }
+
     public:
 
         /** Utility function that reads a list of floating point coefficients from a file

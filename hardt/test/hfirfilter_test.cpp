@@ -60,6 +60,12 @@ class HFirFilter_Test: public Test
                     memcpy((void*) received, src, blocksize * sizeof(T));
                     return blocksize;
                 }
+
+                /** Execute or carry through a command */
+                bool Command(HCommand* command) {
+                    // No ruther propagation of commands
+                    return true;
+                }
         };
 
         template <class T>

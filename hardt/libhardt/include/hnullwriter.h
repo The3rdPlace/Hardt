@@ -37,6 +37,12 @@ class HNullWriter : public HWriter<T>, public HWriterConsumer<T>
         {
             // Writing into empty space
         }
+
+        /** Execute or carry through a command */
+        bool Command(HCommand* command) {
+            // No ruther propagation of commands
+            return true;
+        }
 };
 
 #endif

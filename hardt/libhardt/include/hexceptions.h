@@ -178,4 +178,18 @@ class HInvalidArgumentException : public HException
         HInvalidArgumentException(const char* reason);
 };
 
+/**
+    Thrown if an invalid command opcode is given
+
+    Constructor:
+        HUnknownCommandOpcodeException(reason)
+*/
+class HUnknownCommandOpcodeException : public HException
+{
+public:
+
+    /** Construct a new HUnknownCommandOpcodeException with a reason */
+    HUnknownCommandOpcodeException(const char* reason);
+};
+
 #endif

@@ -53,3 +53,7 @@ HFilterInitializationException::HFilterInitializationException(const char* reaso
 HInvalidArgumentException::HInvalidArgumentException(const char* reason):
     HException(reason)
 {}
+
+HUnknownCommandOpcodeException::HUnknownCommandOpcodeException(const char* reason):
+        HException(reason)
+{}

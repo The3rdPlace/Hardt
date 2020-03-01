@@ -50,27 +50,6 @@ class HMultiplier_Test: public Test
                 }
         };
 
-        template <class T>
-        class TestWriter : public HWriter<T>
-        {
-            public:
-
-                T Received[5];
-
-            public:
-
-                int Write(T* src, size_t blocksize)
-                {
-                    if( blocksize != 5 )
-                    {
-                        return 0;
-                    }
-
-                    memcpy((void*) Received, (void*) src, blocksize * sizeof(T));
-                    return blocksize;
-                }
-        };
-
         void test_multiplier_with_readers()
         {
             TestReader<int8_t> reader;
@@ -90,9 +69,9 @@ class HMultiplier_Test: public Test
 
         void test_multiplier_with_reader_and_writer()
         {
-            TestWriter<int8_t> writer;
+            TestWriter2<int8_t> writer(5);
             HLocalOscillator<float> localOscillator(8000, 1000);
-            HMultiplier<int8_t> multiplier(&writer, 8000, 1000, 10, 5);
+            HMultiplier<int8_t> multiplier(writer.Writer(), 8000, 1000, 10, 5);
 
             int8_t input[5] = {0, 1, 2, 3, 4};
             float oscillator[5];

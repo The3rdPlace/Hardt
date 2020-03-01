@@ -74,6 +74,12 @@ class HNetwork_Test: public Test
                     memcpy(_received, src, blocksize * sizeof(int16_t));
                     return blocksize;
                 }
+
+                /** Execute or carry through a command */
+                bool Command(HCommand* command) {
+                    // No ruther propagation of commands
+                    return true;
+                }
         };
 
         static void runServer()

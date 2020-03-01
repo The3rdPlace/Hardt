@@ -1,6 +1,8 @@
 #ifndef __HREADER_H
 #define __HREADER_H
 
+#include "hcommand.h"
+
 /**
     The base class for any reader type. It provides a pure virtual Read() function which must
     be implemented by the specific reader.
@@ -46,6 +48,14 @@ class HReader : public HObject
         {
             return (HReader<T>*) this;
         }
+
+        /** Receive, handle and propagate command 
+
+	        Returns:
+		    True if the command was executed correctly
+		    False otherwise. Errors is written to the error log
+	    */
+        //virtual bool Command(HCommand* command) {return true;}
 };
 
 #define READER (HReader<T>*)

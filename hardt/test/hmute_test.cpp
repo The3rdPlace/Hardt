@@ -26,40 +26,6 @@ class HMute_Test: public Test
         int8_t expected[6] = {0, 0, 0, 0, 0, 0};
 
         template <class T>
-        class TestWriter : public HWriter<T>
-        {
-            public:
-
-                int started;
-                int stopped;
-
-                int8_t received[6];
-
-                TestWriter():
-                    started(0),
-                    stopped(0)
-                {}
-
-                int Write(T* src, size_t blocksize)
-                {
-                    memcpy((void*) received, src, blocksize * sizeof(T));
-                    return blocksize;
-                }
-
-                bool Start()
-                {
-                    started++;
-                    return true;
-                }
-
-                bool Stop()
-                {
-                    stopped++;
-                    return true;
-                }
-        };
-
-        template <class T>
         class TestReader : public HReader<T>
         {
             public:
@@ -95,16 +61,16 @@ class HMute_Test: public Test
 
         void test_mute_as_writer()
         {
-            TestWriter<int8_t> wr;
+            TestWriter2<int8_t> wr(8);
             int8_t input[8] = {10, 20, 30, 40, 50, 60, 70, 80};
-            HMute<int8_t> mute(&wr, false, 6);
+            HMute<int8_t> mute(wr.Writer(), false, 6);
 
             ASSERT_IS_EQUAL(mute.Write(input, 6), 6);
-            ASSERT_IS_EQUAL(memcmp((void*) wr.received, (void*) input, 6 * sizeof(int8_t)), 0);
+            ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) input, 6 * sizeof(int8_t)), 0);
 
             mute.SetMuted(true);
             ASSERT_IS_EQUAL(mute.Write(input, 6), 6);
-            ASSERT_IS_EQUAL(memcmp((void*) wr.received, (void*) expected, 6 * sizeof(int8_t)), 0);
+            ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, 6 * sizeof(int8_t)), 0);
         }
 
         void test_mute_as_reader()
@@ -124,33 +90,33 @@ class HMute_Test: public Test
         void test_start_stop_as_writer()
         {
             // Initial start not-muted (false)
-            TestWriter<int8_t> wr;
-            HMute<int8_t> mute(&wr, false, 6);
+            TestWriter2<int8_t> wr(8);
+            HMute<int8_t> mute(wr.Writer(), false, 6);
 
             mute.Start(); // start = 1
             mute.Start(); // start = 2
             mute.Stop();  // stop = 1
             mute.Start(); // start = 3
-            ASSERT_IS_EQUAL(wr.started, 3);
-            ASSERT_IS_EQUAL(wr.stopped, 1);
+            ASSERT_IS_EQUAL(wr.Started, 3);
+            ASSERT_IS_EQUAL(wr.Stopped, 1);
 
             mute.SetMuted(true); // stop = 2
-            ASSERT_IS_EQUAL(wr.started, 3);
-            ASSERT_IS_EQUAL(wr.stopped, 2);
+            ASSERT_IS_EQUAL(wr.Started, 3);
+            ASSERT_IS_EQUAL(wr.Stopped, 2);
 
             mute.Start(); // start = 3
             mute.Stop(); // stop =2
-            ASSERT_IS_EQUAL(wr.started, 3);
-            ASSERT_IS_EQUAL(wr.stopped, 2);
+            ASSERT_IS_EQUAL(wr.Started, 3);
+            ASSERT_IS_EQUAL(wr.Stopped, 2);
 
             mute.SetMuted(false); // start = 4
-            ASSERT_IS_EQUAL(wr.started, 4);
-            ASSERT_IS_EQUAL(wr.stopped, 2);
+            ASSERT_IS_EQUAL(wr.Started, 4);
+            ASSERT_IS_EQUAL(wr.Stopped, 2);
 
             mute.Start(); // start = 5
             mute.Stop(); // stop = 3
-            ASSERT_IS_EQUAL(wr.started, 5);
-            ASSERT_IS_EQUAL(wr.stopped, 3);
+            ASSERT_IS_EQUAL(wr.Started, 5);
+            ASSERT_IS_EQUAL(wr.Stopped, 3);
         }
 
         void test_start_stop_as_reader()

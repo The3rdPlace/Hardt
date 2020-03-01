@@ -55,6 +55,12 @@ class HSoundcardWriter : public HWriter<T>
                                    const PaStreamCallbackTimeInfo* timeInfo,
                                    PaStreamCallbackFlags statusFlags,
                                    void *userData );
+
+        /** Execute or carry through a command */
+        bool Command(HCommand* command) {
+            // No further propagation of commands
+            return true;
+        }
 };
 
 #endif

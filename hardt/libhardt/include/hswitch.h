@@ -106,6 +106,12 @@ class HSwitch: public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
 
         /** Call Stop() on all known components */
         bool Stop();
+
+        /** Execute or carry through a command */
+        bool Command(HCommand* command) {
+            // No further propagation of commands
+            return true;
+        }
 };
 
 #endif

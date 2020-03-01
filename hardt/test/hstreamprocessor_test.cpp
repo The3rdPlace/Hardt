@@ -58,6 +58,12 @@ class HStreamProcessor_Test: public Test
                     *_terminated = true;
                     return blocksize;
                 }
+
+                /** Execute or carry through a command */
+                bool Command(HCommand* command) {
+                    // No ruther propagation of commands
+                    return true;
+                }
         };
 
         void test_read_write()

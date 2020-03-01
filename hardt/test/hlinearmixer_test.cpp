@@ -69,6 +69,12 @@ class HLinearMixer_Test: public Test
                     memcpy((void*) Received, (void*) src, blocksize * sizeof(T));
                     return blocksize;
                 }
+
+                /** Execute or carry through a command */
+                bool Command(HCommand* command) {
+                    // No ruther propagation of commands
+                    return true;
+                }
         };
 
         void test_mixer_with_readers()

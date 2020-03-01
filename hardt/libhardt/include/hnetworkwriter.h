@@ -28,6 +28,11 @@ class HNetworkWriter : public HWriter<T>
 
         /** Write a block of samples */
         int Write(T* src, size_t blocksize);
+
+        bool Command(HCommand* command) {
+            // Command can go no further, transfering commands on the network is done by only by the HNetworkProcessor
+            return true;
+        }
 };
 
 #endif

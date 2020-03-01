@@ -42,6 +42,12 @@ class HFileWriter : public HWriter<T>
 
         /** Seek to this position in the file */
         void Seek(int bytes);
+
+        /** Execute or carry through a command */
+        bool Command(HCommand* command) {
+            // No ruther propagation of commands
+            return true;
+        }
 };
 
 #endif

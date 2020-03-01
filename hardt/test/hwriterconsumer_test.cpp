@@ -17,44 +17,6 @@ class HWriterConsumer_Test: public Test
 
     private:
 
-        template <class T>
-        class TestWriter : public HWriter<T>, public HWriterConsumer<T>
-        {
-            public:
-
-                int Writes;
-                int Samples;
-                HWriter<T>* _writer;
-
-                TestWriter(HWriter<T>* writer):
-                    Writes(0),
-                    Samples(0),
-                    _writer(writer)
-                {}
-
-                TestWriter(HWriterConsumer<T>* consumer):
-                    Writes(0),
-                    Samples(0)
-                {
-                    consumer->SetWriter(this);
-                }
-
-                int Write(T* src, size_t blocksize)
-                {
-                    Writes++;
-                    Samples += blocksize;
-
-                    _writer->Write(src, blocksize);
-
-                    return blocksize;
-                }
-
-                void SetWriter(HWriter<T>* writer)
-                {
-                    _writer = writer;
-                }
-        };
-
         void test_bottom_to_top()
         {
             //----------------------------------------
@@ -75,13 +37,13 @@ class HWriterConsumer_Test: public Test
             HNullWriter<int8_t> wr4;
 
             // 3. writer
-            TestWriter<int8_t> wr3(wr4.Writer());
+            TestWriter2<int8_t> wr3(wr4.Writer(), 10);
 
             // 2. writer
-            TestWriter<int8_t> wr2(wr3.Writer());
+            TestWriter2<int8_t> wr2(wr3.Writer(), 10);
 
             // 1. writer
-            TestWriter<int8_t> wr1(wr2.Writer());
+            TestWriter2<int8_t> wr1(wr2.Writer(), 10);
 
             // Processor
             bool terminated = false;
@@ -124,13 +86,13 @@ class HWriterConsumer_Test: public Test
             HStreamProcessor<int8_t> proc(&rd1, 10, &terminated);
 
             // 1. writer
-            TestWriter<int8_t> wr1(proc.Consumer());
+            TestWriter2<int8_t> wr1(proc.Consumer(), 10);
 
             // 2. writer
-            TestWriter<int8_t> wr2(wr1.Consumer());
+            TestWriter2<int8_t> wr2(wr1.Consumer(), 10);
 
             // 3. writer
-            TestWriter<int8_t> wr3(wr2.Consumer());
+            TestWriter2<int8_t> wr3(wr2.Consumer(), 10);
 
             // Write samples out into empty space
             HNullWriter<int8_t> wr4(wr3.Consumer());

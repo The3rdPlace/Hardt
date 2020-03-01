@@ -58,6 +58,12 @@ class HFft : public HOutput<T, HFftResults>
 
         /** Process a block of samples */
         int Output(T* src, size_t size);
+
+        /** Execute or carry through a command */
+        bool Command(HCommand* command) {
+            // No ruther propagation of commands
+            return true;
+        }
 };
 
 #endif
