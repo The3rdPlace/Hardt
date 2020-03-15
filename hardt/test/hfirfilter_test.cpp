@@ -48,53 +48,17 @@ class HFirFilter_Test: public Test
         int8_t expected[6] = {1, 4, 11, 22, 44, 88};
         int8_t expectedNext[2] = {113, 100};
 
-        template <class T>
-        class TestWriter : public HWriter<T>
-        {
-            public:
-
-                int8_t received[6];
-
-                int Write(T* src, size_t blocksize)
-                {
-                    memcpy((void*) received, src, blocksize * sizeof(T));
-                    return blocksize;
-                }
-
-                /** Execute or carry through a command */
-                bool Command(HCommand* command) {
-                    // No ruther propagation of commands
-                    return true;
-                }
-        };
-
-        template <class T>
-        class TestReader : public HReader<T>
-        {
-            private:
-
-                int8_t output[8] = {1, 2, 4, 8, 16, 32, 0, 0};
-
-            public:
-
-                int Read(T* dest, size_t blocksize)
-                {
-                    memcpy((void*) dest, output, blocksize * sizeof(T));
-                    return blocksize;
-                }
-        };
-
         void test_filter_as_writer()
         {
-            TestWriter<int8_t> wr;
-            HFirFilter<int8_t> filter(&wr, coeefs, 3, 6);
+            TestWriter<int8_t> wr(8);
+            HFirFilter<int8_t> filter(wr.Writer(), coeefs, 3, 6);
 
             int8_t input[8] = {1, 2, 4, 8, 16, 32, 0, 0};
             ASSERT_IS_EQUAL(filter.Write(input, 6), 6);
-            ASSERT_IS_EQUAL(memcmp((void*) wr.received, (void*) expected, 6 * sizeof(int8_t)), 0);
+            ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, 6 * sizeof(int8_t)), 0);
 
             ASSERT_IS_EQUAL(filter.Write(input, 2), 2);
-            ASSERT_IS_EQUAL(memcmp((void*) wr.received, (void*) expectedNext, 2 * sizeof(int8_t)), 0);
+            ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expectedNext, 2 * sizeof(int8_t)), 0);
 
             try
             {
@@ -111,7 +75,8 @@ class HFirFilter_Test: public Test
 
         void test_filter_as_reader()
         {
-            TestReader<int8_t> rd;
+            int8_t output[8] = {1, 2, 4, 8, 16, 32, 0, 0};
+            TestReader<int8_t> rd(output, 8);
             HFirFilter<int8_t> filter(&rd, coeefs, 3, 6);
 
             int8_t received[6];

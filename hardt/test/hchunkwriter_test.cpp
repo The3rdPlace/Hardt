@@ -21,8 +21,8 @@ class HChunkWriter_Test: public Test
         {
             public:
 
-                int writes;
-                int8_t received[1024];
+                int Writes;
+                int8_t Received[1024];
 
                 TestWriter():
                     HChunkWriter()
@@ -34,14 +34,14 @@ class HChunkWriter_Test: public Test
 
                 int WriteChunk(int8_t* src, size_t chunksize)
                 {
-                    memcpy(&received[writes * GetChunksize()], src, chunksize);
-                    writes++;
+                    memcpy(&Received[Writes * GetChunksize()], src, chunksize);
+                    Writes++;
                     return chunksize;
                 }
 
                 /** Execute or carry through a command */
                 bool Command(HCommand* command) {
-                    // No ruther propagation of commands
+                    // No further propagation of commands
                     return true;
                 }
         };
@@ -73,18 +73,18 @@ class HChunkWriter_Test: public Test
 
             try
             {
-                wr.writes = 0;
-                memset(wr.received, 0, 1024);
+                wr.Writes = 0;
+                memset(wr.Received, 0, 1024);
                 ASSERT_IS_EQUAL(wr.Write(input, 512), 512);
-                ASSERT_IS_EQUAL(wr.writes, 1);
-                ASSERT_IS_EQUAL((int) wr.received[0], 0x42);
+                ASSERT_IS_EQUAL(wr.Writes, 1);
+                ASSERT_IS_EQUAL((int) wr.Received[0], 0x42);
 
-                wr.writes = 0;
-                memset(wr.received, 0, 1024);
+                wr.Writes = 0;
+                memset(wr.Received, 0, 1024);
                 ASSERT_IS_EQUAL(wr.Write(input, 1024), 1024);
-                ASSERT_IS_EQUAL(wr.writes, 1);
-                ASSERT_IS_EQUAL((int) wr.received[0], 0x42);
-                ASSERT_IS_EQUAL((int) wr.received[512], 0x24);
+                ASSERT_IS_EQUAL(wr.Writes, 1);
+                ASSERT_IS_EQUAL((int) wr.Received[0], 0x42);
+                ASSERT_IS_EQUAL((int) wr.Received[512], 0x24);
             }
             catch(...)
             {
@@ -117,18 +117,18 @@ class HChunkWriter_Test: public Test
 
             try
             {
-                wr.writes = 0;
-                memset(wr.received, 0, 1024);
+                wr.Writes = 0;
+                memset(wr.Received, 0, 1024);
                 ASSERT_IS_EQUAL(wr.Write(input, 512), 512);
-                ASSERT_IS_EQUAL(wr.writes, 1);
-                ASSERT_IS_EQUAL((int) wr.received[0], 0x42);
+                ASSERT_IS_EQUAL(wr.Writes, 1);
+                ASSERT_IS_EQUAL((int) wr.Received[0], 0x42);
 
-                wr.writes = 0;
-                memset(wr.received, 0, 1024);
+                wr.Writes = 0;
+                memset(wr.Received, 0, 1024);
                 ASSERT_IS_EQUAL(wr.Write(input, 1024), 1024);
-                ASSERT_IS_EQUAL(wr.writes, 2);
-                ASSERT_IS_EQUAL((int) wr.received[0], 0x42);
-                ASSERT_IS_EQUAL((int) wr.received[512], 0x24);
+                ASSERT_IS_EQUAL(wr.Writes, 2);
+                ASSERT_IS_EQUAL((int) wr.Received[0], 0x42);
+                ASSERT_IS_EQUAL((int) wr.Received[512], 0x24);
             }
             catch(...)
             {

@@ -21,25 +21,6 @@ class HSwitch_Test: public Test
 
     private:
 
-
-        template <class T>
-        class TestReader : public HReader<T>
-        {
-            public:
-
-                int8_t *_data;
-
-                TestReader(int8_t* data):
-                    _data(data)
-                {}
-
-                int Read(T* dest, size_t blocksize)
-                {
-                    memcpy((void*) dest, _data, blocksize * sizeof(T));
-                    return blocksize;
-                }
-        };
-
         void test_read()
         {
             int8_t data0[] = {1, 2, 3, 4, 5};
@@ -47,10 +28,10 @@ class HSwitch_Test: public Test
             int8_t data2[] = {1, 3, 5, 7, 9};
             int8_t data3[] = {5, 4, 3, 2, 1};
 
-            TestReader<int8_t> rd0(data0); // bypass (position 0)
-            TestReader<int8_t> rd1(data1);
-            TestReader<int8_t> rd2(data2);
-            TestReader<int8_t> rd3(data3);
+            TestReader<int8_t> rd0(data0, 5); // bypass (position 0)
+            TestReader<int8_t> rd1(data1, 5);
+            TestReader<int8_t> rd2(data2, 5);
+            TestReader<int8_t> rd3(data3, 5);
 
             HSwitch<int8_t> sw(&rd0, 5);
 
@@ -87,10 +68,10 @@ class HSwitch_Test: public Test
             int8_t data[] = {1, 2, 3, 4, 5};
             int8_t zero[] = {0, 0, 0, 0, 0};
 
-            TestWriter2<int8_t> wr0(5); // bypass (position 0)
-            TestWriter2<int8_t> wr1(5);
-            TestWriter2<int8_t> wr2(5);
-            TestWriter2<int8_t> wr3(5);
+            TestWriter<int8_t> wr0(5); // bypass (position 0)
+            TestWriter<int8_t> wr1(5);
+            TestWriter<int8_t> wr2(5);
+            TestWriter<int8_t> wr3(5);
 
             HSwitch<int8_t> sw(wr0.Writer(), 5);
             sw.Add(&wr1);
@@ -165,13 +146,13 @@ class HSwitch_Test: public Test
             int8_t received[5];
 
             // Upstream writer
-            TestWriter2<int8_t> upstream(5);
+            TestWriter<int8_t> upstream(5);
 
             // The switch
             HSwitch<int8_t> sw(upstream.Consumer(), 5);
 
             // Downstream writer, simulate the consumer interface pattern
-            TestWriter2<int8_t> downstream(sw.Consumer(), 5); // bypass (position 0)
+            TestWriter<int8_t> downstream(sw.Consumer(), 5); // bypass (position 0)
 
             // Add writers to the switch
             HGain<int8_t> wr1(downstream.Writer(), 2, 5);

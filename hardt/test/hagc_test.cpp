@@ -22,7 +22,7 @@ class HAgc_Test: public Test
 
         void test_agc_as_writer()
         {
-            TestWriter2<int8_t> wr(6);
+            TestWriter<int8_t> wr(6);
             int8_t input_low[6] = {1, 1, 1, 1, 1, 1};
             int8_t input_high[6] = {8, 8, 8, 8, 8, 8};
             int8_t expected_2[6] = {2, 2, 2, 2, 2, 2};
@@ -72,7 +72,7 @@ class HAgc_Test: public Test
 
         void test_agc_as_writer_with_lock_and_hold()
         {
-            TestWriter2<int8_t> wr(6);
+            TestWriter<int8_t> wr(6);
             int8_t input_low[6] = {1, 1, 1, 1, 1, 1};
             int8_t input_mid[6] = {2, 2, 2, 2, 2, 2};
             int8_t input_high[6] = {3, 3, 3, 3, 3, 3};

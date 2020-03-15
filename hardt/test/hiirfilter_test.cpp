@@ -79,53 +79,17 @@ class HIirFilter_Test: public Test
         int16_t expected[6] = {1, 3, 6, 10, 22, 46};
         int16_t expectedNext[2] = {23, -15};
 
-        template <class T>
-        class TestWriter : public HWriter<T>
-        {
-            public:
-
-                int16_t received[6];
-
-                int Write(T* src, size_t blocksize)
-                {
-                    memcpy((void*) received, src, blocksize * sizeof(T));
-                    return blocksize;
-                }
-
-                /** Execute or carry through a command */
-                bool Command(HCommand* command) {
-                    // No ruther propagation of commands
-                    return true;
-                }
-        };
-
-        template <class T>
-        class TestReader : public HReader<T>
-        {
-            private:
-
-                int16_t output[8] = {1, 2, 4, 8, 16, 32, 0, 0};
-
-            public:
-
-                int Read(T* dest, size_t blocksize)
-                {
-                    memcpy((void*) dest, output, blocksize * sizeof(T));
-                    return blocksize;
-                }
-        };
-
         void test_filter_as_writer()
         {
-            TestWriter<int16_t> wr;
-            HIirFilter<int16_t> filter(&wr, coeefs, 5, 6);
+            TestWriter<int16_t> wr(8);
+            HIirFilter<int16_t> filter(wr.Writer(), coeefs, 5, 6);
 
             int16_t input[8] = {1, 2, 4, 8, 16, 32, 0, 0};
             ASSERT_IS_EQUAL(filter.Write(input, 6), 6);
-            ASSERT_IS_EQUAL(memcmp((void*) wr.received, (void*) expected, 6 * sizeof(int16_t)), 0);
+            ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, 6 * sizeof(int16_t)), 0);
 
             ASSERT_IS_EQUAL(filter.Write(input, 2), 2);
-            ASSERT_IS_EQUAL(memcmp((void*) wr.received, (void*) expectedNext, 2 * sizeof(int16_t)), 0);
+            ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expectedNext, 2 * sizeof(int16_t)), 0);
 
             try
             {
@@ -142,7 +106,8 @@ class HIirFilter_Test: public Test
 
         void test_filter_as_reader()
         {
-            TestReader<int16_t> rd;
+            int16_t output[8] = {1, 2, 4, 8, 16, 32, 0, 0};
+            TestReader<int16_t> rd(output, 8);
             HIirFilter<int16_t> filter(&rd, coeefs, 5, 6);
 
             int16_t received[6];

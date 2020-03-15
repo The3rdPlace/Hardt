@@ -20,30 +20,12 @@ class HMux_Test: public Test
     private:
 
 
-        template <class T>
-        class TestReader : public HReader<T>
-        {
-            public:
-
-                int8_t *_data;
-
-                TestReader(int8_t* data):
-                    _data(data)
-                {}
-
-                int Read(T* dest, size_t blocksize)
-                {
-                    memcpy((void*) dest, _data, blocksize * sizeof(T));
-                    return blocksize;
-                }
-        };
-
         void test_mux()
         {
             int8_t stream_1[4] = {1, 3, 5, 7};
             int8_t stream_2[4] = {2, 4, 6, 8};
-            TestReader<int8_t> rd_1(stream_1);
-            TestReader<int8_t> rd_2(stream_2);
+            TestReader<int8_t> rd_1(stream_1, 4);
+            TestReader<int8_t> rd_2(stream_2, 4);
             std::vector< HReader<int8_t>* > readers = { &rd_1, &rd_2 };
             HMux<int8_t> mux(readers, 8);
 

@@ -24,8 +24,8 @@ class HDeMux_Test: public Test
 
         void test_demux()
         {
-            TestWriter2<int8_t> wr_1(8);
-            TestWriter2<int8_t> wr_2(8);
+            TestWriter<int8_t> wr_1(8);
+            TestWriter<int8_t> wr_2(8);
             std::vector< HWriter<int8_t>* > writers = { &wr_1, &wr_2 };
             int8_t input[8] = {1, 2, 3, 4, 5, 6, 7, 8};
             HDeMux<int8_t> demux(writers, 8);

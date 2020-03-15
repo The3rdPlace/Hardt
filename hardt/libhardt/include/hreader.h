@@ -56,6 +56,7 @@ class HReader : public HObject
 		    False otherwise. Errors is written to the error log
 	    */
         //virtual bool Command(HCommand* command) {return true;}
+        virtual bool Command(HCommand* command) = 0;
 };
 
 #define READER (HReader<T>*)

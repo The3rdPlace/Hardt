@@ -24,58 +24,22 @@ class HGain_Test: public Test
         int8_t expected_0_5[6] = {0, 1, 1, 2, 2, 3};
         int8_t expected_neg2[6] = {0, 0, 0, 0, 0, 0};
 
-        template <class T>
-        class TestWriter : public HWriter<T>
-        {
-            public:
-
-                int8_t received[6];
-
-                int Write(T* src, size_t blocksize)
-                {
-                    memcpy((void*) received, src, blocksize * sizeof(T));
-                    return blocksize;
-                }
-
-                /** Execute or carry through a command */
-                bool Command(HCommand* command) {
-                    // No ruther propagation of commands
-                    return true;
-                }
-        };
-
-        template <class T>
-        class TestReader : public HReader<T>
-        {
-            private:
-
-                int8_t output[8] = {1, 2, 3, 4, 5, 6, 7, 8};
-
-            public:
-
-                int Read(T* dest, size_t blocksize)
-                {
-                    memcpy((void*) dest, output, blocksize * sizeof(T));
-                    return blocksize;
-                }
-        };
-
         void test_gain_as_writer()
         {
-            TestWriter<int8_t> wr;
+            TestWriter<int8_t> wr(8);
             int8_t input[8] = {1, 2, 3, 4, 5, 6, 7, 8};
-            HGain<int8_t> gain(&wr, 2, 6);
+            HGain<int8_t> gain(wr.Writer(), 2, 6);
 
             ASSERT_IS_EQUAL(gain.Write(input, 6), 6);
-            ASSERT_IS_EQUAL(memcmp((void*) wr.received, (void*) expected_2, 6 * sizeof(int8_t)), 0);
+            ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected_2, 6 * sizeof(int8_t)), 0);
 
             gain.SetGain(0.5f);
             ASSERT_IS_EQUAL(gain.Write(input, 6), 6);
-            ASSERT_IS_EQUAL(memcmp((void*) wr.received, (void*) expected_0_5, 6 * sizeof(int8_t)), 0);
+            ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected_0_5, 6 * sizeof(int8_t)), 0);
 
             gain.SetGain(-2);
             ASSERT_IS_EQUAL(gain.Write(input, 6), 6);
-            ASSERT_IS_EQUAL(memcmp((void*) wr.received, (void*) expected_neg2, 6 * sizeof(int8_t)), 0);
+            ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected_neg2, 6 * sizeof(int8_t)), 0);
 
             ASSERT_IS_EQUAL(gain.Write(input, 2), 2);
 
@@ -94,7 +58,8 @@ class HGain_Test: public Test
 
         void test_gain_as_reader()
         {
-            TestReader<int8_t> rd;
+            int8_t output[8] = {1, 2, 3, 4, 5, 6, 7, 8};
+            TestReader<int8_t> rd(output, 8);
             HGain<int8_t> gain(&rd, 2, 6);
 
             int8_t received[6];
