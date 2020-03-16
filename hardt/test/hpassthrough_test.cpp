@@ -40,6 +40,9 @@ class HPassThrough_Test: public Test
             {
                 ASSERT_FAIL("Expected HFilterIOException, but got other type");
             }
+
+            ASSERT_IS_TRUE(passthrough.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
         }
 
         void test_passthrough_as_reader()
@@ -63,5 +66,8 @@ class HPassThrough_Test: public Test
             {
                 ASSERT_FAIL("Expected HFilterIOException, but got other type");
             }
+
+            ASSERT_IS_TRUE(passthrough.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(rd.Commands, 1);
         }
 } hpassthrough_test;

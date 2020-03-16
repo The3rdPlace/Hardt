@@ -34,6 +34,10 @@ class HLinearMixer_Test: public Test
             {
                 ASSERT_IS_EQUAL(output[i], (int8_t) (i + i));
             }
+
+            ASSERT_IS_TRUE(mixer.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(reader_1.Commands, 1);
+            ASSERT_IS_EQUAL(reader_2.Commands, 1);
         }
 
         void test_mixer_with_reader_and_writer()
@@ -51,6 +55,10 @@ class HLinearMixer_Test: public Test
             {
                 ASSERT_IS_EQUAL(writer.Received[i], expected[i]);
             }
+
+            ASSERT_IS_TRUE(mixer.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(reader.Commands, 1);
+            ASSERT_IS_EQUAL(writer.Commands, 1);
         }
 
 } hlinearmixer_test;

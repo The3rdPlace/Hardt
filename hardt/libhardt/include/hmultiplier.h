@@ -72,7 +72,18 @@ class HMultiplier : public HReader<T>, public HWriter<T>, public HWriterConsumer
 
         /** Execute or carry through a command */
         bool Command(HCommand* command) {
-            // No ruther propagation of commands
+            if( _reader != nullptr ) {
+                if( !_reader->Command(command) )
+                {
+                    return false;
+                }
+            }
+            if( _writer != nullptr ) {
+                if( !_writer->Command(command) )
+                {
+                    return false;
+                }
+            }
             return true;
         }
 };

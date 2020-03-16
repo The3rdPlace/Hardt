@@ -142,7 +142,7 @@ class HConverter : public HReader<Tout>, HWriter<Tin>, HWriterConsumer<Tout>
             if( _writer != nullptr ) {
                 return _writer->Command(command);
             } else if( _reader != nullptr ){
-                return true; //_reader->Command(command);
+                return _reader->Command(command);
             }
             return true;
         }

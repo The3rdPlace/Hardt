@@ -63,7 +63,7 @@ class HDeMux : public HWriter<T>, HWriterConsumer<T>
             typename std::vector< HWriter<T>* >::iterator it;
 
             for( it = _writers.begin(); it != _writers.end(); it++ ) {
-                if( (*it)->Command(command) ) {
+                if( !(*it)->Command(command) ) {
                     return false;
                 }
             }

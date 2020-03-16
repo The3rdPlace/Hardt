@@ -71,6 +71,9 @@ class HFirFilter_Test: public Test
             {
                 ASSERT_FAIL("Expected HFilterIOException, but got other type");
             }
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
         }
 
         void test_filter_as_reader()
@@ -97,5 +100,8 @@ class HFirFilter_Test: public Test
             {
                 ASSERT_FAIL("Expected HFilterIOException, but got other type");
             }
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(rd.Commands, 1);
         }
 } hfirfilter_test;

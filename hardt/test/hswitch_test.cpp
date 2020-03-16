@@ -44,23 +44,48 @@ class HSwitch_Test: public Test
             // Initial position should be bypass mode
             ASSERT_IS_EQUAL(sw.Read(received, 5), 5);
             ASSERT_IS_EQUAL(memcmp((void*) received, (void*) data0, 5 * sizeof(int8_t)), 0);
+            ASSERT_IS_TRUE(sw.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(rd0.Commands, 1);
+            ASSERT_IS_EQUAL(rd1.Commands, 0);
+            ASSERT_IS_EQUAL(rd2.Commands, 0);
+            ASSERT_IS_EQUAL(rd3.Commands, 0);
 
             // Check each position
             sw.SetPosition(1);
             ASSERT_IS_EQUAL(sw.Read(received, 5), 5);
             ASSERT_IS_EQUAL(memcmp((void*) received, (void*) data1, 5 * sizeof(int8_t)), 0);
+            ASSERT_IS_TRUE(sw.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(rd0.Commands, 1);
+            ASSERT_IS_EQUAL(rd1.Commands, 1);
+            ASSERT_IS_EQUAL(rd2.Commands, 0);
+            ASSERT_IS_EQUAL(rd3.Commands, 0);
 
             sw.SetPosition(2);
             ASSERT_IS_EQUAL(sw.Read(received, 5), 5);
             ASSERT_IS_EQUAL(memcmp((void*) received, (void*) data2, 5 * sizeof(int8_t)), 0);
+            ASSERT_IS_TRUE(sw.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(rd0.Commands, 1);
+            ASSERT_IS_EQUAL(rd1.Commands, 1);
+            ASSERT_IS_EQUAL(rd2.Commands, 1);
+            ASSERT_IS_EQUAL(rd3.Commands, 0);
 
             sw.SetPosition(3);
             ASSERT_IS_EQUAL(sw.Read(received, 5), 5);
             ASSERT_IS_EQUAL(memcmp((void*) received, (void*) data3, 5 * sizeof(int8_t)), 0);
+            ASSERT_IS_TRUE(sw.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(rd0.Commands, 1);
+            ASSERT_IS_EQUAL(rd1.Commands, 1);
+            ASSERT_IS_EQUAL(rd2.Commands, 1);
+            ASSERT_IS_EQUAL(rd3.Commands, 1);
 
             sw.SetPosition(0);
             ASSERT_IS_EQUAL(sw.Read(received, 5), 5);
             ASSERT_IS_EQUAL(memcmp((void*) received, (void*) data0, 5 * sizeof(int8_t)), 0);
+            ASSERT_IS_TRUE(sw.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(rd0.Commands, 2);
+            ASSERT_IS_EQUAL(rd1.Commands, 1);
+            ASSERT_IS_EQUAL(rd2.Commands, 1);
+            ASSERT_IS_EQUAL(rd3.Commands, 1);
         }
 
         void test_write()
@@ -88,6 +113,11 @@ class HSwitch_Test: public Test
             ASSERT_IS_EQUAL(memcmp((void*) wr1.Received, (void*) zero, 5 * sizeof(int8_t)), 0);
             ASSERT_IS_EQUAL(memcmp((void*) wr2.Received, (void*) zero, 5 * sizeof(int8_t)), 0);
             ASSERT_IS_EQUAL(memcmp((void*) wr3.Received, (void*) zero, 5 * sizeof(int8_t)), 0);
+            ASSERT_IS_TRUE(sw.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr0.Commands, 1);
+            ASSERT_IS_EQUAL(wr1.Commands, 0);
+            ASSERT_IS_EQUAL(wr2.Commands, 0);
+            ASSERT_IS_EQUAL(wr3.Commands, 0);
 
             // Check each position
             sw.SetPosition(1);
@@ -100,6 +130,11 @@ class HSwitch_Test: public Test
             ASSERT_IS_EQUAL(memcmp((void*) wr1.Received, (void*) data, 5 * sizeof(int8_t)), 0);
             ASSERT_IS_EQUAL(memcmp((void*) wr2.Received, (void*) zero, 5 * sizeof(int8_t)), 0);
             ASSERT_IS_EQUAL(memcmp((void*) wr3.Received, (void*) zero, 5 * sizeof(int8_t)), 0);
+            ASSERT_IS_TRUE(sw.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr0.Commands, 1);
+            ASSERT_IS_EQUAL(wr1.Commands, 1);
+            ASSERT_IS_EQUAL(wr2.Commands, 0);
+            ASSERT_IS_EQUAL(wr3.Commands, 0);
 
             sw.SetPosition(2);
             memset((void*) wr0.Received, 0, 5 * sizeof(int8_t));
@@ -111,6 +146,11 @@ class HSwitch_Test: public Test
             ASSERT_IS_EQUAL(memcmp((void*) wr1.Received, (void*) zero, 5 * sizeof(int8_t)), 0);
             ASSERT_IS_EQUAL(memcmp((void*) wr2.Received, (void*) data, 5 * sizeof(int8_t)), 0);
             ASSERT_IS_EQUAL(memcmp((void*) wr3.Received, (void*) zero, 5 * sizeof(int8_t)), 0);
+            ASSERT_IS_TRUE(sw.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr0.Commands, 1);
+            ASSERT_IS_EQUAL(wr1.Commands, 1);
+            ASSERT_IS_EQUAL(wr2.Commands, 1);
+            ASSERT_IS_EQUAL(wr3.Commands, 0);
 
             sw.SetPosition(3);
             memset((void*) wr0.Received, 0, 5 * sizeof(int8_t));
@@ -122,6 +162,11 @@ class HSwitch_Test: public Test
             ASSERT_IS_EQUAL(memcmp((void*) wr1.Received, (void*) zero, 5 * sizeof(int8_t)), 0);
             ASSERT_IS_EQUAL(memcmp((void*) wr2.Received, (void*) zero, 5 * sizeof(int8_t)), 0);
             ASSERT_IS_EQUAL(memcmp((void*) wr3.Received, (void*) data, 5 * sizeof(int8_t)), 0);
+            ASSERT_IS_TRUE(sw.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr0.Commands, 1);
+            ASSERT_IS_EQUAL(wr1.Commands, 1);
+            ASSERT_IS_EQUAL(wr2.Commands, 1);
+            ASSERT_IS_EQUAL(wr3.Commands, 1);
 
             // Switch back to bypass position
             sw.SetPosition(0);
@@ -134,6 +179,11 @@ class HSwitch_Test: public Test
             ASSERT_IS_EQUAL(memcmp((void*) wr1.Received, (void*) zero, 5 * sizeof(int8_t)), 0);
             ASSERT_IS_EQUAL(memcmp((void*) wr2.Received, (void*) zero, 5 * sizeof(int8_t)), 0);
             ASSERT_IS_EQUAL(memcmp((void*) wr3.Received, (void*) zero, 5 * sizeof(int8_t)), 0);
+            ASSERT_IS_TRUE(sw.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr0.Commands, 2);
+            ASSERT_IS_EQUAL(wr1.Commands, 1);
+            ASSERT_IS_EQUAL(wr2.Commands, 1);
+            ASSERT_IS_EQUAL(wr3.Commands, 1);
         }
 
         void test_writerConsumer()
@@ -165,22 +215,32 @@ class HSwitch_Test: public Test
             // Initial position should be bypass mode
             ASSERT_IS_EQUAL(upstream.Write(data, 5), 5);
             ASSERT_IS_EQUAL(memcmp((void*) downstream.Received, (void*) data, 5 * sizeof(int8_t)), 0);
+            ASSERT_IS_TRUE(upstream.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(downstream.Commands, 1);
 
             // Check each position
             sw.SetPosition(1);
             ASSERT_IS_EQUAL(upstream.Write(data, 5), 5);
             ASSERT_IS_EQUAL(memcmp((void*) downstream.Received, (void*) expected1, 5 * sizeof(int8_t)), 0);
+            ASSERT_IS_TRUE(upstream.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(downstream.Commands, 2);
             sw.SetPosition(2);
             ASSERT_IS_EQUAL(upstream.Write(data, 5), 5);
             ASSERT_IS_EQUAL(memcmp((void*) downstream.Received, (void*) expected2, 5 * sizeof(int8_t)), 0);
+            ASSERT_IS_TRUE(upstream.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(downstream.Commands, 3);
             sw.SetPosition(3);
             ASSERT_IS_EQUAL(upstream.Write(data, 5), 5);
             ASSERT_IS_EQUAL(memcmp((void*) downstream.Received, (void*) expected3, 5 * sizeof(int8_t)), 0);
+            ASSERT_IS_TRUE(upstream.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(downstream.Commands, 4);
 
             // Switch back to bypass position
             sw.SetPosition(0);
             ASSERT_IS_EQUAL(upstream.Write(data, 5), 5);
             ASSERT_IS_EQUAL(memcmp((void*) downstream.Received, (void*) data, 5 * sizeof(int8_t)), 0);
+            ASSERT_IS_TRUE(upstream.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(downstream.Commands, 5);
        }
 
 } hswitch_test;

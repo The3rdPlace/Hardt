@@ -72,6 +72,9 @@ class HFilter_Test: public Test
             {
                 ASSERT_FAIL("Expected HFilterIOException, but got other type");
             }
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
         }
 
         void test_filter_as_reader()
@@ -98,6 +101,9 @@ class HFilter_Test: public Test
             {
                 ASSERT_FAIL("Expected HFilterIOException, but got other type");
             }
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(rd.Commands, 1);
         }
 
         void test_filter_with_probe()
@@ -114,6 +120,9 @@ class HFilter_Test: public Test
             if( !resultfile.is_open() ) {
                 ASSERT_FAIL("No probe file found");
             }
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
         }
 
         void test_read_coeffs_single_line()

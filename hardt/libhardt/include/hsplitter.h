@@ -56,7 +56,13 @@ class HSplitter : public HWriter<T>, public HWriterConsumer<T>
 
         /** Execute or carry through a command */
         bool Command(HCommand* command) {
-            // No ruther propagation of commands
+            for( typename std::vector< HWriter<T>* >::iterator it = _writers.begin(); it != _writers.end(); it++ )
+            {
+                if( !(*it)->Command(command) )
+                {
+                    return false;
+                }
+            }
             return true;
         }
 };

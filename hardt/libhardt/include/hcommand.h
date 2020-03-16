@@ -31,13 +31,19 @@ enum HCOMMAND_OPCODE
         Length:
         struct + sizeof(HCommandData)
     */
-    NOOP
+    NOP
 };
 
 /** Data union of a command */
 union HCommandData {
+
+    /** Integer value carried by the command */
     int32_t Value;
+
+    /** Boolean value carried by the command */
     bool State;
+
+    /** Data carried by the command */
     void *Content;
 };
 
@@ -58,7 +64,7 @@ struct HCommand
 	 * (in the future, some commands may carry a serialized object, structured data or other
 	 * types of advanced data in the content field. Only the sender and receiver knowns how
 	 * to handle the content. All others should handle the content as an oblige blob of bytes.
-	 *
+	 * A special case is the use of the class NONE and opcode NOP, here Length should be set to 0 (zero)
 	 */
 	int16_t Length;
 

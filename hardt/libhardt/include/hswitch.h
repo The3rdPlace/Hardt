@@ -27,7 +27,7 @@ class HSwitch: public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
     public:
 
 	/** Contains either a reader or a writer */
-        union ComponentPtr
+        struct ComponentPtr
         {
             /** A reader */
             HReader<T>* Reader;
@@ -39,11 +39,13 @@ class HSwitch: public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
             ComponentPtr(HReader<T>* reader)
             {
                 Reader = reader;
+                Writer = nullptr;
             }
 
             /** Create a new ComponentPtr containing a writer */
             ComponentPtr(HWriter<T>* writer)
             {
+                Reader = nullptr;
                 Writer = writer;
             }
         };
@@ -109,7 +111,37 @@ class HSwitch: public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
 
         /** Execute or carry through a command */
         bool Command(HCommand* command) {
-            // No further propagation of commands
+            if( _writer != nullptr && _position == 0 )
+            {
+                if( !_writer->Command(command) )
+                {
+                    return false;
+                }
+            }
+            if( _reader != nullptr && _position == 0 )
+            {
+                if( !_reader->Command(command) )
+                {
+                    return false;
+                }
+            }
+            if( _position > 0 )
+            {
+                if( _components.at(_position - 1).Reader != nullptr )
+                {
+                    if( !_components.at(_position - 1).Reader->Command(command) )
+                    {
+                        return false;
+                    }
+                }
+                if( _components.at(_position - 1).Writer != nullptr )
+                {
+                    if( !_components.at(_position - 1).Writer->Command(command) )
+                    {
+                        return false;
+                    }
+                }
+            }
             return true;
         }
 };

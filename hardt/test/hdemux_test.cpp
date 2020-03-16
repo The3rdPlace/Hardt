@@ -33,5 +33,9 @@ class HDeMux_Test: public Test
             ASSERT_IS_EQUAL(demux.Write(input, 8), 8);
             ASSERT_IS_EQUAL(memcmp((void*) wr_1.Received, (void*) expected_1, 8 * sizeof(int8_t)), 0);
             ASSERT_IS_EQUAL(memcmp((void*) wr_2.Received, (void*) expected_2, 8 * sizeof(int8_t)), 0);
+
+            ASSERT_IS_TRUE(demux.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr_1.Commands, 1);
+            ASSERT_IS_EQUAL(wr_2.Commands, 1);
         }
 } hdemux_test;

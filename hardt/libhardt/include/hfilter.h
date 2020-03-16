@@ -67,8 +67,7 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
             if( _writer != nullptr ) {
                 return _writer->Command(command);
             } else if( _reader != nullptr ) {
-                // Todo: enable reader commands
-                //return _reader->Command(command);
+                return _reader->Command(command);
             }
             return true;
         }

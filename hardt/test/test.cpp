@@ -56,3 +56,5 @@ int main(int argc, char **argv)
         return 4;
     }
 }
+
+HCommand Test::TestNopCommand {HCOMMAND_CLASS::NONE, HCOMMAND_OPCODE::NOP, 0};

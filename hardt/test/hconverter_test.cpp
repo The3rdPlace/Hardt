@@ -70,6 +70,9 @@ class HConverter_Test: public Test
             {
                 ASSERT_IS_EQUAL(output[i], expected[i]);
             }
+
+            ASSERT_IS_TRUE(converter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(reader.Commands, 1);
         }
 
         void test_converter_int8_int8_write()
@@ -86,6 +89,9 @@ class HConverter_Test: public Test
             {
                 ASSERT_IS_EQUAL(writer.Received[i], expected[i]);
             }
+
+            ASSERT_IS_TRUE(converter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(writer.Commands, 1);
         }
 
         void test_converter_int8_int8_read_overflow()
@@ -103,6 +109,9 @@ class HConverter_Test: public Test
             {
                 ASSERT_IS_EQUAL(output[i], expected[i]);
             }
+
+            ASSERT_IS_TRUE(converter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(reader.Commands, 1);
         }
 
         void test_converter_int8_int8_write_overflow()
@@ -119,6 +128,9 @@ class HConverter_Test: public Test
             {
                 ASSERT_IS_EQUAL(writer.Received[i], expected[i]);
             }
+
+            ASSERT_IS_TRUE(converter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(writer.Commands, 1);
         }
 
         void test_converter_int8_int16_read()
@@ -136,6 +148,9 @@ class HConverter_Test: public Test
             {
                 ASSERT_IS_EQUAL(output[i], expected[i]);
             }
+
+            ASSERT_IS_TRUE(converter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(reader.Commands, 1);
         }
 
         void test_converter_int8_int16_write()
@@ -152,6 +167,9 @@ class HConverter_Test: public Test
             {
                 ASSERT_IS_EQUAL(writer.Received[i], expected[i]);
             }
+
+            ASSERT_IS_TRUE(converter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(writer.Commands, 1);
         }
 
 } hconverter_test;

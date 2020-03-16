@@ -109,6 +109,9 @@ class HBiQuads_Test: public Test
             ASSERT_IS_EQUAL(c[2], 3.0f); // b2
             ASSERT_IS_EQUAL(c[3], -1.0f); // a1
             ASSERT_IS_EQUAL(c[4], -2.0f); // a2
+
+            ASSERT_IS_TRUE(filter->Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
         }
 
         void test_biquad_parameters_normalized()
@@ -122,6 +125,9 @@ class HBiQuads_Test: public Test
             ASSERT_IS_EQUAL(c[2], 3.0f); // b2
             ASSERT_IS_EQUAL(c[3], -1.0f); // a1
             ASSERT_IS_EQUAL(c[4], -2.0f); // a2
+
+            ASSERT_IS_TRUE(filter->Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
         }
 
         void test_filter_as_writer()
@@ -132,6 +138,9 @@ class HBiQuads_Test: public Test
             int16_t input[6] = {1, 2, 4, 8, 16, 32};
             ASSERT_IS_EQUAL(filter->Write(input, 6), 6);
             ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, 6 * sizeof(int16_t)), 0);
+
+            ASSERT_IS_TRUE(filter->Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
         }
 
         void test_filter_as_reader()
@@ -143,6 +152,9 @@ class HBiQuads_Test: public Test
             int16_t received[6];
             ASSERT_IS_EQUAL(filter->Read(received, 6), 6);
             ASSERT_IS_EQUAL(memcmp((void*) received, (void*) expected, 6 * sizeof(int16_t)), 0);
+
+            ASSERT_IS_TRUE(filter->Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(rd.Commands, 1);
         }
 
         int ftrim(float value)
@@ -162,6 +174,9 @@ class HBiQuads_Test: public Test
             ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.154455f));  // b2
             ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(0.617822f)); // a1
             ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(-0.235644f));  // a2
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
         }
 
         void test_lowpassbiquad_as_reader()
@@ -176,6 +191,9 @@ class HBiQuads_Test: public Test
             ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.154455f));  // b2
             ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(0.617822f)); // a1
             ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(-0.235644f));  // a2
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(rd.Commands, 1);
         }
 
         void test_highpassbiquad_as_writer()
@@ -189,6 +207,9 @@ class HBiQuads_Test: public Test
             ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.463367f));  // b2
             ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(0.617822f)); // a1
             ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(-0.235644f));  // a2
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
         }
 
         void test_highpassbiquad_as_reader()
@@ -203,6 +224,9 @@ class HBiQuads_Test: public Test
             ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.463367f));  // b2
             ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(0.617822f)); // a1
             ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(-0.235644f));  // a2
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(rd.Commands, 1);
         }
 
         void test_bandpassbiquad_as_writer()
@@ -216,6 +240,9 @@ class HBiQuads_Test: public Test
             ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(-0.267524f)); // b2
             ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(0.617822f)); // a1
             ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(-0.235644f));  // a2
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
         }
 
         void test_bandpassbiquad_as_reader()
@@ -230,6 +257,9 @@ class HBiQuads_Test: public Test
             ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(-0.267524f)); // b2
             ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(0.617822f)); // a1
             ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(-0.235644f));  // a2
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(rd.Commands, 1);
         }
 
         void test_notchbiquad_as_writer()
@@ -243,6 +273,9 @@ class HBiQuads_Test: public Test
             ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.617822f));  // b2
             ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(0.617822f));  // a1
             ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(-0.235644f)); // a2
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
         }
 
         void test_notchbiquad_as_reader()
@@ -257,6 +290,9 @@ class HBiQuads_Test: public Test
             ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.617822f));  // b2
             ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(0.617822f));  // a1
             ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(-0.235644f)); // a2
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(rd.Commands, 1);
         }
 
         void test_allpassbiquad_as_writer()
@@ -270,6 +306,9 @@ class HBiQuads_Test: public Test
             ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(1.0f));       // b2
             ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(0.617822f));  // a1
             ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(-0.235644f)); // a2
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
         }
 
         void test_allpassbiquad_as_reader()
@@ -284,6 +323,9 @@ class HBiQuads_Test: public Test
             ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(1.0f));       // b2
             ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(0.617822f));  // a1
             ASSERT_IS_EQUAL(ftrim(c[4]), ftrim(-0.235644f)); // a2
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(rd.Commands, 1);
         }
 
         void test_peakingeqbiquad_as_writer()
@@ -297,6 +339,9 @@ class HBiQuads_Test: public Test
             ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.217652f));  // b2
             ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(0.631319f));  // a1
             ASSERT_IS_EQUAL(ftrim(c[4]), -262637);           // a2
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
         }
 
         void test_peakingeqbiquad_as_reader()
@@ -311,6 +356,9 @@ class HBiQuads_Test: public Test
             ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.217652f));  // b2
             ASSERT_IS_EQUAL(ftrim(c[3]), ftrim(0.631319f));  // a1
             ASSERT_IS_EQUAL(ftrim(c[4]), -262637);           // a2
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(rd.Commands, 1);
         }
 
         void test_lowshelvingbiquad_as_writer()
@@ -324,6 +372,9 @@ class HBiQuads_Test: public Test
             ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.238278f)); // b2
             ASSERT_IS_EQUAL(ftrim(c[3]), 647722);           // a1
             ASSERT_IS_EQUAL(ftrim(c[4]), -242572);          // a2
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
         }
 
         void test_lowshelvingbiquad_as_reader()
@@ -338,6 +389,9 @@ class HBiQuads_Test: public Test
             ASSERT_IS_EQUAL(ftrim(c[2]), ftrim(0.238278f)); // b2
             ASSERT_IS_EQUAL(ftrim(c[3]), 647722);           // a1
             ASSERT_IS_EQUAL(ftrim(c[4]), -242572);          // a2
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(rd.Commands, 1);
         }
 
         void test_highshelvingbiquad_as_writer()
@@ -351,6 +405,9 @@ class HBiQuads_Test: public Test
             ASSERT_IS_EQUAL(ftrim(c[2]), 261556);  // b2
             ASSERT_IS_EQUAL(ftrim(c[3]), 587583);  // a1
             ASSERT_IS_EQUAL(ftrim(c[4]), -228984); // a2
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
         }
 
         void test_highshelvingbiquad_as_reader()
@@ -365,6 +422,9 @@ class HBiQuads_Test: public Test
             ASSERT_IS_EQUAL(ftrim(c[2]), 261556);  // b2
             ASSERT_IS_EQUAL(ftrim(c[3]), 587583);  // a1
             ASSERT_IS_EQUAL(ftrim(c[4]), -228984); // a2
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(rd.Commands, 1);
         }
 
 } hbiquads_test;

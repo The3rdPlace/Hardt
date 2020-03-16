@@ -36,6 +36,9 @@ class HMultiplier_Test: public Test
             {
                 ASSERT_IS_EQUAL(received[i], (int8_t) (i * oscillator[i]));
             }
+
+            ASSERT_IS_TRUE(multiplier.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(reader.Commands, 1);
         }
 
         void test_multiplier_with_reader_and_writer()
@@ -53,6 +56,9 @@ class HMultiplier_Test: public Test
             {
                 ASSERT_IS_EQUAL(writer.Received[i], (int8_t) (input[i] * oscillator[i]));
             }
+
+            ASSERT_IS_TRUE(multiplier.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(writer.Commands, 1);
         }
 
 } hmultiplier_test;

@@ -33,5 +33,9 @@ class HMux_Test: public Test
             int8_t expected[8] = {1, 2, 3, 4, 5, 6, 7, 8};
             ASSERT_IS_EQUAL(mux.Read(input, 8), 8);
             ASSERT_IS_EQUAL(memcmp((void*) input, (void*) expected, 8 * sizeof(int8_t)), 0);
+
+            ASSERT_IS_TRUE(mux.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(rd_1.Commands, 1);
+            ASSERT_IS_EQUAL(rd_2.Commands, 1);
         }
 } hmux_test;

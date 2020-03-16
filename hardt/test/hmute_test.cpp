@@ -37,6 +37,9 @@ class HMute_Test: public Test
             mute.SetMuted(true);
             ASSERT_IS_EQUAL(mute.Write(input, 6), 6);
             ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, 6 * sizeof(int8_t)), 0);
+
+            ASSERT_IS_TRUE(mute.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
         }
 
         void test_mute_as_reader()
@@ -52,6 +55,9 @@ class HMute_Test: public Test
             mute.SetMuted(true);
             ASSERT_IS_EQUAL(mute.Read(received, 6), 6);
             ASSERT_IS_EQUAL(memcmp((void*) received, (void*) expected, 6 * sizeof(int8_t)), 0);
+
+            ASSERT_IS_TRUE(mute.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(rd.Commands, 1);
         }
 
         void test_start_stop_as_writer()

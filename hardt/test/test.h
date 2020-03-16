@@ -181,13 +181,15 @@ class Test
                 int Samples;
                 int Started;
                 int Stopped;
+                int Commands;
 
                 TestReader(T* data, int blocksize, bool multipleReads = true):
                         _data(data),
                         _first(true),
                         _multipleReads(multipleReads),
                         Started(0),
-                        Stopped(0)
+                        Stopped(0),
+                        Commands(0)
                 {}
 
                 int Read(T* dest, size_t blocksize)
@@ -219,6 +221,7 @@ class Test
                 /** Execute or carry through a command */
                 bool Command(HCommand* command) {
                     // No further propagation of commands
+                    Commands++;
                     return true;
                 }
         };
@@ -239,6 +242,7 @@ class Test
                 int Samples;
                 int Started;
                 int Stopped;
+                int Commands;
 
 
                 TestWriter(size_t blocksize, bool multipleWrites = true):
@@ -248,7 +252,8 @@ class Test
                     Started(0),
                     Stopped(0),
                     _first(true),
-                    _multipleWrites(multipleWrites)
+                    _multipleWrites(multipleWrites),
+                    Commands(0)
                 {
                     Received = new T[blocksize];
                     memset((void*) Received, 0, blocksize * sizeof(T));
@@ -261,7 +266,8 @@ class Test
                         Started(0),
                         Stopped(0),
                         _first(true),
-                        _multipleWrites(multipleWrites)
+                        _multipleWrites(multipleWrites),
+                        Commands(0)
                 {
                     Received = new T[blocksize];
                     memset((void*) Received, 0, blocksize * sizeof(T));
@@ -274,7 +280,8 @@ class Test
                         Started(0),
                         Stopped(0),
                         _first(true),
-                        _multipleWrites(multipleWrites)
+                        _multipleWrites(multipleWrites),
+                        Commands(0)
                 {
                     Received = new T[blocksize];
                     memset((void*) Received, 0, blocksize * sizeof(T));
@@ -322,11 +329,19 @@ class Test
 
                 /** Execute or carry through a command */
                 bool Command(HCommand* command) {
-                    // No further propagation of commands
+                    if( _writer != nullptr )
+                    {
+                        if( !_writer->Command(command) )
+                        {
+                            return false;
+                        }
+                    }
+                    Commands++;
                     return true;
                 }
         };
 
+        static HCommand TestNopCommand;
 
     public:
 

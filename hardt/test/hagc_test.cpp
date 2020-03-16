@@ -68,6 +68,9 @@ class HAgc_Test: public Test
             ASSERT_IS_EQUAL(agc.Write(input_high, 6), 6);
             ASSERT_IS_EQUAL(agc.Write(input_high, 6), 6);
             ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected_8, 6 * sizeof(int8_t)), 0);
+
+            ASSERT_IS_TRUE(agc.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
         }
 
         void test_agc_as_writer_with_lock_and_hold()
@@ -127,5 +130,8 @@ class HAgc_Test: public Test
             ASSERT_IS_EQUAL(agc.Write(input_low, 6), 6);
             ASSERT_IS_EQUAL(agc.Write(input_low, 6), 6);
             ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected_16, 6 * sizeof(int8_t)), 0);
+
+            ASSERT_IS_TRUE(agc.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
         }
 } hagc_test;
