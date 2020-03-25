@@ -182,6 +182,7 @@ class Test
                 int Started;
                 int Stopped;
                 int Commands;
+                HCommand LastCommand;
 
                 TestReader(T* data, int blocksize, bool multipleReads = true):
                         _data(data),
@@ -220,8 +221,12 @@ class Test
 
                 /** Execute or carry through a command */
                 bool Command(HCommand* command) {
-                    // No further propagation of commands
                     Commands++;
+                    LastCommand.Length = command->Length;
+                    LastCommand.Opcode = command->Opcode;
+                    LastCommand.Class = command->Class;
+                    LastCommand.Data = command->Data;
+
                     return true;
                 }
         };
@@ -243,7 +248,7 @@ class Test
                 int Started;
                 int Stopped;
                 int Commands;
-
+                HCommand LastCommand;
 
                 TestWriter(size_t blocksize, bool multipleWrites = true):
                     Writes(0),
@@ -337,6 +342,10 @@ class Test
                         }
                     }
                     Commands++;
+                    LastCommand.Length = command->Length;
+                    LastCommand.Opcode = command->Opcode;
+                    LastCommand.Class = command->Class;
+                    LastCommand.Data = command->Data;
                     return true;
                 }
         };

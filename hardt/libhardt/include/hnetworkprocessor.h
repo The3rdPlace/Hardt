@@ -73,6 +73,13 @@ class HNetworkProcessor : public HProcessor<T>
 
         /** Halt the processor. This will set the associated terminationToken to true */
         void Halt();
+
+        /** Send a command */
+        bool Command(HCOMMAND_CLASS commandClass, HCOMMAND_OPCODE commandOpcode, int16_t length, HCommandData data)
+        {
+            HCommand cmd = {static_cast<int16_t>(commandClass), static_cast<int16_t>(commandOpcode), length, data};
+            return false;
+        }
 };
 
 #endif
