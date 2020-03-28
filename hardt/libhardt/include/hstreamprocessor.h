@@ -25,10 +25,12 @@ class HStreamProcessor : public HProcessor<T>
         /** Send a command */
         bool Command(HCOMMAND_CLASS commandClass, HCOMMAND_OPCODE commandOpcode, int16_t length, HCommandData data)
         {
+            HLog("Creating command with class %d and opcode %d with length %d", commandClass, commandOpcode, length);
             HCommand cmd = {static_cast<int16_t>(commandClass), static_cast<int16_t>(commandOpcode), length, data};
 
             if( HProcessor<T>::_reader != nullptr )
             {
+                HLog("Sending command to reader chain");
                 if( !HProcessor<T>::_reader->Command(&cmd) )
                 {
                     HError("Error when sending command to reader chain");
@@ -37,12 +39,15 @@ class HStreamProcessor : public HProcessor<T>
             }
             if( HProcessor<T>::_writer != nullptr )
             {
+                HLog("Sending command to writer chain");
                 if( !HProcessor<T>::_writer->Command(&cmd) )
                 {
                     HError("Error when sending command to writer chain");
                     return false;
                 }
             }
+
+            HLog("Command sent successfully");
             return true;
         }
 };

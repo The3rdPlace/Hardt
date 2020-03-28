@@ -39,7 +39,10 @@ class HProcessor : public HWriterConsumer<T>
 
     protected:
 
+        /** The writer used by this processor */
         HWriter<T>* _writer;
+
+        /** The reader used by this processor */
         HReader<T>* _reader;
 
         /** Construct a new HProcessor */
@@ -94,6 +97,7 @@ class HProcessor : public HWriterConsumer<T>
         */
         virtual void Halt();
 
+        /** Send a command to the reader and writer chain of this processor */
         virtual bool Command(HCOMMAND_CLASS commandClass, HCOMMAND_OPCODE commandOpcode, int16_t length, HCommandData data) = 0;
 };
 

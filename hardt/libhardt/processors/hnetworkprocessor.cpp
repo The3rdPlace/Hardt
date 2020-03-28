@@ -23,7 +23,10 @@ HNetworkProcessor<T>::HNetworkProcessor(const char* address, int port, HWriter<T
     HProcessor<T>(writer, &_networkReader, blocksize, terminationToken),
     _isServer(false),
     _isWriter(true),
+    _reader(nullptr),
+    _writer(writer),
     _port(port),
+    _commandPort(port + 1),
     _server(address),
     _clientSocket(-1),
     _serverSocket(-1),
@@ -38,7 +41,10 @@ HNetworkProcessor<T>::HNetworkProcessor(const char* address, int port, int block
     HProcessor<T>(&_networkReader, blocksize, terminationToken),
     _isServer(false),
     _isWriter(true),
+    _reader(nullptr),
+    _writer(nullptr),
     _port(port),
+    _commandPort(port + 1),
     _server(address),
     _clientSocket(-1),
     _serverSocket(-1),
@@ -53,7 +59,10 @@ HNetworkProcessor<T>::HNetworkProcessor(const char* address, int port, HReader<T
     HProcessor<T>(&_networkWriter, reader, blocksize, terminationToken),
     _isServer(false),
     _isWriter(false),
+    _reader(reader),
+    _writer(nullptr),
     _port(port),
+    _commandPort(port + 1),
     _server(address),
     _clientSocket(-1),
     _serverSocket(-1),
@@ -68,7 +77,10 @@ HNetworkProcessor<T>::HNetworkProcessor(int port, HWriter<T>* writer, int blocks
     HProcessor<T>(writer, &_networkReader, blocksize, terminationToken),
     _isServer(true),
     _isWriter(true),
+    _reader(nullptr),
+    _writer(writer),
     _port(port),
+    _commandPort(port + 1),
     _server(NULL),
     _clientSocket(-1),
     _serverSocket(-1),
@@ -83,7 +95,10 @@ HNetworkProcessor<T>::HNetworkProcessor(int port, int blocksize, bool* terminati
     HProcessor<T>(&_networkReader, blocksize, terminationToken),
     _isServer(true),
     _isWriter(true),
+    _reader(nullptr),
+    _writer(nullptr),
     _port(port),
+    _commandPort(port + 1),
     _server(NULL),
     _clientSocket(-1),
     _serverSocket(-1),
@@ -98,7 +113,10 @@ HNetworkProcessor<T>::HNetworkProcessor(int port, HReader<T>* reader, int blocks
     HProcessor<T>(&_networkWriter, reader, blocksize, terminationToken),
     _isServer(true),
     _isWriter(false),
+    _reader(reader),
+    _writer(nullptr),
     _port(port),
+    _commandPort(port + 1),
     _server(NULL),
     _clientSocket(-1),
     _serverSocket(-1),
@@ -127,6 +145,18 @@ HNetworkProcessor<T>::~HNetworkProcessor()
 template <class T>
 void HNetworkProcessor<T>::InitServer()
 {
+    // Initialize sockets for incomming connections
+    InitServerDataPort();
+    InitServerCommandPort();
+
+    // Ignore the SIGPIPE signal since it occurres when ever a client closes the connection
+    sigignore(SIGPIPE);
+    HLog("SIGPIPE disabled");
+}
+
+template <class T>
+void HNetworkProcessor<T>::InitServerDataPort()
+{
     if ((this->_serverSocket = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
         HError("Failed to create server socket");
@@ -154,10 +184,38 @@ void HNetworkProcessor<T>::InitServer()
         throw new HInitializationException("bind() failed");
     }
     HLog("Bound to INADDR_ANY on port %d", _port);
+}
 
-    // Ignore the SIGPIPE signal since it occurres when ever a client closes the connection
-    sigignore(SIGPIPE);
-    HLog("SIGPIPE disabled");
+template <class T>
+void HNetworkProcessor<T>::InitServerCommandPort()
+{
+    if ((this->_commandSocket = socket(AF_INET, SOCK_STREAM, 0)) == 0)
+    {
+        HError("Failed to create command socket");
+        throw new HInitializationException("Failed to create command socket");
+    }
+    HLog("Created command socket");
+
+    // Forcefully attaching socket to the selected port
+    int opt = 0;
+    if (setsockopt(_commandSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)))
+    {
+        HError("setsockopt() failed");
+        throw new HInitializationException("setsockopt() failed");
+    }
+
+    // Server address
+    _address.sin_family = AF_INET;
+    _address.sin_addr.s_addr = INADDR_ANY;
+    _address.sin_port = htons( _commandPort );
+
+    // Forcefully attaching socket to the selected port
+    if (bind(_commandSocket, (struct sockaddr *)&_address, sizeof(_address))<0)
+    {
+        HError("bind() failed for port %d on INADDR_ANY", _commandPort);
+        throw new HInitializationException("bind() failed");
+    }
+    HLog("Bound to INADDR_ANY on port %d", _commandPort);
 }
 
 template <class T>
@@ -218,6 +276,9 @@ void HNetworkProcessor<T>::RunServer(long unsigned int blocks)
     int activity;
     fd_set rfds;
     struct timeval tv;
+
+    // Start thread than will listen for commands
+    // __START_COMMAND_LISTENER__
 
     // Run server untill terminated
     try
@@ -303,9 +364,12 @@ void HNetworkProcessor<T>::RunServer(long unsigned int blocks)
             close(_clientSocket);
             _clientSocket = -1;
         }
-        HLog("Exit from Run() due to exception");
-        return;
     }
+
+    // Stop command listener thread
+    //__STOP_COMMAND_LISTENER__
+
+    // Server stopped
     HLog("Exit from Run()");
 }
 
@@ -346,6 +410,12 @@ void HNetworkProcessor<T>::Halt()
         _serverSocket = -1;
     }
     HProcessor<T>::Halt();
+}
+
+template <class T>
+bool HNetworkProcessor<T>::SendCommand(HCommand* command)
+{
+    return true;
 }
 
 /********************************************************************
@@ -464,6 +534,19 @@ void HNetworkProcessor<int16_t>::Halt();
 
 template
 void HNetworkProcessor<int32_t>::Halt();
+
+// SendCommand()
+template
+bool HNetworkProcessor<int8_t>::SendCommand(HCommand* command);
+
+template
+bool HNetworkProcessor<uint8_t>::SendCommand(HCommand* command);
+
+template
+bool HNetworkProcessor<int16_t>::SendCommand(HCommand* command);
+
+template
+bool HNetworkProcessor<int32_t>::SendCommand(HCommand* command);
 
 //! @endcond
 #endif
