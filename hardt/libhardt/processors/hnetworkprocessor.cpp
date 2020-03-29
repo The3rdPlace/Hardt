@@ -11,6 +11,8 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <netdb.h>
+#include <thread>
+#include <chrono>
 
 #include "hnetworkprocessor.h"
 
@@ -30,6 +32,7 @@ HNetworkProcessor<T>::HNetworkProcessor(const char* address, int port, HWriter<T
     _server(address),
     _clientSocket(-1),
     _serverSocket(-1),
+    _commandSocket(-1),
     _terminated(terminationToken)
 {
     HLog("HNetworkProcessor(client)(address=%s, port=%d, writer=*, terminationToken=%d), blocksize is %d", address, port, *terminationToken, blocksize);
@@ -48,6 +51,7 @@ HNetworkProcessor<T>::HNetworkProcessor(const char* address, int port, int block
     _server(address),
     _clientSocket(-1),
     _serverSocket(-1),
+    _commandSocket(-1),
     _terminated(terminationToken)
 {
     HLog("HNetworkProcessor(client)(address=%s, port=%d, terminationToken=%d), blocksize is %d", address, port, *terminationToken, blocksize);
@@ -66,6 +70,7 @@ HNetworkProcessor<T>::HNetworkProcessor(const char* address, int port, HReader<T
     _server(address),
     _clientSocket(-1),
     _serverSocket(-1),
+    _commandSocket(-1),
     _terminated(terminationToken)
 {
     HLog("HNetworkProcessor(client)(address=%s, port=%d, reader=*, terminationToken=%d), blocksize is %d", address, port, *terminationToken, blocksize);
@@ -84,6 +89,7 @@ HNetworkProcessor<T>::HNetworkProcessor(int port, HWriter<T>* writer, int blocks
     _server(NULL),
     _clientSocket(-1),
     _serverSocket(-1),
+    _commandSocket(-1),
     _terminated(terminationToken)
 {
     HLog("HNetworkProcessor(server)(port=%d, writer=*, terminationToken=%d), blocksize is %d", port, *terminationToken, blocksize);
@@ -102,6 +108,7 @@ HNetworkProcessor<T>::HNetworkProcessor(int port, int blocksize, bool* terminati
     _server(NULL),
     _clientSocket(-1),
     _serverSocket(-1),
+    _commandSocket(-1),
     _terminated(terminationToken)
 {
     HLog("HNetworkProcessor(server)(port=%d, terminationToken=%d), blocksize is %d", port, *terminationToken, blocksize);
@@ -120,6 +127,7 @@ HNetworkProcessor<T>::HNetworkProcessor(int port, HReader<T>* reader, int blocks
     _server(NULL),
     _clientSocket(-1),
     _serverSocket(-1),
+    _commandSocket(-1),
     _terminated(terminationToken)
 {
     HLog("HNetworkProcessor(server)(port=%d, reader=*, terminationToken=%d), blocksize is %d", port, *terminationToken, blocksize);
@@ -137,6 +145,10 @@ HNetworkProcessor<T>::~HNetworkProcessor()
     if( this->_serverSocket > -1 ) {
         HLog("Closing server socket");
         close(this->_serverSocket);
+    }
+    if( this->_commandSocket > -1 ) {
+        HLog("Closing command socket");
+        close(this->_commandSocket);
     }
     HLog("Done");
 
@@ -278,7 +290,8 @@ void HNetworkProcessor<T>::RunServer(long unsigned int blocks)
     struct timeval tv;
 
     // Start thread than will listen for commands
-    // __START_COMMAND_LISTENER__
+    HLog("Creating commandlistener thread");
+    std::thread commandListener ( [this] { ReceiveCommands(); } );
 
     // Run server untill terminated
     try
@@ -294,7 +307,7 @@ void HNetworkProcessor<T>::RunServer(long unsigned int blocks)
             {
                 HError("Error in listen(), socket may have been closed");
                 HLog("Exit from Run() due to error");
-                return;
+                break;
             }
 
             //wait for activity (connect)
@@ -313,7 +326,7 @@ void HNetworkProcessor<T>::RunServer(long unsigned int blocks)
                 if ( activity < 0)
                 {
                     HLog("Error when waiting for connections");
-                    return;
+                    break;
                 }
                 else if( activity > 0 )
                 {
@@ -335,7 +348,7 @@ void HNetworkProcessor<T>::RunServer(long unsigned int blocks)
             {
                 HError("Error in accept, socket may have been closed");
                 HLog("Exit from Run() due to error");
-                return;
+                break;
             }
             HLog("Accepting new connection from %s", inet_ntoa(((struct sockaddr_in *) &_address)->sin_addr));
 
@@ -366,8 +379,10 @@ void HNetworkProcessor<T>::RunServer(long unsigned int blocks)
         }
     }
 
-    // Stop command listener thread
-    //__STOP_COMMAND_LISTENER__
+    // Wait for the command listener thread to halt
+    HLog("Waiting for commandListener thread to halt");
+    commandListener.join();
+    HLog("Commandlistenener thread halted");
 
     // Server stopped
     HLog("Exit from Run()");
@@ -416,6 +431,101 @@ template <class T>
 bool HNetworkProcessor<T>::SendCommand(HCommand* command)
 {
     return true;
+}
+
+template <class T>
+void HNetworkProcessor<T>::ReceiveCommands()
+{
+    // Prepare select()
+    int activity;
+    fd_set rfds;
+    struct timeval tv;
+    int clientCommandSocket = -1;
+
+    // Run commandlistener untill terminated
+    HLog("commandlistener thread starting");
+    try
+    {
+        int addrlen = sizeof(_address);
+
+        // Run untill stopped
+        while(!*_terminated)
+        {
+            // Wait for connection
+            HLog("Listening on port %d", _commandPort);
+            if (listen(_commandSocket, 3) < 0)
+            {
+                HError("Error in listen(), socket may have been closed");
+                HLog("Exit from Run() due to error");
+                break;
+            }
+
+            //wait for activity (connect)
+            while( !*_terminated )
+            {
+                // Wait for activity on the commandsocket.
+                // This is not the optimal way to check for exit, but it will suffice
+                // for the types of scenarios that we will encounter, running on small
+                // isolated boxes (raspberry's etc.) or just handling a very limited number
+                // of connections. Some days we'll make this beautifull though.
+                tv.tv_sec = 3;
+                tv.tv_usec = 0;
+                FD_ZERO(&rfds);
+                FD_SET(_commandSocket, &rfds);
+                activity = select( _commandSocket + 1 , &rfds , &rfds , NULL , &tv);
+                if ( activity < 0)
+                {
+                    HLog("Error when waiting for connections");
+                    break;
+                }
+                else if( activity > 0 )
+                {
+                    // Someone is trying to connect
+                    break;
+                }
+            }
+
+            // Check for termination
+            if( *_terminated )
+            {
+                HLog("Termination token set to true, halting");
+                break;
+            }
+
+            // Accept new connection
+            HLog("Accepting command connection");
+
+            if ((clientCommandSocket = accept(_commandSocket, (struct sockaddr *)&_address, (socklen_t*)&addrlen))<0)
+            {
+                HError("Error in accept, socket may have been closed");
+                HLog("Exit from Run() due to error");
+                break;
+            }
+            HLog("Accepting new command connection from %s", inet_ntoa(((struct sockaddr_in *) &_address)->sin_addr));
+
+            // Read and handle the command
+            //__HANDLE_COMMAND__
+
+            // Close the socket, should it still be open
+            if( clientCommandSocket > -1 )
+            {
+                HLog("Closing command connection to the client");
+                close(clientCommandSocket);
+            }
+            HLog("Command connection closed");
+        }
+    }
+    catch( const std::exception& ex )
+    {
+        HError("Caught exception while handling client command: %s", ex.what());
+        if( _clientSocket > -1 )
+        {
+            HLog("Closing connection to the client");
+            close(_clientSocket);
+            _clientSocket = -1;
+        }
+    }
+    HLog("commandlistener thread stopping");
 }
 
 /********************************************************************
@@ -547,6 +657,19 @@ bool HNetworkProcessor<int16_t>::SendCommand(HCommand* command);
 
 template
 bool HNetworkProcessor<int32_t>::SendCommand(HCommand* command);
+
+// ReceiveCommands()
+template
+void HNetworkProcessor<int8_t>::ReceiveCommands();
+
+template
+void HNetworkProcessor<uint8_t>::ReceiveCommands();
+
+template
+void HNetworkProcessor<int16_t>::ReceiveCommands();
+
+template
+void HNetworkProcessor<int32_t>::ReceiveCommands();
 
 //! @endcond
 #endif

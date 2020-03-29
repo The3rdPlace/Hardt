@@ -47,6 +47,7 @@ class HNetworkProcessor : public HProcessor<T>
         void RunProcessor(long unsigned int blocks);
 
         bool SendCommand(HCommand* command);
+        void ReceiveCommands();
 
     public:
 
