@@ -504,7 +504,7 @@ void HNetworkProcessor<T>::ReceiveCommands()
             HLog("Accepting new command connection from %s", inet_ntoa(((struct sockaddr_in *) &_address)->sin_addr));
 
             // Read and handle the command
-            //__HANDLE_COMMAND__
+            ReadCommand(clientCommandSocket);
 
             // Close the socket, should it still be open
             if( clientCommandSocket > -1 )
@@ -526,6 +526,67 @@ void HNetworkProcessor<T>::ReceiveCommands()
         }
     }
     HLog("commandlistener thread stopping");
+}
+
+template <class T>
+void HNetworkProcessor<T>::ReadCommand(int socket)
+{
+    HNetworkReader<int8_t> reader(socket);
+    HNetworkWriter<int8_t> writer(socket);
+    int8_t FalseStatus = 0;
+    int8_t TrueStatus = 1;
+
+    // We do not know how much data is needed for the command, so initially read enough bytes for the basic command struct
+    int8_t commandData[HCommandMinimumsSize];
+    int length = reader.Read(commandData, HCommandMinimumsSize);
+    if( length != HCommandMinimumsSize ){
+        HError("Could not read enough bytes for a HCommand struct");
+        writer.Write(&FalseStatus, 1);
+        return;
+    }
+    HCommand cmd;
+    memcpy((void*) &cmd, (void*) commandData, HCommandMinimumsSize);
+    HLog("Received command with class %d, opcode %d and length %d", cmd.Class, cmd.Opcode, cmd.Length);
+
+    // If length is larger than 1, then cmd.Data.Content contains a pointer to some data.
+    // This is handled by putting the data on the network after the command structure, then
+    // reading the data and reconstructing the HCommandData struct now pointing to local data
+    if( cmd.Length > 1 )
+    {
+        HLog("Reading %d bytes of commanddata content from the network", cmd.Length);
+        int8_t commandContentData[cmd.Length];
+        length = reader.Read(commandData, cmd.Length);
+        if( length != cmd.Length ){
+            HError("Could not read enough bytes for the HCommandData.Content field");
+            writer.Write(&FalseStatus, 1);
+            return;
+        }
+        cmd.Data.Content = commandContentData;
+    }
+
+    // Ship the command
+    if( HProcessor<T>::_reader != nullptr )
+    {
+        HLog("Sending command to reader chain");
+        if( !HProcessor<T>::_reader->Command(&cmd) )
+        {
+            HError("Error when sending command to reader chain");
+            writer.Write(&FalseStatus, 1);
+            return;
+        }
+    }
+    if( HProcessor<T>::_writer != nullptr )
+    {
+        HLog("Sending command to writer chain");
+        if( !HProcessor<T>::_writer->Command(&cmd) )
+        {
+            HError("Error when sending command to writer chain");
+            writer.Write(&FalseStatus, 1);
+            return;
+        }
+    }
+    HLog("Command sent to local reader and/or writer (if any)");
+    writer.Write(&TrueStatus, 1);
 }
 
 /********************************************************************

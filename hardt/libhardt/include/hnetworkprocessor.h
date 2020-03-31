@@ -48,6 +48,12 @@ class HNetworkProcessor : public HProcessor<T>
 
         bool SendCommand(HCommand* command);
         void ReceiveCommands();
+        void ReadCommand(int socket);
+
+        bool Command(HCommand* cmd)
+        {
+
+        }
 
     public:
 
@@ -118,6 +124,7 @@ class HNetworkProcessor : public HProcessor<T>
             }
 
             // Send the command to the remote end (the server)
+            HLog("Sending command to remote (server)");
             if( !SendCommand(&cmd) )
             {
                 HError("ERror when sending command to rmote end (the server)");
