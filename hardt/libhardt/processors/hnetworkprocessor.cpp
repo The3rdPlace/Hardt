@@ -428,12 +428,6 @@ void HNetworkProcessor<T>::Halt()
 }
 
 template <class T>
-bool HNetworkProcessor<T>::SendCommand(HCommand* command)
-{
-    return true;
-}
-
-template <class T>
 void HNetworkProcessor<T>::ReceiveCommands()
 {
     // Prepare select()
@@ -548,20 +542,20 @@ void HNetworkProcessor<T>::ReadCommand(int socket)
     memcpy((void*) &cmd, (void*) commandData, HCommandMinimumsSize);
     HLog("Received command with class %d, opcode %d and length %d", cmd.Class, cmd.Opcode, cmd.Length);
 
-    // If length is larger than 1, then cmd.Data.Content contains a pointer to some data.
+    // If length is larger than 0, then cmd.Data.Content contains a pointer to some data.
     // This is handled by putting the data on the network after the command structure, then
     // reading the data and reconstructing the HCommandData struct now pointing to local data
-    if( cmd.Length > 1 )
+    if( cmd.Length > 0 )
     {
         HLog("Reading %d bytes of commanddata content from the network", cmd.Length);
-        int8_t commandContentData[cmd.Length];
-        length = reader.Read(commandData, cmd.Length);
+        cmd.Data.Content = (void*) new int8_t[cmd.Length];
+        length = reader.Read((int8_t *) cmd.Data.Content, cmd.Length);
         if( length != cmd.Length ){
             HError("Could not read enough bytes for the HCommandData.Content field");
             writer.Write(&FalseStatus, 1);
+            delete[] (int8_t*) cmd.Data.Content;
             return;
         }
-        cmd.Data.Content = commandContentData;
     }
 
     // Ship the command
@@ -572,6 +566,10 @@ void HNetworkProcessor<T>::ReadCommand(int socket)
         {
             HError("Error when sending command to reader chain");
             writer.Write(&FalseStatus, 1);
+            if( cmd.Length > 0 )
+            {
+                delete[] (int8_t*) cmd.Data.Content;
+            }
             return;
         }
     }
@@ -582,11 +580,93 @@ void HNetworkProcessor<T>::ReadCommand(int socket)
         {
             HError("Error when sending command to writer chain");
             writer.Write(&FalseStatus, 1);
+            if( cmd.Length > 0 )
+            {
+                delete[] (int8_t*)  cmd.Data.Content;
+            }
             return;
         }
     }
     HLog("Command sent to local reader and/or writer (if any)");
     writer.Write(&TrueStatus, 1);
+    if( cmd.Length > 0 )
+    {
+        delete[] (int8_t*) cmd.Data.Content;
+    }
+}
+
+template <class T>
+bool HNetworkProcessor<T>::SendCommand(HCommand* command)
+{
+    // Create a socket
+    int commandSocket;
+    if ((commandSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    {
+        HError("Failed to create command socket");
+        throw new HInitializationException("Failed to create command socket");
+    }
+
+    // Convert the server hostname (or address) to a true ip address
+    HLog("Attempting lookup of server hostname: %s", _server);
+    hostent* record = gethostbyname(_server);
+    if(record == NULL)
+    {
+        HError("Unknown hostname: %s", _address);
+        throw new HInitializationException("Unknown hostname");
+    }
+    in_addr* address = (in_addr*) record->h_addr;
+    _server = inet_ntoa(*address);
+    HLog("Server hostname = %s", _server);
+
+    // Server address
+    memset(&_address, '0', sizeof(_address));
+    _address.sin_family = AF_INET;
+    _address.sin_port = htons(_commandPort);
+
+    // Convert IPv4 and IPv6 addresses from text to binary form
+    if (inet_pton(AF_INET, _server, &_address.sin_addr)<=0)
+    {
+        HError("Invalid address %s", _server);
+        throw new HNetworkException("Invalid address");
+    }
+
+    // Connect
+    HLog("Trying to connect to %s:%d", _server, _commandPort);
+    if (connect(commandSocket, (struct sockaddr *)&_address, sizeof(_address)) < 0)
+    {
+        HError("Failed to connect to command port on server %s", _server);
+        throw new HNetworkException("Failed to connect to command port on server");
+    }
+    HLog("Connected");
+
+    // Send the command
+    HNetworkWriter<int8_t> writer(commandSocket);
+    int8_t commandData[HCommandMinimumsSize + command->Length];
+    memcpy((void*) commandData, (void*) command, HCommandMinimumsSize);
+    memcpy((void*) &commandData[HCommandMinimumsSize], (void*) command->Data.Content, command->Length);
+    int length = writer.Write(commandData, HCommandMinimumsSize + command->Length);
+    if( length != HCommandMinimumsSize + command->Length )
+    {
+        HError("Incorrect length of data written to the network. Expected %d send %d", HCommandMinimumsSize + command->Length, length);
+        close(commandSocket);
+        return false;
+    }
+
+    // Read the return byte indicating error or success
+    HNetworkReader<int8_t> reader(commandSocket);
+    int8_t commandStatus;
+    length = reader.Read(&commandStatus, 1);
+    if( length != 1 )
+    {
+        HError("Read wrong length of command status. Expected 1 got %d", length);
+        close(commandSocket);
+        return false;
+    }
+
+    // Disconnect
+    close(commandSocket);
+    HLog("Commandstatus is %d", commandStatus);
+    return commandStatus == 1;
 }
 
 /********************************************************************

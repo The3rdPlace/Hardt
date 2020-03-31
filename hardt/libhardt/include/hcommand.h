@@ -56,7 +56,7 @@ struct HCommand
 	/** The command to execute */
 	int16_t Opcode;
 
-	/** Length of data, for boolean and integer values, this should be 1
+	/** Length of data, for boolean and integer values, this should be 0
 	 * otherwise set to the length of the content not including an eventual terminating
 	 * zero byte. (that is. Use the exact length of the content block, and let the receiver
 	 * convert it into a zero-terminated buffer if they prefer so.). The length of the content
@@ -64,7 +64,6 @@ struct HCommand
 	 * (in the future, some commands may carry a serialized object, structured data or other
 	 * types of advanced data in the content field. Only the sender and receiver knowns how
 	 * to handle the content. All others should handle the content as an oblige blob of bytes.
-	 * A special case is the use of the class NONE and opcode NOP, here Length should be set to 0 (zero)
 	 */
 	int16_t Length;
 

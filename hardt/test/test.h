@@ -183,6 +183,7 @@ class Test
                 int Stopped;
                 int Commands;
                 HCommand LastCommand;
+                void* LastContent;
 
                 TestReader(T* data, int blocksize, bool multipleReads = true):
                         _data(data),
@@ -190,8 +191,17 @@ class Test
                         _multipleReads(multipleReads),
                         Started(0),
                         Stopped(0),
-                        Commands(0)
+                        Commands(0),
+                        LastContent(nullptr)
                 {}
+
+                ~TestReader()
+                {
+                    if( LastContent != nullptr )
+                    {
+                        free(LastContent);
+                    }
+                }
 
                 int Read(T* dest, size_t blocksize)
                 {
@@ -221,11 +231,23 @@ class Test
 
                 /** Execute or carry through a command */
                 bool Command(HCommand* command) {
+
+                    if( LastContent != nullptr )
+                    {
+                        free(LastContent);
+                        LastContent = nullptr;
+                    }
+
                     Commands++;
                     LastCommand.Length = command->Length;
                     LastCommand.Opcode = command->Opcode;
                     LastCommand.Class = command->Class;
                     LastCommand.Data = command->Data;
+
+                    if( command->Length > 0 ) {
+                        LastContent = malloc(command->Length);
+                        memcpy(LastContent, (void*) command->Data.Content, command->Length);
+                    }
 
                     return true;
                 }
@@ -249,6 +271,7 @@ class Test
                 int Stopped;
                 int Commands;
                 HCommand LastCommand;
+                void* LastContent;
 
                 TestWriter(size_t blocksize, bool multipleWrites = true):
                     Writes(0),
@@ -258,7 +281,8 @@ class Test
                     Stopped(0),
                     _first(true),
                     _multipleWrites(multipleWrites),
-                    Commands(0)
+                    Commands(0),
+                    LastContent(nullptr)
                 {
                     Received = new T[blocksize];
                     memset((void*) Received, 0, blocksize * sizeof(T));
@@ -272,7 +296,8 @@ class Test
                         Stopped(0),
                         _first(true),
                         _multipleWrites(multipleWrites),
-                        Commands(0)
+                        Commands(0),
+                        LastContent(nullptr)
                 {
                     Received = new T[blocksize];
                     memset((void*) Received, 0, blocksize * sizeof(T));
@@ -286,7 +311,8 @@ class Test
                         Stopped(0),
                         _first(true),
                         _multipleWrites(multipleWrites),
-                        Commands(0)
+                        Commands(0),
+                        LastContent(nullptr)
                 {
                     Received = new T[blocksize];
                     memset((void*) Received, 0, blocksize * sizeof(T));
@@ -296,6 +322,10 @@ class Test
                 ~TestWriter()
                 {
                     delete[] Received;
+                    if( LastContent != nullptr )
+                    {
+                        free(LastContent);
+                    }
                 }
 
                 int Write(T* src, size_t blocksize)
@@ -334,6 +364,13 @@ class Test
 
                 /** Execute or carry through a command */
                 bool Command(HCommand* command) {
+
+                    if( LastContent != nullptr )
+                    {
+                        free(LastContent);
+                        LastContent = nullptr;
+                    }
+
                     if( _writer != nullptr )
                     {
                         if( !_writer->Command(command) )
@@ -341,11 +378,18 @@ class Test
                             return false;
                         }
                     }
+
                     Commands++;
                     LastCommand.Length = command->Length;
                     LastCommand.Opcode = command->Opcode;
                     LastCommand.Class = command->Class;
                     LastCommand.Data = command->Data;
+
+                    if( command->Length > 0 ) {
+                        LastContent = malloc(command->Length);
+                        memcpy(LastContent, (void*) command->Data.Content, command->Length);
+                    }
+
                     return true;
                 }
         };
