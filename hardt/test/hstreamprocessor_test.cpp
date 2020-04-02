@@ -43,30 +43,29 @@ class HStreamProcessor_Test: public Test
             HStreamProcessor<int8_t> proc(&wr, &rdr, 0, &terminated);
 
             HCommandData data;
-            data.State = false;
+            data.State = true;
             ASSERT_IS_TRUE(proc.Command(HCOMMAND_CLASS::NONE, HCOMMAND_OPCODE::NOP, 0, data));
             ASSERT_IS_EQUAL(rdr.Commands, 1);
             ASSERT_IS_EQUAL(rdr.LastCommand.Class, (short) HCOMMAND_CLASS::NONE);
             ASSERT_IS_EQUAL(rdr.LastCommand.Opcode, (short) HCOMMAND_OPCODE::NOP);
             ASSERT_IS_EQUAL(rdr.LastCommand.Length, (short) 0);
-            ASSERT_IS_TRUE(!rdr.LastCommand.Data.State);
+            ASSERT_IS_TRUE(rdr.LastCommand.Data.State);
             ASSERT_IS_EQUAL(wr.Commands, 1);
             ASSERT_IS_EQUAL(wr.LastCommand.Class, (short) HCOMMAND_CLASS::NONE);
             ASSERT_IS_EQUAL(wr.LastCommand.Opcode, (short) HCOMMAND_OPCODE::NOP);
             ASSERT_IS_EQUAL(wr.LastCommand.Length, (short) 0);
-            ASSERT_IS_TRUE(!wr.LastCommand.Data.State);
+            ASSERT_IS_TRUE(wr.LastCommand.Data.State);
 
-            data.State = true;
-            ASSERT_IS_TRUE(proc.Command(HCOMMAND_CLASS::NONE, HCOMMAND_OPCODE::NOP, 919, data));
+            char content[] = "content";
+            data.Content = (void*) content;
+            ASSERT_IS_TRUE(proc.Command(HCOMMAND_CLASS::NONE, HCOMMAND_OPCODE::NOP, 7, data));
             ASSERT_IS_EQUAL(rdr.Commands, 2);
             ASSERT_IS_EQUAL(rdr.LastCommand.Class, (short) HCOMMAND_CLASS::NONE);
             ASSERT_IS_EQUAL(rdr.LastCommand.Opcode, (short) HCOMMAND_OPCODE::NOP);
-            ASSERT_IS_EQUAL(rdr.LastCommand.Length, (short) 919);
-            ASSERT_IS_TRUE(rdr.LastCommand.Data.State);
+            ASSERT_IS_EQUAL(rdr.LastCommand.Length, (short) 7);
             ASSERT_IS_EQUAL(wr.Commands, 2);
             ASSERT_IS_EQUAL(wr.LastCommand.Class, (short) HCOMMAND_CLASS::NONE);
             ASSERT_IS_EQUAL(wr.LastCommand.Opcode, (short) HCOMMAND_OPCODE::NOP);
-            ASSERT_IS_EQUAL(wr.LastCommand.Length, (short) 919);
-            ASSERT_IS_TRUE(wr.LastCommand.Data.State);
+            ASSERT_IS_EQUAL(wr.LastCommand.Length, (short) 7);
         }
 } hstreamprocessor_test;

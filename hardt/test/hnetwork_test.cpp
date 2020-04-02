@@ -106,7 +106,7 @@ class HNetwork_Test: public Test
             ASSERT_IS_EQUAL(rdr.Commands, 2);
             ASSERT_IS_EQUAL(rdr.LastCommand.Data.State, true);
             sleep(5);
-            char* content = "thisismycontent";
+            char content[] = "thisismycontent";
             cmdData.Content = (void*) content;
             client->Command(HCOMMAND_CLASS::NONE, HCOMMAND_OPCODE::NOP, 15, cmdData);
             ASSERT_IS_EQUAL(rdr.Commands, 3);
@@ -149,7 +149,7 @@ class HNetwork_Test: public Test
             ASSERT_IS_EQUAL(wr.Commands, 2);
             ASSERT_IS_EQUAL(wr.LastCommand.Data.State, true);
             sleep(5);
-            char* content = "thisismycontent";
+            char content[] = "thisismycontent";
             cmdData.Content = (void*) content;
             client->Command(HCOMMAND_CLASS::NONE, HCOMMAND_OPCODE::NOP, 15, cmdData);
             ASSERT_IS_EQUAL(wr.Commands, 3);
