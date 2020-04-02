@@ -27,36 +27,6 @@ class HFilter_Test: public Test
         int8_t expected[6] = {2, 4, 8, 16, 32, 64};
         
         template <class T>
-        class TestWriter : public HWriter<T>
-        {
-            public:
-
-                int8_t received[6];
-
-                int Write(T* src, size_t blocksize)
-                {
-                    memcpy((void*) received, src, blocksize * sizeof(T));
-                    return blocksize;
-                }
-        };
-
-        template <class T>
-        class TestReader : public HReader<T>
-        {
-            private:
-
-                int8_t output[8] = {1, 2, 4, 8, 16, 32, 0, 0};
-
-            public:
-
-                int Read(T* dest, size_t blocksize)
-                {
-                    memcpy((void*) dest, output, blocksize * sizeof(T));
-                    return blocksize;
-                }
-        };
-
-        template <class T>
         class TestFilter : public HFilter<T>
         {
             private:
@@ -82,12 +52,12 @@ class HFilter_Test: public Test
 
         void test_filter_as_writer()
         {
-            TestWriter<int8_t> wr;
+            TestWriter<int8_t> wr(8);
             TestFilter<int8_t> filter(&wr, 6);
 
             int8_t input[8] = {1, 2, 4, 8, 16, 32, 0, 0};
             ASSERT_IS_EQUAL(filter.Write(input, 6), 6);
-            ASSERT_IS_EQUAL(memcmp((void*) wr.received, (void*) expected, 6 * sizeof(int8_t)), 0);
+            ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, 6 * sizeof(int8_t)), 0);
 
             ASSERT_IS_EQUAL(filter.Write(input, 2), 2);
 
@@ -102,11 +72,16 @@ class HFilter_Test: public Test
             {
                 ASSERT_FAIL("Expected HFilterIOException, but got other type");
             }
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
         }
 
         void test_filter_as_reader()
         {
-            TestReader<int8_t> rd;
+            int8_t output[8] = {1, 2, 4, 8, 16, 32, 0, 0};
+
+            TestReader<int8_t> rd(output, 8);
             TestFilter<int8_t> filter(&rd, 6);
 
             int8_t received[6];
@@ -126,22 +101,28 @@ class HFilter_Test: public Test
             {
                 ASSERT_FAIL("Expected HFilterIOException, but got other type");
             }
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(rd.Commands, 1);
         }
 
         void test_filter_with_probe()
         {
-            TestWriter<int8_t> wr;
+            TestWriter<int8_t> wr(6);
             TestFilter<int8_t> filter(&wr, 6);
             HProbe<int8_t> probe("hfilter_test", true);
 
             int8_t input[8] = {1, 2, 4, 8, 16, 32, 0, 0};
             ASSERT_IS_EQUAL(filter.Write(input, 6), 6);
-            ASSERT_IS_EQUAL(memcmp((void*) wr.received, (void*) expected, 6 * sizeof(int8_t)), 0);
+            ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, 6 * sizeof(int8_t)), 0);
 
             std::ifstream resultfile("PROBE_hfilter_test.pcm", std::ios::in | std::ios::binary | std::ios::ate);
             if( !resultfile.is_open() ) {
                 ASSERT_FAIL("No probe file found");
             }
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
         }
 
         void test_read_coeffs_single_line()

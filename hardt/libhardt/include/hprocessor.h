@@ -25,8 +25,6 @@ class HProcessor : public HWriterConsumer<T>
 {
     private:
 
-        HWriter<T>* _writer;
-        HReader<T>* _reader;
         T* _buffer;
         int _blocksize;
         bool* _terminated;
@@ -40,6 +38,12 @@ class HProcessor : public HWriterConsumer<T>
         void Init();
 
     protected:
+
+        /** The writer used by this processor */
+        HWriter<T>* _writer;
+
+        /** The reader used by this processor */
+        HReader<T>* _reader;
 
         /** Construct a new HProcessor */
         HProcessor(HWriter<T>* writer, HReader<T>* reader, size_t blocksize, bool* terminationToken);
@@ -92,6 +96,9 @@ class HProcessor : public HWriterConsumer<T>
             by calling Run() once agan after setting the terminationToken to false
         */
         virtual void Halt();
+
+        /** Send a command to the reader and writer chain of this processor */
+        virtual bool Command(HCOMMAND_CLASS commandClass, HCOMMAND_OPCODE commandOpcode, int16_t length, HCommandData data) = 0;
 };
 
 #endif

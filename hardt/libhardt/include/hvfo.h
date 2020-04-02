@@ -25,6 +25,12 @@ class HVfo : public HGenerator<T>
 
         /** Set the frequency and phase of the vfo */
         void SetFrequency(int frequency, float phase = 0);
+
+        /** Execute and/or pass on a command */
+        bool Command(HCommand* command) {
+            // No further propagation of commands
+            return true;
+        }
 };
 
 #endif

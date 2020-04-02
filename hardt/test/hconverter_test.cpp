@@ -26,44 +26,6 @@ class HConverter_Test: public Test
 
     public:
 
-        template <class T>
-        class TestWriter : public HWriter<T>
-        {
-            public:
-
-                T* Output;
-
-                TestWriter(T* output):
-                    Output(output)
-                {
-                }
-
-                int Write(T* src, size_t blocksize)
-                {
-                    memcpy((void*) Output, (void*) src, blocksize * sizeof(T));
-                    return blocksize;
-                }
-        };
-
-        template <class T>
-        class TestReader : public HReader<T>
-        {
-            public:
-
-                T* Input;
-
-                TestReader(T* input):
-                    Input(input)
-                {
-                }
-
-                int Read(T* dest, size_t blocksize)
-                {
-                    memcpy((void*) dest, (void*) Input, blocksize * sizeof(T));
-                    return blocksize;
-                }
-        };
-
         template <class Tin, class Tout>
         class TestConverter : public HConverter<Tin, Tout>
         {
@@ -99,7 +61,7 @@ class HConverter_Test: public Test
             int8_t expected[6] = {2, 4, 6, 8, 10, 12};
             int8_t output[6] = {0, 0 ,0 ,0 ,0 ,0};
 
-            TestReader<int8_t> reader(input);
+            TestReader<int8_t> reader(input, 6);
             TestConverter<int8_t, int8_t> converter(&reader, 6, 2);
 
             converter.Read(output, 6);
@@ -108,23 +70,28 @@ class HConverter_Test: public Test
             {
                 ASSERT_IS_EQUAL(output[i], expected[i]);
             }
+
+            ASSERT_IS_TRUE(converter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(reader.Commands, 1);
         }
 
         void test_converter_int8_int8_write()
         {
             int8_t input[6] = {1, 2, 3, 4, 5, 6};
             int8_t expected[6] = {3, 6, 9, 12, 15, 18};
-            int8_t output[6] = {0, 0 ,0 ,0 ,0 ,0};
 
-            TestWriter<int8_t> writer(output);
+            TestWriter<int8_t> writer(6);
             TestConverter<int8_t, int8_t> converter(&writer, 6, 3);
 
             converter.Write(input, 6);
 
             for(int i = 0; i < 6; i++)
             {
-                ASSERT_IS_EQUAL(output[i], expected[i]);
+                ASSERT_IS_EQUAL(writer.Received[i], expected[i]);
             }
+
+            ASSERT_IS_TRUE(converter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(writer.Commands, 1);
         }
 
         void test_converter_int8_int8_read_overflow()
@@ -133,7 +100,7 @@ class HConverter_Test: public Test
             int8_t expected[6] = {-24, -48, -72, -96, -120, 112};
             int8_t output[6] = {0, 0 ,0 ,0 ,0 ,0};
 
-            TestReader<int8_t> reader(input);
+            TestReader<int8_t> reader(input, 6);
             TestConverter<int8_t, int8_t> converter(&reader, 6, 1000);
 
             converter.Read(output, 6);
@@ -142,23 +109,28 @@ class HConverter_Test: public Test
             {
                 ASSERT_IS_EQUAL(output[i], expected[i]);
             }
+
+            ASSERT_IS_TRUE(converter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(reader.Commands, 1);
         }
 
         void test_converter_int8_int8_write_overflow()
         {
             int8_t input[6] = {1, 2, 3, 4, 5, 6};
             int8_t expected[6] = {-48, -96, 112, 64, 16, -32};
-            int8_t output[6] = {0, 0 ,0 ,0 ,0 ,0};
 
-            TestWriter<int8_t> writer(output);
+            TestWriter<int8_t> writer(6);
             TestConverter<int8_t, int8_t> converter(&writer, 6, 2000);
 
             converter.Write(input, 6);
 
             for(int i = 0; i < 6; i++)
             {
-                ASSERT_IS_EQUAL(output[i], expected[i]);
+                ASSERT_IS_EQUAL(writer.Received[i], expected[i]);
             }
+
+            ASSERT_IS_TRUE(converter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(writer.Commands, 1);
         }
 
         void test_converter_int8_int16_read()
@@ -167,7 +139,7 @@ class HConverter_Test: public Test
             int16_t expected[6] = {3000, 6000, 9000, 12000, 15000, 18000};
             int16_t output[6] = {0, 0 ,0 ,0 ,0 ,0};
 
-            TestReader<int8_t> reader(input);
+            TestReader<int8_t> reader(input, 6);
             TestConverter<int8_t, int16_t> converter(&reader, 6, 3000);
 
             converter.Read(output, 6);
@@ -176,23 +148,28 @@ class HConverter_Test: public Test
             {
                 ASSERT_IS_EQUAL(output[i], expected[i]);
             }
+
+            ASSERT_IS_TRUE(converter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(reader.Commands, 1);
         }
 
         void test_converter_int8_int16_write()
         {
             int8_t input[6] = {1, 2, 3, 4, 5, 6};
             int16_t expected[6] = {4000, 8000, 12000, 16000, 20000, 24000};
-            int16_t output[6] = {0, 0 ,0 ,0 ,0 ,0};
 
-            TestWriter<int16_t> writer(output);
+            TestWriter<int16_t> writer(6);
             TestConverter<int8_t, int16_t> converter(&writer, 6, 4000);
 
             converter.Write(input, 6);
 
             for(int i = 0; i < 6; i++)
             {
-                ASSERT_IS_EQUAL(output[i], expected[i]);
+                ASSERT_IS_EQUAL(writer.Received[i], expected[i]);
             }
+
+            ASSERT_IS_TRUE(converter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(writer.Commands, 1);
         }
 
 } hconverter_test;

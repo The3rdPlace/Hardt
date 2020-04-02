@@ -38,6 +38,7 @@ class HConverter : public HReader<Tout>, HWriter<Tin>, HWriterConsumer<Tout>
         /** Construct a new HConverter that reads from a reader */
         HConverter(HReader<Tin>* reader, size_t blocksize):
             _reader(reader),
+            _writer(nullptr),
             _blocksize(blocksize),
             _output(NULL)
         {
@@ -46,6 +47,7 @@ class HConverter : public HReader<Tout>, HWriter<Tin>, HWriterConsumer<Tout>
 
         /** Construct a new HConverter that writes to a writer */
         HConverter(HWriter<Tout>* writer, size_t blocksize):
+            _reader(nullptr),
             _writer(writer),
             _blocksize(blocksize),
             _input(NULL)
@@ -134,6 +136,15 @@ class HConverter : public HReader<Tout>, HWriter<Tin>, HWriterConsumer<Tout>
         void SetWriter(HWriter<Tout>* writer)
         {
             _writer = writer;
+        }
+
+        bool Command(HCommand* command) {
+            if( _writer != nullptr ) {
+                return _writer->Command(command);
+            } else if( _reader != nullptr ){
+                return _reader->Command(command);
+            }
+            return true;
         }
 };
 

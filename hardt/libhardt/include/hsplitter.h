@@ -54,6 +54,17 @@ class HSplitter : public HWriter<T>, public HWriterConsumer<T>
         /** Implements HWriterConsumer::SetWriter. Register writers for the splitter */
         void SetWriter(HWriter<T>* writer);
 
+        /** Execute or carry through a command */
+        bool Command(HCommand* command) {
+            for( typename std::vector< HWriter<T>* >::iterator it = _writers.begin(); it != _writers.end(); it++ )
+            {
+                if( !(*it)->Command(command) )
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
 };
 
 #endif

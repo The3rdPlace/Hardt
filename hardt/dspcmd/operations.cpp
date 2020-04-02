@@ -685,7 +685,13 @@ class FilterSpectrumReader : public HReader<T>
         double _fdelta;
         int _lastDisplayedFreq;
 
-    public:
+        /** Execute and/or pass on a command */
+        bool Command(HCommand* command) {
+            // No further propagation of commands
+            return true;
+        }
+
+public:
 
         FilterSpectrumReader(int delta = 0)
         {

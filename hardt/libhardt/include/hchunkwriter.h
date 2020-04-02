@@ -40,6 +40,8 @@ class HChunkWriter : public HWriter<T>
         {
             return _chunksize;
         }
+
+        virtual bool Command(HCommand* command) = 0;
 };
 
 #endif

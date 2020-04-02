@@ -32,6 +32,16 @@ class HMux : public HReader<T>
 
         /** Read a block of samples */
         int Read(T* dest, size_t blocksize);
+
+        /** Execute or carry through a command */
+        bool Command(HCommand* command) {
+            for(int i = 0; i < _readers.size(); i++ ) {
+                if( !_readers[i]->Command(command) ) {
+                    return false;
+                }
+            }
+            return true;
+        }
 };
 
 #endif

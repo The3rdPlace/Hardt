@@ -53,6 +53,29 @@ class HLinearMixer : public HReader<T>, public HWriter<T>
         {
             _writer = writer;
         }
+
+        /** Execute or carry through a command */
+        bool Command(HCommand* command) {
+            if( _writer != nullptr )
+            {
+                if (!_writer->Command(command)) {
+                    return false;
+                }
+            }
+            if( _reader_1 != nullptr )
+            {
+                if (!_reader_1->Command(command)) {
+                    return false;
+                }
+            }
+            if( _reader_2 != nullptr )
+            {
+                if( !_reader_2->Command(command) ) {
+                    return false;
+                }
+            }
+            return true;
+        }
 };
 
 #endif

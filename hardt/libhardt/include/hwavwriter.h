@@ -35,6 +35,12 @@ class HWavWriter : public HWav, public HFileWriter<T>
 
         /** Write to this wav stream */
         virtual int Write(T* dest, size_t blocksize);
+
+        /** Execute or carry through a command */
+        bool Command(HCommand* command) {
+            // No further propagation of commands
+            return true;
+        }
 };
 
 #endif

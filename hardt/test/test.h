@@ -166,6 +166,238 @@ class Test
 
     public:
 
+        template <class T>
+        class TestReader : public HReader<T>
+        {
+            private:
+
+                T* _data;
+                bool _first;
+                bool _multipleReads;
+
+            public:
+
+                int Reads;
+                int Samples;
+                int Started;
+                int Stopped;
+                int Commands;
+                HCommand LastCommand;
+                void* LastContent;
+
+                TestReader(T* data, int blocksize, bool multipleReads = true):
+                        _data(data),
+                        _first(true),
+                        _multipleReads(multipleReads),
+                        Started(0),
+                        Stopped(0),
+                        Commands(0),
+                        LastContent(nullptr)
+                {}
+
+                ~TestReader()
+                {
+                    if( LastContent != nullptr )
+                    {
+                        free(LastContent);
+                    }
+                }
+
+                int Read(T* dest, size_t blocksize)
+                {
+                    if (!_multipleReads && !_first)
+                    {
+                        return 0;
+                    }
+
+                    _first = false;
+                    memcpy(dest, _data, blocksize * sizeof(T));
+                    Reads++;
+                    Samples += blocksize;
+                    return blocksize;
+                }
+
+                bool Start()
+                {
+                    Started++;
+                    return true;
+                }
+
+                bool Stop()
+                {
+                    Stopped++;
+                    return true;
+                }
+
+                /** Execute or carry through a command */
+                bool Command(HCommand* command) {
+
+                    if( LastContent != nullptr )
+                    {
+                        free(LastContent);
+                        LastContent = nullptr;
+                    }
+
+                    Commands++;
+                    LastCommand.Length = command->Length;
+                    LastCommand.Opcode = command->Opcode;
+                    LastCommand.Class = command->Class;
+                    LastCommand.Data = command->Data;
+
+                    if( command->Length > 0 ) {
+                        LastContent = malloc(command->Length);
+                        memcpy(LastContent, (void*) command->Data.Content, command->Length);
+                    }
+
+                    return true;
+                }
+        };
+
+        template <class T>
+        class TestWriter : public HWriter<T>, public HWriterConsumer<T>
+        {
+            private:
+                HWriter<T>* _writer;
+
+            public:
+
+                bool _first;
+                bool _multipleWrites;
+
+                T* Received;
+                int Writes;
+                int Samples;
+                int Started;
+                int Stopped;
+                int Commands;
+                HCommand LastCommand;
+                void* LastContent;
+
+                TestWriter(size_t blocksize, bool multipleWrites = true):
+                    Writes(0),
+                    Samples(0),
+                    _writer(nullptr),
+                    Started(0),
+                    Stopped(0),
+                    _first(true),
+                    _multipleWrites(multipleWrites),
+                    Commands(0),
+                    LastContent(nullptr)
+                {
+                    Received = new T[blocksize];
+                    memset((void*) Received, 0, blocksize * sizeof(T));
+                }
+
+                TestWriter(HWriter<T>* writer, size_t blocksize, bool multipleWrites = true):
+                        Writes(0),
+                        Samples(0),
+                        _writer(writer),
+                        Started(0),
+                        Stopped(0),
+                        _first(true),
+                        _multipleWrites(multipleWrites),
+                        Commands(0),
+                        LastContent(nullptr)
+                {
+                    Received = new T[blocksize];
+                    memset((void*) Received, 0, blocksize * sizeof(T));
+                }
+
+                TestWriter(HWriterConsumer<T>* consumer, size_t blocksize, bool multipleWrites = true):
+                        Writes(0),
+                        Samples(0),
+                        _writer(nullptr),
+                        Started(0),
+                        Stopped(0),
+                        _first(true),
+                        _multipleWrites(multipleWrites),
+                        Commands(0),
+                        LastContent(nullptr)
+                {
+                    Received = new T[blocksize];
+                    memset((void*) Received, 0, blocksize * sizeof(T));
+                    consumer->SetWriter(this->Writer());
+                }
+
+                ~TestWriter()
+                {
+                    delete[] Received;
+                    if( LastContent != nullptr )
+                    {
+                        free(LastContent);
+                    }
+                }
+
+                int Write(T* src, size_t blocksize)
+                {
+                    if (!_multipleWrites && !_first)
+                    {
+                        return 0;
+                    }
+
+                    _first = false;
+                    memcpy((void*) Received, (void*) src, blocksize * sizeof(T));
+                    Writes++;
+                    Samples += blocksize;
+                    if( _writer != nullptr ) {
+                        _writer->Write(src, blocksize);
+                    }
+                    return blocksize;
+                }
+
+                void SetWriter(HWriter<T>* writer)
+                {
+                    _writer = writer;
+                }
+
+                bool Start()
+                {
+                    Started++;
+                    return true;
+                }
+
+                bool Stop()
+                {
+                    Stopped++;
+                    return true;
+                }
+
+                /** Execute or carry through a command */
+                bool Command(HCommand* command) {
+
+                    if( LastContent != nullptr )
+                    {
+                        free(LastContent);
+                        LastContent = nullptr;
+                    }
+
+                    if( _writer != nullptr )
+                    {
+                        if( !_writer->Command(command) )
+                        {
+                            return false;
+                        }
+                    }
+
+                    Commands++;
+                    LastCommand.Length = command->Length;
+                    LastCommand.Opcode = command->Opcode;
+                    LastCommand.Class = command->Class;
+                    LastCommand.Data = command->Data;
+
+                    if( command->Length > 0 ) {
+                        LastContent = malloc(command->Length);
+                        memcpy(LastContent, (void*) command->Data.Content, command->Length);
+                    }
+
+                    return true;
+                }
+        };
+
+        static HCommand TestNopCommand;
+
+    public:
+
         virtual void run() = 0;
         virtual const char* name() = 0;
 };

@@ -26,6 +26,12 @@ class HNetworkReader : public HReader<T>
 
         /** Read a block of samples from the network */
         int Read(T* dest, size_t blocksize);
+
+        /** Execute and/or pass on a command */
+        bool Command(HCommand* command) {
+            // Command can go no further, transfering commands on the network is done by only by the HNetworkProcessor
+            return true;
+        }
 };
 
 #endif

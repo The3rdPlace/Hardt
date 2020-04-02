@@ -14,6 +14,12 @@ class HLocalOscillator : public HVfo<T>
 
         /** Construct a new HLocalOscillator with the given samplingrate and frequency */
         HLocalOscillator(H_SAMPLE_RATE rate, int frequency, int amplitude = 10);
+
+        /** Execute and/or pass on a command */
+        bool Command(HCommand* command) {
+            // No further propagation of commands
+            return true;
+        }
 };
 
 #endif

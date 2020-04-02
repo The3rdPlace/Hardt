@@ -75,6 +75,12 @@ class HSignalLevel : public HOutput<T, HSignalLevelResult>
 
         /** Process a block of samples */
         int Output(T* src, size_t blocksize);
+
+        /** Execute or carry through a command */
+        bool Command(HCommand* command) {
+            // No ruther propagation of commands
+            return true;
+        }
 };
 
 #endif

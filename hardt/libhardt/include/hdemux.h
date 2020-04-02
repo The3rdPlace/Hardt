@@ -58,6 +58,17 @@ class HDeMux : public HWriter<T>, HWriterConsumer<T>
                 _buffers[i] = new T[_blocksize / _writers.size()];
             }
         }
+
+        bool Command(HCommand* command) {
+            typename std::vector< HWriter<T>* >::iterator it;
+
+            for( it = _writers.begin(); it != _writers.end(); it++ ) {
+                if( !(*it)->Command(command) ) {
+                    return false;
+                }
+            }
+            return true;
+        }
 };
 
 #endif

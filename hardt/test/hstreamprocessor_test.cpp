@@ -10,6 +10,7 @@ class HStreamProcessor_Test: public Test
         void run()
         {
             UNITTEST(test_read_write);
+            UNITTEST(test_command);
         }
 
         const char* name()
@@ -19,60 +20,53 @@ class HStreamProcessor_Test: public Test
 
     private:
 
-        class TestReader : public HReader<int8_t>
-        {
-            private:
-
-                int8_t* _data;
-
-            public:
-
-                TestReader(int8_t* data):
-                    _data(data)
-                {}
-
-                int Read(int8_t* dest, size_t blocksize)
-                {
-                    memcpy(dest, _data, blocksize * sizeof(int8_t));
-                    return blocksize;
-                }
-        };
-
-        class TestWriter : public HWriter<int8_t>
-        {
-            private:
-
-                int8_t* _received;
-                bool* _terminated;
-
-            public:
-
-                TestWriter(int8_t* received, bool* terminationToken):
-                    _received(received),
-                    _terminated(terminationToken)
-                {}
-
-                int Write(int8_t* src, size_t blocksize)
-                {
-                    memcpy(_received, src, blocksize * sizeof(int8_t));
-                    *_terminated = true;
-                    return blocksize;
-                }
-        };
-
         void test_read_write()
         {
             bool terminated = false;
             int8_t expected[] = {1, 3, 2, 4, 3, 5, 4, 6, 5, 7, 6, 8, 7, 9};
-            int8_t received[14];
-            memset(received, 0, 14 * sizeof(int8_t));
 
-            TestReader rdr(expected);
-            TestWriter wr(received, &terminated);
+            TestReader<int8_t> rdr(expected, 14);
+            TestWriter<int8_t> wr(14);
             HStreamProcessor<int8_t> proc(&wr, &rdr, 14, &terminated);
 
-            proc.Run();
+            proc.Run(1);
 
-            ASSERT_IS_EQUAL(memcmp(received, expected, 14 * sizeof(int8_t)), 0);
+            ASSERT_IS_EQUAL(memcmp(wr.Received, expected, 14 * sizeof(int8_t)), 0);
+        }
+
+        void test_command()
+        {
+            bool terminated = false;
+
+            TestReader<int8_t> rdr(nullptr, 0);
+            TestWriter<int8_t> wr(0);
+            HStreamProcessor<int8_t> proc(&wr, &rdr, 0, &terminated);
+
+            HCommandData data;
+            data.State = false;
+            ASSERT_IS_TRUE(proc.Command(HCOMMAND_CLASS::NONE, HCOMMAND_OPCODE::NOP, 0, data));
+            ASSERT_IS_EQUAL(rdr.Commands, 1);
+            ASSERT_IS_EQUAL(rdr.LastCommand.Class, (short) HCOMMAND_CLASS::NONE);
+            ASSERT_IS_EQUAL(rdr.LastCommand.Opcode, (short) HCOMMAND_OPCODE::NOP);
+            ASSERT_IS_EQUAL(rdr.LastCommand.Length, (short) 0);
+            ASSERT_IS_TRUE(!rdr.LastCommand.Data.State);
+            ASSERT_IS_EQUAL(wr.Commands, 1);
+            ASSERT_IS_EQUAL(wr.LastCommand.Class, (short) HCOMMAND_CLASS::NONE);
+            ASSERT_IS_EQUAL(wr.LastCommand.Opcode, (short) HCOMMAND_OPCODE::NOP);
+            ASSERT_IS_EQUAL(wr.LastCommand.Length, (short) 0);
+            ASSERT_IS_TRUE(!wr.LastCommand.Data.State);
+
+            data.State = true;
+            ASSERT_IS_TRUE(proc.Command(HCOMMAND_CLASS::NONE, HCOMMAND_OPCODE::NOP, 919, data));
+            ASSERT_IS_EQUAL(rdr.Commands, 2);
+            ASSERT_IS_EQUAL(rdr.LastCommand.Class, (short) HCOMMAND_CLASS::NONE);
+            ASSERT_IS_EQUAL(rdr.LastCommand.Opcode, (short) HCOMMAND_OPCODE::NOP);
+            ASSERT_IS_EQUAL(rdr.LastCommand.Length, (short) 919);
+            ASSERT_IS_TRUE(rdr.LastCommand.Data.State);
+            ASSERT_IS_EQUAL(wr.Commands, 2);
+            ASSERT_IS_EQUAL(wr.LastCommand.Class, (short) HCOMMAND_CLASS::NONE);
+            ASSERT_IS_EQUAL(wr.LastCommand.Opcode, (short) HCOMMAND_OPCODE::NOP);
+            ASSERT_IS_EQUAL(wr.LastCommand.Length, (short) 919);
+            ASSERT_IS_TRUE(wr.LastCommand.Data.State);
         }
 } hstreamprocessor_test;

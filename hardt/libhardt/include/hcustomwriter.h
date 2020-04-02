@@ -104,6 +104,11 @@ class HCustomWriter : public HWriter<T>
 
             return new HCustomWriter<T>(func, consumer);
         }
+
+        bool Command(HCommand* command) {
+            // Terminates a command
+            return true;
+        }
 };
 
 #endif

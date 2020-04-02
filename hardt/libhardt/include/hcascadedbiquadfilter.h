@@ -98,6 +98,14 @@ class HCascadedBiQuadFilter: public HReader<T>, public HWriter<T>, public HWrite
 
             return new HCascadedBiQuadFilter<T>(reader, coeffs.data(), coeffs.size(), blocksize);
         }
+
+        /** Execute or carry through a command */
+        bool Command(HCommand* command) {
+            if( _filterCount > 0 ) {
+                return _filters[0]->Command(command);
+            }
+            return true;
+        }
 };
 
 #endif

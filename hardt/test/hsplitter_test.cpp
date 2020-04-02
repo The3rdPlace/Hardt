@@ -20,7 +20,7 @@ class HSplitter_Test: public Test
 
     private:
 
-        template <class T>
+        /*template <class T>
         class TestWriter : public HWriter<T>, public HWriterConsumer<T>
         {
             public:
@@ -48,7 +48,13 @@ class HSplitter_Test: public Test
                 }
 
                 void SetWriter(HWriter<T>* writer) {}
-        };
+
+             Execute or carry through a command
+            bool Command(HCommand* command) {
+                // No ruther propagation of commands
+                return true;
+            }
+        };*/
 
         void test_write()
         {
@@ -90,6 +96,11 @@ class HSplitter_Test: public Test
             ASSERT_IS_EQUAL(memcmp((void*) writer1.Received, (void*) input, 10 * sizeof(int8_t)), 0);
             ASSERT_IS_EQUAL(memcmp((void*) writer2.Received, (void*) input, 10 * sizeof(int8_t)), 0);
             ASSERT_IS_EQUAL(memcmp((void*) writer3.Received, (void*) input, 10 * sizeof(int8_t)), 0);
+
+            ASSERT_IS_TRUE(splitter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(writer1.Commands, 1);
+            ASSERT_IS_EQUAL(writer2.Commands, 1);
+            ASSERT_IS_EQUAL(writer3.Commands, 1);
         }
 
         void test_ignore_multiple_setwriter_calls()
@@ -115,6 +126,10 @@ class HSplitter_Test: public Test
 
             ASSERT_IS_EQUAL(writer1.Writes, 1);
             ASSERT_IS_EQUAL(writer2.Writes, 1);
+
+            ASSERT_IS_TRUE(Parent.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(writer1.Commands, 1);
+            ASSERT_IS_EQUAL(writer2.Commands, 1);
         }
 
 } hsplitter_test;

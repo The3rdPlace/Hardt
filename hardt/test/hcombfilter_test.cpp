@@ -20,64 +20,30 @@ class HCombFilter_Test: public Test
 
     public:
 
-        int8_t input[1025];
+        int8_t input[1024];
 
         HCombFilter_Test()
         {
-            for( int i = 0; i < 1025; i++ )
+            for( int i = 0; i < 1024; i++ )
             {
                 input[i] = 0;
             }
             input[0] = 1;
         }
 
-        template <class T>
-        class TestWriter : public HWriter<T>
-        {
-            public:
-
-                int8_t received[1024];
-
-                int Write(T* src, size_t blocksize)
-                {
-                    memcpy((void*) received, src, blocksize * sizeof(T));
-                    return blocksize;
-                }
-        };
-
-        template <class T>
-        class TestReader : public HReader<T>
-        {
-            private:
-
-                T* _input;
-
-            public:
-
-                TestReader(T* input):
-                    _input(input)
-                {}
-
-                int Read(T* dest, size_t blocksize)
-                {
-                    memcpy((void*) dest, _input, blocksize * sizeof(T));
-                    return blocksize;
-                }
-        };
-
         void test_feedforward_filter_as_writer()
         {
-            TestWriter<int8_t> wr;
-            HCombFilter<int8_t> filter(&wr, 48000, 50, -1, 1024);
+            TestWriter<int8_t> wr(1024);
+            HCombFilter<int8_t> filter(wr.Writer(), 48000, 50, -1, 1024);
 
             ASSERT_IS_EQUAL(filter.Write(input, 1024), 1024);
-            ASSERT_IS_EQUAL((int) wr.received[0], 1);
-            ASSERT_IS_EQUAL((int) wr.received[960], -1);
+            ASSERT_IS_EQUAL((int) wr.Received[0], 1);
+            ASSERT_IS_EQUAL((int) wr.Received[960], -1);
             for( int i = 0; i < 1024; i++)
             {
                 if( i != 0 && i != 960 )
                 {
-                    ASSERT_IS_EQUAL((int) wr.received[i], 0);
+                    ASSERT_IS_EQUAL((int) wr.Received[i], 0);
                 }
             }
 
@@ -94,11 +60,14 @@ class HCombFilter_Test: public Test
             {
                 ASSERT_FAIL("Expected HFilterIOException, but got other type");
             }
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
         }
 
         void test_feedforward_filter_as_reader()
         {
-            TestReader<int8_t> rd(input);
+            TestReader<int8_t> rd(input, 1024);
             HCombFilter<int8_t> filter(&rd, 48000, 50, -1, 1024);
 
             int8_t received[1024];
@@ -126,5 +95,8 @@ class HCombFilter_Test: public Test
             {
                 ASSERT_FAIL("Expected HFilterIOException, but got other type");
             }
+
+            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(rd.Commands, 1);
         }
 } hcombfilter_test;

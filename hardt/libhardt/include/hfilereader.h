@@ -31,6 +31,12 @@ class HFileReader : public HReader<T>
 
         /** Seek to this position in the file */
         void Seek(int bytes);
+
+        /** Execute and/or pass on a command */
+        bool Command(HCommand* command) {
+            // No further propagation of commands
+            return true;
+        }
 };
 
 #endif

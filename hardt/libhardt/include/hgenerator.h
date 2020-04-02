@@ -46,6 +46,11 @@ class HGenerator : public HReader<T>
         /** Calculate and fill generator sample lookup table */
         void Calculate(int frequency, T amplitude, float phase);
 
+        /** Execute and/or pass on a command */
+        bool Command(HCommand* command) {
+            // No further propagation of commands
+            return true;
+        }
 };
 
 #endif

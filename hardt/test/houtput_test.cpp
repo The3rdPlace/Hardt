@@ -88,6 +88,12 @@ class HOutput_Test: public Test
 
                 int counter;
                 int result;
+
+                /** Execute or carry through a command */
+                bool Command(HCommand* command) {
+                    // No ruther propagation of commands
+                    return true;
+                }
         };
 
         int readyCalled;
