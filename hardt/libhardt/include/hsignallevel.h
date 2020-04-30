@@ -41,6 +41,12 @@ struct HSignalLevelResult
 
     /** The average sample value over 10 blocks, in S degress */
     int AvgS;
+
+    /** The sum of all samples values. This is a unqualified measurement, so
+        the best use is to provide an instantaneous measurement of received
+        signal values at a single point in time (and location). The value is
+        not directly comparable with results removed in time or distance */
+    double Sum;
 };
 
 /** Reports signallevel for a sampled signal */
@@ -55,6 +61,7 @@ class HSignalLevel : public HOutput<T, HSignalLevelResult>
 
         int _avgCount;
         T* _avg;
+        double *_avgSum;
         int _avgPos;
 
         float _factor;
