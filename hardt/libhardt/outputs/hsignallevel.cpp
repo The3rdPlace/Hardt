@@ -9,6 +9,7 @@ HSignalLevel<T>::HSignalLevel(HWriter<HSignalLevelResult>* writer, int average, 
     _ref(ref),
     _scale(scale),
     _avg(NULL),
+    _avgSum(NULL),
     _avgPos(0),
     _avgCount(average > 0 ? average : 1)
 {
@@ -22,6 +23,7 @@ HSignalLevel<T>::HSignalLevel(HWriterConsumer<T>* consumer, int average, int ref
     _ref(ref),
     _scale(scale),
     _avg(NULL),
+    _avgSum(NULL),
     _avgPos(0),
     _avgCount(average > 0 ? average : 1)
 {
@@ -33,7 +35,9 @@ template <class T>
 void HSignalLevel<T>::Init()
 {
     _avg = new T[_avgCount];
+    _avgSum = new double[_avgCount];
     memset((void*) _avg, 0, sizeof(T) * _avgCount);
+    memset((void*) _avgSum, 0, sizeof(double) * _avgCount);
 
     _factor = (float) (std::numeric_limits<T>::is_signed ? std::numeric_limits<T>::max() : std::numeric_limits<T>::max() / 2) / 508;
 }
@@ -45,6 +49,10 @@ HSignalLevel<T>::~HSignalLevel()
     {
         delete _avg;
     }
+    if( _avgSum != NULL )
+    {
+        delete _avgSum;
+    }
 }
 
 template <class T>
@@ -55,6 +63,7 @@ int HSignalLevel<T>::Output(T* src, size_t blocksize)
     #pragma GCC diagnostic ignored "-Wabsolute-value"
     int max = 0;
     int min = std::numeric_limits<T>::max();
+    double sum = 0;
     for( int i = 0; i < blocksize; i++ )
     {
         if( abs(src[i]) > max )
@@ -65,6 +74,8 @@ int HSignalLevel<T>::Output(T* src, size_t blocksize)
         {
             min = abs(src[i]);
         }
+
+        sum += abs(src[i]);
     }
     #pragma GCC diagnostic pop
 
@@ -80,22 +91,27 @@ int HSignalLevel<T>::Output(T* src, size_t blocksize)
     }
 
     // Store this max
-    _avg[_avgPos++] = max;
+    _avg[_avgPos] = max;
+    _avgSum[_avgPos++] = sum;
 
     // If we have seen enough samples, calculate the average and execute the callback
     if( _avgPos >= _avgCount )
     {
         int avg = 0;
+        double avgSum = 0;
         for( int i = 0; i < _avgCount; i++ )
         {
             avg += _avg[i];
+            avgSum += _avgSum[i];
         }
         avg /= _avgCount;
+        avgSum /= _avgCount;
 
         // Store collected information
         _result.Max = max;
         _result.Min = min;
         _result.Avg = avg;
+        _result.Sum = avgSum;
 
         // Calculate signal level
         _result.Db = 20 * log10((float) ceil((_result.Max == 0 ? 0.25 : _result.Max) / (float) _factor));

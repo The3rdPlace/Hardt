@@ -9,7 +9,7 @@ class HSignalLevel_Test: public Test
 
         void run()
         {
-            UNITTEST(test_min_max_avg);
+            UNITTEST(test_min_max_avg_sum);
             UNITTEST(test_signallevel_int8);
             UNITTEST(test_signallevel_uint8);
             UNITTEST(test_signallevel_int16);
@@ -30,6 +30,7 @@ class HSignalLevel_Test: public Test
         int Min;
         int Max;
         int Avg;
+        double Sum;
         int callback(HSignalLevelResult* result, size_t length)
         {
             Db = result->Db;
@@ -40,11 +41,12 @@ class HSignalLevel_Test: public Test
             Min = result->Min;
             Max = result->Max;
             Avg = result->Avg;
+            Sum = result->Sum;
 
             return length;
         }
 
-        void test_min_max_avg()
+        void test_min_max_avg_sum()
         {
             int8_t input[10] = { 2, 4, 6, 4, 2, -1, -3, -5, -3, -1 };
 
@@ -57,6 +59,7 @@ class HSignalLevel_Test: public Test
             ASSERT_IS_EQUAL(Avg, 6);
             ASSERT_IS_EQUAL(Db, -27);
             ASSERT_IS_EQUAL(AvgDb, -27);
+            ASSERT_IS_EQUAL(Sum, (double) 31);
 
             // This test assumes that the average is calculated over the last 10 blocks
             siglevel.Write(input, 10);
