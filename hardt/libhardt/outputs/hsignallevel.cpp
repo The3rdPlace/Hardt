@@ -1,6 +1,8 @@
 #ifndef __HSIGNALLEVEL_CPP
 #define __HSIGNALLEVEL_CPP
 
+#include <cstdio>
+
 #include "hsignallevel.h"
 
 template <class T>

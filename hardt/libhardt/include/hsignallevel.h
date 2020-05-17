@@ -1,6 +1,9 @@
 #ifndef __HSIGNALLEVEL_H
 #define __HSIGNALLEVEL_H
 
+#include "hwriter.h"
+#include "hwriterconsumer.h"
+
 /**
     The result of a signallevel calculation on
     one or more blocks of samples.
