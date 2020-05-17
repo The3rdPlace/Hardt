@@ -25,12 +25,14 @@ class HTimer
         HTimer();
 
         /**
-            Create a new timer with a start date and time of NOW and a given stop date and time
+            Create a new timer with a start date and time of NOW and a given stop date and time.
+            The stop definition has the format "%HH:%MM" or "%YYYY-%mm-%dd %HH:%MM" (H = Hour, M = minute, Y = Year, m = month, d = day)
         */
         HTimer(char* stop);
 
         /**
             Create a new timer with a given start and stop date and time
+            The start and stop definition has the format "%HH:%MM" or "%YYYY-%mm-%dd %HH:%MM" (H = Hour, M = minute, Y = Year, m = month, d = day)
         */
         HTimer(char* start, char* stop);
 
@@ -45,11 +47,13 @@ class HTimer
 
         /**
             Set a (new) start date and time
+            The datetime definition has the format "%HH:%MM" or "%YYYY-%mm-%dd %HH:%MM" (H = Hour, M = minute, Y = Year, m = month, d = day)
         */
         void SetStart(char* datetime);
 
         /**
             Set a (new) stop date and time
+            The datetime definition has the format "%HH:%MM" or "%YYYY-%mm-%dd %HH:%MM" (H = Hour, M = minute, Y = Year, m = month, d = day)
         */
         void SetStop(char* datetime);
 
