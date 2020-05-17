@@ -71,12 +71,30 @@ class HTimer
         }
 
         /**
-            Returns true if the timer is currently active, thus would block in Wait()
+            Returns true if the timer is currently active, thus would not block in Wait()
         */
         bool Active()
         {
             time_t now = time(0);
             return _active && now > _start && now < _stop;
+        }
+
+        /**
+            Returns true if the timer is currently active and the start time has not yet arrived, thus would block in Wait()
+        */
+        bool Before()
+        {
+            time_t now = time(0);
+            return _active && now < _start;
+        }
+
+        /**
+            Returns true if the timer is currently active and the stop time has arrived, thus would not block in Wait()
+        */
+        bool After()
+        {
+            time_t now = time(0);
+            return _active && now > _stop;
         }
 
         /**
