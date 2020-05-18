@@ -11,6 +11,7 @@
 
 #include "hwriter.h"
 #include "hwriterconsumer.h"
+#include "hbufferedwriter.h"
 #include "hcustomwriter.h"
 #include "hreader.h"
 #include "hprocessor.h"
