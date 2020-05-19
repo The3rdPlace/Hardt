@@ -1,4 +1,9 @@
-hardt (1.0-17) RELEASED; urgency=medium
+hardt (1.0-18) RELEASED; urgency=medium
+
+  [ Henrik Witt-Hansen ]
+  * Added a new buffered writer to help with writing to slow sinks
+
+ -- Mackie <henrik@hardttoolkit.org>  Sun, 19 May 2020 15:16:00 +0100
 
   [ Henrik Witt-Hansen ]
   * Added a new summation field in the signallevel result object
