@@ -36,46 +36,27 @@ class HBufferedWriter : public HWriter<T>, public HWriterConsumer<T>
 
     public:
 
-        /** Create a new enabled buffered writer with a default reserved buffer size (in blocks) */
-        HBufferedWriter(size_t blocksize):
-            _blocksize(blocksize),
-            _blocksReserved(DEFAULT_BLOCKS_RESERVED),
-            _blocks(DEFAULT_BLOCKS_RESERVED),
-            _isDraining(false),
-            _enabled(true)
-        {
-            Init();
-        }
-
-        /** Create a new buffered writer with a preset enabled/disabled state and a default reserved buffer size (in blocks) */
-        HBufferedWriter(size_t blocksize, bool enabled):
-                _blocksize(blocksize),
-                _blocksReserved(DEFAULT_BLOCKS_RESERVED),
-                _blocks(DEFAULT_BLOCKS_RESERVED),
-                _isDraining(false),
-                _enabled(enabled)
-        {
-            Init();
-        }
-
-        /** Create a new enabled buffered writer with a specific reserved buffer size (in blocks) */
-        HBufferedWriter(size_t blocksize, int reserved):
+        /** Create a new buffered writer with a preset enabled/disabled state and with a specific reserved buffer size (in blocks) */
+        HBufferedWriter(HWriterConsumer<T>* consumer, size_t blocksize, int reserved = DEFAULT_BLOCKS_RESERVED, bool enabled = true):
                 _blocksize(blocksize),
                 _blocksReserved(reserved),
                 _blocks(reserved),
                 _isDraining(false),
-                _enabled(true)
+                _enabled(enabled)
         {
             Init();
+
+            consumer->SetWriter(this->Writer());
         }
 
         /** Create a new buffered writer with a preset enabled/disabled state and with a specific reserved buffer size (in blocks) */
-        HBufferedWriter(size_t blocksize, int reserved, bool enabled):
+        HBufferedWriter(HWriter<T>* writer, size_t blocksize, int reserved = DEFAULT_BLOCKS_RESERVED, bool enabled = true):
                 _blocksize(blocksize),
                 _blocksReserved(reserved),
                 _blocks(reserved),
                 _isDraining(false),
-                _enabled(enabled)
+                _enabled(enabled),
+                _writer(writer)
         {
             Init();
         }
@@ -129,7 +110,7 @@ class HBufferedWriter : public HWriter<T>, public HWriterConsumer<T>
 	        return _writer->Command(command);
         }
 
-        /** This function must be implemented if you inherit this interface */
+        /** Set the downstream writer */
         void SetWriter(HWriter<T>* writer)
         {
             _writer = writer;

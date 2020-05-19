@@ -26,8 +26,8 @@ class HBufferedWriter_Test: public Test
         {
             int8_t input[8] = {1, 2, 3, 4, 5, 6, 7, 8};
 
-            HBufferedWriter<int8_t> bufferedWriter(8, 10);
-            TestWriter<int8_t> writer(bufferedWriter.Consumer(), 8);
+            TestWriter<int8_t> writer(8);
+            HBufferedWriter<int8_t> bufferedWriter(writer.Writer(), 8, 10);
 
             bufferedWriter.Write(input, 8);
             bufferedWriter.Write(input, 8);
@@ -49,8 +49,9 @@ class HBufferedWriter_Test: public Test
         {
             int8_t input[8] = {1, 2, 3, 4, 5, 6, 7, 8};
 
-            HBufferedWriter<int8_t> bufferedWriter(8, 10);
-            TestWriter<int8_t> writer(bufferedWriter.Consumer(), 8);
+            TestWriter<int8_t> writer(8);
+            HBufferedWriter<int8_t> bufferedWriter(writer.Writer(), 8, 10);
+
 
             bufferedWriter.Write(input, 8);
             bufferedWriter.Write(input, 8);
@@ -74,8 +75,8 @@ class HBufferedWriter_Test: public Test
         {
             int8_t input[8] = {1, 2, 3, 4, 5, 6, 7, 8};
 
-            HBufferedWriter<int8_t> bufferedWriter(8, 10, false);
-            TestWriter<int8_t> writer(bufferedWriter.Consumer(), 8);
+            TestWriter<int8_t> writer(8);
+            HBufferedWriter<int8_t> bufferedWriter(writer.Writer(), 8, 10, false);
 
             ASSERT_IS_EQUAL(bufferedWriter.Enabled(), false);
 
@@ -101,8 +102,8 @@ class HBufferedWriter_Test: public Test
         {
             int8_t input[8] = {1, 2, 3, 4, 5, 6, 7, 8};
 
-            HBufferedWriter<int8_t> bufferedWriter(8, 10);
-            TestWriter<int8_t> writer(bufferedWriter.Consumer(), 8);
+            TestWriter<int8_t> writer(8);
+            HBufferedWriter<int8_t> bufferedWriter(writer.Writer(), 8, 10);
 
             for( int i = 0; i < 100000; i++ )
             {
@@ -116,8 +117,8 @@ class HBufferedWriter_Test: public Test
 
         void inactive_drain()
         {
-            HBufferedWriter<int8_t> bufferedWriter(8, 10);
-            TestWriter<int8_t> writer(bufferedWriter.Consumer(), 8);
+            TestWriter<int8_t> writer(8);
+            HBufferedWriter<int8_t> bufferedWriter(writer.Writer(), 8, 10);
 
             bufferedWriter.Start();
 
@@ -130,8 +131,8 @@ class HBufferedWriter_Test: public Test
         {
             int8_t input[8] = {1, 2, 3, 4, 5, 6, 7, 8};
 
-            HBufferedWriter<int8_t> bufferedWriter(8, 10);
-            TestWriter<int8_t> writer(bufferedWriter.Consumer(), 8);
+            TestWriter<int8_t> writer(8);
+            HBufferedWriter<int8_t> bufferedWriter(writer.Writer(), 8, 10);
 
             bufferedWriter.Start();
 
@@ -153,8 +154,8 @@ class HBufferedWriter_Test: public Test
         {
             int8_t input[8] = {1, 2, 3, 4, 5, 6, 7, 8};
 
-            HBufferedWriter<int8_t> bufferedWriter(8, 10);
-            TestWriter<int8_t> writer(bufferedWriter.Consumer(), 8, true, 10);
+            TestWriter<int8_t> writer(8, true, 10);
+            HBufferedWriter<int8_t> bufferedWriter(writer.Writer(), 8, 10);
 
             bufferedWriter.Start();
 
