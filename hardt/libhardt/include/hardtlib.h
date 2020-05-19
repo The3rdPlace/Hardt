@@ -30,6 +30,7 @@ Abstract base classes with no, or little implementation
 Include api function declarations
 ********************************************************************/
 
+#include "hbufferedwriter.cpp"
 #include "hchunkwriter.cpp"
 #include "hconverter.h"
 #include "houtput.h"
