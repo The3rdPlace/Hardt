@@ -5,6 +5,8 @@ hardt (1.0-18) RELEASED; urgency=medium
 
  -- Mackie <henrik@hardttoolkit.org>  Sun, 19 May 2020 15:16:00 +0100
 
+hardt (1.0-17) RELEASED; urgency=medium
+
   [ Henrik Witt-Hansen ]
   * Added a new summation field in the signallevel result object
 

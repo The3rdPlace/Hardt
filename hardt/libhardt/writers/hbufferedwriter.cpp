@@ -16,6 +16,11 @@ int HBufferedWriter<T>::Write(T* src, size_t blocksize)
         return _writer->Write(src, blocksize);
     }
 
+    // Check the blocksize
+    if( blocksize != _blocksize ) {
+        throw new HWriterIOException("Invalid blocksize for write to HBufferedWriter");
+    }
+
     // --------------------------------------------------------------------------------------
     // ENTER CRITICAL SECTION: Access to the buffer
     std::unique_lock<std::mutex> lck (_readWriteMutex, std::defer_lock);
