@@ -263,6 +263,7 @@ class Test
 
                 bool _first;
                 bool _multipleWrites;
+                int _writeDelay;
 
                 T* Received;
                 int Writes;
@@ -273,7 +274,7 @@ class Test
                 HCommand LastCommand;
                 void* LastContent;
 
-                TestWriter(size_t blocksize, bool multipleWrites = true):
+                TestWriter(size_t blocksize, bool multipleWrites = true, int writeDelay = 0):
                     Writes(0),
                     Samples(0),
                     _writer(nullptr),
@@ -281,6 +282,7 @@ class Test
                     Stopped(0),
                     _first(true),
                     _multipleWrites(multipleWrites),
+                    _writeDelay(writeDelay),
                     Commands(0),
                     LastContent(nullptr)
                 {
@@ -288,7 +290,7 @@ class Test
                     memset((void*) Received, 0, blocksize * sizeof(T));
                 }
 
-                TestWriter(HWriter<T>* writer, size_t blocksize, bool multipleWrites = true):
+                TestWriter(HWriter<T>* writer, size_t blocksize, bool multipleWrites = true, int writeDelay = 0):
                         Writes(0),
                         Samples(0),
                         _writer(writer),
@@ -296,6 +298,7 @@ class Test
                         Stopped(0),
                         _first(true),
                         _multipleWrites(multipleWrites),
+                        _writeDelay(writeDelay),
                         Commands(0),
                         LastContent(nullptr)
                 {
@@ -303,7 +306,7 @@ class Test
                     memset((void*) Received, 0, blocksize * sizeof(T));
                 }
 
-                TestWriter(HWriterConsumer<T>* consumer, size_t blocksize, bool multipleWrites = true):
+                TestWriter(HWriterConsumer<T>* consumer, size_t blocksize, bool multipleWrites = true, int writeDelay = 0):
                         Writes(0),
                         Samples(0),
                         _writer(nullptr),
@@ -311,6 +314,7 @@ class Test
                         Stopped(0),
                         _first(true),
                         _multipleWrites(multipleWrites),
+                        _writeDelay(writeDelay),
                         Commands(0),
                         LastContent(nullptr)
                 {
@@ -342,6 +346,9 @@ class Test
                     if( _writer != nullptr ) {
                         _writer->Write(src, blocksize);
                     }
+
+                    usleep(_writeDelay);
+
                     return blocksize;
                 }
 

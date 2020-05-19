@@ -24,30 +24,60 @@ class HBufferedWriter : public HWriter<T>, public HWriterConsumer<T>
         std::vector<T*> _buffer;
         int _blocks;
 
+        bool _enabled;
+
         std::thread* _drain;
         bool _isDraining;
 
         std::mutex _drainMutex;
         std::condition_variable _drainLock;
 
+        std::mutex _readWriteMutex;
+
     public:
 
-        /** Create a new buffered writer with a default reserved buffer size */
+        /** Create a new enabled buffered writer with a default reserved buffer size (in blocks) */
         HBufferedWriter(size_t blocksize):
             _blocksize(blocksize),
             _blocksReserved(DEFAULT_BLOCKS_RESERVED),
-            _blocks(DEFAULT_BLOCKS_RESERVED)
+            _blocks(DEFAULT_BLOCKS_RESERVED),
+            _isDraining(false),
+            _enabled(true)
         {
-            _buffer.reserve( _blocks * sizeof(T*) );
+            Init();
         }
 
-        /** Create a new buffered writer with a specific reserved buffer size */
+        /** Create a new buffered writer with a preset enabled/disabled state and a default reserved buffer size (in blocks) */
+        HBufferedWriter(size_t blocksize, bool enabled):
+                _blocksize(blocksize),
+                _blocksReserved(DEFAULT_BLOCKS_RESERVED),
+                _blocks(DEFAULT_BLOCKS_RESERVED),
+                _isDraining(false),
+                _enabled(enabled)
+        {
+            Init();
+        }
+
+        /** Create a new enabled buffered writer with a specific reserved buffer size (in blocks) */
         HBufferedWriter(size_t blocksize, int reserved):
                 _blocksize(blocksize),
                 _blocksReserved(reserved),
-                _blocks(reserved)
+                _blocks(reserved),
+                _isDraining(false),
+                _enabled(true)
         {
-            _buffer.reserve( _blocks * sizeof(T*) );
+            Init();
+        }
+
+        /** Create a new buffered writer with a preset enabled/disabled state and with a specific reserved buffer size (in blocks) */
+        HBufferedWriter(size_t blocksize, int reserved, bool enabled):
+                _blocksize(blocksize),
+                _blocksReserved(reserved),
+                _blocks(reserved),
+                _isDraining(false),
+                _enabled(enabled)
+        {
+            Init();
         }
 
         /** Delete a buffered writer */
@@ -108,7 +138,9 @@ class HBufferedWriter : public HWriter<T>, public HWriterConsumer<T>
         /** Write all buffered blocks before returning */
         void Flush()
         {
-
+            while( _isDraining && _buffer.size() > 0 ) {
+                usleep(100);
+            }
         }
 
         /** Get the number of blocks currently reserved in the buffer */
@@ -124,7 +156,17 @@ class HBufferedWriter : public HWriter<T>, public HWriterConsumer<T>
             return _buffer.size();
         }
 
+        /** Returns true if buffering is enabled, otherwise false */
+        bool Enabled()
+        {
+            return _enabled;
+        }
+
     private:
+
+        void Init() {
+            _buffer.reserve( _blocks * sizeof(T*) );
+        }
 
         void StartDrain() {
 

@@ -10,6 +10,17 @@
 template <class T>
 int HBufferedWriter<T>::Write(T* src, size_t blocksize)
 {
+    // Check if buffering is disabled
+    if( !_enabled )
+    {
+        return _writer->Write(src, blocksize);
+    }
+
+    // --------------------------------------------------------------------------------------
+    // ENTER CRITICAL SECTION: Access to the buffer
+    std::unique_lock<std::mutex> lck (_readWriteMutex, std::defer_lock);
+    lck.lock();
+
     // Check capacity
     if( _buffer.size() == _blocks )
     {
@@ -23,8 +34,11 @@ int HBufferedWriter<T>::Write(T* src, size_t blocksize)
     memcpy((void*) block, (void*) src, blocksize * sizeof(T));
     _buffer.push_back(block);
 
+    lck.unlock();
+    // EXIT CRITICAL_SECTION
+    // --------------------------------------------------------------------------------------
+
     // Notify a locked drain
-    std::unique_lock<std::mutex> lck(_drainMutex);
     _drainLock.notify_one();
 
     return blocksize;
@@ -44,10 +58,20 @@ void HBufferedWriter<T>::Drain()
         return;
     }
 
+    // --------------------------------------------------------------------------------------
+    // ENTER CRITICAL SECTION: Access to the buffer
+    std::unique_lock<std::mutex> lck (_readWriteMutex, std::defer_lock);
+    lck.lock();
+
     // Drain one block
-    _writer->Write( _buffer.at(0), _blocksize);
+    T* src = _buffer.at(0);
+    _writer->Write(src, _blocksize);
+    delete[] src;
     _buffer.erase( _buffer.begin(), _buffer.begin() + 1);
 
+    lck.unlock();
+    // EXIT CRITICAL_SECTION
+    // --------------------------------------------------------------------------------------
 }
 
 /********************************************************************
