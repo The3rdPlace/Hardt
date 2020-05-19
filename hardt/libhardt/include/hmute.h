@@ -3,7 +3,7 @@
 
 /**
     A filter that can be muted. When muted, reads will return
-    zero samples and writes will silently discard the samples.
+    zero samples and writes will write zero samples.
 
     When the component is muted, Stop() will be called on the
     up- or downstream writer or reader. And when unmuted, Start()
@@ -40,9 +40,9 @@ class HMute : public HFilter<T>
         void SetMuted(bool muted);
 
         /** Get state */
-	bool GetMuted() {
-	    return _muted;
-	}
+        bool GetMuted() {
+            return _muted;
+        }
 
         /** Initialize before first write */
         bool Start();

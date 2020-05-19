@@ -68,6 +68,7 @@
 #include "hmux.h"
 #include "hswitch.h"
 #include "hmute.h"
+#include "hbreaker.h"
 #include "hnullreader.h"
 #include "hpassthrough.h"
 #include "hagc.h"

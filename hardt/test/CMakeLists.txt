@@ -44,6 +44,7 @@ target_sources(hardt_test
     hprobe_test.cpp
     hagc_test.cpp
 	hbufferedwriter_test.cpp
+	hbreaker_test.cpp
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")

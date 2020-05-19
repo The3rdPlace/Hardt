@@ -68,6 +68,10 @@ void HMute<T>::SetMuted(bool muted)
         _muted = muted;
         HFilter<T>::Start();
     }
+    else
+    {
+        HLog("Huhhh?");
+    }
 }
 
 template <class T>

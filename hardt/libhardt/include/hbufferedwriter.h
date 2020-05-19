@@ -82,20 +82,28 @@ class HBufferedWriter : public HWriter<T>, public HWriterConsumer<T>
         /** Initialize before first write */
         bool Start()
         {
+            HLog("Start() called");
             if( _isDraining ) {
                 throw new HWriterIOException("Drain thread is running. Writer must not be started again without being stopped first");
             }
 
+            HLog("Starting downstream writer");
+            bool started = _writer->Start();
+
+            HLog("Starting drain thread");
             StartDrain();
 
-            return _writer->Start();
+            HLog("Drain thread is running");
+            return started;
         }
 
         /** Clean after last write */
         bool Stop()
         {
+            HLog("Stop() called");
             StopDrain();
 
+            HLog("Drain thread is stopped, stopping downstream writer");
             return _writer->Stop();
         }
 

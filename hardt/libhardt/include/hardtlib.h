@@ -80,6 +80,7 @@ Include api function declarations
 #include "hmux.cpp"
 #include "hswitch.cpp"
 #include "hmute.cpp"
+#include "hbreaker.cpp"
 #include "hnullreader.cpp"
 #include "hpassthrough.cpp"
 #include "hagc.cpp"
