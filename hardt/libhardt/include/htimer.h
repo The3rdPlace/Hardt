@@ -76,7 +76,7 @@ class HTimer
         bool Active()
         {
             time_t now = time(0);
-            return _active && now > _start && now < _stop;
+            return _active && now >= _start && now < _stop;
         }
 
         /**
