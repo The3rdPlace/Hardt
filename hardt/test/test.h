@@ -186,6 +186,8 @@ class Test
                 void* LastContent;
 
                 TestReader(T* data, int blocksize, bool multipleReads = true):
+                        Reads(0),
+                        Samples(0),
                         _data(data),
                         _first(true),
                         _multipleReads(multipleReads),
