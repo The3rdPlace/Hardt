@@ -37,6 +37,13 @@
     Unpack the sources, run cmake and then make.  I prefer out-of-source builds, so for me, that would be:
     "mkdir build; cd build; cmake ../.; make" and optionally "make install"
 
+	Hardt depends on the following packages as well as your standard (clang) c++ build tools:
+	- PortAudio: 
+		- sudo apt install libportaudio2
+	    - sudo apt install portaudio19-dev
+	- Librtlsdr: 
+		- sudo apt install rtl-sdr
+		- sudo apt install librtlsdr-dev
 
 	\section classes_section Classes
 	Hardt provides the most commonly needed building blocks for DSP applications. That is in- and output from soundcards or files (pcm or wav format),
@@ -106,5 +113,29 @@ void HWriteErrorMessage(std::string file, std::string line, const char* fmt, ...
     Call HInit() as soon as you can in your app.
 */
 void HInit(std::string logname, bool verbose = true);
+
+/**
+    Supported sample format
+*/
+#define H_SAMPLE_FORMAT int
+#define H_SAMPLE_FORMAT_INT_8 1
+#define H_SAMPLE_FORMAT_UINT_8 2
+#define H_SAMPLE_FORMAT_INT_16 3
+//#define H_SAMPLE_FORMAT_INT_24 4 // Need some extra work in the reader before we can enable this
+#define H_SAMPLE_FORMAT_INT_32 5
+
+/**
+    Supported samplerates. Not all rates are supported by any given card or device.
+	Others may be needed for decimation or upsampling in applications
+*/
+#define H_SAMPLE_RATE int
+#define H_SAMPLE_RATE_8K 8000
+#define H_SAMPLE_RATE_11K 11025
+#define H_SAMPLE_RATE_22K 22050
+#define H_SAMPLE_RATE_32K 32000
+#define H_SAMPLE_RATE_44K1 44100
+#define H_SAMPLE_RATE_48K 48000
+#define H_SAMPLE_RATE_96K 96000
+#define H_SAMPLE_RATE_192K 192000
 
 #endif

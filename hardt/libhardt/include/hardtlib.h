@@ -15,6 +15,7 @@ Initialization, logging and other basic functions.
 #include "hobject.h"
 #include "hfft.h"
 #include "hfir.h"
+#include "hrtl2832.h"
 
 /********************************************************************
 Abstract base classes with no, or little implementation

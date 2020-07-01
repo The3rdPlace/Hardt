@@ -10,6 +10,7 @@
 #include "htimer.h"
 #include "hfft.h"
 #include "hfir.h"
+#include "hrtl2832.h"
 
 #include "hwriter.h"
 #include "hwriterconsumer.h"

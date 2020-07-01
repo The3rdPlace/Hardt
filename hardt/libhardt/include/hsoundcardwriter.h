@@ -4,6 +4,8 @@
 #include <mutex>
 #include <condition_variable>
 
+#include "hardt.h"
+
 #define NUMBER_OF_BUFFERS 4
 
 /**

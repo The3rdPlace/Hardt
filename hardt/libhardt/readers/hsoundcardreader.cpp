@@ -45,7 +45,7 @@ HSoundcardReader<T>::HSoundcardReader(int device, H_SAMPLE_RATE rate, int channe
     PaStreamParameters inputParameters;
     inputParameters.device = device;
     inputParameters.channelCount = channels;
-    inputParameters.sampleFormat = format;
+    inputParameters.sampleFormat = HSoundcard::GetPortAudioFormat(format);
     inputParameters.suggestedLatency = Pa_GetDeviceInfo(device)->defaultLowInputLatency ;
     inputParameters.hostApiSpecificStreamInfo = NULL;
 
