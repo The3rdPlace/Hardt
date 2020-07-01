@@ -106,7 +106,7 @@ int main(int argc, char** argv)
     HBiQuadFilter<HLowpassBiQuad<int16_t>, int16_t> lowpass(bandpass.Reader(), 2000, H_SAMPLE_RATE_48K, 0.7071f, 1, BLOCKSIZE);
 
     // Final boost of signal (output volume)
-    HGain<int16_t> volume(lowpass.Reader(), 200, BLOCKSIZE);
+    HGain<int16_t> volume(lowpass.Reader(), 20, BLOCKSIZE);
 
     // -------------------------------------------------------------------------------------
     // Setup dsp chain for writers - first to last
