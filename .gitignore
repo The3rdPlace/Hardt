@@ -49,3 +49,10 @@ docs
 
 # Doxygen
 doxygen.conf.in
+
+# Microsoft Code
+*.code-workspace
+.vscode
+
+# Distribution artifacts
+publish
