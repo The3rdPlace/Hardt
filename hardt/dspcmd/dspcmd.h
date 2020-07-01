@@ -19,6 +19,8 @@
     
     -a = Show a list of available audio devices
 
+    -t = Show a list of available RTL2832 devices
+
     -h = Show this help
 
     -v = Be verbose, dont write to logfiles but to stdout

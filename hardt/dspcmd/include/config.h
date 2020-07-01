@@ -11,6 +11,7 @@ struct DspCmdConfig
 {
     bool Verbose = false;
     bool ShowAudioDevices = false;
+    bool ShowRtl2832Devices = false;
 
     bool IsNetworkReaderClient = false;
     bool IsNetworkWriterServer = false;

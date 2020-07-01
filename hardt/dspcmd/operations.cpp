@@ -2371,6 +2371,32 @@ int RunOperation()
         return 0;
     }
 
+
+    // Show RTL2832 device information
+    if( Config.ShowRtl2832Devices ) {
+
+        if( HRtl2832::AvailableDevices() == 0 )
+        {
+            std::cout << "There is no RTL2832 devices available on this system" << std::endl;
+            return 0;
+        }
+
+        std::cout << "Default device is: " << HRtl2832::GetDefaultDevice() << std::endl;
+        std::cout << std::endl;
+
+        std::vector<HRtl2832::DeviceInformation> info = HRtl2832::GetDeviceInformation();
+        for( std::vector<HRtl2832::DeviceInformation>::iterator it = info.begin(); it != info.end(); it++)
+        {
+            std::cout << "Device: " << (*it).Device << std::endl;
+            std::cout << "Vendor: " << (*it).Vendor << std::endl;
+            std::cout << "Product: " << (*it).Product << std::endl;
+            std::cout << "Serial: " << (*it).Serial << std::endl;
+            std::cout << "Is default device: " << ((*it).IsDefaultDevice ? "yes" : "no") << std::endl;
+            std::cout << std::endl;
+        }
+        return 0;
+    }
+
     // Read from network and write to local file
     if( Config.IsNetworkReaderClient )
     {

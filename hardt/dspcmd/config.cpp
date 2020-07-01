@@ -41,6 +41,7 @@ bool parseArguments(int argc, char** argv)
     {
         Config.Verbose = argBoolCmp(argv[argNo], "-v", Config.Verbose);
         Config.ShowAudioDevices = argBoolCmp(argv[argNo], "-a", Config.ShowAudioDevices);
+        Config.ShowRtl2832Devices = argBoolCmp(argv[argNo], "-t", Config.ShowRtl2832Devices);
 
         Config.IsFileRecorder = argBoolCmp(argv[argNo], "-rf", Config.IsFileRecorder);
         Config.IsFilePlayer = argBoolCmp(argv[argNo], "-pf", Config.IsFilePlayer);
@@ -231,8 +232,13 @@ bool parseArguments(int argc, char** argv)
         if( argBoolCmp(argv[argNo], "-h", false) )
         {
             std::cout << "Usage: dspcmd [option [value]]" << std::endl << std::endl;
+
             std::cout << "$ dspcmd -a" << std::endl;
             std::cout << "Show a list of available audio devices" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "$ dspcmd -t" << std::endl;
+            std::cout << "Show a list of available RTL2832 devices" << std::endl;
             std::cout << std::endl;
 
             std::cout << "$ dspcmd -h" << std::endl;
