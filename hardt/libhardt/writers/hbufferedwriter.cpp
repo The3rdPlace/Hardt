@@ -70,13 +70,14 @@ void HBufferedWriter<T>::Drain()
 
     // Drain one block
     T* src = _buffer.at(0);
-    _writer->Write(src, _blocksize);
-    delete[] src;
     _buffer.erase( _buffer.begin(), _buffer.begin() + 1);
 
     lck.unlock();
     // EXIT CRITICAL_SECTION
     // --------------------------------------------------------------------------------------
+
+    _writer->Write(src, _blocksize);
+    delete[] src;
 }
 
 /********************************************************************
