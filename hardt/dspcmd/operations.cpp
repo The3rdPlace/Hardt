@@ -474,6 +474,77 @@ int RunFileConverter()
 }
 
 template <typename T>
+int RunClickRemoval()
+{
+   // Create reader
+    HReader<T>* rd;
+    if( strcmp(Config.InFileFormat, "wav") == 0 )
+    {
+        rd = new HWavReader<T>(Config.InputFile);
+    }
+    else if( strcmp(Config.InFileFormat, "pcm") == 0 )
+    {
+        rd = new HFileReader<T>(Config.InputFile);
+    }
+    else
+    {
+        std::cout << "Unknown input file format " << Config.InFileFormat << std::endl;
+        return -1;
+    }
+
+    // Create processor
+    HStreamProcessor<T> proc(rd, Config.Blocksize, &terminated);
+
+    // Create clickremoval filter
+    HClickRemovingFilter<T>* filter = new HClickRemovingFilter<T>(proc.Consumer(), Config.Blocksize);
+
+    // Create writer
+    HWriter<T>* wr;
+    if( strcmp(Config.OutFileFormat, "wav") == 0 )
+    {
+        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate, filter->Consumer());
+    }
+    else if( strcmp(Config.OutFileFormat, "pcm") == 0 )
+    {
+        wr = new HFileWriter<T>(Config.OutputFile, filter->Consumer());
+    }
+    else
+    {
+        std::cout << "Unknown output file format " << Config.OutFileFormat << std::endl;
+        return -1;
+    }
+
+    // Run clickremoval
+    proc.Run();
+
+    // Delete reader
+    if( strcmp(Config.InFileFormat, "wav") == 0 )
+    {
+        delete (HWavReader<T>*) rd;
+    }
+    else if( strcmp(Config.InFileFormat, "pcm") == 0 )
+    {
+        delete (HFileReader<T>*) rd;
+    }
+
+    // Delete writer
+    if( strcmp(Config.OutFileFormat, "wav") == 0 )
+    {
+        delete (HWavWriter<T>*) wr;
+    }
+    else if( strcmp(Config.OutFileFormat, "pcm") == 0 )
+    {
+        delete (HFileWriter<T>*) wr;
+    }
+
+    // delete filter
+    delete filter;
+
+    // Done
+    return 0;
+}
+
+template <typename T>
 int RunMixer()
 {
    // Create reader 1
@@ -1509,6 +1580,60 @@ int RunOperation()
         }
 
         return RunFileConverter<T>();
+    }
+
+    if( Config.IsClickRemoval )
+    {
+        // Verify configuration
+        if( Config.InputFile == NULL )
+        {
+            std::cout << "No input file (-if)" << std::endl;
+            return -1;
+        }
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file (-of)" << std::endl;
+            return -1;
+        }
+        if( Config.InFileFormat == NULL )
+        {
+            std::cout << "No input file format (-cr in-format out-format)" << std::endl;
+            return -1;
+        }
+        if( Config.OutFileFormat == NULL )
+        {
+            std::cout << "No output file format (-cr in-format out-format)" << std::endl;
+            return -1;
+        }
+
+        return RunClickRemoval<T>();
+    }
+
+    if( Config.IsClickRemoval )
+    {
+        // Verify configuration
+        if( Config.InputFile == NULL )
+        {
+            std::cout << "No input file (-if)" << std::endl;
+            return -1;
+        }
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file (-of)" << std::endl;
+            return -1;
+        }
+        if( Config.InFileFormat == NULL )
+        {
+            std::cout << "No input file format (-cr in-format out-format)" << std::endl;
+            return -1;
+        }
+        if( Config.OutFileFormat == NULL )
+        {
+            std::cout << "No output file format (-cr in-format out-format)" << std::endl;
+            return -1;
+        }
+
+        return RunClickRemoval<T>();
     }
 
     if( Config.IsMixer )

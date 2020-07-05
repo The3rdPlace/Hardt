@@ -84,6 +84,7 @@ Include api function declarations
 #include "hnullreader.cpp"
 #include "hpassthrough.cpp"
 #include "hagc.cpp"
+#include "hclickremovingfilter.cpp"
 
 /********************************************************************
 Debug and diagnostics

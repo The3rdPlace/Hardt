@@ -20,6 +20,7 @@ struct DspCmdConfig
     bool IsFFTMagnitudePlot = false;
     bool IsFFTMagnitudeGnuPlot = false;
     bool IsFileConverter = false;
+    bool IsClickRemoval = false;
     bool IsMixer = false;
     bool IsMultiplier = false;
     bool IsFilter = false;

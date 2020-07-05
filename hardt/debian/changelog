@@ -2,6 +2,7 @@ hardt (1.0-19) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
   * Fixed a bug in the buffered writer
+  * Added a click-removal filter
 
  -- Mackie <henrik@hardttoolkit.org>  Sun, 05 Jul 2020 17:49:00 +0200
 

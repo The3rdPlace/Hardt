@@ -72,6 +72,7 @@
 #include "hnullreader.h"
 #include "hpassthrough.h"
 #include "hagc.h"
+#include "hclickremovingfilter.h"
 
 #include "hprobe.h"
 

@@ -119,6 +119,10 @@ bool parseArguments(int argc, char** argv)
             Config.InFileFormat = argCharCmp(argv[argNo], "-fc", argv[argNo + 1], Config.InFileFormat);
             Config.OutFileFormat = argCharCmp(argv[argNo], "-fc", argv[argNo + 2], Config.OutFileFormat);
 
+            Config.IsClickRemoval = argBoolCmp(argv[argNo], "-cr", Config.IsClickRemoval);
+            Config.InFileFormat = argCharCmp(argv[argNo], "-cr", argv[argNo + 1], Config.InFileFormat);
+            Config.OutFileFormat = argCharCmp(argv[argNo], "-cr", argv[argNo + 2], Config.OutFileFormat);
+
             Config.IsMixer = argBoolCmp(argv[argNo], "-mx", Config.IsMixer);
             Config.InputFile1 = argCharCmp(argv[argNo], "-mx", argv[argNo + 1], Config.InputFile1);
             Config.InputFile2 = argCharCmp(argv[argNo], "-mx", argv[argNo + 2], Config.InputFile2);
@@ -215,6 +219,9 @@ bool parseArguments(int argc, char** argv)
             std::cout << std::endl;
 
             std::cout << "-fc in-format out-format   Convert input file format to output file format (same as in -ff)" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "-cr in-format out-format   Run the input file through a clickremoval filter." << std::endl;
             std::cout << std::endl;
 
             std::cout << "-mx file1 file2            Mix (linear) file1 and file2" << std::endl;
