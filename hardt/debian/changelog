@@ -1,38 +1,45 @@
+hardt (1.0-19) RELEASED; urgency=medium
+
+  [ Henrik Witt-Hansen ]
+  * Fixed a bug in the buffered writer
+
+ -- Mackie <henrik@hardttoolkit.org>  Sun, 05 Jul 2020 17:49:00 +0200
+
 hardt (1.0-18) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
   * Added a new buffered writer to help with writing to slow sinks
   * Added new component HBreaker to switch a data stream on/off
 
- -- Mackie <henrik@hardttoolkit.org>  Sat, 23 May 2020 00:25:00 +0100
+ -- Mackie <henrik@hardttoolkit.org>  Sat, 23 May 2020 00:25:00 +0200
 
 hardt (1.0-17) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
   * Added a new summation field in the signallevel result object
 
- -- Mackie <henrik@hardttoolkit.org>  Sun, 17 May 2020 17:36:00 +0100
+ -- Mackie <henrik@hardttoolkit.org>  Sun, 17 May 2020 17:36:00 +0200
 
 hardt (1.0-16) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
   * Add command interface (Closes: #XXXXXX)
 
- -- Mackie <henrik@hardttoolkit.org>  Thu, 02 Apr 2020 22:48:00 +0100
+ -- Mackie <henrik@hardttoolkit.org>  Thu, 02 Apr 2020 22:48:00 +0200
 
 hardt (1.0-15) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
   * Add documentation for dspcmd options (Closes: #XXXXXX)
 
- -- Mackie <henrik@hardttoolkit.org>  Sun, 26 Jan 2020 21:53:00 +0100
+ -- Mackie <henrik@hardttoolkit.org>  Sun, 26 Jan 2020 21:53:00 +0200
 
 hardt (1.0-14) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
   * Improve the filter coefficients reader (Closes: #XXXXXX)
 
- -- Mackie <henrik@hardttoolkit.org>  Wed, 22 Jan 2020 21:43:00 +0100
+ -- Mackie <henrik@hardttoolkit.org>  Wed, 22 Jan 2020 21:43:00 +0200
 
 hardt (1.0-13) RELEASED; urgency=medium
 
@@ -43,7 +50,7 @@ hardt (1.0-13) RELEASED; urgency=medium
   * Add optional localoscillator amplitude parameter to the localoscillator (Closes: #XXXXXX)
   * Added lock-and-hold logic to the agc component (Closes: #XXXXXX)
   
- -- Mackie <henrik@hardttoolkit.org>  Thu, 10 Jan 2020 00:40:00 +0100
+ -- Mackie <henrik@hardttoolkit.org>  Thu, 10 Jan 2020 00:40:00 +0200
 
 hardt (1.0-12) RELEASED; urgency=medium
 
