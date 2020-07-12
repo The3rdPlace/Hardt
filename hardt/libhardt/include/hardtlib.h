@@ -85,6 +85,8 @@ Include api function declarations
 #include "hpassthrough.cpp"
 #include "hagc.cpp"
 #include "hclickremovingfilter.cpp"
+#include "hmemorywriter.h"
+#include "hmemoryreader.h"
 
 /********************************************************************
 Debug and diagnostics

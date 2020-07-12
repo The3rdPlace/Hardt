@@ -73,6 +73,8 @@
 #include "hpassthrough.h"
 #include "hagc.h"
 #include "hclickremovingfilter.h"
+#include "hmemorywriter.h"
+#include "hmemoryreader.h"
 
 #include "hprobe.h"
 
