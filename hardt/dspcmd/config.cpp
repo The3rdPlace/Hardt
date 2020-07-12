@@ -237,8 +237,8 @@ bool parseArguments(int argc, char** argv)
             std::cout << "-bqt name Fcutoff Q G      Create biquad filter and run file through the filter" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-bqc coeffs                Create biquad filter, dump coefficients and run sweep" << std::endl;
-            std::cout << "-bgct coeffs               Create biquad filter and run file through the filter" << std::endl;
+            std::cout << "-bqc coeffs                Create cascaded biquad filter, dump coefficients and run sweep" << std::endl;
+            std::cout << "-bgct coeffs               Create cascaded biquad filter and run file through the filter" << std::endl;
             std::cout << std::endl;
 
             std::cout << "-g gain                    Run file through gain filter" << std::endl;
@@ -314,8 +314,10 @@ bool VerifyConfig()
     }
     if( (Config.InputFile != NULL || Config.OutputFile != NULL) && Config.FileFormat == NULL )
     {
-        std::cout << "No file format specified, and can not be guessed from the file extension" << std::endl;
-        return true;
+        if( Config.IsFilePlayer || Config.IsFileRecorder || Config.IsClickRemoval || Config.IsFileConverter ) {
+            std::cout << "No file format specified, and can not be guessed from the file extension" << std::endl;
+            return true;
+        }
     }
 
     // Check that an input file exists
