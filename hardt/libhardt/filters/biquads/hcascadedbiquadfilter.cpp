@@ -1,6 +1,13 @@
 #ifndef __HCASCADEDBIQUADFACTORY_CPP
 #define __HCASCADEDBIQUADFACTORY_CPP
 
+#include "hwriter.h"
+#include "hwriterconsumer.h"
+#include "hprobe.h"
+#include "hreader.h"
+
+#include <vector>
+
 #include "hcascadedbiquadfilter.h"
 
 template <class T>
@@ -23,11 +30,11 @@ HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(HWriter<T>* writer, float* coeff
     {
         if( i == _filterCount - 1 )
         {
-            _filters[i] = new HIirFilter<T>((HWriter<T>*) writer, &coefficients[i * 5], 5, 4096, probe);
+            _filters[i] = new HIirFilter<T>(writer, &coefficients[i * 5], 5, blocksize, probe);
         }
         else
         {
-            _filters[i] = new HIirFilter<T>((HWriter<T>*) _filters[i + 1], &coefficients[i * 5], 5, 4096);
+            _filters[i] = new HIirFilter<T>(_filters[i + 1]->Writer(), &coefficients[i * 5], 5, blocksize);
         }
     }
 }
@@ -48,15 +55,15 @@ HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(HWriterConsumer<T>* consumer, fl
     Init(length);
 
     // Create filters
-    for( int i = _filterCount -1; i >= 0; i-- )
+    for( int i = 0; i < _filterCount; i++ )
     {
-        if( i == _filterCount - 1 )
+        if( i == 0 )
         {
-            _filters[i] = new HIirFilter<T>((HWriterConsumer<T>*) consumer, &coefficients[i * 5], 5, 4096, probe);
+            _filters[i] = new HIirFilter<T>(consumer, &coefficients[i * 5], 5, blocksize, probe);
         }
         else
         {
-            _filters[i] = new HIirFilter<T>((HWriterConsumer<T>*) _filters[i + 1], &coefficients[i * 5], 5, 4096);
+            _filters[i] = new HIirFilter<T>(_filters[i - 1]->Consumer(), &coefficients[i * 5], 5, blocksize);
         }
     }
 }
@@ -81,11 +88,11 @@ HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(HReader<T>* reader, float* coeff
     {
         if( i == 0 )
         {
-            _filters[i] = new HIirFilter<T>((HReader<T>*) reader, &coefficients[i * 5], 5, 4096, probe);
+            _filters[i] = new HIirFilter<T>(reader, &coefficients[i * 5], 5, blocksize, probe);
         }
         else
         {
-            _filters[i] = new HIirFilter<T>((HReader<T>*) _filters[i - 1], &coefficients[i * 5], 5, 4096);
+            _filters[i] = new HIirFilter<T>(_filters[i - 1]->Reader(), &coefficients[i * 5], 5, blocksize);
         }
     }
 }
@@ -105,11 +112,11 @@ HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(HWriter<T>* writer, std::vector<
     {
         if( i == _filterCount - 1 )
         {
-            _filters[i] = new HIirFilter<T>((HWriter<T>*) writer, biquadCoefficients.at(i), 5, 4096, probe);
+            _filters[i] = new HIirFilter<T>(writer, biquadCoefficients.at(i), 5, blocksize, probe);
         }
         else
         {
-            _filters[i] = new HIirFilter<T>((HWriter<T>*) _filters[i + 1], biquadCoefficients.at(i), 5, 4096);
+            _filters[i] = new HIirFilter<T>(_filters[i + 1]->Writer(), biquadCoefficients.at(i), 5, blocksize);
         }
     }
 }
@@ -125,15 +132,15 @@ HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(HWriterConsumer<T>* consumer, st
     Init(biquadCoefficients.size() * 5);
 
     // Create filters
-    for( int i = _filterCount -1; i >= 0; i-- )
+    for( int i = 0; i < _filterCount; i++ )
     {
-        if( i == _filterCount - 1 )
+        if( i == 0 )
         {
-            _filters[i] = new HIirFilter<T>((HWriterConsumer<T>*) consumer, biquadCoefficients.at(i), 5, 4096, probe);
+            _filters[i] = new HIirFilter<T>(consumer, biquadCoefficients.at(i), 5, blocksize, probe);
         }
         else
         {
-            _filters[i] = new HIirFilter<T>((HWriterConsumer<T>*) _filters[i + 1], biquadCoefficients.at(i), 5, 4096);
+            _filters[i] = new HIirFilter<T>(_filters[i - 1]->Consumer(), biquadCoefficients.at(i), 5, blocksize);
         }
     }
 }
@@ -153,11 +160,11 @@ HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(HReader<T>* reader, std::vector<
     {
         if( i == 0 )
         {
-            _filters[i] = new HIirFilter<T>((HReader<T>*) reader, biquadCoefficients.at(i), 5, 4096, probe);
+            _filters[i] = new HIirFilter<T>(reader, biquadCoefficients.at(i), 5, blocksize, probe);
         }
         else
         {
-            _filters[i] = new HIirFilter<T>((HReader<T>*) _filters[i - 1], biquadCoefficients.at(i), 5, 4096);
+            _filters[i] = new HIirFilter<T>(_filters[i - 1]->Reader(), biquadCoefficients.at(i), 5, blocksize);
         }
     }
 }

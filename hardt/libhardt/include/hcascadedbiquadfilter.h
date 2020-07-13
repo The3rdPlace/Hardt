@@ -1,5 +1,10 @@
-#ifndef __HCASCADEDBIQUADFACTORY_H
-#define __HCASCADEDBIQUADFACTORY_H
+#ifndef __HCASCADEDBIQUADFILTER_H
+#define __HCASCADEDBIQUADFILTER_H
+
+#include "hwriter.h"
+#include "hwriterconsumer.h"
+#include "hprobe.h"
+#include "hreader.h"
 
 /**
     A generic cascaded biquad filter (a number of biquads
