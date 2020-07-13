@@ -48,6 +48,7 @@ target_sources(hardt_test
 	hclickremovingfilter_test.cpp
 	hmemorywriter_test.cpp
 	hmemoryreader_test.cpp
+	hcascadedbiquadfilter_test.cpp
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
