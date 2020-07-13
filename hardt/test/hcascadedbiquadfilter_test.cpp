@@ -188,6 +188,8 @@ class HCascadedBiQuadFilter_Test: public Test
 
             ASSERT_IS_TRUE(filter->Command(&TestNopCommand));
             ASSERT_IS_EQUAL(wr.Commands, 1);
+
+            delete filter;
         }
 
         void test_cascaded_filter_as_consumer()
@@ -261,6 +263,8 @@ class HCascadedBiQuadFilter_Test: public Test
 
             ASSERT_IS_TRUE(filter->Command(&TestNopCommand));
             ASSERT_IS_EQUAL(rd.Commands, 1);
+
+            delete filter;
         }
 
 } HCascadedBiQuadFilter_test;
