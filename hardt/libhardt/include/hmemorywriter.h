@@ -19,21 +19,24 @@ class HMemoryWriter : public HWriter<T>, public HWriterConsumer<T>
         T* _buffer;
         int _size;
         int _pos;
+        bool _infinite;
 
     public:
 
         /** Construct a new HMemoryWriter */
-        HMemoryWriter(T* buffer, size_t size):
+        HMemoryWriter(T* buffer, size_t size, bool infinite = false):
             _buffer(buffer),
             _size(size),
-            _pos(0)
+            _pos(0),
+            _infinite(infinite)
         {}
 
         /** Construct a new HMemoryWriter that registers with the upstream writer */
-        HMemoryWriter(HWriterConsumer<T>* consumer, T* buffer, size_t size):
+        HMemoryWriter(HWriterConsumer<T>* consumer, T* buffer, size_t size, bool infinite):
             _buffer(buffer),
             _size(size),
-            _pos(0)
+            _pos(0),
+            _infinite(infinite)
         {
             consumer->SetWriter(this);
         }
@@ -45,7 +48,7 @@ class HMemoryWriter : public HWriter<T>, public HWriterConsumer<T>
                 return 0;
             }
             memcpy((void*) &_buffer[_pos], (void*) src, blocksize * sizeof(T));
-            _pos += blocksize;
+            _pos += _infinite ? 0 : blocksize;
             return blocksize;
         }
 

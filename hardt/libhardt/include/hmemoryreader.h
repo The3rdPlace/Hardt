@@ -18,14 +18,16 @@ class HMemoryReader : public HReader<T>
         T* _buffer;
         int _size;
         int _pos;
+        bool _infinite;
 
     public:
 
         /** Construct a new HMemoryReader */
-        HMemoryReader(T* buffer, size_t size):
+        HMemoryReader(T* buffer, size_t size, bool infinite = false):
             _buffer(buffer),
             _size(size),
-            _pos(0)
+            _pos(0),
+            _infinite(infinite)
         {}
 
         /** Read a block of samples */
@@ -35,7 +37,7 @@ class HMemoryReader : public HReader<T>
                 return 0;
             }
             memcpy((void*) dest, (void*) &_buffer[_pos], blocksize * sizeof(T));
-            _pos += blocksize;
+            _pos += _infinite ? 0 : blocksize;
             return blocksize;
         }
 
