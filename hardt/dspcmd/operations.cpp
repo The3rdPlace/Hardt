@@ -1365,6 +1365,128 @@ int RunBiQuadCascadeSpectrum()
     return 0;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+template <typename T>
+int RunMovingAverageSpectrum()
+{
+    // Create reader
+    FilterSpectrumReader<T> rd(2);
+
+    // Create  filter
+    HMovingAverageFilter<T>* filter = new HMovingAverageFilter<T>(&rd, Config.M, Config.Blocksize);
+    
+    // Create writer
+    HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
+
+    // Create FFT
+    HFft<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
+
+    // Buffer for the accumulated spectrum values
+    aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
+
+    // Create processor
+    HStreamProcessor<T> proc(&fft, (HReader<T>*) filter, Config.Blocksize, &terminated);
+    std::cout << "Sweep from 0Hz - " << (Config.Rate / 2) << "Hz" << std::endl;
+    proc.Run();
+
+    // Display the final plot
+    FFTMagnitudeShowGnuPlot();
+
+    // Delete the filter
+    delete filter;
+
+    return 0;
+}
+
+template <typename T>
+int RunMovingAverageFilter()
+{
+    // Create reader
+    HReader<T>* rd;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        rd = new HWavReader<T>(Config.InputFile);
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        rd = new HFileReader<T>(Config.InputFile);
+    }
+    else
+    {
+        std::cout << "Unknown input file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+    // Create writer
+    HWriter<T>* wr;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        wr = new HFileWriter<T>(Config.OutputFile);
+    }
+    else
+    {
+        std::cout << "Unknown output file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+    // Create  filter
+    HMovingAverageFilter<T>* filter = new HMovingAverageFilter<T>(rd, Config.M, Config.Blocksize);
+
+    // Create processor
+    HStreamProcessor<T> proc(wr, filter->Reader(), Config.Blocksize, &terminated);
+    proc.Run();
+
+    // Delete the reader and writer
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        delete (HWavReader<T>*) rd;
+        delete (HWavWriter<T>*) wr;
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        delete (HFileReader<T>*) rd;
+        delete (HFileWriter<T>*) wr;
+    }
+
+    // Delete the filter
+    delete filter;
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 template <typename T>
 int RunOperation()
 {
@@ -1885,6 +2007,38 @@ int RunOperation()
         }
 
         return RunBiQuadCascadeSpectrum<T>();
+    }
+
+    if( Config.IsMovingAverageSpectrum )
+    {
+        if( Config.M == 0 )
+        {
+            std::cout << "Moving average factor M not set (-mat M)" << std::endl;
+            return -1;
+        }
+        
+        return RunMovingAverageSpectrum<T>();
+    }
+
+    if( Config.IsMovingAverage )
+    {
+        if( Config.InputFile == NULL )
+        {
+            std::cout << "No input file (-if)" << std::endl;
+            return -1;
+        }
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file (-of)" << std::endl;
+            return -1;
+        }
+        if( Config.M == 0 )
+        {
+            std::cout << "Moving average factor M not set (-mat M)" << std::endl;
+            return -1;
+        }
+
+        return RunMovingAverageFilter<T>();
     }
 
     // No known operation could be determined from the input arguments

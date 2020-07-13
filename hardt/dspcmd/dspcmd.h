@@ -518,6 +518,16 @@
     the average output for a goertzl filter at each frequency.
 
     Show the plot using GnuPlot
+
+    \page ma
+    Syntax: dspcmd -ma num
+
+    Sweep a moving average filter with the avering factor M set to 'num'
+
+    \page mat
+    Syntax: dspcmd -mat num
+
+    Run a file through a moving average filter with the averaging factor M set to 'num'
 */
 
 #ifndef __DSPCMD_H

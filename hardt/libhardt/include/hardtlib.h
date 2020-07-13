@@ -87,6 +87,7 @@ Include api function declarations
 #include "hclickremovingfilter.cpp"
 #include "hmemorywriter.h"
 #include "hmemoryreader.h"
+#include "hmovingaveragefilter.h"
 
 /********************************************************************
 Debug and diagnostics

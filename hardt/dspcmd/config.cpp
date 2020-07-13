@@ -91,19 +91,17 @@ bool parseArguments(int argc, char** argv)
             Config.IsGain = argBoolCmp(argv[argNo], "-g", Config.IsGain);
             Config.Gain = argFloatCmp(argv[argNo], "-g", argv[argNo + 1], Config.Gain);
 
-            Config.IsHum = argBoolCmp(argv[argNo], "-hmt", Config.IsHum);
-            Config.Frequency = argIntCmp(argv[argNo], "-hmt", argv[argNo + 1], Config.Frequency);
-            Config.FCutOff = argIntCmp(argv[argNo], "-hmt", argv[argNo + 2], Config.FCutOff);
-
-            Config.IsHumSpectrum = argBoolCmp(argv[argNo], "-hm", Config.IsHumSpectrum);
-            Config.Frequency = argIntCmp(argv[argNo], "-hm", argv[argNo + 1], Config.Frequency);
-            Config.FCutOff = argIntCmp(argv[argNo], "-hm", argv[argNo + 2], Config.FCutOff);
-
             Config.IsBiQuadCascadeSpectrum = argBoolCmp(argv[argNo], "-bqc", Config.IsBiQuadCascadeSpectrum);
             Config.FilterCoeffs = argCharCmp(argv[argNo], "-bqc", argv[argNo + 1], Config.FilterCoeffs);
 
             Config.IsBiQuadCascade = argBoolCmp(argv[argNo], "-bqct", Config.IsBiQuadCascade);
             Config.FilterCoeffs = argCharCmp(argv[argNo], "-bqct", argv[argNo + 1], Config.FilterCoeffs);
+
+            Config.IsMovingAverageSpectrum = argBoolCmp(argv[argNo], "-ma", Config.IsMovingAverageSpectrum);
+            Config.M = argIntCmp(argv[argNo], "-ma", argv[argNo + 1], Config.M);
+
+            Config.IsMovingAverage = argBoolCmp(argv[argNo], "-mat", Config.IsMovingAverage);
+            Config.M = argIntCmp(argv[argNo], "-mat", argv[argNo + 1], Config.M);
         }
 
         if( argNo < argc - 2 )
@@ -146,6 +144,14 @@ bool parseArguments(int argc, char** argv)
             Config.IsCombSpectrum = argBoolCmp(argv[argNo], "-cb", Config.IsCombSpectrum);
             Config.Frequency = argIntCmp(argv[argNo], "-cb", argv[argNo + 1], Config.Frequency);
             Config.Alpha = argFloatCmp(argv[argNo], "-cb", argv[argNo + 2], Config.Alpha);
+
+            Config.IsHum = argBoolCmp(argv[argNo], "-hmt", Config.IsHum);
+            Config.Frequency = argIntCmp(argv[argNo], "-hmt", argv[argNo + 1], Config.Frequency);
+            Config.FCutOff = argIntCmp(argv[argNo], "-hmt", argv[argNo + 2], Config.FCutOff);
+
+            Config.IsHumSpectrum = argBoolCmp(argv[argNo], "-hm", Config.IsHumSpectrum);
+            Config.Frequency = argIntCmp(argv[argNo], "-hm", argv[argNo + 1], Config.Frequency);
+            Config.FCutOff = argIntCmp(argv[argNo], "-hm", argv[argNo + 2], Config.FCutOff);
         }
 
         if( argNo < argc - 3 )
@@ -228,9 +234,9 @@ bool parseArguments(int argc, char** argv)
             std::cout << "-mp frequency              Multiply (mix nonlinear) with localoscilator signal running at frequency" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-flt name coeffs           Read coefficients from coeffs and run file through filter name" << std::endl;
-            std::cout << "-flp name coeffs           Read coefficients from coeffs and plot filter response for filter name" << std::endl;
-            std::cout << "-flgp name coeffs          Read coefficients from coeffs and plot filter response for filter name using GnuPlot" << std::endl;
+            std::cout << "-flt name coeffs           Read coefficients from coeffs and run file through filter name (HIirFilter|HFirFilter)" << std::endl;
+            std::cout << "-flp name coeffs           Read coefficients from coeffs and plot filter response for filter name  (HIirFilter|HFirFilter)" << std::endl;
+            std::cout << "-flgp name coeffs          Read coefficients from coeffs and plot filter response for filter name  (HIirFilter|HFirFilter) using GnuPlot" << std::endl;
             std::cout << std::endl;
 
             std::cout << "-bq name Fcutoff Q G       Create biquad filter, dump coefficients and run sweep" << std::endl;
@@ -253,6 +259,10 @@ bool parseArguments(int argc, char** argv)
             std::cout << std::endl;
 
             std::cout << "-gz                        Sweep a file by running the individual bins through a Goertzl filter" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "-ma num                    Create moving average filter and run sweep" << std::endl;
+            std::cout << "-mat num                   Create moving average filter and run file through the filter" << std::endl;
             std::cout << std::endl;
 
             // Force exit

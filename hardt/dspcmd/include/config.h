@@ -36,6 +36,8 @@ struct DspCmdConfig
     bool IsGoertzl = false;
     bool IsBiQuadCascade = false;
     bool IsBiQuadCascadeSpectrum = false;
+    bool IsMovingAverage = false;
+    bool IsMovingAverageSpectrum = false;
 
     char* InFileFormat = NULL;
     char* OutFileFormat = NULL;
@@ -81,6 +83,8 @@ struct DspCmdConfig
     float Gain;
 
     float Bin = 0;
+
+    int M = 0;
 };
 
 extern DspCmdConfig Config;

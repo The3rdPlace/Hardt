@@ -20,12 +20,14 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
 
         HProbe<T>* _probe;
 
-        int _blocksize;
         T* _buffer;
 
         void Init();
 
     protected:
+
+        /** The filters set blocksize */
+        int _blocksize;
 
         /** Construct a new HFilter that writes to a writer */
         HFilter(HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL);
