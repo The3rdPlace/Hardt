@@ -337,7 +337,7 @@ void FFTMagnitudeShowGnuPlot(double displace = 0)
     double displayedSpectrum[Config.FFTSize / 2];
     for( int i = 0; i < Config.FFTSize / 2; i++ )
     {
-        displayedSpectrum[i] = (double) aggregatedMagnitudeSpectrum[i] / numFfts;
+        displayedSpectrum[i] = ((double) aggregatedMagnitudeSpectrum[i] - displace) / numFfts;
     }
 
     // Calculate frequency span per bin
@@ -355,9 +355,9 @@ void FFTMagnitudeShowGnuPlot(double displace = 0)
         fprintf(gnuplotPipe, "set yrange [%d:%d]\n", Config.YMin, Config.YMax);
     }
     fprintf(gnuplotPipe, "plot '-' with linespoints linestyle 1\n");
-    for( int bin = 0; bin < Config.FFTSize / 2; bin++ )
+    for( int bin = 3; bin < (Config.FFTSize / 2) - 3; bin++ )
     {
-        fprintf(gnuplotPipe, "%lf %lf\n", (double) bin * fdelta, displayedSpectrum[bin] - displace);
+        fprintf(gnuplotPipe, "%lf %lf\n", (double) bin * fdelta, displayedSpectrum[bin]);
     }
     fprintf(gnuplotPipe, "e");
     fclose(gnuplotPipe);
@@ -752,9 +752,13 @@ class FilterSpectrumReader : public HReader<T>
     private:
 
         HVfo<T>* vfo;
+        int _freqStart;
+        int _freqStop;
         int _freq;
-        double _fdelta;
+        double _fDelta;
         int _lastDisplayedFreq;
+
+        double _ref;
 
         /** Execute and/or pass on a command */
         bool Command(HCommand* command) {
@@ -762,39 +766,64 @@ class FilterSpectrumReader : public HReader<T>
             return true;
         }
 
-public:
+    public:
 
-        FilterSpectrumReader(int delta = 0)
+        FilterSpectrumReader(int delta = 0):
+            _ref(0)
         {
             // Calculate f-delta
             if( delta == 0 )
             {
-                _fdelta = (((double) Config.Rate / 2) / ((double) Config.FFTSize / 2)) / 10;
+                _fDelta = (((double) Config.Rate / 2) / ((double) Config.FFTSize / 2)) / 10;
             }
             else
             {
-                _fdelta = delta;
+                _fDelta = delta;
             }
 
-            if( _fdelta < 1 )
+            if( _fDelta < 1 )
             {
                 std::cout << "Too low fft size" << std::endl;
-                _fdelta = 1;
+                _fDelta = 1;
             }
 
-            // Initialize initial starting frequency
-            _freq = Config.XMin == 0 ? _fdelta : Config.XMin;
+            // Initialize initial starting and stopping frequencies
+            _freqStart = Config.XMin == 0 ? _fDelta : Config.XMin;
+            _freqStop = (Config.XMax == 0 ? (Config.Rate / 2) : Config.XMax);
+            _freq = _freqStart;
             _lastDisplayedFreq = _freq;
 
             // Create vfo
-            vfo = new HVfo<T>(Config.Rate, 1000, std::numeric_limits<T>::max() / 2, 0);
+            vfo = new HVfo<T>(Config.Rate, _freq, std::numeric_limits<T>::max() / 2, 0);
 
-            // Get reference magnitude
-            T refBlock[Config.Blocksize];
-            vfo->Read(refBlock, Config.Blocksize);
-            // TODO: Run block through FFT
+            // Calibration - measure input spectrum magnitude
+            const int Blocks = 128;
+            HHahnWindow<T> window;
+            HFft<T> fft(Blocks, &window);
+            double refSpectrum[Blocks / 2];
+            T refBlock[Blocks];
+            double refSum = 0;
+            int refNumFfts = 0;
+            double refSummer[Blocks / 2];
+            memset((void*) refSummer, 0, sizeof(double) * (Blocks / 2));
+            for( ; _freq < _freqStop; _freq += _fDelta) {
+                vfo->SetFrequency(_freq);
+
+                vfo->Read(refBlock, Blocks);
+                fft.FFT(refBlock, refSpectrum);
+
+                for( int i = 0; i < Blocks / 2; i++ ) {
+                    refSummer[i] += refSpectrum[i];
+                }
+                refNumFfts++;
+            }
+            for( int i = 0; i < Blocks / 2; i++ ) {
+                refSum += refSummer[i];
+            }
+            _ref = refSum / (Blocks / 2);
 
             // Set vfo to initial frequency
+            _freq = _freqStart;
             vfo->SetFrequency(_freq);
         }
 
@@ -806,15 +835,17 @@ public:
         int Read(T* dest, size_t blocksize)
         {
             // At end of sweep ?
-            if( _freq >= (Config.XMax == 0 ? (Config.Rate / 2) : Config.XMax) )
+            if( _freq >= _freqStop )
             {
+                int freq = _freq / 1000;
+                std::cout << "  - " << freq << "000Hz" << std::endl;
                 return 0;
             }
 
             // Set frequency then return signal
             vfo->SetFrequency(_freq, 0);
             vfo->Read(dest, blocksize);
-            _freq += _fdelta;
+            _freq += _fDelta;
 
             if( _freq - _lastDisplayedFreq > 1000 )
             {
@@ -824,6 +855,10 @@ public:
             }
 
             return blocksize;
+        }
+
+        double GetRef() {
+            return _ref;
         }
 };
 
@@ -936,12 +971,12 @@ int RunBiQuadSpectrum()
     aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
 
     // Create processor
-    HStreamProcessor<T> proc(&fft, (HReader<T>*) filter, Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc(&fft, filter->Reader(), Config.Blocksize, &terminated);
     std::cout << "Sweep from 0Hz - " << (Config.Rate / 2) << "Hz" << std::endl;
     proc.Run();
 
     // Display the final plot
-    FFTMagnitudeShowGnuPlot();
+    FFTMagnitudeShowGnuPlot(rd.GetRef());
 
     return 0;
 }
@@ -1377,22 +1412,6 @@ int RunBiQuadCascadeSpectrum()
     return 0;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 template <typename T>
 int RunMovingAverageSpectrum()
 {
@@ -1484,20 +1503,6 @@ int RunMovingAverageFilter()
 
     return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 template <typename T>
 int RunOperation()
