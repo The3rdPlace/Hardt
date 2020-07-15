@@ -1,3 +1,11 @@
+hardt (1.0-20) RELEASED; urgency=medium
+
+  [ Henrik Witt-Hansen ]
+  * Fixed a bug in the cascaded biquad filter when using consumers
+  * Added a moving average filter
+
+ -- Mackie <henrik@hardttoolkit.org>  Mon, 14 Jul 2020 00:39:00 +0200
+
 hardt (1.0-19) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
