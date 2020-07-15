@@ -1,6 +1,11 @@
 #ifndef __HPASSTHROUGH_CPP
 #define __HPASSTHROUGH_CPP
 
+#include "hwriter.h"
+#include "hwriterconsumer.h"
+#include "hreader.h"
+#include "hprobe.h"
+
 #include "hpassthrough.h"
 
 template <class T>
