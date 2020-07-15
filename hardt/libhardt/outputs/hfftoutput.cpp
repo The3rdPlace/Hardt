@@ -1,7 +1,7 @@
-#ifndef __HFFT_CPP
-#define __HFFT_CPP
+#ifndef __HFFTOUTPUT_CPP
+#define __HFFTOUTPUT_CPP
 
-#include "hfft.h"
+#include "hfftoutput.h"
 
 #include <cmath>
 
@@ -12,31 +12,31 @@ typedef std::complex<double> Complex;
 typedef std::valarray<Complex> CArray;
 
 template <class T>
-HFft<T>::HFft(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* window):
+HFftOutput<T>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* window):
     HOutput<T, HFftResults>(writer, size),
     _size(size),
     _average(average),
     _count(0),
     _window(window)
 {
-    HLog("HFft(%d, %d, ...)", size, average);
+    HLog("HFftOutput(%d, %d, ...)", size, average);
     Init();
 }
 
 template <class T>
-HFft<T>::HFft(int size, int average, HWriterConsumer<T>* consumer, HWindow<T>* window):
+HFftOutput<T>::HFftOutput(int size, int average, HWriterConsumer<T>* consumer, HWindow<T>* window):
     HOutput<T, HFftResults>(size, consumer),
     _size(size),
     _average(average),
     _count(0),
     _window(window)
 {
-    HLog("HFft(%d, %d, ...)", size, average);
+    HLog("HFftOutput(%d, %d, ...)", size, average);
     Init();
 }
 
 template <class T>
-void HFft<T>::Init()
+void HFftOutput<T>::Init()
 {
     // Allocate a buffer for the spectrum and phase values
     _spectrum = new double[_size];
@@ -75,7 +75,7 @@ void fft(CArray& x)
 }
 
 template <class T>
-int HFft<T>::Output(T* src, size_t size)
+int HFftOutput<T>::Output(T* src, size_t size)
 {
     // Run the input buffer through a window function, if any is given
     _window->Apply(src, _buffer, size);
@@ -136,40 +136,40 @@ Explicit instantiation
 //! @cond Doxygen_Suppress
 
 template
-HFft<int8_t>::HFft(int size, int average, HWriter<HFftResults>* writer, HWindow<int8_t>* window);
+HFftOutput<int8_t>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<int8_t>* window);
 
 template
-HFft<uint8_t>::HFft(int size, int average, HWriter<HFftResults>* writer, HWindow<uint8_t>* window);
+HFftOutput<uint8_t>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<uint8_t>* window);
 
 template
-HFft<int16_t>::HFft(int size, int average, HWriter<HFftResults>* writer, HWindow<int16_t>* window);
+HFftOutput<int16_t>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<int16_t>* window);
 
 template
-HFft<int32_t>::HFft(int size, int average, HWriter<HFftResults>* writer, HWindow<int32_t>* window);
+HFftOutput<int32_t>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<int32_t>* window);
 
 template
-HFft<int8_t>::HFft(int size, int average, HWriterConsumer<int8_t>* consumer, HWindow<int8_t>* window);
+HFftOutput<int8_t>::HFftOutput(int size, int average, HWriterConsumer<int8_t>* consumer, HWindow<int8_t>* window);
 
 template
-HFft<uint8_t>::HFft(int size, int average, HWriterConsumer<uint8_t>* consumer, HWindow<uint8_t>* window);
+HFftOutput<uint8_t>::HFftOutput(int size, int average, HWriterConsumer<uint8_t>* consumer, HWindow<uint8_t>* window);
 
 template
-HFft<int16_t>::HFft(int size, int average, HWriterConsumer<int16_t>* consumer, HWindow<int16_t>* window);
+HFftOutput<int16_t>::HFftOutput(int size, int average, HWriterConsumer<int16_t>* consumer, HWindow<int16_t>* window);
 
 template
-HFft<int32_t>::HFft(int size, int average, HWriterConsumer<int32_t>* consumer, HWindow<int32_t>* window);
+HFftOutput<int32_t>::HFftOutput(int size, int average, HWriterConsumer<int32_t>* consumer, HWindow<int32_t>* window);
 
 template
-int HFft<int8_t>::Output(int8_t* src, size_t size);
+int HFftOutput<int8_t>::Output(int8_t* src, size_t size);
 
 template
-int HFft<uint8_t>::Output(uint8_t* src, size_t size);
+int HFftOutput<uint8_t>::Output(uint8_t* src, size_t size);
 
 template
-int HFft<int16_t>::Output(int16_t* src, size_t size);
+int HFftOutput<int16_t>::Output(int16_t* src, size_t size);
 
 template
-int HFft<int32_t>::Output(int32_t* src, size_t size);
+int HFftOutput<int32_t>::Output(int32_t* src, size_t size);
 
 //! @endcond
 #endif

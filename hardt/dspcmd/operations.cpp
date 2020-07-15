@@ -331,7 +331,7 @@ void FFTMagnitudeShowPlot()
     std::cout << std::endl;
 }
 
-void FFTMagnitudeShowGnuPlot()
+void FFTMagnitudeShowGnuPlot(double displace = 0)
 {
     // Calculate the output spectrum
     double displayedSpectrum[Config.FFTSize / 2];
@@ -357,7 +357,7 @@ void FFTMagnitudeShowGnuPlot()
     fprintf(gnuplotPipe, "plot '-' with linespoints linestyle 1\n");
     for( int bin = 0; bin < Config.FFTSize / 2; bin++ )
     {
-        fprintf(gnuplotPipe, "%lf %lf\n", (double) bin * fdelta, displayedSpectrum[bin]);
+        fprintf(gnuplotPipe, "%lf %lf\n", (double) bin * fdelta, displayedSpectrum[bin] - displace);
     }
     fprintf(gnuplotPipe, "e");
     fclose(gnuplotPipe);
@@ -386,7 +386,7 @@ int RunFFTMagnitudePlot()
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFft<T> fft(Config.FFTSize, Config.Average, &fftWriter, new HHahnWindow<T>());
+    HFftOutput<T> fft(Config.FFTSize, Config.Average, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.FFTSize / 2];
@@ -766,6 +766,7 @@ public:
 
         FilterSpectrumReader(int delta = 0)
         {
+            // Calculate f-delta
             if( delta == 0 )
             {
                 _fdelta = (((double) Config.Rate / 2) / ((double) Config.FFTSize / 2)) / 10;
@@ -780,10 +781,21 @@ public:
                 std::cout << "Too low fft size" << std::endl;
                 _fdelta = 1;
             }
+
+            // Initialize initial starting frequency
             _freq = Config.XMin == 0 ? _fdelta : Config.XMin;
             _lastDisplayedFreq = _freq;
 
-            vfo = new HVfo<T>(Config.Rate, _freq, std::numeric_limits<T>::max() / 2, 0);
+            // Create vfo
+            vfo = new HVfo<T>(Config.Rate, 1000, std::numeric_limits<T>::max() / 2, 0);
+
+            // Get reference magnitude
+            T refBlock[Config.Blocksize];
+            vfo->Read(refBlock, Config.Blocksize);
+            // TODO: Run block through FFT
+
+            // Set vfo to initial frequency
+            vfo->SetFrequency(_freq);
         }
 
         ~FilterSpectrumReader()
@@ -841,7 +853,7 @@ int RunFilterSpectrum()
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFft<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
+    HFftOutput<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
@@ -918,7 +930,7 @@ int RunBiQuadSpectrum()
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFft<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
+    HFftOutput<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
@@ -1106,7 +1118,7 @@ int RunCombSpectrum()
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFft<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
+    HFftOutput<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
@@ -1195,7 +1207,7 @@ int RunCombFilter()
 
 int CurrentGoertzlBin = 0;
 
-int GoertzelMagnitudePlotWriter(HGoertzelFilterResult* data, size_t size)
+int GoertzelMagnitudePlotWriter(HGoertzelResult* data, size_t size)
 {
     aggregatedMagnitudeSpectrum[CurrentGoertzlBin] += data->Magnitude;
     numFfts++;
@@ -1214,8 +1226,8 @@ int RunGoertzlSweep()
 
     // Sweep
     HRectangularWindow<T> window;
-    HCustomWriter<HGoertzelFilterResult> resultWriter(GoertzelMagnitudePlotWriter);
-    HGoertzelFilter<T>* filter;
+    HCustomWriter<HGoertzelResult> resultWriter(GoertzelMagnitudePlotWriter);
+    HGoertzelOutput<T>* filter;
     HReader<T>* rd;
     std::cout << "Sweep from 0Hz - " << (Config.Rate / 2) << "Hz" << std::endl;
     for( int i = 0; i < Config.Blocksize; i++ )
@@ -1239,7 +1251,7 @@ int RunGoertzlSweep()
         }
 
         // Create Goertzl filter at this bin
-        filter = new HGoertzelFilter<T>(Config.Blocksize, 4, i, &resultWriter, &window);
+        filter = new HGoertzelOutput<T>(Config.Blocksize, 4, i, &resultWriter, &window);
 
         // Create processor
         HStreamProcessor<T> proc(filter, rd, Config.Blocksize, &terminated);
@@ -1346,7 +1358,7 @@ int RunBiQuadCascadeSpectrum()
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFft<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
+    HFftOutput<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
@@ -1394,7 +1406,7 @@ int RunMovingAverageSpectrum()
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFft<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
+    HFftOutput<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];

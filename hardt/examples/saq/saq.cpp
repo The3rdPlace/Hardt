@@ -123,7 +123,7 @@ int main(int argc, char** argv)
     // The signallevel writer needs a way to report results so we create a HCustomWriter that
     // wraps a callback function defined in our code. We could also have implemented a writer
     // that accepted the HSignalLevelResult as datatype locally - but the callback is simpler to use
-    HSignalLevel<int16_t> level(splitter.Consumer(), 2);
+    HSignalLevelOutput<int16_t> level(splitter.Consumer(), 2);
     HCustomWriter<HSignalLevelResult>* result = HCustomWriter<HSignalLevelResult>::Create(callback, level.Consumer());
 
     // Create a fader that turns up the output volume when we begin to process samples.

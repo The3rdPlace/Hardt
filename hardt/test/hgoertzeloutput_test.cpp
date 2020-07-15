@@ -3,7 +3,7 @@
 
 #include "test.h"
 
-class HGoertzelFilter_Test: public Test
+class HGoertzelOutput_Test: public Test
 {
     public:
 
@@ -16,7 +16,7 @@ class HGoertzelFilter_Test: public Test
 
         const char* name()
         {
-            return "HGoertzelFilter";
+            return "HGoertzelOutput";
         }
 
     private:
@@ -24,7 +24,7 @@ class HGoertzelFilter_Test: public Test
         int magnitude = -1;
         int phase = -1;
 
-        int callback(HGoertzelFilterResult* result, size_t length)
+        int callback(HGoertzelResult* result, size_t length)
         {
             magnitude = (*result).Magnitude;
             phase = (*result).Phase;
@@ -40,14 +40,14 @@ class HGoertzelFilter_Test: public Test
             int16_t input[4 * N];
             g.Read(input, 4 * N);
 
-            HGoertzelFilter<int16_t>* grtzl;
+            HGoertzelOutput<int16_t>* grtzl;
             HRectangularWindow<int16_t> window;
 
             float n = N;
             for( float bin = 1; bin < N / 2; bin += 0.1f )
             {
                 // Check for result at 1KHz
-                grtzl = new HGoertzelFilter<int16_t>(N, 4, bin, HCustomWriter<HGoertzelFilterResult>::Create<HGoertzelFilter_Test>(this, &HGoertzelFilter_Test::callback), &window);
+                grtzl = new HGoertzelOutput<int16_t>(N, 4, bin, HCustomWriter<HGoertzelResult>::Create<HGoertzelOutput_Test>(this, &HGoertzelOutput_Test::callback), &window);
                 ASSERT_IS_EQUAL(grtzl->Write(input, 4 * N), 4 * N);
 
                 if( floor(bin * 10) == 213 ) // = bin 21.3 adjusted for tiny decimal fractions
@@ -82,7 +82,7 @@ class HGoertzelFilter_Test: public Test
 
             // Get a Goertzel filter at 1Khz (bin = 21.3)
             HRectangularWindow<int16_t> window;
-            HGoertzelFilter<int16_t> grtzl(N, 4, 48000, 1000, HCustomWriter<HGoertzelFilterResult>::Create<HGoertzelFilter_Test>(this, &HGoertzelFilter_Test::callback), &window);
+            HGoertzelOutput<int16_t> grtzl(N, 4, 48000, 1000, HCustomWriter<HGoertzelResult>::Create<HGoertzelOutput_Test>(this, &HGoertzelOutput_Test::callback), &window);
 
             // Check for result at 1KHz
             ASSERT_IS_EQUAL(grtzl.Write(input, 4 * N), 4 * N);
@@ -102,7 +102,7 @@ class HGoertzelFilter_Test: public Test
             int16_t buffer[N * Iter];
 
             HRectangularWindow<int16_t> window;
-            HGoertzelFilter<int16_t> grtzl(N, Iter, 21.3f, HCustomWriter<HGoertzelFilterResult>::Create<HGoertzelFilter_Test>(this, &HGoertzelFilter_Test::callback), &window);;
+            HGoertzelOutput<int16_t> grtzl(N, Iter, 21.3f, HCustomWriter<HGoertzelResult>::Create<HGoertzelOutput_Test>(this, &HGoertzelOutput_Test::callback), &window);;
 
             // Run several reads and compare phase
             for( int i = 0; i < 4; i++ )
@@ -128,4 +128,4 @@ class HGoertzelFilter_Test: public Test
             }
         }
 
-} hgoertzelfilter_test;
+} hgoertzeloutput_test;

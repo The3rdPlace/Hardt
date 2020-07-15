@@ -1,5 +1,5 @@
-#ifndef __HSIGNALLEVEL_H
-#define __HSIGNALLEVEL_H
+#ifndef __HSIGNALLEVELOUTPUT_H
+#define __HSIGNALLEVELOUTPUT_H
 
 #include "hwriter.h"
 #include "hwriterconsumer.h"
@@ -54,7 +54,7 @@ struct HSignalLevelResult
 
 /** Reports signallevel for a sampled signal */
 template <class T>
-class HSignalLevel : public HOutput<T, HSignalLevelResult>
+class HSignalLevelOutput : public HOutput<T, HSignalLevelResult>
 {
     private:
 
@@ -74,14 +74,14 @@ class HSignalLevel : public HOutput<T, HSignalLevelResult>
     public:
 
         /** Construct a new HSignalLevel object */
-        HSignalLevel(HWriter<HSignalLevelResult>* writer, int average, int ref = 54, int scale = 1);
+        HSignalLevelOutput(HWriter<HSignalLevelResult>* writer, int average, int ref = 54, int scale = 1);
 
         /** Construct a new HSignalLevel object and register with the upstream writer by the
             HWriterConsumer scheme */
-        HSignalLevel(HWriterConsumer<T>* consumer, int average, int ref = 54, int scale = 1);
+        HSignalLevelOutput(HWriterConsumer<T>* consumer, int average, int ref = 54, int scale = 1);
 
         /** Destruct a HSignalLevel object */
-        ~HSignalLevel();
+        ~HSignalLevelOutput();
 
         /** Process a block of samples */
         int Output(T* src, size_t blocksize);

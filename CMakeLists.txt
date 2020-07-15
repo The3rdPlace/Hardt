@@ -9,7 +9,7 @@ set (Hardt_VERSION_MINOR 0)
 
 # When setting the debian package version, do not forget to add a changelog
 # entry in hardt/debian/changelog
-set (Hardt_VERSION_DEB_PACKAGE 19)
+set (Hardt_VERSION_DEB_PACKAGE 20)
 
 # Define the version string
 set (Hardt_VERSION Hardt_VERSION_MAJOR + "." + HARDT_VERSION_MINOR + "." + HARDT_VERSION_DEP_PACKAGE)
@@ -108,4 +108,7 @@ ADD_CUSTOM_TARGET( distclean
 COMMAND sudo rm -r -f ../dist
 COMMAND sudo rm -r -f docs
 COMMAND sudo rm -r -f hardt
+COMMAND sudo rm -r -f /tmp/hfilereader*
+COMMAND sudo rm -r -f /tmp/hfilewriter*
+COMMAND sudo rm -r -f /tmp/hfilewav*
 WORKING_DIRECTORY ${CMAKE_BINARY_DIR})

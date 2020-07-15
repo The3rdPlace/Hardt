@@ -3,7 +3,7 @@
 
 #include "test.h"
 
-class HFft_Test: public Test
+class HFftOutput_Test: public Test
 {
     public:
 
@@ -30,7 +30,7 @@ class HFft_Test: public Test
         static double* staticSpectrum;
         int ready;
 
-        void writeToFFT(HFft<int16_t>* fft)
+        void writeToFFT(HFftOutput<int16_t>* fft)
         {
             int16_t input[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 9 ,8 ,7 ,6 ,5 ,4 ,3 ,2 ,1};
             ASSERT_IS_EQUAL(fft->Write(input, 20), 20);
@@ -67,7 +67,7 @@ class HFft_Test: public Test
         void test_fft_static_callback()
         {
             staticReady = 0;
-            auto fft = HFft<int16_t>(10, 1, new HCustomWriter<HFftResults>(staticCallback), new TestWindow);
+            auto fft = HFftOutput<int16_t>(10, 1, new HCustomWriter<HFftResults>(staticCallback), new TestWindow);
             writeToFFT(&fft);
             ASSERT_IS_EQUAL(staticReady, 2);
         }
@@ -75,7 +75,7 @@ class HFft_Test: public Test
         void test_fft_static_callback_with_factory()
         {
             staticReady = 0;
-            HFft<int16_t> fft(10, 1, HCustomWriter<HFftResults>::Create(staticCallback), new TestWindow);
+            HFftOutput<int16_t> fft(10, 1, HCustomWriter<HFftResults>::Create(staticCallback), new TestWindow);
             writeToFFT(&fft);
             ASSERT_IS_EQUAL(staticReady, 2);
         }
@@ -83,7 +83,7 @@ class HFft_Test: public Test
         void test_fft_member_callback()
         {
             ready = 0;
-            HFft<int16_t> fft(10, 1, HCustomWriter<HFftResults>::Create<HFft_Test>(this, &HFft_Test::memberCallback), new TestWindow);
+            HFftOutput<int16_t> fft(10, 1, HCustomWriter<HFftResults>::Create<HFftOutput_Test>(this, &HFftOutput_Test::memberCallback), new TestWindow);
             writeToFFT(&fft);
             ASSERT_IS_EQUAL(ready, 2);
         }
@@ -99,7 +99,7 @@ class HFft_Test: public Test
             g.Read(input, N);
 
             // Run 'N' samples through the fft
-            HFft<int16_t> fft(N, 1, new HCustomWriter<HFftResults>(staticCallback), new TestWindow);
+            HFftOutput<int16_t> fft(N, 1, new HCustomWriter<HFftResults>(staticCallback), new TestWindow);
             fft.Write(input, N);
 
             // Check if the spectrum contains the expected peak af 'fg'
@@ -219,7 +219,7 @@ class HFft_Test: public Test
             time_t start;
             time_t end;
 
-            HFft<int16_t> fft(N, 1, new HCustomWriter<HFftResults>(staticCallback), new TestWindow);
+            HFftOutput<int16_t> fft(N, 1, new HCustomWriter<HFftResults>(staticCallback), new TestWindow);
 
             int ffts = 0;
             time(&start);
@@ -272,8 +272,8 @@ class HFft_Test: public Test
             INFO("Average FFT's per second with chunking: " << avg / 3 << "  (753)");
         }
 
-} hfft_test;
+} hfftoutput_test;
 
-int HFft_Test::staticReady = 0;
+int HFftOutput_Test::staticReady = 0;
 
-double* HFft_Test::staticSpectrum;
+double* HFftOutput_Test::staticSpectrum;

@@ -1,12 +1,13 @@
-#ifndef __HSIGNALLEVEL_CPP
-#define __HSIGNALLEVEL_CPP
+#ifndef __HSIGNALLEVELOUTPUT_CPP
+#define __HSIGNALLEVELOUTPUT_CPP
 
+#include <cstdint>
 #include <cstdio>
 
-#include "hsignallevel.h"
+#include "hsignalleveloutput.h"
 
 template <class T>
-HSignalLevel<T>::HSignalLevel(HWriter<HSignalLevelResult>* writer, int average, int ref, int scale):
+HSignalLevelOutput<T>::HSignalLevelOutput(HWriter<HSignalLevelResult>* writer, int average, int ref, int scale):
     HOutput<T, HSignalLevelResult>(writer),
     _ref(ref),
     _scale(scale),
@@ -20,7 +21,7 @@ HSignalLevel<T>::HSignalLevel(HWriter<HSignalLevelResult>* writer, int average, 
 }
 
 template <class T>
-HSignalLevel<T>::HSignalLevel(HWriterConsumer<T>* consumer, int average, int ref, int scale):
+HSignalLevelOutput<T>::HSignalLevelOutput(HWriterConsumer<T>* consumer, int average, int ref, int scale):
     HOutput<T, HSignalLevelResult>(consumer),
     _ref(ref),
     _scale(scale),
@@ -29,12 +30,12 @@ HSignalLevel<T>::HSignalLevel(HWriterConsumer<T>* consumer, int average, int ref
     _avgPos(0),
     _avgCount(average > 0 ? average : 1)
 {
-    HLog("HSignalLevel(...)");
+    HLog("HSignalLevelOutput(...)");
     Init();
 }
 
 template <class T>
-void HSignalLevel<T>::Init()
+void HSignalLevelOutput<T>::Init()
 {
     _avg = new T[_avgCount];
     _avgSum = new double[_avgCount];
@@ -45,7 +46,7 @@ void HSignalLevel<T>::Init()
 }
 
 template <class T>
-HSignalLevel<T>::~HSignalLevel()
+HSignalLevelOutput<T>::~HSignalLevelOutput()
 {
     if( _avg != NULL )
     {
@@ -58,7 +59,7 @@ HSignalLevel<T>::~HSignalLevel()
 }
 
 template <class T>
-int HSignalLevel<T>::Output(T* src, size_t blocksize)
+int HSignalLevelOutput<T>::Output(T* src, size_t blocksize)
 {
     // Analyze block - disable warnings about using abs() for unsigned types
     #pragma GCC diagnostic push
@@ -143,54 +144,54 @@ Explicit instantiation
 
 // HGoertzelFilter
 template
-HSignalLevel<int8_t>::HSignalLevel(HWriter<HSignalLevelResult>* writer, int skip, int ref, int scale);
+HSignalLevelOutput<int8_t>::HSignalLevelOutput(HWriter<HSignalLevelResult>* writer, int skip, int ref, int scale);
 
 template
-HSignalLevel<uint8_t>::HSignalLevel(HWriter<HSignalLevelResult>* writer, int skip, int ref, int scale);
+HSignalLevelOutput<uint8_t>::HSignalLevelOutput(HWriter<HSignalLevelResult>* writer, int skip, int ref, int scale);
 
 template
-HSignalLevel<int16_t>::HSignalLevel(HWriter<HSignalLevelResult>* writer, int skip, int ref, int scale);
+HSignalLevelOutput<int16_t>::HSignalLevelOutput(HWriter<HSignalLevelResult>* writer, int skip, int ref, int scale);
 
 template
-HSignalLevel<int32_t>::HSignalLevel(HWriter<HSignalLevelResult>* writer, int skip, int ref, int scale);
+HSignalLevelOutput<int32_t>::HSignalLevelOutput(HWriter<HSignalLevelResult>* writer, int skip, int ref, int scale);
 
 template
-HSignalLevel<int8_t>::HSignalLevel(HWriterConsumer<int8_t>* consumer, int skip, int ref, int scale);
+HSignalLevelOutput<int8_t>::HSignalLevelOutput(HWriterConsumer<int8_t>* consumer, int skip, int ref, int scale);
 
 template
-HSignalLevel<uint8_t>::HSignalLevel(HWriterConsumer<uint8_t>* consumer, int skip, int ref, int scale);
+HSignalLevelOutput<uint8_t>::HSignalLevelOutput(HWriterConsumer<uint8_t>* consumer, int skip, int ref, int scale);
 
 template
-HSignalLevel<int16_t>::HSignalLevel(HWriterConsumer<int16_t>* consumer, int skip, int ref, int scale);
+HSignalLevelOutput<int16_t>::HSignalLevelOutput(HWriterConsumer<int16_t>* consumer, int skip, int ref, int scale);
 
 template
-HSignalLevel<int32_t>::HSignalLevel(HWriterConsumer<int32_t>* consumer, int skip, int ref, int scale);
+HSignalLevelOutput<int32_t>::HSignalLevelOutput(HWriterConsumer<int32_t>* consumer, int skip, int ref, int scale);
 
 // ~HSignalLevel
 template
-HSignalLevel<int8_t>::~HSignalLevel();
+HSignalLevelOutput<int8_t>::~HSignalLevelOutput();
 
 template
-HSignalLevel<uint8_t>::~HSignalLevel();
+HSignalLevelOutput<uint8_t>::~HSignalLevelOutput();
 
 template
-HSignalLevel<int16_t>::~HSignalLevel();
+HSignalLevelOutput<int16_t>::~HSignalLevelOutput();
 
 template
-HSignalLevel<int32_t>::~HSignalLevel();
+HSignalLevelOutput<int32_t>::~HSignalLevelOutput();
 
 // Output
 template
-int HSignalLevel<int8_t>::Output(int8_t* src, size_t size);
+int HSignalLevelOutput<int8_t>::Output(int8_t* src, size_t size);
 
 template
-int HSignalLevel<uint8_t>::Output(uint8_t* src, size_t size);
+int HSignalLevelOutput<uint8_t>::Output(uint8_t* src, size_t size);
 
 template
-int HSignalLevel<int16_t>::Output(int16_t* src, size_t size);
+int HSignalLevelOutput<int16_t>::Output(int16_t* src, size_t size);
 
 template
-int HSignalLevel<int32_t>::Output(int32_t* src, size_t size);
+int HSignalLevelOutput<int32_t>::Output(int32_t* src, size_t size);
 
 //! @endcond
 #endif

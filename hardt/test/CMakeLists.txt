@@ -20,7 +20,7 @@ target_sources(hardt_test
 	hnullwriter_test.cpp
 	hchunkwriter_test.cpp
 	hwindow_test.cpp
-	hfft_test.cpp
+	hfftoutput_test.cpp
 	hrectangularwindow_test.cpp
 	hhammingwindow_test.cpp
 	hhahnwindow_test.cpp
@@ -30,9 +30,9 @@ target_sources(hardt_test
 	hbiquads_test.cpp
 	hgain_test.cpp
 	hcombfilter_test.cpp
-	hgoertzelfilter_test.cpp
+	hgoertzeloutput_test.cpp
 	hsplitter_test.cpp
-	hsignallevel_test.cpp
+	hsignalleveloutput_test.cpp
 	hdemux_test.cpp
 	hmux_test.cpp
 	hwriterconsumer_test.cpp

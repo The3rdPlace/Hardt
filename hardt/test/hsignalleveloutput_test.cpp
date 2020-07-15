@@ -3,7 +3,7 @@
 
 #include "test.h"
 
-class HSignalLevel_Test: public Test
+class HSignalLevelOutput_Test: public Test
 {
     public:
 
@@ -18,7 +18,7 @@ class HSignalLevel_Test: public Test
 
         const char* name()
         {
-            return "HSignalLevel";
+            return "HSignalLevelOutput";
         }
 
     private:
@@ -50,8 +50,8 @@ class HSignalLevel_Test: public Test
         {
             int8_t input[10] = { 2, 4, 6, 4, 2, -1, -3, -5, -3, -1 };
 
-            auto wr = HCustomWriter<HSignalLevelResult>::Create<HSignalLevel_Test>(this, &HSignalLevel_Test::callback);
-            HSignalLevel<int8_t> siglevel(wr, 1);
+            auto wr = HCustomWriter<HSignalLevelResult>::Create<HSignalLevelOutput_Test>(this, &HSignalLevelOutput_Test::callback);
+            HSignalLevelOutput<int8_t> siglevel(wr, 1);
 
             siglevel.Write(input, 10);
             ASSERT_IS_EQUAL(Min, 1);
@@ -82,8 +82,8 @@ class HSignalLevel_Test: public Test
             int8_t input[1024];
             g.Read(input, 1024);
 
-            auto wr = HCustomWriter<HSignalLevelResult>::Create<HSignalLevel_Test>(this, &HSignalLevel_Test::callback);
-            HSignalLevel<int8_t> siglevel(wr, 0);
+            auto wr = HCustomWriter<HSignalLevelResult>::Create<HSignalLevelOutput_Test>(this, &HSignalLevelOutput_Test::callback);
+            HSignalLevelOutput<int8_t> siglevel(wr, 0);
 
             // The low dynamic range for 8 bit samples reduces the possible signal level values
             g.Calculate(1000, 0, 0);
@@ -150,8 +150,8 @@ class HSignalLevel_Test: public Test
             uint8_t input[1024];
             g.Read(input, 1024);
 
-            auto wr = HCustomWriter<HSignalLevelResult>::Create<HSignalLevel_Test>(this, &HSignalLevel_Test::callback);
-            HSignalLevel<uint8_t> siglevel(wr, 0);
+            auto wr = HCustomWriter<HSignalLevelResult>::Create<HSignalLevelOutput_Test>(this, &HSignalLevelOutput_Test::callback);
+            HSignalLevelOutput<uint8_t> siglevel(wr, 0);
 
             // The low dynamic range for 8 bit samples reduces the possible signal level values
             g.Calculate(1000, 0, 0);
@@ -218,8 +218,8 @@ class HSignalLevel_Test: public Test
             int16_t input[1024];
             g.Read(input, 1024);
 
-            auto wr = HCustomWriter<HSignalLevelResult>::Create<HSignalLevel_Test>(this, &HSignalLevel_Test::callback);
-            HSignalLevel<int16_t> siglevel(wr, 0);
+            auto wr = HCustomWriter<HSignalLevelResult>::Create<HSignalLevelOutput_Test>(this, &HSignalLevelOutput_Test::callback);
+            HSignalLevelOutput<int16_t> siglevel(wr, 0);
 
             g.Calculate(1000, 0, 0);
             g.Read(input, 1024);
@@ -291,8 +291,8 @@ class HSignalLevel_Test: public Test
             int32_t input[1024];
             g.Read(input, 1024);
 
-            auto wr = HCustomWriter<HSignalLevelResult>::Create<HSignalLevel_Test>(this, &HSignalLevel_Test::callback);
-            HSignalLevel<int32_t> siglevel(wr, 0);
+            auto wr = HCustomWriter<HSignalLevelResult>::Create<HSignalLevelOutput_Test>(this, &HSignalLevelOutput_Test::callback);
+            HSignalLevelOutput<int32_t> siglevel(wr, 0);
 
             // The high dynamic range for 32 bit samples will allow many lower db values, but all will register with S = 0
             g.Calculate(1000, 0, 0);
@@ -358,4 +358,4 @@ class HSignalLevel_Test: public Test
             delete wr;
         }
 
-} hSignallevel_test;
+} hSignalleveloutput_test;

@@ -1,5 +1,5 @@
-#ifndef __HFFT_H
-#define __HFFT_H
+#ifndef __HFFTOUTPUT_H
+#define __HFFTOUTPUT_H
 
 #include <complex>
 
@@ -24,7 +24,7 @@ struct HFftResults
     given writer (usually a HCustomWRiter)
 */
 template <class T>
-class HFft : public HOutput<T, HFftResults>
+class HFftOutput : public HOutput<T, HFftResults>
 {
     private:
 
@@ -44,13 +44,13 @@ class HFft : public HOutput<T, HFftResults>
     public:
 
         /** Create a new HFft output that writes to a writer */
-        HFft(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* window);
+        HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* window);
 
         /** Create a new HFft output that registers with an upstream writer */
-        HFft(int size, int average, HWriterConsumer<T>* consumer, HWindow<T>* window);
+        HFftOutput(int size, int average, HWriterConsumer<T>* consumer, HWindow<T>* window);
 
         /** Default destructor */
-        ~HFft()
+        ~HFftOutput()
         {
             delete _spectrum;
             delete _buffer;

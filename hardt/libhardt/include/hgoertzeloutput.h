@@ -1,11 +1,11 @@
-#ifndef __HGOERTZELFILTER_H
-#define __HGOERTZELFILTER_H
+#ifndef __HGOERTZELOUTPUT_H
+#define __HGOERTZELOUTPUT_H
 
 /**
-    Holds the result of a single or more Goertzl filter
+    Holds the result of a single or more Goertzl spectrum
     calculations over a set of samples.
 */
-struct HGoertzelFilterResult
+struct HGoertzelResult
 {
     /** Calculated magnitude of the selected frequency bin for a block of samples */
     int Magnitude;
@@ -15,7 +15,7 @@ struct HGoertzelFilterResult
 };
 
 /**
-    Calculate one or more Goertzl filter results over a set
+    Calculate one or more Goertzl spectrum results over a set
     of samples.
 
     When the requested number of calculations has been performed,
@@ -23,7 +23,7 @@ struct HGoertzelFilterResult
     (usualy a HCustomWriter)
 */
 template <class T>
-class HGoertzelFilter : public HOutput<T, HGoertzelFilterResult>
+class HGoertzelOutput : public HOutput<T, HGoertzelResult>
 {
     private:
 
@@ -34,7 +34,7 @@ class HGoertzelFilter : public HOutput<T, HGoertzelFilterResult>
         T* _buffer;
 
         int _count;
-        HGoertzelFilterResult _result;
+        HGoertzelResult _result;
 
         float omega;
         float sine;
@@ -48,20 +48,20 @@ class HGoertzelFilter : public HOutput<T, HGoertzelFilterResult>
 
     public:
 
-        /** Construct a new HGoertzelFilter, with a given frequency bin, that writes to a writer */
-        HGoertzelFilter(int size, int average, float bin, HWriter<HGoertzelFilterResult>* writer, HWindow<T>* window);
+        /** Construct a new HGoertzelOutput, with a given frequency bin, that writes to a writer */
+        HGoertzelOutput(int size, int average, float bin, HWriter<HGoertzelResult>* writer, HWindow<T>* window);
 
-        /** Construct a new HGoertzelFilter, with a given frequency bin, that registers with an upstream writer */
-        HGoertzelFilter(int size, int average, float bin, HWriterConsumer<T>* consumer, HWindow<T>* window);
+        /** Construct a new HGoertzelOutput, with a given frequency bin, that registers with an upstream writer */
+        HGoertzelOutput(int size, int average, float bin, HWriterConsumer<T>* consumer, HWindow<T>* window);
 
-        /** Construct a new HGoertzelFilter, from the sample rate and a frequency, that writes to a writer */
-        HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<HGoertzelFilterResult>* writer, HWindow<T>* window);
+        /** Construct a new HGoertzelOutput, from the sample rate and a frequency, that writes to a writer */
+        HGoertzelOutput(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<HGoertzelResult>* writer, HWindow<T>* window);
 
         /** Construct a new HGoertzelFilter, from the sample rate and a frequency, that registers with an upstream writer */
-        HGoertzelFilter(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriterConsumer<T>* consumer, HWindow<T>* window);
+        HGoertzelOutput(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriterConsumer<T>* consumer, HWindow<T>* window);
 
         /** Default destructor */
-        ~HGoertzelFilter()
+        ~HGoertzelOutput()
         {
             delete _buffer;
         }
