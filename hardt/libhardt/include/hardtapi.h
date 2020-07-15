@@ -8,6 +8,7 @@
 #include "hsoundcard.h"
 #include "hexceptions.h"
 #include "htimer.h"
+#include "hfft.h"
 
 #include "hwriter.h"
 #include "hwriterconsumer.h"

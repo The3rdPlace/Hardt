@@ -1,15 +1,14 @@
 #ifndef __HFFTOUTPUT_CPP
 #define __HFFTOUTPUT_CPP
 
+#include "hwriter.h"
+#include "hwriterconsumer.h"
+
 #include "hfftoutput.h"
 
 #include <cmath>
-
 #include <complex>
 #include <valarray>
-
-typedef std::complex<double> Complex;
-typedef std::valarray<Complex> CArray;
 
 template <class T>
 HFftOutput<T>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* window):
@@ -39,70 +38,34 @@ template <class T>
 void HFftOutput<T>::Init()
 {
     // Allocate a buffer for the spectrum and phase values
+    // Do not forget to zero the result buffer as new results are being added to the 
+    // current values, not overriding them!
     _spectrum = new double[_size];
     memset((void*) _spectrum, 0, _size * sizeof(double));
-    _result = new Complex[_size];
-    memset((void*) _result, 0, _size * sizeof(Complex));
+    _result = new std::complex<double>[_size];
+    memset((void*) _result, 0, _size * sizeof(std::complex<double>));
 
     // Allocate a buffer for intermediate results
     _buffer = new T[_size];
 
     // Set window size
     _window->SetSize(_size);
+
+    // Create the fft
+    _fft = new HFft<T>(_size, _window);
 }
 
-void fft(CArray& x)
-{
-
-    const size_t N = x.size();
-    if (N <= 1) return;
-
-    // divide
-    CArray even = x[std::slice(0, N/2, 2)];
-    CArray  odd = x[std::slice(1, N/2, 2)];
-
-    // conquer
-    fft(even);
-    fft(odd);
-
-    // combine
-    for (size_t k = 0; k < N/2; ++k)
-    {
-        Complex t = std::polar(1.0, -2 * M_PI * k / N) * odd[k];
-        x[k    ] = even[k] + t;
-        x[k+N/2] = even[k] - t;
-    }
-}
 
 template <class T>
 int HFftOutput<T>::Output(T* src, size_t size)
 {
-    // Run the input buffer through a window function, if any is given
-    _window->Apply(src, _buffer, size);
-
-    // Prepare a set of complex values
-    int N = size;
-    CArray x(N);
-    for( int i = 0; i < N ; i++ )
-    {
-        Complex r(_buffer[i], 0);
-        x[i] = r;
-    }
-
-    // Calculate the FFT
-    fft(x);
-
-    // Accumulate the results for averaging later
-    for( int i = 0; i < N / 2; i++ )
-    {
-        _result[i] += x[i];
-    }
+    _fft->FFT(src, _result);
 
     // Did we reach averaging target ?
     if( ++_count >= _average )
     {
         // Calculate spectrum
-        for( int i = 0; i < N / 2; i++ )
+        for( int i = 0; i < size / 2; i++ )
         {
             // Get absolute value at point n
             double value = std::abs(_result[i]);
@@ -117,13 +80,13 @@ int HFftOutput<T>::Output(T* src, size_t size)
         HFftResults results;
         results.Spectrum = &_spectrum[0];
         results.Result = &_result[0];
-        results.Size = N / 2;
+        results.Size = size / 2;
         HOutput<T, HFftResults>::Ready(&results, 1);
 
         // Reset results
         _count = 0;
         memset((void*) _spectrum, 0, size * sizeof(double));
-        memset((void*) _result, 0, size * sizeof(Complex));
+        memset((void*) _result, 0, size * sizeof(std::complex<double>));
     }
 
     // We took the entire window

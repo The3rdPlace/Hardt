@@ -3,6 +3,8 @@
 
 #include <complex>
 
+#include "hfft.h"
+
 /**
     Holds the result of a number of dfft's
 */
@@ -39,6 +41,8 @@ class HFftOutput : public HOutput<T, HFftResults>
 
         T* _buffer;
 
+        HFft<T>* _fft;
+
         void Init();
 
     public:
@@ -54,6 +58,7 @@ class HFftOutput : public HOutput<T, HFftResults>
         {
             delete _spectrum;
             delete _buffer;
+            delete _fft;
         }
 
         /** Process a block of samples */

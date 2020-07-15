@@ -13,6 +13,7 @@ Initialization, logging and other basic functions.
 #include "hwav.h"
 #include "hmetrics.h"
 #include "hobject.h"
+#include "hfft.h"
 
 /********************************************************************
 Abstract base classes with no, or little implementation
