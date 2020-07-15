@@ -12,25 +12,37 @@
     processors _do_ update metrics and since they are the hubs that
     allows data to flow, measuring metrics there should be sufficient.
 */
-struct HMetrics
+class HMetrics
 {
-    /** Bytes (not samples) written */
-    unsigned long BytesOut;
+    public:
 
-    /** Bytes (not samples) read */
-    unsigned long BytesIn;
+        /** Bytes (not samples) written */
+        unsigned long BytesOut;
 
-    /** Blocks written */
-    unsigned long BlocksOut;
+        /** Bytes (not samples) read */
+        unsigned long BytesIn;
 
-    /** Blocks read */
-    unsigned long BlocksIn;
+        /** Blocks written */
+        unsigned long BlocksOut;
 
-    /** Writes */
-    unsigned long Writes;
+        /** Blocks read */
+        unsigned long BlocksIn;
 
-    /** Reads */
-    unsigned long Reads;
+        /** Writes */
+        unsigned long Writes;
+
+        /** Reads */
+        unsigned long Reads;
+
+    public:
+
+        HMetrics():
+            BytesOut(0),
+            BytesIn(0),
+            BlocksOut(0),
+            BlocksIn(0),
+            Writes(0),
+            Reads(0) {}
 };
 
 #endif
