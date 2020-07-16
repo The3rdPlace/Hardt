@@ -5,13 +5,14 @@
     Linear mixer that simply mixes (without level adjustment) two signals.
 */
 template <class T>
-class HLinearMixer : public HReader<T>, public HWriter<T>
+class HLinearMixer : public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
 {
     private:
 
         HReader<T>* _reader_1;
         HReader<T>* _reader_2;
         HWriter<T>* _writer;
+        bool _wait;
 
         int _blocksize;
         T* _buffer_1;
@@ -27,8 +28,14 @@ class HLinearMixer : public HReader<T>, public HWriter<T>
         /** Construct a new HLinearMixer */
         HLinearMixer(HReader<T>* reader, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL);
 
+        /** Construct a new HLinearMixer which mixes two inputs by multiplexing between alternating writes */
+        HLinearMixer(HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL);
+
         /** Construct a new HLinearMixer */
         HLinearMixer(HReader<T>* reader, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL);
+
+        /** Construct a new HLinearMixer */
+        HLinearMixer(HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Default destructor */
         ~HLinearMixer();

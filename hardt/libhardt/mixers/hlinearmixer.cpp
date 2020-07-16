@@ -1,7 +1,11 @@
 #ifndef __HLINEARMIXER_CPP
 #define __HLINEARMIXER_CPP
 
+#include "hwriter.h"
+#include "hwriterconsumer.h"
 #include "hreader.h"
+#include "hprobe.h"
+
 #include "hlinearmixer.h"
 
 template <class T>
@@ -10,7 +14,8 @@ HLinearMixer<T>::HLinearMixer(HReader<T>* reader_1, HReader<T>* reader_2, size_t
     _reader_2(reader_2),
     _writer(NULL),
     _blocksize(blocksize),
-    _probe(probe)
+    _probe(probe),
+    _wait(false)
 {
     HLog("Hlinearmixer(HReader*, HReader*)");
     Init(blocksize);
@@ -22,9 +27,23 @@ HLinearMixer<T>::HLinearMixer(HReader<T>* reader, HWriter<T>* writer, size_t blo
     _reader_2(NULL),
     _writer(writer),
     _blocksize(blocksize),
-    _probe(probe)
+    _probe(probe),
+    _wait(false)
 {
     HLog("Hlinearmixer(HReader*, HWriter*)");
+    Init(blocksize);
+}
+
+template <class T>
+HLinearMixer<T>::HLinearMixer(HWriter<T>* writer, size_t blocksize, HProbe<T>* probe):
+    _reader_1(NULL),
+    _reader_2(NULL),
+    _writer(writer),
+    _blocksize(blocksize),
+    _probe(probe),
+    _wait(false)
+{
+    HLog("Hlinearmixer(HWriter*)");
     Init(blocksize);
 }
 
@@ -34,10 +53,26 @@ HLinearMixer<T>::HLinearMixer(HReader<T>* reader, HWriterConsumer<T>* consumer, 
     _reader_2(NULL),
     _writer(NULL),
     _blocksize(blocksize),
-    _probe(probe)
+    _probe(probe),_wait(false)
+
 {
     HLog("Hlinearmixer(HReader*, HWriterConsumer*)");
     Init(blocksize);
+    consumer->SetWriter(this->Writer());
+}
+
+template <class T>
+HLinearMixer<T>::HLinearMixer(HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe):
+    _reader_1(NULL),
+    _reader_2(NULL),
+    _writer(NULL),
+    _blocksize(blocksize),
+    _probe(probe),_wait(false)
+
+{
+    HLog("Hlinearmixer(HWriterConsumer*)");
+    Init(blocksize);
+    consumer->SetWriter(this->Writer());
 }
 
 template <class T>
@@ -110,12 +145,26 @@ int HLinearMixer<T>::Write(T* src, size_t blocksize)
         throw new HFilterIOException("It is not possible to write more data than the size given at creation of the mixer");
     }
 
-    // Read from the reader and mix with the input
-    int received = _reader_1->Read(_buffer_1, blocksize);
-    if( received < blocksize)
-    {
-        HLog("Short read from reader, stopping %d", received);
-        return 0;
+    // Handle multiplexed input from alternating writers
+    if( _reader_1 == nullptr && _reader_2 == nullptr && _wait == false ) {
+
+        // Copy first write to buffer-1 then wait for next write
+        memcpy((void*) _buffer_1, src, sizeof(T) * blocksize);
+        _wait = true;
+        return blocksize;
+    } else if( _reader_1 == nullptr && _reader_2 == nullptr && _wait == true ) {
+
+        // Second write
+        _wait = false;
+    } else {
+
+        // Read from the reader and mix with the input
+        int received = _reader_1->Read(_buffer_1, blocksize);
+        if( received < blocksize)
+        {
+            HLog("Short read from reader, stopping %d", received);
+            return 0;
+        }
     }
 
     // Mix inputs
@@ -211,6 +260,18 @@ template
 HLinearMixer<int32_t>::HLinearMixer(HReader<int32_t>* reader, HWriter<int32_t>* writer, size_t blocksize, HProbe<int32_t>* probe);
 
 template
+HLinearMixer<int8_t>::HLinearMixer(HWriter<int8_t>* writer, size_t blocksize, HProbe<int8_t>* probe);
+
+template
+HLinearMixer<uint8_t>::HLinearMixer(HWriter<uint8_t>* writer, size_t blocksize, HProbe<uint8_t>* probe);
+
+template
+HLinearMixer<int16_t>::HLinearMixer(HWriter<int16_t>* writer, size_t blocksize, HProbe<int16_t>* probe);
+
+template
+HLinearMixer<int32_t>::HLinearMixer(HWriter<int32_t>* writer, size_t blocksize, HProbe<int32_t>* probe);
+
+template
 HLinearMixer<int8_t>::HLinearMixer(HReader<int8_t>* reader, HWriterConsumer<int8_t>* consumer, size_t blocksize, HProbe<int8_t>* probe);
 
 template
@@ -221,6 +282,18 @@ HLinearMixer<int16_t>::HLinearMixer(HReader<int16_t>* reader, HWriterConsumer<in
 
 template
 HLinearMixer<int32_t>::HLinearMixer(HReader<int32_t>* reader, HWriterConsumer<int32_t>* consumer, size_t blocksize, HProbe<int32_t>* probe);
+
+template
+HLinearMixer<int8_t>::HLinearMixer(HWriterConsumer<int8_t>* consumer, size_t blocksize, HProbe<int8_t>* probe);
+
+template
+HLinearMixer<uint8_t>::HLinearMixer(HWriterConsumer<uint8_t>* consumer, size_t blocksize, HProbe<uint8_t>* probe);
+
+template
+HLinearMixer<int16_t>::HLinearMixer(HWriterConsumer<int16_t>* consumer, size_t blocksize, HProbe<int16_t>* probe);
+
+template
+HLinearMixer<int32_t>::HLinearMixer(HWriterConsumer<int32_t>* consumer, size_t blocksize, HProbe<int32_t>* probe);
 
 // ~HLinearMixer()
 template

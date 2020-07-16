@@ -11,6 +11,9 @@ class HLinearMixer_Test: public Test
         {
             UNITTEST(test_mixer_with_readers);
             UNITTEST(test_mixer_with_reader_and_writer);
+            UNITTEST(test_mixer_with_reader_and_consumer);
+            UNITTEST(test_mixer_with_multiplexed_writers);
+            UNITTEST(test_mixer_with_multiplexed_writers_and_consumer);
         }
 
         const char* name()
@@ -59,6 +62,74 @@ class HLinearMixer_Test: public Test
             ASSERT_IS_TRUE(mixer.Command(&TestNopCommand));
             ASSERT_IS_EQUAL(reader.Commands, 1);
             ASSERT_IS_EQUAL(writer.Commands, 1);
+        }
+
+        void test_mixer_with_reader_and_consumer()
+        {
+            int8_t input_1[5] = {0, 1, 2, 3, 4};
+            TestReader<int8_t> reader(input_1, 5);
+            TestWriter<int8_t> writer_1(5);
+            HLinearMixer<int8_t> mixer(reader.Reader(), writer_1.Consumer(), 5);
+            TestWriter<int8_t> writer_2(mixer.Consumer(), 5);
+
+            int8_t input_2[5] = {4, 3, 2, 1, 0};
+            int8_t expected[5] = {4, 4, 4, 4, 4};
+            ASSERT_IS_EQUAL(writer_1.Write(input_2, 5), 5);
+
+            ASSERT_IS_EQUAL(writer_2.Writes, 1);
+            for(int i = 0; i < 5; i++)
+            {
+                ASSERT_IS_EQUAL(writer_2.Received[i], expected[i]);
+            }
+
+            ASSERT_IS_TRUE(writer_1.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(reader.Commands, 1);
+            ASSERT_IS_EQUAL(writer_2.Commands, 1);
+        }
+
+        void test_mixer_with_multiplexed_writers()
+        {
+            TestWriter<int8_t> writer(5);
+            HLinearMixer<int8_t> mixer(writer.Writer(), 5);
+
+            int8_t input_1[5] = {0, 1, 2, 3, 4};
+            int8_t input_2[5] = {4, 3, 2, 1, 0};
+            int8_t expected[5] = {4, 4, 4, 4, 4};
+            ASSERT_IS_EQUAL(mixer.Write(input_1, 5), 5);
+            ASSERT_IS_EQUAL(mixer.Write(input_2, 5), 5);
+
+            ASSERT_IS_EQUAL(writer.Writes, 1);
+
+            for(int i = 0; i < 5; i++)
+            {
+                ASSERT_IS_EQUAL(writer.Received[i], expected[i]);
+            }
+
+            ASSERT_IS_TRUE(mixer.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(writer.Commands, 1);
+        }
+
+        void test_mixer_with_multiplexed_writers_and_consumer()
+        {
+            TestWriter<int8_t> writer_1(5);
+            HLinearMixer<int8_t> mixer(writer_1.Consumer(), 5);
+            TestWriter<int8_t> writer_2(mixer.Consumer(), 5);
+
+            int8_t input_1[5] = {0, 1, 2, 3, 4};
+            int8_t input_2[5] = {4, 3, 2, 1, 0};
+            int8_t expected[5] = {4, 4, 4, 4, 4};
+            ASSERT_IS_EQUAL(writer_1.Write(input_1, 5), 5);
+            ASSERT_IS_EQUAL(writer_1.Write(input_2, 5), 5);
+
+            ASSERT_IS_EQUAL(writer_2.Writes, 1);
+
+            for(int i = 0; i < 5; i++)
+            {
+                ASSERT_IS_EQUAL(writer_2.Received[i], expected[i]);
+            }
+
+            ASSERT_IS_TRUE(writer_1.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(writer_2.Commands, 1);
         }
 
 } hlinearmixer_test;
