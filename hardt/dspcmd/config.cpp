@@ -234,17 +234,17 @@ bool parseArguments(int argc, char** argv)
             std::cout << "-mp frequency              Multiply (mix nonlinear) with localoscilator signal running at frequency" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-flt name coeffs           Read coefficients from coeffs and run file through filter name (HIirFilter|HFirFilter)" << std::endl;
-            std::cout << "-flp name coeffs           Read coefficients from coeffs and plot filter response for filter name  (HIirFilter|HFirFilter)" << std::endl;
-            std::cout << "-flgp name coeffs          Read coefficients from coeffs and plot filter response for filter name  (HIirFilter|HFirFilter) using GnuPlot" << std::endl;
+            std::cout << "-flt filtername coeffs     Read coefficients from coeffs and run file through filter name (HIirFilter|HFirFilter)" << std::endl;
+            std::cout << "-flp filtername coeffs     Read coefficients from coeffs and plot filter response for filter name  (HIirFilter|HFirFilter)" << std::endl;
+            std::cout << "-flgp filtername coeffs    Read coefficients from coeffs and plot filter response for filter name  (HIirFilter|HFirFilter) using GnuPlot" << std::endl;
             std::cout << std::endl;
 
             std::cout << "-bq name Fcutoff Q G       Create biquad filter, dump coefficients and run sweep" << std::endl;
             std::cout << "-bqt name Fcutoff Q G      Create biquad filter and run file through the filter" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-bqc coeffs                Create cascaded biquad filter, dump coefficients and run sweep" << std::endl;
-            std::cout << "-bgct coeffs               Create cascaded biquad filter and run file through the filter" << std::endl;
+            std::cout << "-bqc coeffs                Create cascaded biquad filter from the given coefficients in 'coeffs' and run sweep" << std::endl;
+            std::cout << "-bgct coeffs               Create cascaded biquad filter from the given coefficients in 'coeffs' and run file through the filter" << std::endl;
             std::cout << std::endl;
 
             std::cout << "-g gain                    Run file through gain filter" << std::endl;
