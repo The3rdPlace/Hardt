@@ -22,6 +22,7 @@ struct DspCmdConfig
     bool IsFileConverter = false;
     bool IsClickRemoval = false;
     bool IsMixer = false;
+    bool IsSubtracter = false;
     bool IsMultiplier = false;
     bool IsFilter = false;
     bool IsFilterSpectrumPlot = false;

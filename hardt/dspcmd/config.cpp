@@ -125,6 +125,10 @@ bool parseArguments(int argc, char** argv)
             Config.InputFile1 = argCharCmp(argv[argNo], "-mx", argv[argNo + 1], Config.InputFile1);
             Config.InputFile2 = argCharCmp(argv[argNo], "-mx", argv[argNo + 2], Config.InputFile2);
 
+            Config.IsSubtracter = argBoolCmp(argv[argNo], "-sb", Config.IsSubtracter);
+            Config.InputFile1 = argCharCmp(argv[argNo], "-sb", argv[argNo + 1], Config.InputFile1);
+            Config.InputFile2 = argCharCmp(argv[argNo], "-sb", argv[argNo + 2], Config.InputFile2);
+
             Config.IsFilter = argBoolCmp(argv[argNo], "-flt", Config.IsFilter);
             Config.FilterName = argCharCmp(argv[argNo], "-flt", argv[argNo + 1], Config.FilterName);
             Config.FilterCoeffs = argCharCmp(argv[argNo], "-flt", argv[argNo + 2], Config.FilterCoeffs);
@@ -231,6 +235,7 @@ bool parseArguments(int argc, char** argv)
             std::cout << std::endl;
 
             std::cout << "-mx file1 file2            Mix (linear) file1 and file2" << std::endl;
+            std::cout << "-sb file1 file2            Subtract file1 and file2" << std::endl;
             std::cout << "-mp frequency              Multiply (mix nonlinear) with localoscilator signal running at frequency" << std::endl;
             std::cout << std::endl;
 

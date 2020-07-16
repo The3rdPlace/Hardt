@@ -620,6 +620,81 @@ int RunMixer()
 }
 
 template <typename T>
+int RunSubtracter()
+{
+   // Create reader 1
+    HReader<T>* rd1;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        rd1 = new HWavReader<T>(Config.InputFile1);
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        rd1 = new HFileReader<T>(Config.InputFile1);
+    }
+    else
+    {
+        std::cout << "Unknown input file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+   // Create reader 2
+    HReader<T>* rd2;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        rd2 = new HWavReader<T>(Config.InputFile2);
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        rd2 = new HFileReader<T>(Config.InputFile2);
+    }
+    else
+    {
+        std::cout << "Unknown input file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+    // Create writer
+    HWriter<T>* wr;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        wr = new HFileWriter<T>(Config.OutputFile);
+    }
+    else
+    {
+        std::cout << "Unknown output file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+    // Create  subtracter
+    HSubtracter<T> subtracter(rd1, rd2, Config.Blocksize);
+
+    // Create processor
+    HStreamProcessor<T> proc(wr, (HReader<T>*) &subtracter, Config.Blocksize, &terminated);
+    proc.Run();
+
+    // Delete readers and the writer
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        delete (HWavReader<T>*) rd1;
+        delete (HWavReader<T>*) rd2;
+        delete (HWavWriter<T>*) wr;
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        delete (HFileReader<T>*) rd1;
+        delete (HFileReader<T>*) rd2;
+        delete (HFileWriter<T>*) wr;
+    }
+
+    return 0;
+}
+
+template <typename T>
 int RunMultiplier()
 {
    // Create reader
@@ -1800,6 +1875,33 @@ int RunOperation()
         }
 
         return RunMixer<T>();
+    }
+
+    if( Config.IsSubtracter )
+    {
+        // Verify configuration
+        if( Config.InputFile1 == NULL )
+        {
+            std::cout << "No input file 1 (-sb file1 file2)" << std::endl;
+            return -1;
+        }
+        if( Config.InputFile2 == NULL )
+        {
+            std::cout << "No input file 2 (-sb file1 file2)" << std::endl;
+            return -1;
+        }
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file (-of)" << std::endl;
+            return -1;
+        }
+        if( Config.FileFormat == NULL )
+        {
+            std::cout << "No input file format (-ff pcm|wav)" << std::endl;
+            return -1;
+        }
+
+        return RunSubtracter<T>();
     }
 
     if( Config.IsMultiplier )
