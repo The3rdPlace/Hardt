@@ -89,6 +89,7 @@ Include api function declarations
 #include "hmemorywriter.h"
 #include "hmemoryreader.h"
 #include "hmovingaveragefilter.h"
+#include "hsubtracter.cpp"
 
 /********************************************************************
 Debug and diagnostics

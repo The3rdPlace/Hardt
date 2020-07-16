@@ -77,6 +77,7 @@
 #include "hmemorywriter.h"
 #include "hmemoryreader.h"
 #include "hmovingaveragefilter.h"
+#include "hsubtracter.h"
 
 #include "hprobe.h"
 

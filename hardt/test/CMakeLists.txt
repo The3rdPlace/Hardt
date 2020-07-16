@@ -50,6 +50,7 @@ target_sources(hardt_test
 	hmemoryreader_test.cpp
 	hcascadedbiquadfilter_test.cpp
 	hmovingaveragefilter_test.cpp
+	hsubtracter_test.cpp
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
