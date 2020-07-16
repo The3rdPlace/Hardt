@@ -52,7 +52,7 @@ int HGenerator<T>::Read(T* dest, size_t blocksize)
 
     // Update metrics
     HObject::Metrics.Reads++;
-    HObject::Metrics.BlocksOut += blocksize;
+    HObject::Metrics.BlocksOut++;
     HObject::Metrics.BytesOut += sizeof(T) * blocksize;
 
     return blocksize;

@@ -127,6 +127,7 @@ int HLinearMixer<T>::Read(T* dest, size_t blocksize)
     }
 
     ((HReader<T>*) this)->Metrics.Reads++;
+    ((HReader<T>*) this)->Metrics.BlocksIn++;
     ((HReader<T>*) this)->Metrics.BytesIn += blocksize * sizeof(T);
     if( _probe != NULL )
     {
@@ -151,6 +152,7 @@ int HLinearMixer<T>::Write(T* src, size_t blocksize)
         // Copy first write to buffer-1 then wait for next write
         memcpy((void*) _buffer_1, src, sizeof(T) * blocksize);
         _wait = true;
+        ((HWriter<T>*) this)->Metrics.Writes++;
         return blocksize;
     } else if( _reader_1 == nullptr && _reader_2 == nullptr && _wait == true ) {
 
@@ -182,6 +184,7 @@ int HLinearMixer<T>::Write(T* src, size_t blocksize)
     }
 
     ((HWriter<T>*) this)->Metrics.Writes++;
+    ((HWriter<T>*) this)->Metrics.BlocksIn++;
     ((HWriter<T>*) this)->Metrics.BytesOut += blocksize * sizeof(T);
     if( _probe != NULL )
     {
