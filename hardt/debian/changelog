@@ -1,3 +1,12 @@
+hardt (1.0-21) RELEASED; urgency=medium
+
+  [ Henrik Witt-Hansen ]
+  * Added memory reader/writer
+  * Added a subtracting mixer
+  * Improved filter sweeps of filters
+
+ -- Mackie <henrik@hardttoolkit.org>  Fri, 17 Jul 2020 11:06:00 +0200
+
 hardt (1.0-20) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]

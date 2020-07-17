@@ -974,7 +974,7 @@ int RunFilterSpectrum()
     proc.Run();
 
     // Display the final plot
-    Config.IsFilterSpectrumPlot ? FFTMagnitudeShowPlot() : FFTMagnitudeShowGnuPlot();
+    Config.IsFilterSpectrumPlot ? FFTMagnitudeShowPlot() : FFTMagnitudeShowGnuPlot(rd.GetRef());
 
     return 0;
 }
@@ -1239,7 +1239,7 @@ int RunCombSpectrum()
     proc.Run();
 
     // Display the final plot
-    FFTMagnitudeShowGnuPlot();
+    FFTMagnitudeShowGnuPlot(rd.GetRef());
 
     // Delete the filter
     delete filter;
@@ -1479,7 +1479,7 @@ int RunBiQuadCascadeSpectrum()
     proc.Run();
 
     // Display the final plot
-    FFTMagnitudeShowGnuPlot();
+    FFTMagnitudeShowGnuPlot(rd.GetRef());
 
     // Delete the filter
     delete filter;
@@ -1511,7 +1511,7 @@ int RunMovingAverageSpectrum()
     proc.Run();
 
     // Display the final plot
-    FFTMagnitudeShowGnuPlot();
+    FFTMagnitudeShowGnuPlot(rd.GetRef());
 
     // Delete the filter
     delete filter;
