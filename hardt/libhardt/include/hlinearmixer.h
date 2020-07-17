@@ -28,7 +28,10 @@ class HLinearMixer : public HReader<T>, public HWriter<T>, public HWriterConsume
         /** Construct a new HLinearMixer */
         HLinearMixer(HReader<T>* reader, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL);
 
-        /** Construct a new HLinearMixer which mixes two inputs by multiplexing between alternating writes */
+        /** Construct a new HLinearMixer which mixes two inputs by multiplexing between alternating writes.
+            Every 1st. write is kept in a buffer and with the 2nd. write, the sample values from the first and
+            second write is subtracted. The result is then written to the next writer.
+         */
         HLinearMixer(HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HLinearMixer */

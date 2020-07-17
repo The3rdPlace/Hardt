@@ -28,7 +28,10 @@ class HSubtracter : public HReader<T>, public HWriter<T>, public HWriterConsumer
         /** Construct a new HSubtracter */
         HSubtracter(HReader<T>* reader, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL);
 
-        /** Construct a new HSubtracter which mixes two inputs by multiplexing between alternating writes */
+        /** Construct a new HSubtracter which mixes two inputs by multiplexing between alternating writes.
+            Every 1st. write is kept in a buffer and with the 2nd. write, the sample values from the first and
+            second write is subtracted. The result is then written to the next writer.
+         */
         HSubtracter(HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HSubtracter */
