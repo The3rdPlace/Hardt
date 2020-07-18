@@ -197,10 +197,13 @@ int HLinearMixer<T>::Write(T* src, size_t blocksize)
 template <class T>
 bool HLinearMixer<T>::Start()
 {
-    HLog("Calling Start() on reader 1");
-    if( !_reader_1->Start() )
-    {
-        return false;
+    HLog("Propagating Start()");
+    if( _reader_1 != NULL ) {
+        HLog("Calling Start() on reader 1");
+        if( !_reader_1->Start() )
+        {
+            return false;
+        }
     }
     if( _reader_2 != NULL ) {
         HLog("Calling Start() on reader 2");
@@ -216,10 +219,13 @@ bool HLinearMixer<T>::Start()
 template <class T>
 bool HLinearMixer<T>::Stop()
 {
-    HLog("Calling Stop() on reader 1");
-    if( !_reader_1->Stop() )
-    {
-        return false;
+    HLog("Propagating Stop()");
+    if( _reader_1 != NULL ) {
+        HLog("Calling Stop() on reader 1");
+        if( !_reader_1->Stop() )
+        {
+            return false;
+        }
     }
     if( _reader_2 != NULL ) {
         HLog("Calling Stop() on reader 2");

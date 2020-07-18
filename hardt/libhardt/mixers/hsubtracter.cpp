@@ -15,7 +15,8 @@ HSubtracter<T>::HSubtracter(HReader<T>* reader_1, HReader<T>* reader_2, size_t b
     _writer(NULL),
     _blocksize(blocksize),
     _probe(probe),
-    _wait(false)
+    _wait(false),
+    _started(false)
 {
     HLog("HSubtracter(HReader*, HReader*)");
     Init(blocksize);
@@ -28,7 +29,8 @@ HSubtracter<T>::HSubtracter(HReader<T>* reader, HWriter<T>* writer, size_t block
     _writer(writer),
     _blocksize(blocksize),
     _probe(probe),
-    _wait(false)
+    _wait(false),
+    _started(false)
 {
     HLog("HSubtracter(HReader*, HWriter*)");
     Init(blocksize);
@@ -41,7 +43,8 @@ HSubtracter<T>::HSubtracter(HWriter<T>* writer, size_t blocksize, HProbe<T>* pro
     _writer(writer),
     _blocksize(blocksize),
     _probe(probe),
-    _wait(false)
+    _wait(false),
+    _started(false)
 {
     HLog("HSubtracter(HWriter*)");
     Init(blocksize);
@@ -53,8 +56,8 @@ HSubtracter<T>::HSubtracter(HReader<T>* reader, HWriterConsumer<T>* consumer, si
     _reader_2(NULL),
     _writer(NULL),
     _blocksize(blocksize),
-    _probe(probe),_wait(false)
-
+    _probe(probe),_wait(false),
+    _started(false)
 {
     HLog("HSubtracter(HReader*, HWriterConsumer*)");
     Init(blocksize);
@@ -67,8 +70,8 @@ HSubtracter<T>::HSubtracter(HWriterConsumer<T>* consumer, size_t blocksize, HPro
     _reader_2(NULL),
     _writer(NULL),
     _blocksize(blocksize),
-    _probe(probe),_wait(false)
-
+    _probe(probe),_wait(false),
+    _started(false)
 {
     HLog("HSubtracter(HWriterConsumer*)");
     Init(blocksize);
@@ -197,10 +200,18 @@ int HSubtracter<T>::Write(T* src, size_t blocksize)
 template <class T>
 bool HSubtracter<T>::Start()
 {
-    HLog("Calling Start() on reader 1");
-    if( !_reader_1->Start() )
-    {
-        return false;
+    if( _started == true ) {
+        HLog("Discarding Start() to already started subtracter");
+        return true;
+    }
+    HLog("Propagating Start()");
+    _started = true;
+    if( _reader_1 != NULL ) {
+        HLog("Calling Start() on reader 1");
+        if( !_reader_1->Start() )
+        {
+            return false;
+        }
     }
     if( _reader_2 != NULL ) {
         HLog("Calling Start() on reader 2");
@@ -216,10 +227,18 @@ bool HSubtracter<T>::Start()
 template <class T>
 bool HSubtracter<T>::Stop()
 {
-    HLog("Calling Stop() on reader 1");
-    if( !_reader_1->Stop() )
-    {
-        return false;
+    HLog("Propagating Stop()");
+    if( !_started ) {
+        HLog("Discarding Stop() to already stopped subtracter");
+        return true;
+    }
+    _started = false;
+    if( _reader_1 != NULL ) {
+        HLog("Calling Stop() on reader 1");
+        if( !_reader_1->Stop() )
+        {
+            return false;
+        }
     }
     if( _reader_2 != NULL ) {
         HLog("Calling Stop() on reader 2");

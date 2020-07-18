@@ -20,6 +20,8 @@ class HSubtracter : public HReader<T>, public HWriter<T>, public HWriterConsumer
 
         HProbe<T>* _probe;
 
+        bool _started;
+
     public:
 
         /** Construct a new HSubtracter */
