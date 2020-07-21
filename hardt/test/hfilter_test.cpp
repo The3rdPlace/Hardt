@@ -15,6 +15,8 @@ class HFilter_Test: public Test
             UNITTEST(test_read_coeffs_single_line);
             UNITTEST(test_read_coeffs_separators);
             UNITTEST(test_read_coeffs_mixed);
+            UNITTEST(test_filter_write_disable_enable);
+            UNITTEST(test_filter_read_disable_enable);
         }
 
         const char* name()
@@ -222,6 +224,52 @@ class HFilter_Test: public Test
             for(int i = 0; i < expected.size(); i++ ) {
                 ASSERT_IS_EQUAL(expected.at(i), coeffs.at(i));
             }
+        }
+
+        void test_filter_write_disable_enable()
+        {
+            TestWriter<int8_t> wr(6);
+            TestFilter<int8_t> filter(&wr, 6);
+
+            int8_t input[6] = {1, 2, 4, 8, 16, 32};
+            ASSERT_IS_TRUE(filter.GetEnabled());
+            ASSERT_IS_EQUAL(filter.Write(input, 6), 6);
+            ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, 6 * sizeof(int8_t)), 0);
+
+            filter.Disable();
+            ASSERT_IS_TRUE(!filter.GetEnabled());
+            int8_t disabled[6] = {99, 98, 97, 96, 95, 94};
+            memcpy((void*) wr.Received, (void*) disabled, 6 * sizeof(int8_t));
+            ASSERT_IS_EQUAL(filter.Write(input, 6), 6);
+            ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) input, 6 * sizeof(int8_t)), 0);
+
+            filter.Enable();
+            ASSERT_IS_TRUE(filter.GetEnabled());
+            ASSERT_IS_EQUAL(filter.Write(input, 6), 6);
+            ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, 6 * sizeof(int8_t)), 0);
+        }
+
+        void test_filter_read_disable_enable()
+        {
+            int8_t output[6] = {1, 2, 4, 8, 16, 32};
+
+            TestReader<int8_t> rd(output, 6);
+            TestFilter<int8_t> filter(&rd, 6);
+
+            int8_t received[6];
+            ASSERT_IS_TRUE(filter.GetEnabled());
+            ASSERT_IS_EQUAL(filter.Read(received, 6), 6);
+            ASSERT_IS_EQUAL(memcmp((void*) received, (void*) expected, 6 * sizeof(int8_t)), 0);
+
+            filter.Disable();
+            ASSERT_IS_TRUE(!filter.GetEnabled());
+            ASSERT_IS_EQUAL(filter.Read(received, 6), 6);
+            ASSERT_IS_EQUAL(memcmp((void*) received, (void*) output, 6 * sizeof(int8_t)), 0);
+
+            filter.Enable();
+            ASSERT_IS_TRUE(filter.GetEnabled());
+            ASSERT_IS_EQUAL(filter.Read(received, 6), 6);
+            ASSERT_IS_EQUAL(memcmp((void*) received, (void*) expected, 6 * sizeof(int8_t)), 0);
         }
 
 } hfilter_test;

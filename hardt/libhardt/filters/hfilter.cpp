@@ -2,6 +2,7 @@
 #define __HFILTER_CPP
 
 #include "hwriter.h"
+#include "hwriterconsumer.h"
 #include "hreader.h"
 #include "hfilterbase.h"
 #include "hfilter.h"
@@ -12,7 +13,8 @@ HFilter<T>::HFilter(HWriter<T>* writer, size_t blocksize, HProbe<T>* probe):
     _writer(writer),
     _reader(NULL),
     _blocksize(blocksize),
-    _probe(probe)
+    _probe(probe),
+    _enabled(true)
 {
     HLog("HFilter(HWriter*)");
     Init();
@@ -22,7 +24,8 @@ template <class T>
 HFilter<T>::HFilter(HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe):
     _reader(NULL),
     _blocksize(blocksize),
-    _probe(probe)
+    _probe(probe),
+    _enabled(true)
 {
     HLog("HFilter(HWriter*)");
     Init();
@@ -35,7 +38,8 @@ HFilter<T>::HFilter(HReader<T>* reader, size_t blocksize, HProbe<T>* probe):
     _writer(NULL),
     _reader(reader),
     _blocksize(blocksize),
-    _probe(probe)
+    _probe(probe),
+    _enabled(true)
 {
     HLog("HFilter(HReader*)");
     Init();
@@ -64,10 +68,15 @@ int HFilter<T>::Write(T* src, size_t blocksize)
         throw new HFilterIOException("It is not allowed to write more data than the size given at creation of the filter");
     }
 
-    Filter(src, _buffer, blocksize);
+    if( _enabled ) {
+        Filter(src, _buffer, blocksize);
+    } else {
+        memcpy((void*) _buffer, (void*) src, sizeof(T) * blocksize);
+    }
     int written = _writer->Write(_buffer, blocksize);
 
     ((HFilterBase<T>*) this)->Metrics.Writes++;
+    ((HFilterBase<T>*) this)->Metrics.BlocksOut++;
     ((HFilterBase<T>*) this)->Metrics.BytesOut += blocksize * sizeof(T);
     if( _probe != NULL )
     {
@@ -87,9 +96,14 @@ int HFilter<T>::Read(T* dest, size_t blocksize)
     }
 
     int received = _reader->Read(_buffer, blocksize);
-    Filter(_buffer, dest, received);
-
+    if( _enabled ) {
+        Filter(_buffer, dest, received);
+    } else {
+        memcpy((void*) dest, (void*) _buffer, sizeof(T) * blocksize);
+    }
+    
     ((HFilterBase<T>*) this)->Metrics.Reads++;
+    ((HFilterBase<T>*) this)->Metrics.BlocksIn++;
     ((HFilterBase<T>*) this)->Metrics.BytesIn += blocksize * sizeof(T);
     if( _probe != NULL )
     {

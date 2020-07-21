@@ -22,6 +22,8 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
 
         T* _buffer;
 
+        bool _enabled;
+
         void Init();
 
     protected:
@@ -72,6 +74,21 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
                 return _reader->Command(command);
             }
             return true;
+        }
+
+        /** Enable the filter (the filter is always enabled after construction) */
+        void Enable() {
+            _enabled = true;
+        }
+
+        /** Disable the filter */
+        void Disable() {
+            _enabled = false;
+        }
+
+        /** Returns true if the filter is enabled (filter is always enabled after construction), false otherwise */
+        bool GetEnabled() {
+            return _enabled;
         }
 
     public:

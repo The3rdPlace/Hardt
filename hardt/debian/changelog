@@ -1,3 +1,10 @@
+hardt (1.0-22) RELEASED; urgency=medium
+
+  [ Henrik Witt-Hansen ]
+  * Added option for disabling/enabling filters
+
+ -- Mackie <henrik@hardttoolkit.org>  Mon, 20 Jul 2020 23:22:00 +0200
+
 hardt (1.0-21) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
