@@ -81,9 +81,9 @@ struct DspCmdConfig
     float Quality;
     float Gain;
 
-    float Bin = 0;
-
     int M = 0;
+
+    int Amplitude;
 };
 
 extern DspCmdConfig Config;

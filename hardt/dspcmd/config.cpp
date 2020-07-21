@@ -153,11 +153,7 @@ bool parseArguments(int argc, char** argv)
 
         if( argNo < argc - 3 )
         {
-            Config.IsSignalGenerator = argBoolCmp(argv[argNo], "-sg", Config.IsSignalGenerator);
-            Config.Frequency = argIntCmp(argv[argNo], "-sg", argv[argNo + 1], Config.Frequency);
-            PhaseIntValue = argIntCmp(argv[argNo], "-sg", argv[argNo + 2], PhaseIntValue);
-            Config.Phase = ((float) PhaseIntValue / 360) * 2 * M_PI;
-            Config.Duration = argIntCmp(argv[argNo], "-sg", argv[argNo + 3], Config.Duration);
+            // Currently empty
         }
 
         if( argNo < argc - 4 )
@@ -178,6 +174,13 @@ bool parseArguments(int argc, char** argv)
             Config.FCutOff = argFloatCmp(argv[argNo], "-bqt", argv[argNo + 2], Config.FCutOff);
             Config.Quality = argFloatCmp(argv[argNo], "-bqt", argv[argNo + 3], Config.Quality);
             Config.Gain = argFloatCmp(argv[argNo], "-bqt", argv[argNo + 4], Config.Gain);
+
+            Config.IsSignalGenerator = argBoolCmp(argv[argNo], "-sg", Config.IsSignalGenerator);
+            Config.Frequency = argIntCmp(argv[argNo], "-sg", argv[argNo + 1], Config.Frequency);
+            PhaseIntValue = argIntCmp(argv[argNo], "-sg", argv[argNo + 2], PhaseIntValue);
+            Config.Phase = ((float) PhaseIntValue / 360) * 2 * M_PI;
+            Config.Amplitude = argIntCmp(argv[argNo], "-sg", argv[argNo + 3], Config.Amplitude);
+            Config.Duration = argIntCmp(argv[argNo], "-sg", argv[argNo + 4], Config.Duration);
         }
 
         if( argBoolCmp(argv[argNo], "-h", false) )
@@ -203,7 +206,7 @@ bool parseArguments(int argc, char** argv)
             std::cout << "-start [YYYY-MM-DD ]hh:mm  Start time" << std::endl;
             std::cout << "-stop [YYYY-MM-DD ]hh:mm   Stop time" << std::endl;
             std::cout << std::endl;
-            std::cout << "-sg freq phase duration    Run as signalgenerator, duration in seconds" << std::endl;
+            std::cout << "-sg f p a d                Run as signalgenerator. f=frequency,p=phase,a=amplitude,d=duration(sec.)" << std::endl;
             std::cout << std::endl;
 
             std::cout << "-nc server port            Run as network client, reading from the network and writing to a local writer" << std::endl;

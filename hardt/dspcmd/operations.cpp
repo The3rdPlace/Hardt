@@ -112,15 +112,14 @@ int RunSignalGenerator()
         return -1;
     }
 
-    // Calculate how many blocks fit into 10 seconds
+    // Calculate how many blocks fit into the requested duration
     unsigned long int blocks = (Config.Duration * Config.Rate) / Config.Blocksize;
 
-    // Generate a signal with half the maximum amplitude available
-    int amplitude = floor(std::numeric_limits<T>::max() / (std::numeric_limits<T>::is_signed ? 2 : 4));
-    HLog("Amplitude set to %d", amplitude);
+    // Generate a signal with the requested amplitude
+    HLog("Using amplitude %d", Config.Amplitude);
 
     // Create and run the signalgenerator
-    HVfo<T> sg(Config.Rate, Config.Frequency, amplitude, Config.Phase);
+    HVfo<T> sg(Config.Rate, Config.Frequency, Config.Amplitude, Config.Phase);
     HStreamProcessor<T> proc(wr, &sg, Config.Blocksize, &terminated);
     proc.Run(blocks);
 
@@ -245,28 +244,38 @@ int FFTMagnitudePlotWriter(HFftResults* data, size_t size)
 }
 
 template <class T>
-void NormalizeFFTPlot(double displace, double* values, double* normalizedValues) {
+double NormalizeFFTPlot(double reference, double ignore, double* values, double* normalizedValues) {
 
     // Calculate scaling factors
     double scale = ((double) Config.Blocksize / 1024) * numFfts;
-    double ignore = (std::numeric_limits<T>::max() / 30) / scale;
+    double scaledIgnore = ignore/ scale;
 
     // Scale fft magnitude values
     for( int i = 0; i < Config.FFTSize / 2; i++ )
     {
-        normalizedValues[i] = ((double) values[i] - displace) / scale;
-        if( abs(normalizedValues[i]) < ignore ) {
+        normalizedValues[i] = ((double) values[i]) / scale;
+
+        // Remove the lowest values since they are the result of quantization errors
+        if( abs(normalizedValues[i]) < scaledIgnore ) {
+            normalizedValues[i] = 0;
+        }
+
+        // values below 0 is noise and must be removed
+        if( normalizedValues[i] < 0 ) {
             normalizedValues[i] = 0;
         }
     }
+
+    // Return scaled reference value
+    return reference / scale;
 }
 
 template <class T>
-void FFTMagnitudeShowGnuPlot(double displace = 0)
+void FFTMagnitudeShowGnuDBPlot(double reference, double ignore)
 {
     // Calculate the output spectrum
     double displayedSpectrum[Config.FFTSize / 2];
-    NormalizeFFTPlot<T>(displace, aggregatedMagnitudeSpectrum, displayedSpectrum);
+    double ref = NormalizeFFTPlot<T>(reference, ignore, aggregatedMagnitudeSpectrum, displayedSpectrum);
 
     // Calculate frequency span per bin
     double fdelta = ((double) Config.Rate / 2) / ((double)Config.FFTSize / 2);
@@ -285,10 +294,29 @@ void FFTMagnitudeShowGnuPlot(double displace = 0)
     fprintf(gnuplotPipe, "plot '-' with linespoints linestyle 1\n");
     for( int bin = 3; bin < (Config.FFTSize / 2) - 3; bin++ )
     {
-        fprintf(gnuplotPipe, "%lf %lf\n", (double) bin * fdelta, displayedSpectrum[bin]);
+        // Plot DB value
+        double ratio = displayedSpectrum[bin] / ref;
+        double db = (double) 20 * log10(ratio);
+        if( isinff(db) ) {
+            db = 0;
+        }
+        fprintf(gnuplotPipe, "%lf %lf\n", (double) bin * fdelta, db);
     }
     fprintf(gnuplotPipe, "e");
     fclose(gnuplotPipe);
+}
+
+template <class T>
+void FFTMagnitudeShowGnuDBPlot(double reference)
+{
+    double ignore = (std::numeric_limits<T>::max() / 30);
+    FFTMagnitudeShowGnuDBPlot<T>(reference, ignore);
+}
+
+template <class T>
+void FFTMagnitudeShowGnuPlot()
+{
+    FFTMagnitudeShowGnuDBPlot<T>(14523 , 14523);
 }
 
 template <typename T>
@@ -902,7 +930,7 @@ int RunFilterSpectrum()
     proc.Run();
 
     // Display the final plot
-    FFTMagnitudeShowGnuPlot<T>(rd.GetRef());
+    FFTMagnitudeShowGnuDBPlot<T>(rd.GetRef());
 
     return 0;
 }
@@ -979,7 +1007,7 @@ int RunBiQuadSpectrum()
     proc.Run();
 
     // Display the final plot
-    FFTMagnitudeShowGnuPlot<T>(rd.GetRef());
+    FFTMagnitudeShowGnuDBPlot<T>(rd.GetRef());
 
     return 0;
 }
@@ -1167,7 +1195,7 @@ int RunCombSpectrum()
     proc.Run();
 
     // Display the final plot
-    FFTMagnitudeShowGnuPlot<T>(rd.GetRef());
+    FFTMagnitudeShowGnuDBPlot<T>(rd.GetRef());
 
     // Delete the filter
     delete filter;
@@ -1407,7 +1435,7 @@ int RunBiQuadCascadeSpectrum()
     proc.Run();
 
     // Display the final plot
-    FFTMagnitudeShowGnuPlot<T>(rd.GetRef());
+    FFTMagnitudeShowGnuDBPlot<T>(rd.GetRef());
 
     // Delete the filter
     delete filter;
@@ -1439,7 +1467,7 @@ int RunMovingAverageSpectrum()
     proc.Run();
 
     // Display the final plot
-    FFTMagnitudeShowGnuPlot<T>(rd.GetRef());
+    FFTMagnitudeShowGnuDBPlot<T>(rd.GetRef());
 
     // Delete the filter
     delete filter;
