@@ -11,6 +11,38 @@
 #include "config.h"
 #include "hardtapi.h"
 
+template <class T>
+double GetCalibratedReference(double fdelta, int start, int stop) {
+    int freq = start;
+    HVfo<T> vfo(Config.Rate, freq, std::numeric_limits<T>::max() / 2, 0);
+
+    // Calibration - measure input spectrum magnitude when passed directly to the FFT
+    const int Blocks = 128;
+    HHahnWindow<T> window;
+    HFft<T> fft(Blocks, &window);
+    double refSpectrum[Blocks / 2];
+    T refBlock[Blocks];
+    double refSum = 0;
+    int refNumFfts = 0;
+    double refSummer[Blocks / 2];
+    memset((void *) refSummer, 0, sizeof(double) * (Blocks / 2));
+    for (; freq < stop; freq += fdelta) {
+        vfo.SetFrequency(freq);
+
+        vfo.Read(refBlock, Blocks);
+        fft.FFT(refBlock, refSpectrum);
+
+        for (int i = 0; i < Blocks / 2; i++) {
+            refSummer[i] += refSpectrum[i];
+        }
+        refNumFfts++;
+    }
+    for (int i = 0; i < Blocks / 2; i++) {
+        refSum += refSummer[i];
+    }
+    return refSum / (Blocks / 2);
+}
+
 template <typename T>
 int RunNetworkWriterServer()
 {
@@ -316,6 +348,15 @@ void FFTMagnitudeShowGnuDBPlot(double reference)
 template <class T>
 void FFTMagnitudeShowGnuPlot()
 {
+    // Same f-delta as used by the FilterSpectrumReader during sweeps
+    double fdelta = (((double) Config.Rate / 2) / ((double) Config.FFTSize / 2)) / 10;
+
+    // Get reference value (smallest measureable value
+    int start = Config.XMin == 0 ? fdelta : Config.XMin;
+    int stop = (Config.XMax == 0 ? (Config.Rate / 2) : Config.XMax);
+    double ref = GetCalibratedReference<T>(fdelta, start, stop);
+
+    // Show the plot
     FFTMagnitudeShowGnuDBPlot<T>(14523 , 14523);
 }
 
@@ -799,18 +840,11 @@ class FilterSpectrumReader : public HReader<T>
 
     public:
 
-        FilterSpectrumReader(int delta = 0):
+        FilterSpectrumReader():
             _ref(0)
         {
             // Calculate f-delta
-            if( delta == 0 )
-            {
-                _fDelta = (((double) Config.Rate / 2) / ((double) Config.FFTSize / 2)) / 10;
-            }
-            else
-            {
-                _fDelta = delta;
-            }
+            _fDelta = (((double) Config.Rate / 2) / ((double) Config.FFTSize / 2)) / 10;
 
             if( _fDelta < 1 )
             {
@@ -828,34 +862,7 @@ class FilterSpectrumReader : public HReader<T>
             vfo = new HVfo<T>(Config.Rate, _freq, std::numeric_limits<T>::max() / 2, 0);
 
             // Calibration - measure input spectrum magnitude
-            const int Blocks = 128;
-            HHahnWindow<T> window;
-            HFft<T> fft(Blocks, &window);
-            double refSpectrum[Blocks / 2];
-            T refBlock[Blocks];
-            double refSum = 0;
-            int refNumFfts = 0;
-            double refSummer[Blocks / 2];
-            memset((void*) refSummer, 0, sizeof(double) * (Blocks / 2));
-            for( ; _freq < _freqStop; _freq += _fDelta) {
-                vfo->SetFrequency(_freq);
-
-                vfo->Read(refBlock, Blocks);
-                fft.FFT(refBlock, refSpectrum);
-
-                for( int i = 0; i < Blocks / 2; i++ ) {
-                    refSummer[i] += refSpectrum[i];
-                }
-                refNumFfts++;
-            }
-            for( int i = 0; i < Blocks / 2; i++ ) {
-                refSum += refSummer[i];
-            }
-            _ref = refSum / (Blocks / 2);
-
-            // Set vfo to initial frequency
-            _freq = _freqStart;
-            vfo->SetFrequency(_freq);
+            _ref = GetCalibratedReference<T>(_fDelta, _freqStart, _freqStop);
         }
 
         ~FilterSpectrumReader()
@@ -1447,7 +1454,7 @@ template <typename T>
 int RunMovingAverageSpectrum()
 {
     // Create reader
-    FilterSpectrumReader<T> rd(2);
+    FilterSpectrumReader<T> rd;
 
     // Create  filter
     HMovingAverageFilter<T>* filter = new HMovingAverageFilter<T>(&rd, Config.M, Config.Blocksize);
