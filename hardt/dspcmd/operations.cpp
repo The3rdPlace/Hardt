@@ -12,9 +12,9 @@
 #include "hardtapi.h"
 
 template <class T>
-double GetCalibratedReference(double fdelta, int start, int stop) {
+double GetCalibratedReference(double fdelta, int start, int stop, int amplitude) {
     int freq = start;
-    HVfo<T> vfo(Config.Rate, freq, std::numeric_limits<T>::max() / 2, 0);
+    HVfo<T> vfo(Config.Rate, freq, amplitude, 0);
 
     // Calibration - measure input spectrum magnitude when passed directly to the FFT
     const int Blocks = 128;
@@ -354,10 +354,10 @@ void FFTMagnitudeShowGnuPlot()
     // Get reference value (smallest measureable value
     int start = Config.XMin == 0 ? fdelta : Config.XMin;
     int stop = (Config.XMax == 0 ? (Config.Rate / 2) : Config.XMax);
-    double ref = GetCalibratedReference<T>(fdelta, start, stop);
+    double ref = GetCalibratedReference<T>(fdelta, start, stop, 1);
 
     // Show the plot
-    FFTMagnitudeShowGnuDBPlot<T>(14523 , 14523);
+    FFTMagnitudeShowGnuDBPlot<T>(ref, ref);
 }
 
 template <typename T>
@@ -859,10 +859,11 @@ class FilterSpectrumReader : public HReader<T>
             _lastDisplayedFreq = _freq;
 
             // Create vfo
-            vfo = new HVfo<T>(Config.Rate, _freq, std::numeric_limits<T>::max() / 2, 0);
+            int amplitude = std::numeric_limits<T>::max() / 2;
+            vfo = new HVfo<T>(Config.Rate, _freq, amplitude, 0);
 
             // Calibration - measure input spectrum magnitude
-            _ref = GetCalibratedReference<T>(_fDelta, _freqStart, _freqStop);
+            _ref = GetCalibratedReference<T>(_fDelta, _freqStart, _freqStop, amplitude);
         }
 
         ~FilterSpectrumReader()
