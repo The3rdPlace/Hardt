@@ -17,7 +17,6 @@ struct DspCmdConfig
     bool IsSignalGenerator = false;
     bool IsFilePlayer = false;
     bool IsFileRecorder = false;
-    bool IsFFTMagnitudePlot = false;
     bool IsFFTMagnitudeGnuPlot = false;
     bool IsFileConverter = false;
     bool IsClickRemoval = false;
@@ -25,7 +24,6 @@ struct DspCmdConfig
     bool IsSubtracter = false;
     bool IsMultiplier = false;
     bool IsFilter = false;
-    bool IsFilterSpectrumPlot = false;
     bool IsFilterSpectrumGnuPlot = false;
     bool IsBiQuadSpectrum = false;
     bool IsBiQuad = false;

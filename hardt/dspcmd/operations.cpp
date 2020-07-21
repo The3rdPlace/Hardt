@@ -244,101 +244,29 @@ int FFTMagnitudePlotWriter(HFftResults* data, size_t size)
     return size;
 }
 
-void FFTMagnitudeShowPlot()
-{
-    const int spectrumWidth = 80;
-    const int spectrumHeight = 20;
-    const int scaleWidth = 7;
+template <class T>
+void NormalizeFFTPlot(double displace, double* values, double* normalizedValues) {
 
-    // Calculate initial averaged values
+    // Calculate scaling factors
+    double scale = ((double) Config.Blocksize / 1024) * numFfts;
+    double ignore = (std::numeric_limits<T>::max() / 30) / scale;
+
+    // Scale fft magnitude values
     for( int i = 0; i < Config.FFTSize / 2; i++ )
     {
-        aggregatedMagnitudeSpectrum[i] = aggregatedMagnitudeSpectrum[i] / numFfts;
-    }
-
-    // Calculate how many individual spectrum lines needs to be combined per line in the spectrum graph
-    int binsPerLine = (Config.FFTSize / 2) / spectrumWidth;
-
-    // Calculate the output spectrum
-    double displayedSpectrum[spectrumWidth];
-    memset((void*) displayedSpectrum, 0, spectrumWidth * sizeof(double));
-    int lineNo = 0;
-    for( int i = 0; i < spectrumWidth; i++ )
-    {
-        for( int j = 0; j < binsPerLine; j++ )
-        {
-            displayedSpectrum[i] += aggregatedMagnitudeSpectrum[(i * binsPerLine) + j];
+        normalizedValues[i] = ((double) values[i] - displace) / scale;
+        if( abs(normalizedValues[i]) < ignore ) {
+            normalizedValues[i] = 0;
         }
     }
-
-    // Calculate frequency span per bin
-    int fdelta = (Config.Rate / 2) / (Config.FFTSize / 2);
-
-    // Get maximum fft value for scaling
-    int max = 0;
-    for( int i = 0; i < spectrumWidth; i++ )
-    {
-        max = displayedSpectrum[i] > max ? displayedSpectrum[i] : max;
-    }
-
-    // Calculate how long the spectrum should be to include enough space for the last frequency label
-    int plotWidth = ((spectrumWidth + scaleWidth) / scaleWidth) * scaleWidth;
-
-    // Upper separator
-    for( int col = 0; col < plotWidth; col++ )
-    {
-        std::cout << "-";
-    }
-
-    // Plot lines
-    int scaleFactor = max / spectrumHeight;
-    std::cout << std::endl;
-    for( int row = 0; row < spectrumHeight; row++ )
-    {
-        for( int col = 0; col < spectrumWidth; col++ )
-        {
-            int value = displayedSpectrum[col];
-            if( value > (spectrumHeight - row - 1) * scaleFactor )
-            {
-                std::cout << "#";
-            }
-            else
-            {
-                std::cout << (col % scaleWidth == 0 ? "." : " ");
-            }
-        }
-        std::cout << std::endl;
-    }
-
-    // Add bottom scale separator
-    for( int col = 0; col < plotWidth; col++ )
-    {
-        std::cout << (col % scaleWidth == 0 ? "|" : "-");
-    }
-    std::cout << std::endl;
-
-    // Add frequency scale
-    int fcoldelta = Config.Rate / spectrumWidth;
-    for( int col = 0; col < spectrumWidth; col++ )
-    {
-        if( col % scaleWidth == 0 )
-        {
-            std::string colName = std::to_string(col * fcoldelta / 2);
-            std::string padding(scaleWidth - colName.length(), ' ');
-            std::cout << colName << padding;
-        }
-    }
-    std::cout << std::endl;
 }
 
+template <class T>
 void FFTMagnitudeShowGnuPlot(double displace = 0)
 {
     // Calculate the output spectrum
     double displayedSpectrum[Config.FFTSize / 2];
-    for( int i = 0; i < Config.FFTSize / 2; i++ )
-    {
-        displayedSpectrum[i] = ((double) aggregatedMagnitudeSpectrum[i] - displace) / numFfts;
-    }
+    NormalizeFFTPlot<T>(displace, aggregatedMagnitudeSpectrum, displayedSpectrum);
 
     // Calculate frequency span per bin
     double fdelta = ((double) Config.Rate / 2) / ((double)Config.FFTSize / 2);
@@ -406,7 +334,7 @@ int RunFFTMagnitudePlot()
     }
 
     // Display the final plot
-    Config.IsFFTMagnitudePlot ? FFTMagnitudeShowPlot() : FFTMagnitudeShowGnuPlot();
+    FFTMagnitudeShowGnuPlot<T>();
 
     return 0;
 }
@@ -974,7 +902,7 @@ int RunFilterSpectrum()
     proc.Run();
 
     // Display the final plot
-    Config.IsFilterSpectrumPlot ? FFTMagnitudeShowPlot() : FFTMagnitudeShowGnuPlot(rd.GetRef());
+    FFTMagnitudeShowGnuPlot<T>(rd.GetRef());
 
     return 0;
 }
@@ -1051,7 +979,7 @@ int RunBiQuadSpectrum()
     proc.Run();
 
     // Display the final plot
-    FFTMagnitudeShowGnuPlot(rd.GetRef());
+    FFTMagnitudeShowGnuPlot<T>(rd.GetRef());
 
     return 0;
 }
@@ -1211,7 +1139,7 @@ template <typename T>
 int RunCombSpectrum()
 {
     // Create reader
-    FilterSpectrumReader<T> rd(2);
+    FilterSpectrumReader<T> rd;
 
     // Create  filter
     HCombFilter<T>* filter;
@@ -1239,7 +1167,7 @@ int RunCombSpectrum()
     proc.Run();
 
     // Display the final plot
-    FFTMagnitudeShowGnuPlot(rd.GetRef());
+    FFTMagnitudeShowGnuPlot<T>(rd.GetRef());
 
     // Delete the filter
     delete filter;
@@ -1390,7 +1318,7 @@ int RunGoertzlSweep()
     }
 
     // Display the final plot
-    FFTMagnitudeShowGnuPlot();
+    FFTMagnitudeShowGnuPlot<T>();
 
     return 0;
 }
@@ -1479,7 +1407,7 @@ int RunBiQuadCascadeSpectrum()
     proc.Run();
 
     // Display the final plot
-    FFTMagnitudeShowGnuPlot(rd.GetRef());
+    FFTMagnitudeShowGnuPlot<T>(rd.GetRef());
 
     // Delete the filter
     delete filter;
@@ -1511,7 +1439,7 @@ int RunMovingAverageSpectrum()
     proc.Run();
 
     // Display the final plot
-    FFTMagnitudeShowGnuPlot(rd.GetRef());
+    FFTMagnitudeShowGnuPlot<T>(rd.GetRef());
 
     // Delete the filter
     delete filter;
@@ -1735,7 +1663,7 @@ int RunOperation()
     }
 
     // Run an FFT on a local file and either write or plot the magnitude spectrum
-    if( Config.IsFFTMagnitudePlot || Config.IsFFTMagnitudeGnuPlot )
+    if( Config.IsFFTMagnitudeGnuPlot )
     {
         // Verify configuration
         if( Config.InputFile == NULL )
@@ -1958,7 +1886,7 @@ int RunOperation()
         return RunFilter<T>();
     }
 
-    if( Config.IsFilterSpectrumPlot || Config.IsFilterSpectrumGnuPlot)
+    if( Config.IsFilterSpectrumGnuPlot)
     {
         if( Config.FilterName == NULL )
         {
