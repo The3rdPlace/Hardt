@@ -58,6 +58,18 @@ class HAgc : public HGain<T>
             _overshoot = ((_upper - _lower) / _lower) + 1;
             HLog("Recalculated overshoot = %f", _overshoot);
         }
+
+        /** Set average (how many blocks is averaged before evaluating the gain again) */
+        void SetAverage(int average)
+        {
+            _average = average;
+        }
+
+        /** Set lock (the number of blocks to wait before evaluating the gain again) */
+        void SetLock(int lock)
+        {
+            _lock = lock;
+        }
 };
 
 #endif
