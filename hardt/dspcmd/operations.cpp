@@ -12,7 +12,7 @@
 #include "hardtapi.h"
 
 template <class T>
-double GetCalibratedReference(double fdelta, int start, int stop, int amplitude) {
+double GetCalibratedReference(double fdelta, int start, int stop, int amplitude, bool shrink = true) {
     int freq = start;
     HVfo<T> vfo(Config.Rate, freq, amplitude, 0);
 
@@ -41,7 +41,7 @@ double GetCalibratedReference(double fdelta, int start, int stop, int amplitude)
         refSum += refSummer[i] / refNumFfts;
     }
 
-    return refSum / (Blocks / 2);
+    return (refSum / (Blocks / 2)) * (shrink ? ((Config.Rate / 2) / (stop - start)) : 1);
 }
 
 template <typename T>
@@ -372,7 +372,7 @@ void FFTMagnitudeShowGnuPlot()
     // Get reference value (smallest measureable value
     int start = Config.XMin == 0 ? fdelta : Config.XMin;
     int stop = (Config.XMax == 0 ? (Config.Rate / 2) : Config.XMax);
-    double ref = GetCalibratedReference<T>(fdelta, start, stop, 1);
+    double ref = GetCalibratedReference<T>(fdelta, start, stop, 1, false);
 
     // The scaling factor based on blocksize 1024 is applied when calculating 
     // the db values so we need to take this into account when analyzing a real signal.

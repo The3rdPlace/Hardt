@@ -235,7 +235,7 @@ bool parseArguments(int argc, char** argv)
             std::cout << std::endl;
 
             std::cout << "-flt filtername coeffs     Read coefficients from coeffs and run file through filter name (HIirFilter|HFirFilter)" << std::endl;
-            std::cout << "-flgp filtername coeffs    Read coefficients from coeffs and plot filter response for filter name  (HIirFilter|HFirFilter) using GnuPlot" << std::endl;
+            std::cout << "-flgp filtername coeffs    Read coefficients from coeffs and (Gnu)plot filter response for filter name  (HIirFilter|HFirFilter)" << std::endl;
             std::cout << std::endl;
 
             std::cout << "-bq name Fcutoff Q G       Create biquad filter, dump coefficients and run sweep" << std::endl;
