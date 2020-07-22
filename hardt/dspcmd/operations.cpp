@@ -12,7 +12,7 @@
 #include "hardtapi.h"
 
 template <class T>
-double GetCalibratedReference(double fdelta, int start, int stop, int amplitude) {
+double GetCalibratedReference(double fdelta, int start, int stop, int amplitude, int stopAt = 0) {
     int freq = start;
     HVfo<T> vfo(Config.Rate, freq, amplitude, 0);
 
@@ -36,10 +36,16 @@ double GetCalibratedReference(double fdelta, int start, int stop, int amplitude)
             refSummer[i] += refSpectrum[i];
         }
         refNumFfts++;
+
+        if( stopAt > 0 && refNumFfts >= stopAt ) {
+            break;
+        }
     }
     for (int i = 0; i < Blocks / 2; i++) {
         refSum += refSummer[i];
     }
+    std::cout << "calibrate " << refNumFfts << std::endl;
+
     return refSum / (Blocks / 2);
 }
 
@@ -278,8 +284,11 @@ int FFTMagnitudePlotWriter(HFftResults* data, size_t size)
 template <class T>
 double NormalizeFFTPlot(double reference, double ignore, double* values, double* normalizedValues) {
 
-    // Calculate scaling factors
-    double scale = ((double) Config.Blocksize / 1024) * numFfts;
+    // Calculate scaling factors so that values are more or less the same
+    // for any blocksize. 1024 is choosen as the default blocksize thus
+    // setting the scaling level
+    std::cout << "NUMFFTS " << numFfts << " (" << Config.Blocksize << ")" << std::endl;
+    double scale = ((double) 1024 / (double) Config.Blocksize) * numFfts;
     double scaledIgnore = ignore/ scale;
 
     // Scale fft magnitude values
@@ -288,7 +297,7 @@ double NormalizeFFTPlot(double reference, double ignore, double* values, double*
         normalizedValues[i] = ((double) values[i]) / scale;
 
         // Remove the lowest values since they are the result of quantization errors
-        if( abs(normalizedValues[i]) < scaledIgnore ) {
+        if( abs(normalizedValues[i]) < scaledIgnore) {
             normalizedValues[i] = 0;
         }
 
@@ -332,7 +341,9 @@ void FFTMagnitudeShowGnuDBPlot(double reference, double ignore)
         if( isinff(db) ) {
             db = 0;
         }
-        fprintf(gnuplotPipe, "%lf %lf\n", (double) bin * fdelta, db);
+        if( !isnan(db) ) {
+            fprintf(gnuplotPipe, "%lf %lf\n", (double) bin * fdelta, db);
+        }
     }
     fprintf(gnuplotPipe, "e");
     fclose(gnuplotPipe);
@@ -346,18 +357,41 @@ void FFTMagnitudeShowGnuDBPlot(double reference)
 }
 
 template <class T>
-void FFTMagnitudeShowGnuPlot()
+void FFTMagnitudeShowGnuPlot(int realBlocks)
 {
     // Same f-delta as used by the FilterSpectrumReader during sweeps
     double fdelta = (((double) Config.Rate / 2) / ((double) Config.FFTSize / 2)) / 10;
-
+std::cout << "NUMFFTS before calibrate " << numFfts << std::endl;
+std::cout << "deltaf: " << fdelta << std::endl;
     // Get reference value (smallest measureable value
     int start = Config.XMin == 0 ? fdelta : Config.XMin;
     int stop = (Config.XMax == 0 ? (Config.Rate / 2) : Config.XMax);
-    double ref = GetCalibratedReference<T>(fdelta, start, stop, 1);
+    double ref = GetCalibratedReference<T>(fdelta, start, stop, 20, 0);
+
+    // Adjust the ref value to match the number of blocks actually
+    // read from the source
+    int fsize = realBlocks * Config.Blocksize * sizeof(T);
+    std::cout << "filesize was " << fsize << std::endl;
+    double adjust = 2666 / realBlocks;
+
 
     // Show the plot
-    FFTMagnitudeShowGnuDBPlot<T>(ref, ref);
+    // 512=2666  1024=5999   2048=11999
+    // 2sec=190464            1sec=94208   
+    // 7 @512(187) / 2sec     3.5 @512(94) / 1sec
+    // 3.2 @1024(94) / 2sec   1.6 @1024(47) / 1sec
+    // 1.6 @2048(47) / 2sec   0.8 @2048(24) / 1sec
+
+
+    // 7   (187)  9.375    24000/9.375 = 2560(2666@9)      (2666/10)/187=1.4 1.4/0.5=2.8
+    // 3.2 (94)  4.6875   24000/4.6875 = 5120(6000@4)      (6000/10)/94=6.3  6.3/2=3.2
+    // 1.6 (47)  2.34375  24000/2.34375 = 10240(12000@2)   (12000/10)/47=25.5  25.5/2=12.7
+
+    for(int i = 0; i < Config.Blocksize / 2; i++ ) {
+        aggregatedMagnitudeSpectrum[i] /= (double) realBlocks;
+    }
+
+    FFTMagnitudeShowGnuDBPlot<T>(ref, ref / 2);
 }
 
 template <typename T>
@@ -383,9 +417,11 @@ int RunFFTMagnitudePlot()
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
+    std::cout << "AVERAGE " << Config.Average << std::endl;
     HFftOutput<T> fft(Config.FFTSize, Config.Average, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
+    numFfts = 0;
     aggregatedMagnitudeSpectrum = new double[Config.FFTSize / 2];
 
     // Create processor
@@ -402,8 +438,9 @@ int RunFFTMagnitudePlot()
         delete (HFileReader<T>*) rd;
     }
 
+std::cout << "OUT" << proc.Metrics.BlocksOut << std::endl;;
     // Display the final plot
-    FFTMagnitudeShowGnuPlot<T>();
+    FFTMagnitudeShowGnuPlot<T>(proc.Metrics.BlocksOut);
 
     return 0;
 }
@@ -1304,6 +1341,7 @@ int RunGoertzlSweep()
     HGoertzelOutput<T>* filter;
     HReader<T>* rd;
     std::cout << "Sweep from 0Hz - " << (Config.Rate / 2) << "Hz" << std::endl;
+    int blocksOut = 0;
     for( int i = 0; i < Config.Blocksize; i++ )
     {
         // Reset fft counter
@@ -1330,6 +1368,7 @@ int RunGoertzlSweep()
         // Create processor
         HStreamProcessor<T> proc(filter, rd, Config.Blocksize, &terminated);
         proc.Run();
+        blocksOut = proc.Metrics.BlocksOut;
         delete filter;
 
         // Delete the reader
@@ -1354,7 +1393,7 @@ int RunGoertzlSweep()
     }
 
     // Display the final plot
-    FFTMagnitudeShowGnuPlot<T>();
+    FFTMagnitudeShowGnuPlot<T>(blocksOut);
 
     return 0;
 }
