@@ -55,8 +55,6 @@
 
     -\subpage pf = Play file
 
-    -\subpage fmp = Run FFT on a file and plot the magnitude spectrum on screen
-
     -\subpage fmgp = Run FFT on a file and plot the magnitude spectrum on screen using GnuPlot
 
     -\subpage avg = Take 'number' FFT's and return the average spectrum
@@ -214,19 +212,19 @@
     The stop time and date must be in the future in respect to the start time, in case a start time
     is given.
 
-    You do not need to provide a starting time, dspcmd will then start immediately and run untill
+    You do not need to provide a starting time, dspcmd will then start immediately and run until
     the chosen stop time.
 
 
     \page sg
-    Syntax: dspcmd -fsg freq phase duration
+    Syntax: dspcmd -sg frequency phase amplitude duration
 
     Run as signalgenerator, duration is given in  seconds.
 
     YOu must provide the frequency of the generator, the phase (often this has no implication
     on the use of the output file, so just use 0 (cos) or 90 (sin). The duration given in second will
     control how many seconds of data at the given frequency with the given phase is generated.
-
+    Amplitude gives the maximum possible (absolute) value of the signal. Corresponding to sin/cos = 1.
 
     \page nc
     Syntax: dspcmd -nc server port
@@ -289,18 +287,6 @@
     device or output file (-od, -of)
 
 
-    \page fmp
-    Syntax: dspcmd -fmp size
-
-    Run FFT on a file and plot the magnitude spectrum on screen
-
-    The FFT is calculated for the number of bins given by the choosen blocksize (-bs), samples
-    are read from the file given by the -if parameter.
-
-    The spectrum is plotted in textmode, which will be a very rough estimated spectrum. Most likely,
-    you are looking for the -fmgp option instead. This option will plot the spectrum using GnuPlot
-
-
     \page fmgp
     Syntax: dspcmd -fmgp size
 
@@ -360,6 +346,15 @@
 
     The output is written to the file given by the -of option
 
+
+    \page sb
+    Syntax: dspcmd -sb file1 file2
+
+    Subtract file1 and file2
+
+    Read the file given y 'file1' and subtract samples from file2 from samples in file1.
+
+    The output is written to the file given by the -of option
 
     \page mp
     Syntax. dspcmd -mp frequency

@@ -11,6 +11,39 @@
 #include "config.h"
 #include "hardtapi.h"
 
+template <class T>
+double GetCalibratedReference(double fdelta, int start, int stop, int amplitude, bool shrink = true) {
+    int freq = start;
+    HVfo<T> vfo(Config.Rate, freq, amplitude, 0);
+
+    // Calibration - measure input spectrum magnitude when passed directly to the FFT
+    const int Blocks = 128;
+    HHahnWindow<T> window;
+    HFft<T> fft(Blocks, &window);
+    double refSpectrum[Blocks / 2];
+    T refBlock[Blocks];
+    double refSum = 0;
+    int refNumFfts = 0;
+    double refSummer[Blocks / 2];
+    memset((void *) refSummer, 0, sizeof(double) * (Blocks / 2));
+    for (; freq < stop; freq += fdelta) {
+        vfo.SetFrequency(freq);
+
+        vfo.Read(refBlock, Blocks);
+        fft.FFT(refBlock, refSpectrum);
+
+        for (int i = 0; i < Blocks / 2; i++) {
+            refSummer[i] += refSpectrum[i];
+        }
+        refNumFfts++;
+    }
+    for (int i = 0; i < Blocks / 2; i++) {
+        refSum += refSummer[i] / refNumFfts;
+    }
+
+    return (refSum / (Blocks / 2)) * (shrink ? ((Config.Rate / 2) / (stop - start)) : 1);
+}
+
 template <typename T>
 int RunNetworkWriterServer()
 {
@@ -112,15 +145,14 @@ int RunSignalGenerator()
         return -1;
     }
 
-    // Calculate how many blocks fit into 10 seconds
+    // Calculate how many blocks fit into the requested duration
     unsigned long int blocks = (Config.Duration * Config.Rate) / Config.Blocksize;
 
-    // Generate a signal with half the maximum amplitude available
-    int amplitude = floor(std::numeric_limits<T>::max() / (std::numeric_limits<T>::is_signed ? 2 : 4));
-    HLog("Amplitude set to %d", amplitude);
+    // Generate a signal with the requested amplitude
+    HLog("Using amplitude %d", Config.Amplitude);
 
     // Create and run the signalgenerator
-    HVfo<T> sg(Config.Rate, Config.Frequency, amplitude, Config.Phase);
+    HVfo<T> sg(Config.Rate, Config.Frequency, Config.Amplitude, Config.Phase);
     HStreamProcessor<T> proc(wr, &sg, Config.Blocksize, &terminated);
     proc.Run(blocks);
 
@@ -244,101 +276,41 @@ int FFTMagnitudePlotWriter(HFftResults* data, size_t size)
     return size;
 }
 
-void FFTMagnitudeShowPlot()
-{
-    const int spectrumWidth = 80;
-    const int spectrumHeight = 20;
-    const int scaleWidth = 7;
+template <class T>
+double NormalizeFFTPlot(double reference, double ignore, double* values, double* normalizedValues) {
 
-    // Calculate initial averaged values
+    // Calculate scaling factors so that values are more or less the same
+    // for any blocksize. 1024 is choosen as the default blocksize thus
+    // setting the scaling level
+    double scale = ((double) 1024 / (double) Config.Blocksize) * (double) numFfts;
+    double scaledIgnore = ignore;
+
+    // Scale fft magnitude values
     for( int i = 0; i < Config.FFTSize / 2; i++ )
     {
-        aggregatedMagnitudeSpectrum[i] = aggregatedMagnitudeSpectrum[i] / numFfts;
-    }
+        normalizedValues[i] = ((double) values[i]) / scale;
 
-    // Calculate how many individual spectrum lines needs to be combined per line in the spectrum graph
-    int binsPerLine = (Config.FFTSize / 2) / spectrumWidth;
+        // Remove the lowest values since they are the result of quantization errors
+        if( abs(normalizedValues[i]) < scaledIgnore) {
+            normalizedValues[i] = 0;
+        }
 
-    // Calculate the output spectrum
-    double displayedSpectrum[spectrumWidth];
-    memset((void*) displayedSpectrum, 0, spectrumWidth * sizeof(double));
-    int lineNo = 0;
-    for( int i = 0; i < spectrumWidth; i++ )
-    {
-        for( int j = 0; j < binsPerLine; j++ )
-        {
-            displayedSpectrum[i] += aggregatedMagnitudeSpectrum[(i * binsPerLine) + j];
+        // values below 0 is noise and must be removed
+        if( normalizedValues[i] < 0 ) {
+            normalizedValues[i] = 0;
         }
     }
 
-    // Calculate frequency span per bin
-    int fdelta = (Config.Rate / 2) / (Config.FFTSize / 2);
-
-    // Get maximum fft value for scaling
-    int max = 0;
-    for( int i = 0; i < spectrumWidth; i++ )
-    {
-        max = displayedSpectrum[i] > max ? displayedSpectrum[i] : max;
-    }
-
-    // Calculate how long the spectrum should be to include enough space for the last frequency label
-    int plotWidth = ((spectrumWidth + scaleWidth) / scaleWidth) * scaleWidth;
-
-    // Upper separator
-    for( int col = 0; col < plotWidth; col++ )
-    {
-        std::cout << "-";
-    }
-
-    // Plot lines
-    int scaleFactor = max / spectrumHeight;
-    std::cout << std::endl;
-    for( int row = 0; row < spectrumHeight; row++ )
-    {
-        for( int col = 0; col < spectrumWidth; col++ )
-        {
-            int value = displayedSpectrum[col];
-            if( value > (spectrumHeight - row - 1) * scaleFactor )
-            {
-                std::cout << "#";
-            }
-            else
-            {
-                std::cout << (col % scaleWidth == 0 ? "." : " ");
-            }
-        }
-        std::cout << std::endl;
-    }
-
-    // Add bottom scale separator
-    for( int col = 0; col < plotWidth; col++ )
-    {
-        std::cout << (col % scaleWidth == 0 ? "|" : "-");
-    }
-    std::cout << std::endl;
-
-    // Add frequency scale
-    int fcoldelta = Config.Rate / spectrumWidth;
-    for( int col = 0; col < spectrumWidth; col++ )
-    {
-        if( col % scaleWidth == 0 )
-        {
-            std::string colName = std::to_string(col * fcoldelta / 2);
-            std::string padding(scaleWidth - colName.length(), ' ');
-            std::cout << colName << padding;
-        }
-    }
-    std::cout << std::endl;
+    // Return reference value
+    return reference;
 }
 
-void FFTMagnitudeShowGnuPlot(double displace = 0)
+template <class T>
+void FFTMagnitudeShowGnuDBPlot(double reference, double ignore, bool skipInfinite = true)
 {
     // Calculate the output spectrum
     double displayedSpectrum[Config.FFTSize / 2];
-    for( int i = 0; i < Config.FFTSize / 2; i++ )
-    {
-        displayedSpectrum[i] = ((double) aggregatedMagnitudeSpectrum[i] - displace) / numFfts;
-    }
+    double ref = NormalizeFFTPlot<T>(reference, ignore, aggregatedMagnitudeSpectrum, displayedSpectrum);
 
     // Calculate frequency span per bin
     double fdelta = ((double) Config.Rate / 2) / ((double)Config.FFTSize / 2);
@@ -346,6 +318,8 @@ void FFTMagnitudeShowGnuPlot(double displace = 0)
     // Plot lines
     FILE* gnuplotPipe = popen ("gnuplot -persistent", "w");
     fprintf(gnuplotPipe, "set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2 pointtype -1\n");
+    fprintf(gnuplotPipe, "set xlabel \"Hz\" offset 0,0\n");
+    fprintf(gnuplotPipe, "set ylabel \"DB\" offset 0,0\n");
     if( Config.XMax > 0 )
     {
         fprintf(gnuplotPipe, "set xrange [%d:%d]\n",Config.XMin, Config.XMax);
@@ -354,13 +328,64 @@ void FFTMagnitudeShowGnuPlot(double displace = 0)
     {
         fprintf(gnuplotPipe, "set yrange [%d:%d]\n", Config.YMin, Config.YMax);
     }
-    fprintf(gnuplotPipe, "plot '-' with linespoints linestyle 1\n");
+    fprintf(gnuplotPipe, "plot '-' with linespoints linestyle 1 title \"%d point fft\"\n", Config.Blocksize);
     for( int bin = 3; bin < (Config.FFTSize / 2) - 3; bin++ )
     {
-        fprintf(gnuplotPipe, "%lf %lf\n", (double) bin * fdelta, displayedSpectrum[bin]);
+        // Plot DB value
+        double ratio = displayedSpectrum[bin] / ref;
+        double db = (double) 20 * log10(ratio);
+        if( isinff(db) ) {
+            // skip infinitely small values ?(with respect to the discrete sample)
+            if( skipInfinite ) {
+                continue;
+            } else {
+                db = 0;
+            }
+        }
+        if( !isnan(db) ) {
+            fprintf(gnuplotPipe, "%lf %lf\n", (double) bin * fdelta, db);
+        }
     }
     fprintf(gnuplotPipe, "e");
     fclose(gnuplotPipe);
+}
+
+template <class T>
+void FFTMagnitudeShowGnuDBPlot(double reference)
+{
+    // Scale when using other blocksizes than 1024
+    double ref = reference * ((double) Config.Blocksize / (double) 1024);
+
+    // Calculate minimum acceptable value (remove noise near zero)
+    double ignore = (std::numeric_limits<T>::max() / 30);
+
+    // Plot the spectrum
+    FFTMagnitudeShowGnuDBPlot<T>(ref, ignore);
+}
+
+template <class T>
+void FFTMagnitudeShowGnuPlot()
+{
+    // Same f-delta as used by the FilterSpectrumReader during sweeps
+    double fdelta = (((double) Config.Rate / 2) / ((double) Config.FFTSize / 2)) / 10;
+
+    // Get reference value (smallest measureable value
+    int start = Config.XMin == 0 ? fdelta : Config.XMin;
+    int stop = (Config.XMax == 0 ? (Config.Rate / 2) : Config.XMax);
+    double ref = GetCalibratedReference<T>(fdelta, start, stop, 1, false);
+
+    // The scaling factor based on blocksize 1024 is applied when calculating 
+    // the db values so we need to take this into account when analyzing a real signal.
+    // Also adjust for the increased number of samples by increasing fdelta by 10 (see above)
+    double factor = (double) (Config.Blocksize) / 1024;
+    double scale = factor * ((1024/10)*factor);
+    ref *= scale;
+
+    // Denormalize the ref fft value to match the measured signal
+    ref *= 2;
+
+    // Plot the spectrum
+    FFTMagnitudeShowGnuDBPlot<T>(ref, ref, false);
 }
 
 template <typename T>
@@ -389,6 +414,7 @@ int RunFFTMagnitudePlot()
     HFftOutput<T> fft(Config.FFTSize, Config.Average, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
+    numFfts = 0;
     aggregatedMagnitudeSpectrum = new double[Config.FFTSize / 2];
 
     // Create processor
@@ -406,7 +432,7 @@ int RunFFTMagnitudePlot()
     }
 
     // Display the final plot
-    Config.IsFFTMagnitudePlot ? FFTMagnitudeShowPlot() : FFTMagnitudeShowGnuPlot();
+    FFTMagnitudeShowGnuPlot<T>();
 
     return 0;
 }
@@ -843,18 +869,11 @@ class FilterSpectrumReader : public HReader<T>
 
     public:
 
-        FilterSpectrumReader(int delta = 0):
+        FilterSpectrumReader():
             _ref(0)
         {
             // Calculate f-delta
-            if( delta == 0 )
-            {
-                _fDelta = (((double) Config.Rate / 2) / ((double) Config.FFTSize / 2)) / 10;
-            }
-            else
-            {
-                _fDelta = delta;
-            }
+            _fDelta = (((double) Config.Rate / 2) / ((double) Config.FFTSize / 2)) / 10;
 
             if( _fDelta < 1 )
             {
@@ -869,37 +888,11 @@ class FilterSpectrumReader : public HReader<T>
             _lastDisplayedFreq = _freq;
 
             // Create vfo
-            vfo = new HVfo<T>(Config.Rate, _freq, std::numeric_limits<T>::max() / 2, 0);
+            int amplitude = std::numeric_limits<T>::max() / 2;
+            vfo = new HVfo<T>(Config.Rate, _freq, amplitude, 0);
 
             // Calibration - measure input spectrum magnitude
-            const int Blocks = 128;
-            HHahnWindow<T> window;
-            HFft<T> fft(Blocks, &window);
-            double refSpectrum[Blocks / 2];
-            T refBlock[Blocks];
-            double refSum = 0;
-            int refNumFfts = 0;
-            double refSummer[Blocks / 2];
-            memset((void*) refSummer, 0, sizeof(double) * (Blocks / 2));
-            for( ; _freq < _freqStop; _freq += _fDelta) {
-                vfo->SetFrequency(_freq);
-
-                vfo->Read(refBlock, Blocks);
-                fft.FFT(refBlock, refSpectrum);
-
-                for( int i = 0; i < Blocks / 2; i++ ) {
-                    refSummer[i] += refSpectrum[i];
-                }
-                refNumFfts++;
-            }
-            for( int i = 0; i < Blocks / 2; i++ ) {
-                refSum += refSummer[i];
-            }
-            _ref = refSum / (Blocks / 2);
-
-            // Set vfo to initial frequency
-            _freq = _freqStart;
-            vfo->SetFrequency(_freq);
+            _ref = GetCalibratedReference<T>(_fDelta, _freqStart, _freqStop, amplitude);
         }
 
         ~FilterSpectrumReader()
@@ -974,7 +967,7 @@ int RunFilterSpectrum()
     proc.Run();
 
     // Display the final plot
-    Config.IsFilterSpectrumPlot ? FFTMagnitudeShowPlot() : FFTMagnitudeShowGnuPlot(rd.GetRef());
+    FFTMagnitudeShowGnuDBPlot<T>(rd.GetRef());
 
     return 0;
 }
@@ -1051,7 +1044,7 @@ int RunBiQuadSpectrum()
     proc.Run();
 
     // Display the final plot
-    FFTMagnitudeShowGnuPlot(rd.GetRef());
+    FFTMagnitudeShowGnuDBPlot<T>(rd.GetRef());
 
     return 0;
 }
@@ -1211,7 +1204,7 @@ template <typename T>
 int RunCombSpectrum()
 {
     // Create reader
-    FilterSpectrumReader<T> rd(2);
+    FilterSpectrumReader<T> rd;
 
     // Create  filter
     HCombFilter<T>* filter;
@@ -1239,7 +1232,7 @@ int RunCombSpectrum()
     proc.Run();
 
     // Display the final plot
-    FFTMagnitudeShowGnuPlot(rd.GetRef());
+    FFTMagnitudeShowGnuDBPlot<T>(rd.GetRef());
 
     // Delete the filter
     delete filter;
@@ -1390,7 +1383,7 @@ int RunGoertzlSweep()
     }
 
     // Display the final plot
-    FFTMagnitudeShowGnuPlot();
+    FFTMagnitudeShowGnuPlot<T>();
 
     return 0;
 }
@@ -1479,7 +1472,7 @@ int RunBiQuadCascadeSpectrum()
     proc.Run();
 
     // Display the final plot
-    FFTMagnitudeShowGnuPlot(rd.GetRef());
+    FFTMagnitudeShowGnuDBPlot<T>(rd.GetRef());
 
     // Delete the filter
     delete filter;
@@ -1491,7 +1484,7 @@ template <typename T>
 int RunMovingAverageSpectrum()
 {
     // Create reader
-    FilterSpectrumReader<T> rd(2);
+    FilterSpectrumReader<T> rd;
 
     // Create  filter
     HMovingAverageFilter<T>* filter = new HMovingAverageFilter<T>(&rd, Config.M, Config.Blocksize);
@@ -1511,7 +1504,7 @@ int RunMovingAverageSpectrum()
     proc.Run();
 
     // Display the final plot
-    FFTMagnitudeShowGnuPlot(rd.GetRef());
+    FFTMagnitudeShowGnuDBPlot<T>(rd.GetRef());
 
     // Delete the filter
     delete filter;
@@ -1735,7 +1728,7 @@ int RunOperation()
     }
 
     // Run an FFT on a local file and either write or plot the magnitude spectrum
-    if( Config.IsFFTMagnitudePlot || Config.IsFFTMagnitudeGnuPlot )
+    if( Config.IsFFTMagnitudeGnuPlot )
     {
         // Verify configuration
         if( Config.InputFile == NULL )
@@ -1958,7 +1951,7 @@ int RunOperation()
         return RunFilter<T>();
     }
 
-    if( Config.IsFilterSpectrumPlot || Config.IsFilterSpectrumGnuPlot)
+    if( Config.IsFilterSpectrumGnuPlot)
     {
         if( Config.FilterName == NULL )
         {
