@@ -318,6 +318,8 @@ void FFTMagnitudeShowGnuDBPlot(double reference, double ignore, bool skipInfinit
     // Plot lines
     FILE* gnuplotPipe = popen ("gnuplot -persistent", "w");
     fprintf(gnuplotPipe, "set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2 pointtype -1\n");
+    fprintf(gnuplotPipe, "set xlabel \"Hz\" offset 0,0\n");
+    fprintf(gnuplotPipe, "set ylabel \"DB\" offset 0,0\n");
     if( Config.XMax > 0 )
     {
         fprintf(gnuplotPipe, "set xrange [%d:%d]\n",Config.XMin, Config.XMax);
@@ -326,7 +328,7 @@ void FFTMagnitudeShowGnuDBPlot(double reference, double ignore, bool skipInfinit
     {
         fprintf(gnuplotPipe, "set yrange [%d:%d]\n", Config.YMin, Config.YMax);
     }
-    fprintf(gnuplotPipe, "plot '-' with linespoints linestyle 1\n");
+    fprintf(gnuplotPipe, "plot '-' with linespoints linestyle 1 title \"%d point fft\"\n", Config.Blocksize);
     for( int bin = 3; bin < (Config.FFTSize / 2) - 3; bin++ )
     {
         // Plot DB value
