@@ -38,7 +38,7 @@ double GetCalibratedReference(double fdelta, int start, int stop, int amplitude)
         refNumFfts++;
     }
     for (int i = 0; i < Blocks / 2; i++) {
-        refSum += refSummer[i];
+        refSum += refSummer[i] / refNumFfts;
     }
 
     return refSum / (Blocks / 2);
@@ -282,8 +282,8 @@ double NormalizeFFTPlot(double reference, double ignore, double* values, double*
     // Calculate scaling factors so that values are more or less the same
     // for any blocksize. 1024 is choosen as the default blocksize thus
     // setting the scaling level
-    double scale = ((double) 1024 / (double) Config.Blocksize) * numFfts;
-    double scaledIgnore = ignore/ scale;
+    double scale = ((double) 1024 / (double) Config.Blocksize) * (double) numFfts;
+    double scaledIgnore = ignore;
 
     // Scale fft magnitude values
     for( int i = 0; i < Config.FFTSize / 2; i++ )
@@ -301,12 +301,12 @@ double NormalizeFFTPlot(double reference, double ignore, double* values, double*
         }
     }
 
-    // Return scaled reference value
-    return reference / scale;
+    // Return reference value
+    return reference;
 }
 
 template <class T>
-void FFTMagnitudeShowGnuDBPlot(double reference, double ignore)
+void FFTMagnitudeShowGnuDBPlot(double reference, double ignore, bool skipInfinite = true)
 {
     // Calculate the output spectrum
     double displayedSpectrum[Config.FFTSize / 2];
@@ -333,7 +333,12 @@ void FFTMagnitudeShowGnuDBPlot(double reference, double ignore)
         double ratio = displayedSpectrum[bin] / ref;
         double db = (double) 20 * log10(ratio);
         if( isinff(db) ) {
-            db = 0;
+            // skip infinitely small values ?(with respect to the discrete sample)
+            if( skipInfinite ) {
+                continue;
+            } else {
+                db = 0;
+            }
         }
         if( !isnan(db) ) {
             fprintf(gnuplotPipe, "%lf %lf\n", (double) bin * fdelta, db);
@@ -346,8 +351,14 @@ void FFTMagnitudeShowGnuDBPlot(double reference, double ignore)
 template <class T>
 void FFTMagnitudeShowGnuDBPlot(double reference)
 {
+    // Scale when using other blocksizes than 1024
+    double ref = reference * ((double) Config.Blocksize / (double) 1024);
+
+    // Calculate minimum acceptable value (remove noise near zero)
     double ignore = (std::numeric_limits<T>::max() / 30);
-    FFTMagnitudeShowGnuDBPlot<T>(reference, ignore);
+
+    // Plot the spectrum
+    FFTMagnitudeShowGnuDBPlot<T>(ref, ignore);
 }
 
 template <class T>
@@ -362,16 +373,17 @@ void FFTMagnitudeShowGnuPlot()
     double ref = GetCalibratedReference<T>(fdelta, start, stop, 1);
 
     // The scaling factor based on blocksize 1024 is applied when calculating 
-    // the db values so we need to take this into account when analyzing a real signal 
-    double factor = 1024 / (double) Config.Blocksize;
-    ref *= factor;
+    // the db values so we need to take this into account when analyzing a real signal.
+    // Also adjust for the increased number of samples by increasing fdelta by 10 (see above)
+    double factor = (double) (Config.Blocksize) / 1024;
+    double scale = factor * ((1024/10)*factor);
+    ref *= scale;
 
-    // The given amplitude to the calibration function is a peak voltage
-    // but the ref needs to be the peak power (max.) not the rms value
-    ref /= 0.707;
+    // Denormalize the ref fft value to match the measured signal
+    ref *= 2;
 
-    // Plot the signal spectrum
-    FFTMagnitudeShowGnuDBPlot<T>(ref, ref / 2);
+    // Plot the spectrum
+    FFTMagnitudeShowGnuDBPlot<T>(ref, ref, false);
 }
 
 template <typename T>
