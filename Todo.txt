@@ -1,10 +1,11 @@
 Needed:
-  - Coomb filter (forward- and backward feedback)
-  - Implement missing biquad standard types
-  - Type converters (8 <-> 16 <-> 32)
+  - Decimator
+  - Upconverter
+  - Encoder base (cw, rtty etc. needs this.. Use HFilter as example)
 
 Nice2have:
-  - AGC component
+  - cw encode
+  - allow HWindow to be applied only the beginning or end of a block
 
 Later:
   - Specialized PCM writer than can handle endianness
