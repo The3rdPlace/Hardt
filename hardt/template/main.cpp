@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
         std::cout << "HAudioIOException: " << ex->what() << "\n";
     }
     catch( HException *hex ) {
-        std::cout << "HException: " << hex->what() << "\n";
+        std::cout << hex->type() << ": " << hex->what() << "\n";
     }
     catch( ... ) {
         std::cout << "Unknown exception type caught\n";

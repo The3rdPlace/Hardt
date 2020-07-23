@@ -15,13 +15,19 @@ class HException : public std::exception
         /** Contains the exception reason */
         const char* _why;
 
+        /** Contains the exception type, if one needs to find out which exception is being thrown */
+        const char* _type;
+
     public:
 
         /** Construct a new HException object */
-        HException(const char* reason);
+        HException(const char* reason, const char* type);
 
         /** Return the exception reason */
         const char* what() const throw();
+
+        /** Return the exception type */
+        const char* type() const throw();
 };
 
 /**

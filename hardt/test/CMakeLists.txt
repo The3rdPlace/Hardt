@@ -64,3 +64,7 @@ target_include_directories(hardt_test PRIVATE . include)
 
 ADD_CUSTOM_TARGET(unittests ALL COMMAND hardt_test ${CMAKE_CURRENT_SOURCE_DIR} > test.log || cat test.log)
 ADD_CUSTOM_TARGET(integrationtest COMMAND hardt_test ${CMAKE_CURRENT_SOURCE_DIR} -it)
+
+add_executable (template_test ../template/main.cpp)
+target_link_libraries (template_test hardt)
+add_definitions(-DAPPNAME="template_test")
