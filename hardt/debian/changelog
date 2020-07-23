@@ -1,9 +1,16 @@
+hardt (1.0-24) RELEASED; urgency=medium
+
+  [ Henrik Witt-Hansen ]
+  * Added template for fast startup on new hardt applications
+
+ -- Mackie <henrik@hardttoolkit.org>  Thu, 23 Jul 2020 18:30:00 +0200
+
 hardt (1.0-23) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
   * Reworked plotting to use db scales
 
- -- Mackie <henrik@hardttoolkit.org>  Mon, 22 Jul 2020 16:10:00 +0200
+ -- Mackie <henrik@hardttoolkit.org>  Wed, 22 Jul 2020 16:10:00 +0200
 
 hardt (1.0-22) RELEASED; urgency=medium
 
