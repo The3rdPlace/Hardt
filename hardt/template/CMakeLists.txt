@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.7)
 set( APPNAME MyHardtApp )
 
+project( ${APPNAME} )
+
 find_package(Hardt CONFIG)
 
 add_definitions(-DAPPNAME="${APPNAME}")

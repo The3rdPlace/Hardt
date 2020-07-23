@@ -16,11 +16,15 @@
 
 #include "hardtapi.h"
 
+// Output sound device. If you do not know the device id
+// use 'dspcmd -c' to get a list of available portaudio devices
+#define SOUND_DEVICE 0
+
 #define FREQUENCY    1000
 #define AMPLITUDE    20000
 
 #define BLOCKSIZE    1024
-#define RATE         H_SAMPLE_RATE_44K1
+#define RATE         H_SAMPLE_RATE_48K
 #define FORMAT       H_SAMPLE_FORMAT_INT_16
 
 bool terminated = false;
@@ -50,15 +54,21 @@ int main(int argc, char** argv) {
     // Show application name and and Hardt version.
     std::cout << APPNAME  << ": using Hardt " + getversion() << std::endl;
 
-    // Create a sinus generator running at 1KHz and peak amplitude 20.000
-    HSineGenerator<int16_t> generator(RATE, FREQUENCY, AMPLITUDE);
-
-    // Create a processor
-    HStreamProcessor<int16_t> processor(generator.Reader(), BLOCKSIZE, &terminated);
-
-    // Create a soundcard writer, to output the 1KHz signal to the default sound device
+    // (try to) Catch all exceptions
     try {
-        HSoundcardWriter<int16_t> soundcard(HSoundcard::GetDefaultDevice(), RATE, 1, FORMAT, BLOCKSIZE, processor.Consumer());
+
+        // Create a sinus generator running at 1KHz and peak amplitude 20.000
+        HSineGenerator<int16_t> generator(RATE, FREQUENCY, AMPLITUDE);
+
+        // Create a processor
+        HStreamProcessor<int16_t> processor(generator.Reader(), BLOCKSIZE, &terminated);
+
+        // Create a soundcard writer, to output the 1KHz signal to the selected sound device
+        HSoundcardWriter<int16_t> soundcard(SOUND_DEVICE, RATE, 1, FORMAT, BLOCKSIZE, processor.Consumer());
+
+        // Start the processor and run untill terminated
+        std::cout << "Running. Press CTRL+C to quit\n";
+        processor.Run();
     }
     catch( HAudioIOException *ex ) {
         std::cout << "HAudioIOException: " << ex->what() << "\n";
@@ -69,9 +79,6 @@ int main(int argc, char** argv) {
     catch( ... ) {
         std::cout << "Unknown exception type caught\n";
     }
-
-    // Start the processor and run untill terminated
-    processor.Run();
 
     // Finished
     return 0;
