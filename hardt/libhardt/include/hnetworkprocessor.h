@@ -52,7 +52,7 @@ class HNetworkProcessor : public HProcessor<T>
 
         bool Command(HCommand* cmd)
         {
-
+            return true;
         }
 
     public:
