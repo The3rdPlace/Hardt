@@ -21,7 +21,7 @@ class HNetworkProcessor : public HProcessor<T>
 {
     private:
 
-        int _port;
+        int _dataPort;
         int _serverSocket;
         int _commandPort;
         int _commandSocket;
@@ -59,27 +59,27 @@ class HNetworkProcessor : public HProcessor<T>
 
         /** Construct a new HNetworkProcessor that acts as a client, reading samples from the remote endpoint
             and writing them to a local writer. */
-        HNetworkProcessor(const char* address, int port, HWriter<T>* writer, int blocksize, bool* terminationToken);
+        HNetworkProcessor(const char* address, int dataPort, int commandPort, HWriter<T>* writer, int blocksize, bool* terminationToken);
 
         /** Construct a new HNetworkProcessor that acts as a client, reading samples from the remote endpoint
             and writing them to a local writer which must register by using the HWriterConsumer interface. */
-        HNetworkProcessor(const char* address, int port, int blocksize, bool* terminationToken);
+        HNetworkProcessor(const char* address, int dataPort, int commandPort, int blocksize, bool* terminationToken);
 
         /** Construct a new HNetworkProcessor that acts as a client, reading samples from a local reader and
             writing them to the remote endpoint */
-        HNetworkProcessor(const char* address, int port, HReader<T>* reader, int blocksize, bool* terminationToken);
+        HNetworkProcessor(const char* address, int dataPort, int commandPort, HReader<T>* reader, int blocksize, bool* terminationToken);
 
         /** Construct a new HNetworkProcessor that acts as a server, reading samples from the remote endpoint
             and writing them to a local writer. */
-        HNetworkProcessor(int port, HWriter<T>* writer, int blocksize, bool* terminationToken);
+        HNetworkProcessor(int dataPort, int commandPort, HWriter<T>* writer, int blocksize, bool* terminationToken);
 
         /** Construct a new HNetworkProcessor that acts as a server, reading samples from the remote endpoint
             and writing them to a local writer which must register by using the HWriterConsumer interface. */
-        HNetworkProcessor(int port, int blocksize, bool* terminationToken);
+        HNetworkProcessor(int dataPort, int commandPort, int blocksize, bool* terminationToken);
 
         /** Construct a new HNetworkProcessor that acts as a server, reading samples from a local reader and
             writing them to the remote endpoint. */
-        HNetworkProcessor(int port, HReader<T>* reader, int blocksize, bool* terminationToken);
+        HNetworkProcessor(int dataPort, int commandPort, HReader<T>* reader, int blocksize, bool* terminationToken);
 
         /** Default destructor */
         ~HNetworkProcessor();

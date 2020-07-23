@@ -54,7 +54,7 @@ int main(int argc, char** argv)
 
     // Create the servers processor
     bool serverTerminated = false;
-    HNetworkProcessor<int16_t> serverProcessor(1928, gain.Reader(), BLOCKSIZE, &serverTerminated);
+    HNetworkProcessor<int16_t> serverProcessor(1928, 1929, gain.Reader(), BLOCKSIZE, &serverTerminated);
 
     // On the server, the processor is started as you would normally do. It will begin to read
     // data once you connect, and stop again when you disconnect.
@@ -75,7 +75,7 @@ int main(int argc, char** argv)
     // Setup a network processor that reads from the remote server and writes to a local
     // writer. The downstream writers register using the HWriterConsumer interface.
     bool clientTerminated = false;
-    HNetworkProcessor<int16_t> clientProcessor("127.0.0.1", 1928, BLOCKSIZE, &clientTerminated);
+    HNetworkProcessor<int16_t> clientProcessor("127.0.0.1", 1928, 1929, BLOCKSIZE, &clientTerminated);
 
     // Create a fader that turns up the output volume when we begin to process samples.
     HFade<int16_t> fade(clientProcessor.Consumer(), 0, 3000, true, BLOCKSIZE);

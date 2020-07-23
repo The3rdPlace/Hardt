@@ -48,7 +48,7 @@ template <typename T>
 int RunNetworkWriterServer()
 {
     HSoundcardReader<T> rdr(Config.InputDevice, Config.Rate, 1, Config.Format, Config.Blocksize);
-    HNetworkProcessor<T> srv(Config.Port, &rdr, Config.Blocksize, &terminated);
+    HNetworkProcessor<T> srv(Config.Port, Config.Port + 1, &rdr, Config.Blocksize, &terminated);
     try
     {
         srv.Run();
@@ -83,7 +83,7 @@ int RunNetworkReaderClient()
     }
 
     // Create a network processor and run the client
-    HNetworkProcessor<T> client(Config.Address, Config.Port, wr, Config.Blocksize, &terminated);
+    HNetworkProcessor<T> client(Config.Address, Config.Port, Config.Port + 1, wr, Config.Blocksize, &terminated);
     try
     {
         if( Config.Timer.Duration() > 0 )
