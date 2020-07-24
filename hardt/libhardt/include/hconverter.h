@@ -8,7 +8,7 @@
     inherited and the pure virtual function Convert() implemented.
 */
 template <class Tin, class Tout>
-class HConverter : public HReader<Tout>, HWriter<Tin>, HWriterConsumer<Tout>
+class HConverter : public HReader<Tout>, public HWriter<Tin>, public HWriterConsumer<Tout>
 {
     private:
 
@@ -61,7 +61,7 @@ class HConverter : public HReader<Tout>, HWriter<Tin>, HWriterConsumer<Tout>
             _input(NULL)
         {
             _output = new Tout[blocksize];
-            consumer->SetWriter(this);
+            consumer->SetWriter(this->Writer());
         }
 
     public:
@@ -135,9 +135,11 @@ class HConverter : public HReader<Tout>, HWriter<Tin>, HWriterConsumer<Tout>
         /** Implements HWriterConsumer::SetWriter() */
         void SetWriter(HWriter<Tout>* writer)
         {
+            HLog("setwriter %p", writer);
             _writer = writer;
         }
 
+        /** Transport a command to the next/previous component in the chain */
         bool Command(HCommand* command) {
             if( _writer != nullptr ) {
                 return _writer->Command(command);

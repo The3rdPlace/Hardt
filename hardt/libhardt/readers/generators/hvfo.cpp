@@ -36,18 +36,11 @@ HVfo<int16_t>::HVfo(H_SAMPLE_RATE rate, int frequency, int16_t amplitude, float 
 template
 HVfo<int32_t>::HVfo(H_SAMPLE_RATE rate, int frequency, int32_t amplitude, float phase);
 
-// Read
-/*template
-int HVfo<int8_t>::Read(int8_t* dest, size_t blocksize);
+template
+HVfo<float>::HVfo(H_SAMPLE_RATE rate, int frequency, float amplitude, float phase);
 
 template
-int HVfo<uint8_t>::Read(uint8_t* dest, size_t blocksize);
-
-template
-int HVfo<int16_t>::Read(int16_t* dest, size_t blocksize);
-
-template
-int HVfo<int32_t>::Read(int32_t* dest, size_t blocksize);*/
+HVfo<double>::HVfo(H_SAMPLE_RATE rate, int frequency, double amplitude, float phase);
 
 // SetFrequency
 template
@@ -61,6 +54,12 @@ void HVfo<int16_t>::SetFrequency(int frequency, float phase);
 
 template
 void HVfo<int32_t>::SetFrequency(int frequency, float phase);
+
+template
+void HVfo<float>::SetFrequency(int frequency, float phase);
+
+template
+void HVfo<double>::SetFrequency(int frequency, float phase);
 
 //! @endcond
 #endif
