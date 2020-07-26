@@ -91,6 +91,7 @@ Include api function declarations
 #include "hmovingaveragefilter.h"
 #include "hsubtracter.cpp"
 #include "hreal2iqconverter.cpp"
+#include "hiq2realconverter.cpp"
 
 /********************************************************************
 Debug and diagnostics

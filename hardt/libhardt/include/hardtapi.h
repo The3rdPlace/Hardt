@@ -19,6 +19,7 @@
 #include "hgenerator.h"
 #include "hfilterbase.h"
 #include "hfilter.h"
+#include "hprobe.h"
 
 #include "hchunkwriter.h"
 #include "hconverter.h"
@@ -79,6 +80,6 @@
 #include "hmovingaveragefilter.h"
 #include "hsubtracter.h"
 #include "hreal2iqconverter.h"
-#include "hprobe.h"
+#include "hiq2realconverter.h"
 
 #endif

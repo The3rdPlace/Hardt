@@ -109,4 +109,5 @@ private:
         ASSERT_IS_TRUE(converter.Command(&TestNopCommand));
         ASSERT_IS_EQUAL(rd.Commands, 1);
     }
+
 } hreal2iqconverter_test;

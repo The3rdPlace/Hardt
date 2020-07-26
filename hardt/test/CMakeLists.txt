@@ -52,6 +52,7 @@ target_sources(hardt_test
 	hmovingaveragefilter_test.cpp
 	hsubtracter_test.cpp
 	hreal2iqconverter_test.cpp
+	hiq2realconverter_test.cpp
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
