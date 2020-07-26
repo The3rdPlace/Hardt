@@ -30,8 +30,8 @@ class HReal2IqConverter: public HConverter<T, std::complex<double>> {
         }
 
         void Init(size_t blocksize, H_SAMPLE_RATE rate) {
-            _sine = new HLocalOscillator<double>(rate, rate / 4, 1, 0 );
-            _cos = new HLocalOscillator<double>(rate, rate/4, 1, -1 * M_PI / 2.0f);
+            _sine = new HLocalOscillator<double>(rate, rate, 1, 0 );
+            _cos = new HLocalOscillator<double>(rate, rate, 1, -1 * M_PI / 2.0f);
 
             _sineData = new double[blocksize];
             _cosData = new double[blocksize];
