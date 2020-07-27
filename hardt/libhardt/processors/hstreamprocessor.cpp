@@ -45,6 +45,15 @@ template
 HStreamProcessor<int32_t>::HStreamProcessor(HWriter<int32_t>* writer, HReader<int32_t>* reader, int blocksize, bool* terminationToken);
 
 template
+HStreamProcessor<double>::HStreamProcessor(HWriter<double>* writer, HReader<double>* reader, int blocksize, bool* terminationToken);
+
+template
+HStreamProcessor<float>::HStreamProcessor(HWriter<float>* writer, HReader<float>* reader, int blocksize, bool* terminationToken);
+
+template
+HStreamProcessor<std::complex<double>>::HStreamProcessor(HWriter<std::complex<double>>* writer, HReader<std::complex<double>>* reader, int blocksize, bool* terminationToken);
+
+template
 HStreamProcessor<int8_t>::HStreamProcessor(HReader<int8_t>* reader, int blocksize, bool* terminationToken);
 
 template
@@ -55,6 +64,15 @@ HStreamProcessor<int16_t>::HStreamProcessor(HReader<int16_t>* reader, int blocks
 
 template
 HStreamProcessor<int32_t>::HStreamProcessor(HReader<int32_t>* reader, int blocksize, bool* terminationToken);
+
+template
+HStreamProcessor<double>::HStreamProcessor(HReader<double>* reader, int blocksize, bool* terminationToken);
+
+template
+HStreamProcessor<float>::HStreamProcessor(HReader<float>* reader, int blocksize, bool* terminationToken);
+
+template
+HStreamProcessor<std::complex<double>>::HStreamProcessor(HReader<std::complex<double>>* reader, int blocksize, bool* terminationToken);
 
 // Run()
 template
@@ -68,6 +86,15 @@ void HStreamProcessor<int16_t>::Run(long unsigned int blocks);
 
 template
 void HStreamProcessor<int32_t>::Run(long unsigned int blocks);
+
+template
+void HStreamProcessor<double>::Run(long unsigned int blocks);
+
+template
+void HStreamProcessor<float>::Run(long unsigned int blocks);
+
+template
+void HStreamProcessor<std::complex<double>>::Run(long unsigned int blocks);
 
 //! @endcond
 #endif
