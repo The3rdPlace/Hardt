@@ -37,6 +37,8 @@ struct DspCmdConfig
     bool IsBiQuadCascadeSpectrum = false;
     bool IsMovingAverage = false;
     bool IsMovingAverageSpectrum = false;
+    bool IsReal2Iq = false;
+    bool IsIq2Real = false;
 
     char* InFileFormat = NULL;
     char* OutFileFormat = NULL;
