@@ -87,8 +87,13 @@ class HConverter : public HReader<Tout>, public HWriter<Tin>, public HWriterCons
                 throw new HConverterIOException("Invalid number of blocks");
             }
 
-            int read;
-            if( (read = _reader->Read(_input, blocksize)) != blocksize )
+            int read = _reader->Read(_input, blocksize);
+            if( read == 0 )
+            {
+                HLog("Zero length read. Returning eof (zero)");
+                return 0;
+            }
+            if( read != blocksize )
             {
                 HError("Request for read with blocksize %d returned %d blocks", blocksize, read);
                 throw new HConverterIOException("Invalid number of blocks");
