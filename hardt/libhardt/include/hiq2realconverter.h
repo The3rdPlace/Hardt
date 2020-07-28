@@ -15,7 +15,8 @@ class HIq2RealConverter: public HConverter<std::complex<double>, T> {
         int Convert(std::complex<double>* src, T* dest, size_t blocksize) {
 
             for(int i = 0; i < blocksize; i++ ) {
-                dest[i] = std::abs(src[i]);
+                std::cout << src[i].real() << std::endl;
+                dest[i] = src[i].real(); //std::abs(src[i]);
             }
 
             return blocksize;

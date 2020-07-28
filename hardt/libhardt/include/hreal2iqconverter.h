@@ -12,29 +12,35 @@ class HReal2IqConverter: public HConverter<T, std::complex<double>> {
 
     private:
 
-        HLocalOscillator<double>* _sine;
+        /*HLocalOscillator<double>* _sine;
         HLocalOscillator<double>* _cos;
         double* _sineData;
-        double* _cosData;
+        double* _cosData;*/
 
         int Convert(T* src, std::complex<double>* dest, size_t blocksize) {
 
-            _sine->Read(_sineData, blocksize);
-            _cos->Read(_cosData, blocksize);
+            /*_sine->Read(_sineData, blocksize);
+            _cos->Read(_cosData, blocksize);*/
 
-            for(int i = 0; i < blocksize; i++ ) {
-                dest[i] = std::complex<double>(_sineData[i] * src[i], -1 * _cosData[i] * src[i]);
+            HHahnWindow<T> window;
+            HFft<T> fft(blocksize, &window);
+
+            fft.FFT(src, dest);
+
+            for(int i = blocksize / 2; i < blocksize; i++ ) {
+                //dest[i] = std::complex<double>(_sineData[i] * src[i], -1 * _cosData[i] * src[i]);
+                dest[i] = 0;
             }
 
             return blocksize;
         }
 
         void Init(size_t blocksize, H_SAMPLE_RATE rate) {
-            _sine = new HLocalOscillator<double>(rate, rate/2, 1, 0 );
-            _cos = new HLocalOscillator<double>(rate, rate/2, 1, -1 * M_PI / 2.0f);
+            /*_sine = new HLocalOscillator<double>(rate, rate, 1, 0 );
+            _cos = new HLocalOscillator<double>(rate, rate, 1, -1 * M_PI / 2.0f);*/
 
-            _sineData = new double[blocksize];
-            _cosData = new double[blocksize];
+            /*_sineData = new double[blocksize];
+            _cosData = new double[blocksize];*/
         }
 
     public:
@@ -59,10 +65,10 @@ class HReal2IqConverter: public HConverter<T, std::complex<double>> {
 
         /** Destruct this real-2-iq converter instance */
         ~HReal2IqConverter() {
-            delete _sine;
+            /*delete _sine;
             delete _cos;
             delete[] _sineData;
-            delete[] _cosData;
+            delete[] _cosData;*/
         }
 };
 
