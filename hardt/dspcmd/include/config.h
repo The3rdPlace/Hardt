@@ -40,6 +40,7 @@ struct DspCmdConfig
     bool IsReal2Iq = false;
     bool IsFft = false;
     bool IsIfft = false;
+    bool IsDemux = false;
 
     char* InFileFormat = NULL;
     char* OutFileFormat = NULL;

@@ -59,11 +59,36 @@ class HDeMux : public HWriter<T>, HWriterConsumer<T>
             }
         }
 
+        /** Forward a command */
         bool Command(HCommand* command) {
             typename std::vector< HWriter<T>* >::iterator it;
 
             for( it = _writers.begin(); it != _writers.end(); it++ ) {
                 if( !(*it)->Command(command) ) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /** Initialize before first read/write */
+        bool Start() {
+            typename std::vector< HWriter<T>* >::iterator it;
+
+            for( it = _writers.begin(); it != _writers.end(); it++ ) {
+                if( !(*it)->Start() ) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /** Cleanup after last read/write */
+        bool Stop() {
+            typename std::vector< HWriter<T>* >::iterator it;
+
+            for( it = _writers.begin(); it != _writers.end(); it++ ) {
+                if( !(*it)->Stop() ) {
                     return false;
                 }
             }

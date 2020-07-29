@@ -1,6 +1,12 @@
 #ifndef __HDEMUX_CPP
 #define __HDEMUX_CPP
 
+#include <vector>
+
+#include "hwriter.h"
+#include "hreader.h"
+#include "hwriterconsumer.h"
+
 #include "hdemux.h"
 
 template <class T>

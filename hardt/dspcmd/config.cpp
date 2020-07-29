@@ -54,6 +54,8 @@ bool parseArguments(int argc, char** argv)
         Config.IsFft = argBoolCmp(argv[argNo], "-fft", Config.IsFft);
         Config.IsIfft = argBoolCmp(argv[argNo], "-ifft", Config.IsIfft);
 
+        Config.IsDemux = argBoolCmp(argv[argNo], "-dmx", Config.IsDemux);
+
         if( argNo < argc - 1)
         {
             Config.InputFile = argCharCmp(argv[argNo], "-if", argv[argNo + 1], Config.InputFile);
@@ -276,6 +278,9 @@ bool parseArguments(int argc, char** argv)
             std::cout << "-ifft                      Convert input FFT to IFFT (signal)" << std::endl;
             std::cout << std::endl;
 
+            std::cout << "-dmx                       Demultiplex samples into two separate files" << std::endl;
+            std::cout << std::endl;
+
             // Force exit
             return true;
         }
@@ -366,7 +371,7 @@ bool VerifyConfig()
     }
     if( Config.InputFile != NULL && Config.InFileFormat == NULL )
     {
-        if( Config.IsReal2Iq || Config.IsFft ) {
+        if( Config.IsReal2Iq || Config.IsFft || Config.IsDemux ) {
             std::cout << "File formats for the in- and/or output file can not be guessed from the file extension" << std::endl;
             return true;
         }
