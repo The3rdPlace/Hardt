@@ -7,7 +7,7 @@
 #include "hconverter.h"
 #include "hhahnwindow.h"
 
-/** Convert from realvalues samples to IQ samples.
+/** Convert from realvalued samples to IQ samples.
     IQ samples is stored intermixed, with the I (real) samples first, then the Q (imaginary) sample.
 
     Be aware that this doubles to amount of data returned from a read, or written in a write. You
@@ -21,7 +21,6 @@ class HReal2IqConverter: public HConverter<T, T> {
 
     private:
 
-        HHahnWindow<T> _window;
         HFft<T>* _fft;
         T* _output;
 
@@ -46,7 +45,7 @@ class HReal2IqConverter: public HConverter<T, T> {
         }
 
         void Init(size_t blocksize, H_SAMPLE_RATE rate) {
-            _fft = new HFft<T>(blocksize, &_window);
+            _fft = new HFft<T>(blocksize);
             _output = new T[blocksize];
         }
 

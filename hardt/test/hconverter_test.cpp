@@ -88,36 +88,36 @@ class HConverter_Test: public Test
                 {}
         };
 
-    template <class Tin, class Tout>
-    class TestConverter_2_1 : public HConverter<Tin, Tout>
-    {
-        private:
+        template <class Tin, class Tout>
+        class TestConverter_2_1 : public HConverter<Tin, Tout>
+        {
+            private:
 
-            int _factor;
+                int _factor;
 
-            int Convert(Tin* src, Tout* dest, size_t blocksize)
-            {
-                for( int i = 0; i < blocksize; i++ )
+                int Convert(Tin* src, Tout* dest, size_t blocksize)
                 {
-                    dest[i / 2] = src[i] * _factor;
+                    for( int i = 0; i < blocksize; i++ )
+                    {
+                        dest[i / 2] = src[i] * _factor;
+                    }
+                    return blocksize / 2;
                 }
-                return blocksize / 2;
-            }
 
-        public:
+            public:
 
-            TestConverter_2_1(HReader<Tin>* reader, size_t blocksize, int factor):
-                    HConverter<Tin, Tout>(reader, blocksize, blocksize / 2),
-                    _factor(factor)
-            {}
+                TestConverter_2_1(HReader<Tin>* reader, size_t blocksize, int factor):
+                        HConverter<Tin, Tout>(reader, blocksize, blocksize / 2),
+                        _factor(factor)
+                {}
 
-            TestConverter_2_1(HWriter<Tout>* writer, size_t blocksize, int factor):
-                    HConverter<Tin, Tout>(writer, blocksize, blocksize / 2),
-                    _factor(factor)
-            {}
-    };
+                TestConverter_2_1(HWriter<Tout>* writer, size_t blocksize, int factor):
+                        HConverter<Tin, Tout>(writer, blocksize, blocksize / 2),
+                        _factor(factor)
+                {}
+        };
 
-    void test_converter_int8_int8_read()
+        void test_converter_int8_int8_read()
         {
             int8_t input[6] = {1, 2, 3, 4, 5, 6};
             int8_t expected[6] = {2, 4, 6, 8, 10, 12};

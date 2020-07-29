@@ -82,5 +82,7 @@
 #include "hhilbertfilter.h"
 #include "hreal2iqconverter.h"
 #include "hiq2realconverter.h"
+#include "hmultiplexed2complexconverter.h"
+#include "hcomplex2multiplexedconverter.h"
 
 #endif
