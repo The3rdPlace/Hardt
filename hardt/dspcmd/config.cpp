@@ -49,6 +49,13 @@ bool parseArguments(int argc, char** argv)
 
         Config.IsGoertzl = argBoolCmp(argv[argNo], "-gz", Config.IsGoertzl);
 
+        Config.IsReal2Iq = argBoolCmp(argv[argNo], "-riq", Config.IsReal2Iq);
+
+        Config.IsFft = argBoolCmp(argv[argNo], "-fft", Config.IsFft);
+        Config.IsIfft = argBoolCmp(argv[argNo], "-ifft", Config.IsIfft);
+
+        Config.IsDemux = argBoolCmp(argv[argNo], "-dmx", Config.IsDemux);
+
         if( argNo < argc - 1)
         {
             Config.InputFile = argCharCmp(argv[argNo], "-if", argv[argNo + 1], Config.InputFile);
@@ -264,6 +271,16 @@ bool parseArguments(int argc, char** argv)
             std::cout << "-mat num                   Create moving average filter and run file through the filter" << std::endl;
             std::cout << std::endl;
 
+            std::cout << "-riq                       Convert realvalued samples to IQ samples" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "-fft                       Convert input signal to FFT" << std::endl;
+            std::cout << "-ifft                      Convert input FFT to IFFT (signal)" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "-dmx                       Demultiplex samples into two separate files" << std::endl;
+            std::cout << std::endl;
+
             // Force exit
             return true;
         }
@@ -297,17 +314,18 @@ bool VerifyConfig()
         }
     }
 
-    // If we have input and/or output files but no file format, check if we can
-    // guess the format
+    // If we have input and/or output files but no file format, check if we can guess the format
     if( Config.InputFile != NULL && Config.FileFormat == NULL && strlen(Config.InputFile) > 4 )
     {
         if( strcmp( &Config.InputFile[strlen(Config.InputFile) - 4], ".pcm") == 0 )
         {
             Config.FileFormat = (char*) &PCM_FORMAT_STRING;
+            Config.InFileFormat = (char*) &PCM_FORMAT_STRING;
         }
         else if( strcmp( &Config.InputFile[strlen(Config.InputFile) - 4], ".wav") == 0 )
         {
             Config.FileFormat = (char*) &WAV_FORMAT_STRING;
+            Config.InFileFormat = (char*) &WAV_FORMAT_STRING;
         }
     }
     else if( Config.OutputFile != NULL && Config.FileFormat == NULL && strlen(Config.OutputFile) > 4 )
@@ -315,16 +333,53 @@ bool VerifyConfig()
         if( strcmp( &Config.OutputFile[strlen(Config.OutputFile) - 4], ".pcm") == 0 )
         {
             Config.FileFormat = (char*) &PCM_FORMAT_STRING;
+            Config.OutFileFormat = (char*) &PCM_FORMAT_STRING;
         }
         else if( strcmp( &Config.OutputFile[strlen(Config.OutputFile) - 4], ".wav") == 0 )
         {
             Config.FileFormat = (char*) &WAV_FORMAT_STRING;
+            Config.OutFileFormat = (char*) &WAV_FORMAT_STRING;
         }
     }
     if( (Config.InputFile != NULL || Config.OutputFile != NULL) && Config.FileFormat == NULL )
     {
         if( Config.IsFilePlayer || Config.IsFileRecorder || Config.IsClickRemoval || Config.IsFileConverter ) {
             std::cout << "No file format specified, and can not be guessed from the file extension" << std::endl;
+            return true;
+        }
+    }
+
+    // Also attempt to guess the InFileFormat and OutFileFormat specifiers for operations that takes input and output
+    if( Config.InputFile != NULL && Config.OutputFile != NULL && strlen(Config.InputFile) > 4 && strlen(Config.OutputFile) > 4 )
+    {
+        if( strcmp( &Config.InputFile[strlen(Config.InputFile) - 4], ".pcm") == 0 )
+        {
+            Config.InFileFormat = (char*) &PCM_FORMAT_STRING;
+        }
+        else if( strcmp( &Config.InputFile[strlen(Config.InputFile) - 4], ".wav") == 0 )
+        {
+            Config.InFileFormat = (char*) &WAV_FORMAT_STRING;
+        }
+        if( strcmp( &Config.OutputFile[strlen(Config.OutputFile) - 4], ".pcm") == 0 )
+        {
+            Config.OutFileFormat = (char*) &PCM_FORMAT_STRING;
+        }
+        else if( strcmp( &Config.OutputFile[strlen(Config.OutputFile) - 4], ".wav") == 0 )
+        {
+            Config.OutFileFormat = (char*) &WAV_FORMAT_STRING;
+        }
+    }
+    if( Config.InputFile != NULL && Config.InFileFormat == NULL )
+    {
+        if( Config.IsReal2Iq || Config.IsFft || Config.IsDemux ) {
+            std::cout << "File formats for the in- and/or output file can not be guessed from the file extension" << std::endl;
+            return true;
+        }
+    }
+    if( Config.OutputFile != NULL && Config.OutFileFormat == NULL )
+    {
+        if( Config.IsIfft ) {
+            std::cout << "File formats for the in- and/or output file can not be guessed from the file extension" << std::endl;
             return true;
         }
     }

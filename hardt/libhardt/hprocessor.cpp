@@ -45,7 +45,7 @@ int HProcessor<T>::Read(T* dest, int blocksize)
     }
     catch(std::exception e)
     {
-        HError("Exception in Write(): %s", e.what());
+        HError("Exception in Read(): %s", e.what());
         return 0;
     }
 }
@@ -59,7 +59,7 @@ int HProcessor<T>::Write(T* src, int blocksize)
     }
     catch(std::exception e)
     {
-        HError("Exception in Read(): %s", e.what());
+        HError("Exception in Write(): %s", e.what());
         return 0;
     }
 }
@@ -102,6 +102,7 @@ void HProcessor<T>::Run(long unsigned int blocks)
                 HLog("Zero read from the reader, stopping");
                 break;
             }
+
             this->Metrics.Reads++;
             this->Metrics.BlocksIn++;
             this->Metrics.BytesIn += len * sizeof(T);

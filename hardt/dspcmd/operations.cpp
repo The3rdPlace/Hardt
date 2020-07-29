@@ -1573,6 +1573,231 @@ int RunMovingAverageFilter()
 }
 
 template <typename T>
+int RunReal2Iq()
+{
+    // Create reader
+    HReader<T>* rd;
+    if( strcmp(Config.InFileFormat, "wav") == 0 )
+    {
+        rd = new HWavReader<T>(Config.InputFile);
+    }
+    else if( strcmp(Config.InFileFormat, "pcm") == 0 )
+    {
+        rd = new HFileReader<T>(Config.InputFile);
+    }
+    else
+    {
+        std::cout << "Unknown input file format " << Config.InFileFormat << std::endl;
+        return -1;
+    }
+
+    // Create writer
+    HWriter<T>* wr = new HFileWriter<T>(Config.OutputFile);
+
+    // Create  converter
+    HReal2IqConverter<T>* converter = new HReal2IqConverter<T>(rd, Config.Rate, Config.Blocksize / 2);
+
+    // Create processor
+    HStreamProcessor<T> proc(wr, converter->Reader(), Config.Blocksize, &terminated);
+    proc.Run();
+
+    // Delete the reader and writer
+    if( strcmp(Config.InFileFormat, "wav") == 0 )
+    {
+        delete (HWavReader<T>*) rd;
+    }
+    else if( strcmp(Config.InFileFormat, "pcm") == 0 )
+    {
+        delete (HFileReader<T>*) rd;
+    }
+    delete (HFileWriter<T>*) wr;
+
+    // Delete the filter
+    delete converter;
+
+    return 0;
+}
+
+template <typename T>
+int RunFft()
+{
+    // Create reader
+    HReader<T>* rd;
+    if( strcmp(Config.InFileFormat, "wav") == 0 )
+    {
+        rd = new HWavReader<T>(Config.InputFile);
+    }
+    else if( strcmp(Config.InFileFormat, "pcm") == 0 )
+    {
+        rd = new HFileReader<T>(Config.InputFile);
+    }
+    else
+    {
+        std::cout << "Unknown input file format " << Config.InFileFormat << std::endl;
+        return -1;
+    }
+
+    // Create writer
+    HWriter<std::complex<double>>* wr;
+    wr = new HFileWriter<std::complex<double>>(Config.OutputFile);
+
+    // Start reader and writer
+    rd->Start();
+    wr->Start();
+
+    // Create FFT
+    HHahnWindow<T> window;
+    HFft<T> fft(Config.Blocksize, &window);
+
+    // Convert signal
+    T input[Config.Blocksize];
+    std::complex<double> output[Config.Blocksize];
+    while( rd->Read(input, Config.Blocksize) == Config.Blocksize ) {
+        fft.FFT(input, output);
+        wr->Write(output, Config.Blocksize);
+    }
+
+    // Stop reader and writer
+    rd->Stop();
+    wr->Stop();
+
+    // Delete the reader and writer
+    if( strcmp(Config.InFileFormat, "wav") == 0 )
+    {
+        delete (HWavReader<T>*) rd;
+    }
+    else if( strcmp(Config.InFileFormat, "pcm") == 0 )
+    {
+        delete (HFileReader<T>*) rd;
+    }
+    delete (HFileWriter<T>*) wr;
+
+    return 0;
+}
+
+template <typename T>
+int RunIfft()
+{
+    // Create reader
+    HReader<std::complex<double>>* rd;
+    rd = new HFileReader<std::complex<double>>(Config.InputFile);
+
+    // Create writer
+    HWriter<T>* wr;
+    if( strcmp(Config.OutFileFormat, "wav") == 0 )
+    {
+        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+    }
+    else if( strcmp(Config.OutFileFormat, "pcm") == 0 )
+    {
+        wr = new HFileWriter<T>(Config.OutputFile);
+    }
+    else
+    {
+        std::cout << "Unknown output file format " << Config.OutFileFormat << std::endl;
+        return -1;
+    }
+
+    // Start reader and writer
+    rd->Start();
+    wr->Start();
+
+    // Create FFT
+    HHahnWindow<T> window;
+    HFft<T> fft(Config.Blocksize, &window);
+
+    // Convert fft
+    std::complex<double> input[Config.Blocksize];
+    T output[Config.Blocksize];
+    while( rd->Read(input, Config.Blocksize) == Config.Blocksize ) {
+        fft.IFFT(input, output);
+        wr->Write(output, Config.Blocksize);
+    }
+
+    // Stop reader and writer
+    rd->Stop();
+    wr->Stop();
+
+    // Delete the reader and writer
+    if( strcmp(Config.OutFileFormat, "wav") == 0 )
+    {
+        delete (HWavWriter<T>*) wr;
+    }
+    else if( strcmp(Config.OutFileFormat, "pcm") == 0 )
+    {
+        delete (HFileWriter<T>*) wr;
+    }
+    delete (HFileReader<T>*) rd;
+
+    return 0;
+}
+
+template <typename T>
+int RunDemux()
+{
+    // Create reader
+    HReader<T>* rd;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        rd = new HWavReader<T>(Config.InputFile);
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        rd = new HFileReader<T>(Config.InputFile);
+    }
+    else
+    {
+        std::cout << "Unknown input file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+    // Create writers
+    HWriter<T>* wr1;
+    HWriter<T>* wr2;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        wr1 = new HWavWriter<T>(("1_" + std::string(Config.OutputFile)).c_str(), Config.Format, 1, Config.Rate);
+        wr2 = new HWavWriter<T>(("2_" + std::string(Config.OutputFile)).c_str(), Config.Format, 1, Config.Rate);
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        wr1 = new HFileWriter<T>("1_" + std::string(Config.OutputFile));
+        wr2 = new HFileWriter<T>("2_" + std::string(Config.OutputFile));
+    }
+    else
+    {
+        std::cout << "Unknown output file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+    // Create  demultiplexer
+    std::vector<HWriter<T>*> writers;
+    writers.push_back(wr1);
+    writers.push_back(wr2);
+    HDeMux<T> dmx(writers, Config.Blocksize);
+
+    // Create processor
+    HStreamProcessor<T> proc(dmx.Writer(), rd->Reader(), Config.Blocksize, &terminated);
+    proc.Run();
+
+    // Delete the reader and writer
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        delete (HWavReader<T>*) rd;
+        delete (HWavWriter<T>*) wr1;
+        delete (HWavWriter<T>*) wr2;
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        delete (HFileReader<T>*) rd;
+        delete (HFileWriter<T>*) wr1;
+        delete (HFileWriter<T>*) wr2;
+    }
+
+    return 0;
+}
+
+template <typename T>
 int RunOperation()
 {
     // Wait for start time ?
@@ -2151,6 +2376,72 @@ int RunOperation()
         }
 
         return RunMovingAverageFilter<T>();
+    }
+
+    if( Config.IsReal2Iq )
+    {
+        if( Config.InputFile == NULL )
+        {
+            std::cout << "No input file (-if)" << std::endl;
+            return -1;
+        }
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file (-of)" << std::endl;
+            return -1;
+        }
+
+        return RunReal2Iq<T>();
+    }
+
+    if( Config.IsFft )
+    {
+        if( Config.InputFile == NULL )
+        {
+            std::cout << "No input file (-if)" << std::endl;
+            return -1;
+        }
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file (-of)" << std::endl;
+            return -1;
+        }
+
+        return RunFft<T>();
+    }
+
+    if( Config.IsIfft )
+    {
+        if( Config.InputFile == NULL )
+        {
+            std::cout << "No input file (-if)" << std::endl;
+            return -1;
+        }
+
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file (-of)" << std::endl;
+            return -1;
+        }
+
+        return RunIfft<T>();
+    }
+
+    if( Config.IsDemux )
+    {
+        if( Config.InputFile == NULL )
+        {
+            std::cout << "No input file (-if)" << std::endl;
+            return -1;
+        }
+
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file (-of)" << std::endl;
+            return -1;
+        }
+
+        return RunDemux<T>();
     }
 
     // No known operation could be determined from the input arguments

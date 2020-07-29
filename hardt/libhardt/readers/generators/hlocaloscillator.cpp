@@ -4,9 +4,8 @@
 #include "hlocaloscillator.h"
 
 template <class T>
-HLocalOscillator<T>::HLocalOscillator(H_SAMPLE_RATE rate, int frequency, int amplitude):
-    HVfo<T>::HVfo(rate, frequency, amplitude, M_PI / 2)
-{}
+HLocalOscillator<T>::HLocalOscillator(H_SAMPLE_RATE rate, int frequency, int amplitude, float phase):
+    HVfo<T>::HVfo(rate, frequency, amplitude, phase) {}
 
 /********************************************************************
 Explicit instantiation
@@ -15,22 +14,22 @@ Explicit instantiation
 
 // HLocalOscilator
 template
-HLocalOscillator<int8_t>::HLocalOscillator(H_SAMPLE_RATE rate, int frequency, int amplitude);
+HLocalOscillator<int8_t>::HLocalOscillator(H_SAMPLE_RATE rate, int frequency, int amplitude, float phase);
 
 template
-HLocalOscillator<uint8_t>::HLocalOscillator(H_SAMPLE_RATE rate, int frequency, int amplitude);
+HLocalOscillator<uint8_t>::HLocalOscillator(H_SAMPLE_RATE rate, int frequency, int amplitude, float phase);
 
 template
-HLocalOscillator<int16_t>::HLocalOscillator(H_SAMPLE_RATE rate, int frequency, int amplitude);
+HLocalOscillator<int16_t>::HLocalOscillator(H_SAMPLE_RATE rate, int frequency, int amplitude, float phase);
 
 template
-HLocalOscillator<int32_t>::HLocalOscillator(H_SAMPLE_RATE rate, int frequency, int amplitude);
+HLocalOscillator<int32_t>::HLocalOscillator(H_SAMPLE_RATE rate, int frequency, int amplitude, float phase);
 
 template
-HLocalOscillator<float>::HLocalOscillator(H_SAMPLE_RATE rate, int frequency, int amplitude);
+HLocalOscillator<float>::HLocalOscillator(H_SAMPLE_RATE rate, int frequency, int amplitude, float phase);
 
 template
-HLocalOscillator<double>::HLocalOscillator(H_SAMPLE_RATE rate, int frequency, int amplitude);
+HLocalOscillator<double>::HLocalOscillator(H_SAMPLE_RATE rate, int frequency, int amplitude, float phase);
 
 //! @endcond
 #endif

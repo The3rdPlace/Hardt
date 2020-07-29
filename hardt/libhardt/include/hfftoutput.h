@@ -34,6 +34,7 @@ class HFftOutput : public HOutput<T, HFftResults>
         int _average;
 
         double* _spectrum;
+        std::complex<double>* _fftResult;
         std::complex<double>* _result;
 
         int _count;
@@ -57,6 +58,7 @@ class HFftOutput : public HOutput<T, HFftResults>
         ~HFftOutput()
         {
             delete _spectrum;
+            delete _fftResult;
             delete _buffer;
             delete _fft;
         }

@@ -15,22 +15,62 @@ class HFileReader : public HReader<T>
     public:
 
         /** Construct a new HFileReader */
-        HFileReader(const char* filename);
+        HFileReader(const char* filename):
+            _filename(std::string(filename))
+        {}
 
         /** Construct a new HFileReader */
-        HFileReader(const std::string filename);
+        HFileReader(const std::string filename):
+                _filename(filename)
+        {}
 
         /** Read a block of samples */
-        virtual int Read(T* dest, size_t blocksize);
+        virtual int Read(T* dest, size_t blocksize)
+        {
+            // Read next chunk
+            _stream.read((char*) dest, blocksize * sizeof(T));
+
+            // Check for eof
+            if( _stream.eof() )
+            {
+                HLog("At eof. Returning zero read");
+                return 0;
+            }
+
+            // Update metrics
+            this->Metrics.Reads++;
+            this->Metrics.BlocksIn += blocksize;
+            this->Metrics.BytesIn += blocksize * sizeof(T);
+            return blocksize;
+        }
 
         /** Initialize before first read */
-        bool Start();
+        bool Start()
+        {
+            HLog("Trying to open stream for %s", _filename.c_str());
+            _stream.open(_filename.c_str(), std::ios::binary);
+            if( !_stream.is_open())
+            {
+                HError("Failed to open file %s", _filename.c_str());
+                return false;
+            }
+            HLog("Stream is open");
+            return true;
+        }
 
         /** Cleanup after last read */
-        bool Stop();
+        bool Stop()
+        {
+            HLog("Closing stream");
+            _stream.close();
+            return true;
+        }
 
         /** Seek to this position in the file */
-        void Seek(int bytes);
+        void Seek(int bytes)
+        {
+            _stream.seekg(bytes, std::ios::beg);
+        }
 
         /** Execute and/or pass on a command */
         bool Command(HCommand* command) {
