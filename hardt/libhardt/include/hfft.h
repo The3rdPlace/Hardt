@@ -101,10 +101,7 @@ class HFft {
         void FFT(T* src, double* spectrum) {
 
             // Allocate a buffer for the complex spectrum results
-            // Do not forget to zero the result buffer as new results are being added to the 
-            // current values, not overriding them!
             std::complex<double>* result = new std::complex<double>[_size];
-            memset((void*) result, 0, _size * sizeof(std::complex<double>));
 
             // Run fft on the input
             FFT(src, result);
@@ -130,19 +127,17 @@ class HFft {
 
         // Prepare the input array to the fft function, filled with the complex conjugate of the input values
         std::valarray<std::complex<double>> x(_size);
-        for( int i = 0; i < _size; i++ )
-        {
-            x[i] = conj(src[i]);
-        }
+        x.apply(std::conj);
 
         // Calculate the FFT
         FFT(x);
 
         // Convert to simple array with the realvalued signal samples
         double factor = 1.0 / _size;
+        x.apply(std::conj);
         for( int i = 0; i < _size; i++ )
         {
-            result[i] = conj(x[i]).real() * factor;
+            result[i] = x[i].real() * factor;
         }
     }
 
