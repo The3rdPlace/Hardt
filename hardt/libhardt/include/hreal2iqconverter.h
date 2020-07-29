@@ -23,22 +23,17 @@ class HReal2IqConverter: public HConverter<T, T> {
 
         HHahnWindow<T> _window;
         HFft<T>* _fft;
-        std::complex<double>* _fftOutput;
-        T* _ifftOutput;
+        T* _output;
 
         int Convert(T* src, T* dest, size_t blocksize) {
 
             // Apply Hilbert transformation by taking the FFT, zero'ing the negative
             // frequencies and then taking the ifft of the result
-            _fft->FFT(src, _fftOutput);
-            for(int i = blocksize / 2; i < blocksize; i++ ) {
-                _fftOutput = 0;
-            }
-            _fft->IFFT(_fftOutput, _ifftOutput);
+            _fft->HILBERT(src, _output);
 
             // Interleave I and Q samples
             T* rIn = src;
-            T* iIn = _ifftOutput;
+            T* iIn = _output;
             T* out = dest;
             for( int i = 0; i < blocksize; i++ ) {
                 *out = *(rIn++);
@@ -52,8 +47,7 @@ class HReal2IqConverter: public HConverter<T, T> {
 
         void Init(size_t blocksize, H_SAMPLE_RATE rate) {
             _fft = new HFft<T>(blocksize, &_window);
-            _fftOutput = new std::complex<double>[blocksize];
-            _ifftOutput = new T[blocksize];
+            _output = new T[blocksize];
         }
 
     public:
@@ -79,8 +73,7 @@ class HReal2IqConverter: public HConverter<T, T> {
         /** Destruct this real-2-iq converter instance */
         ~HReal2IqConverter() {
             delete _fft;
-            delete _fftOutput;
-            delete _ifftOutput;
+            delete _output;
         }
 };
 
