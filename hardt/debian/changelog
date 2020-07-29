@@ -1,3 +1,14 @@
+hardt (1.0-25) RELEASED; urgency=medium
+
+  [ Henrik Witt-Hansen ]
+  * Added real-2-iq converter
+  * Added multiplexed-2-complex converter
+  * Added complex-2-multiplexed converter
+  * Added Ifft and Hilbert functions to HFft
+  * Various minor fixes and improvements
+
+ -- Mackie <henrik@hardttoolkit.org>  Wed, 29 Jul 2020 23:30:00 +0200
+
 hardt (1.0-24) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
