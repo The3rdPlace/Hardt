@@ -42,8 +42,9 @@ void HFftOutput<T>::Init()
     // current values, not overriding them!
     _spectrum = new double[_size];
     memset((void*) _spectrum, 0, _size * sizeof(double));
-    _result = new std::complex<double>[_size];
-    memset((void*) _result, 0, _size * sizeof(std::complex<double>));
+    _fftResult = new std::complex<double>[_size];
+    _result = new std::complex<double>[_size / 2];
+    memset((void*) _result, 0, (_size / 2) * sizeof(std::complex<double>));
 
     // Allocate a buffer for intermediate results
     _buffer = new T[_size];
@@ -59,7 +60,10 @@ void HFftOutput<T>::Init()
 template <class T>
 int HFftOutput<T>::Output(T* src, size_t size)
 {
-    _fft->FFT(src, _result);
+    _fft->FFT(src, _fftResult);
+    for( int i = 0; i < size / 2; i++ ) {
+        _result[i] += _fftResult[i];
+    }
 
     // Did we reach averaging target ?
     if( ++_count >= _average )
@@ -86,7 +90,7 @@ int HFftOutput<T>::Output(T* src, size_t size)
         // Reset results
         _count = 0;
         memset((void*) _spectrum, 0, size * sizeof(double));
-        memset((void*) _result, 0, size * sizeof(std::complex<double>));
+        memset((void*) _result, 0, (size / 2) * sizeof(std::complex<double>));
     }
 
     // We took the entire window

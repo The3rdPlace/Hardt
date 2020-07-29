@@ -3,6 +3,7 @@
 
 #include <complex>
 #include <valarray>
+#include <complex.h>
 
 #include "hwindow.h"
 
@@ -67,10 +68,7 @@ class HFft {
             
             Parameters:
                 src = Input buffer, must contain 'size' number of samples
-                size = The fft size
-                result = The output result array, must have enough room for 'size' values 
-                         NOTICE: results are summed in each bin, so you must zero 'result' on
-                         first call to avoid getting random values as the inital content
+                result = The output result array, must have enough room for 'size' values
         */
         void FFT(T* src, std::complex<double>* result) {
 
@@ -81,25 +79,23 @@ class HFft {
             std::valarray<std::complex<double>> x(_size);
             for( int i = 0; i < _size ; i++ )
             {
-                std::complex<double> r(_buffer[i], 0);
-                x[i] = r;
+                x[i] = std::complex<double>(_buffer[i], 0);
             }
 
             // Calculate the FFT
             FFT(x);
 
-            // Convert to simple array with only the positive bins
-            for( int i = 0; i < _size / 2; i++ )
+            // Convert to simple array with bins for positive AND negative frequencies
+            for( int i = 0; i < _size; i++ )
             {
-                result[i] += x[i];
+                result[i] = x[i];
             }
         }
 
         /** Calculate the fft for samples and place the real values spectrum into a buffer
             
             Parameters:
-                src = Input buffer, must contain 'size' number of samples
-                size = The fft size
+                src = Input buffer, must contain 'size/2' number of samples
                 spectrum = The output spectrum array, must have enough room for 'size'/2 values
         */
         void FFT(T* src, double* spectrum) {
@@ -123,6 +119,33 @@ class HFft {
             // Cleanup
             delete[] result;
         }
+
+    /** Calculate the ifft for complex values and place the samples into a buffer
+
+        Parameters:
+            src = Input buffer, must contain 'size/2' number of complex values representing positive frequencies
+            result = The output samples array, must have enough room for 'size' samples
+    */
+    void IFFT(std::complex<double>* src, T* result) {
+
+        // Prepare the input array to the fft function, filled with the complex conjugate of the input values
+        std::valarray<std::complex<double>> x(_size);
+        for( int i = 0; i < _size; i++ )
+        {
+            x[i] = conj(src[i]);
+        }
+
+        // Calculate the FFT
+        FFT(x);
+
+        // Convert to simple array with the realvalued signal samples
+        double factor = 1.0 / _size;
+        for( int i = 0; i < _size; i++ )
+        {
+            result[i] = conj(x[i]).real() * factor;
+        }
+    }
+
 };
 
 #endif
