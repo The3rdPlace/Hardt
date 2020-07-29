@@ -52,6 +52,9 @@ bool parseArguments(int argc, char** argv)
         Config.IsReal2Iq = argBoolCmp(argv[argNo], "-riq", Config.IsReal2Iq);
         Config.IsIq2Real = argBoolCmp(argv[argNo], "-iqr", Config.IsIq2Real);
 
+        Config.IsFft = argBoolCmp(argv[argNo], "-fft", Config.IsFft);
+        Config.IsIfft = argBoolCmp(argv[argNo], "-ifft", Config.IsIfft);
+
         if( argNo < argc - 1)
         {
             Config.InputFile = argCharCmp(argv[argNo], "-if", argv[argNo + 1], Config.InputFile);
@@ -265,9 +268,14 @@ bool parseArguments(int argc, char** argv)
 
             std::cout << "-ma num                    Create moving average filter and run sweep" << std::endl;
             std::cout << "-mat num                   Create moving average filter and run file through the filter" << std::endl;
+            std::cout << std::endl;
 
             std::cout << "-riq                       Convert realvalued samples to IQ samples" << std::endl;
             std::cout << "-iqr                       Convert IQ samples to realvalued samples" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "-fft                       Convert input signal to FFT" << std::endl;
+            std::cout << "-ifft                      Convert input FFT to IFFT (signal)" << std::endl;
             std::cout << std::endl;
 
             // Force exit
@@ -358,9 +366,16 @@ bool VerifyConfig()
             Config.OutFileFormat = (char*) &WAV_FORMAT_STRING;
         }
     }
-    if( (Config.InputFile != NULL && Config.OutputFile != NULL) && (Config.InFileFormat == NULL || Config.OutFileFormat == NULL) )
+    if( Config.InputFile != NULL && Config.InFileFormat == NULL )
     {
-        if( Config.IsReal2Iq || Config.IsIq2Real ) {
+        if( Config.IsReal2Iq || Config.IsFft ) {
+            std::cout << "File formats for the in- and/or output file can not be guessed from the file extension" << std::endl;
+            return true;
+        }
+    }
+    if( Config.OutputFile != NULL && Config.OutFileFormat == NULL )
+    {
+        if( Config.IsIq2Real || Config.IsIfft ) {
             std::cout << "File formats for the in- and/or output file can not be guessed from the file extension" << std::endl;
             return true;
         }
