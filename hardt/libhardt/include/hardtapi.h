@@ -79,6 +79,7 @@
 #include "hmemoryreader.h"
 #include "hmovingaveragefilter.h"
 #include "hsubtracter.h"
+#include "hhilbertfilter.h"
 #include "hreal2iqconverter.h"
 #include "hiq2realconverter.h"
 

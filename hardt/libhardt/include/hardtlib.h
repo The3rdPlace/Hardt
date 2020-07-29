@@ -90,6 +90,7 @@ Include api function declarations
 #include "hmemoryreader.h"
 #include "hmovingaveragefilter.h"
 #include "hsubtracter.cpp"
+#include "hhilbertfilter.h"
 #include "hreal2iqconverter.cpp"
 #include "hiq2realconverter.cpp"
 
