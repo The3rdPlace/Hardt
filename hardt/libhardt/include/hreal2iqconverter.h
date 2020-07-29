@@ -5,70 +5,82 @@
 #include "hwriter.h"
 #include "hwriterconsumer.h"
 #include "hconverter.h"
+#include "hhahnwindow.h"
 
-/** Convert from realvalues samples to IQ samples */
+/** Convert from realvalues samples to IQ samples.
+    IQ samples is stored intermixed, with the I (real) samples first, then the Q (imaginary) sample.
+
+    Be aware that this doubles to amount of data returned from a read, or written in a write. You
+    need to handle the different blocksizes when you declare buffers and/or other components.
+
+    Typically, you would input the IQ data into a multiplexer, and then build two branches that
+    uses the I and Q samples. These branches would then each have the same blocksize as the size
+    you defined for the real-2-iq converter. */
 template <class T>
-class HReal2IqConverter: public HConverter<T, std::complex<double>> {
+class HReal2IqConverter: public HConverter<T, T> {
 
     private:
 
-        /*HLocalOscillator<double>* _sine;
-        HLocalOscillator<double>* _cos;
-        double* _sineData;
-        double* _cosData;*/
+        HHahnWindow<T> _window;
+        HFft<T>* _fft;
+        std::complex<double>* _fftOutput;
+        T* _ifftOutput;
 
-        int Convert(T* src, std::complex<double>* dest, size_t blocksize) {
+        int Convert(T* src, T* dest, size_t blocksize) {
 
-            /*_sine->Read(_sineData, blocksize);
-            _cos->Read(_cosData, blocksize);*/
-
-            HHahnWindow<T> window;
-            HFft<T> fft(blocksize, &window);
-
-            fft.FFT(src, dest);
-
+            // Apply Hilbert transformation by taking the FFT, zero'ing the negative
+            // frequencies and then taking the ifft of the result
+            _fft->FFT(src, _fftOutput);
             for(int i = blocksize / 2; i < blocksize; i++ ) {
-                //dest[i] = std::complex<double>(_sineData[i] * src[i], -1 * _cosData[i] * src[i]);
-                dest[i] = 0;
+                _fftOutput = 0;
+            }
+            _fft->IFFT(_fftOutput, _ifftOutput);
+
+            // Interleave I and Q samples
+            T* rIn = src;
+            T* iIn = _ifftOutput;
+            T* out = dest;
+            for( int i = 0; i < blocksize; i++ ) {
+                *out = *(rIn++);
+                out++;
+                *out = *(iIn++);
+                out++;
             }
 
-            return blocksize;
+            return blocksize * 2;
         }
 
         void Init(size_t blocksize, H_SAMPLE_RATE rate) {
-            /*_sine = new HLocalOscillator<double>(rate, rate, 1, 0 );
-            _cos = new HLocalOscillator<double>(rate, rate, 1, -1 * M_PI / 2.0f);*/
-
-            /*_sineData = new double[blocksize];
-            _cosData = new double[blocksize];*/
+            _fft = new HFft<T>(blocksize, &_window);
+            _fftOutput = new std::complex<double>[blocksize];
+            _ifftOutput = new T[blocksize];
         }
 
     public:
 
         /** Create a new real-2-iq converter with a reader */
         HReal2IqConverter(HReader<T>* reader, H_SAMPLE_RATE rate, size_t blocksize):
-            HConverter<T, std::complex<double>>(reader, blocksize) {
+            HConverter<T, T>(reader, blocksize, blocksize * 2) {
             Init(blocksize, rate);
         }
 
         /** Create a new real-2-iq converter with a writer */
-        HReal2IqConverter(HWriter<std::complex<double>>* writer, H_SAMPLE_RATE rate, size_t blocksize):
-            HConverter<T, std::complex<double>>(writer, blocksize) {
+        HReal2IqConverter(HWriter<T>* writer, H_SAMPLE_RATE rate, size_t blocksize):
+            HConverter<T, T>(writer, blocksize, blocksize * 2) {
             Init(blocksize, rate);
         }
 
         /** Create a new real-2-iq converter with a writerconsumer */
         HReal2IqConverter(HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, size_t blocksize):
-            HConverter<T, std::complex<double>>(consumer, blocksize) {
+            HConverter<T, T>(consumer, blocksize, blocksize * 2) {
             Init(blocksize, rate);
         }
 
         /** Destruct this real-2-iq converter instance */
         ~HReal2IqConverter() {
-            /*delete _sine;
-            delete _cos;
-            delete[] _sineData;
-            delete[] _cosData;*/
+            delete _fft;
+            delete _fftOutput;
+            delete _ifftOutput;
         }
 };
 
