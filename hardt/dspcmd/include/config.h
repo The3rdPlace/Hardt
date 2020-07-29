@@ -38,7 +38,6 @@ struct DspCmdConfig
     bool IsMovingAverage = false;
     bool IsMovingAverageSpectrum = false;
     bool IsReal2Iq = false;
-    bool IsIq2Real = false;
     bool IsFft = false;
     bool IsIfft = false;
 

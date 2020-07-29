@@ -50,7 +50,6 @@ bool parseArguments(int argc, char** argv)
         Config.IsGoertzl = argBoolCmp(argv[argNo], "-gz", Config.IsGoertzl);
 
         Config.IsReal2Iq = argBoolCmp(argv[argNo], "-riq", Config.IsReal2Iq);
-        Config.IsIq2Real = argBoolCmp(argv[argNo], "-iqr", Config.IsIq2Real);
 
         Config.IsFft = argBoolCmp(argv[argNo], "-fft", Config.IsFft);
         Config.IsIfft = argBoolCmp(argv[argNo], "-ifft", Config.IsIfft);
@@ -271,7 +270,6 @@ bool parseArguments(int argc, char** argv)
             std::cout << std::endl;
 
             std::cout << "-riq                       Convert realvalued samples to IQ samples" << std::endl;
-            std::cout << "-iqr                       Convert IQ samples to realvalued samples" << std::endl;
             std::cout << std::endl;
 
             std::cout << "-fft                       Convert input signal to FFT" << std::endl;
@@ -375,7 +373,7 @@ bool VerifyConfig()
     }
     if( Config.OutputFile != NULL && Config.OutFileFormat == NULL )
     {
-        if( Config.IsIq2Real || Config.IsIfft ) {
+        if( Config.IsIfft ) {
             std::cout << "File formats for the in- and/or output file can not be guessed from the file extension" << std::endl;
             return true;
         }

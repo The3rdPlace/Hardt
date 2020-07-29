@@ -1592,14 +1592,13 @@ int RunReal2Iq()
     }
 
     // Create writer
-    HWriter<std::complex<double>>* wr;
-    wr = new HFileWriter<std::complex<double>>(Config.OutputFile);
+    HWriter<T>* wr = new HFileWriter<T>(Config.OutputFile);
 
     // Create  converter
     HReal2IqConverter<T>* converter = new HReal2IqConverter<T>(rd, Config.Rate, Config.Blocksize);
 
     // Create processor
-    HStreamProcessor<std::complex<double>> proc(wr, converter->Reader(), Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc(wr, converter->Reader(), Config.Blocksize, &terminated);
     proc.Run();
 
     // Delete the reader and writer
@@ -1612,53 +1611,6 @@ int RunReal2Iq()
         delete (HFileReader<T>*) rd;
     }
     delete (HFileWriter<T>*) wr;
-
-    // Delete the filter
-    delete converter;
-
-    return 0;
-}
-
-template <typename T>
-int RunIq2Real()
-{
-    // Create reader
-    HReader<std::complex<double>>* rd;
-    rd = new HFileReader<std::complex<double>>(Config.InputFile);
-
-    // Create writer
-    HWriter<T>* wr;
-    if( strcmp(Config.OutFileFormat, "wav") == 0 )
-    {
-        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
-    }
-    else if( strcmp(Config.OutFileFormat, "pcm") == 0 )
-    {
-        wr = new HFileWriter<T>(Config.OutputFile);
-    }
-    else
-    {
-        std::cout << "Unknown output file format " << Config.OutFileFormat << std::endl;
-        return -1;
-    }
-
-    // Create  converter
-    HIq2RealConverter<T>* converter = new HIq2RealConverter<T>(rd, Config.Rate, Config.Blocksize);
-
-    // Create processor
-    HStreamProcessor<T> proc(wr, converter->Reader(), Config.Blocksize, &terminated);
-    proc.Run();
-
-    // Delete the reader and writer
-    if( strcmp(Config.OutFileFormat, "wav") == 0 )
-    {
-        delete (HWavWriter<T>*) wr;
-    }
-    else if( strcmp(Config.OutFileFormat, "pcm") == 0 )
-    {
-        delete (HFileWriter<T>*) wr;
-    }
-    delete (HFileReader<T>*) rd;
 
     // Delete the filter
     delete converter;
@@ -2375,23 +2327,6 @@ int RunOperation()
         }
 
         return RunReal2Iq<T>();
-    }
-
-    if( Config.IsIq2Real )
-    {
-        if( Config.InputFile == NULL )
-        {
-            std::cout << "No input file (-if)" << std::endl;
-            return -1;
-        }
-
-        if( Config.OutputFile == NULL )
-        {
-            std::cout << "No output file (-of)" << std::endl;
-            return -1;
-        }
-
-        return RunIq2Real<T>();
     }
 
     if( Config.IsFft )
