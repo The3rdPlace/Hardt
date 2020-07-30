@@ -57,6 +57,7 @@ target_sources(hardt_test
 	hmultiplexed2complexconverter_test.cpp
 	hcomplex2multiplexedconverter_test.cpp
 	htypeconverter_test.cpp
+	hcomplexconverter_test.cpp
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")

@@ -84,5 +84,6 @@
 #include "hmultiplexed2complexconverter.h"
 #include "hcomplex2multiplexedconverter.h"
 #include "htypeconverter.h"
+#include "hcomplexconverter.h"
 
 #endif
