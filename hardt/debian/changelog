@@ -1,3 +1,11 @@
+hardt (1.0-26) RELEASED; urgency=medium
+
+  [ Henrik Witt-Hansen ]
+  * Added type-converter (real values)
+  * Added complex-converter (complex values to real values and vice versa)
+
+ -- Mackie <henrik@hardttoolkit.org>  Thu, 30 Jul 2020 18:30:00 +0200
+
 hardt (1.0-25) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
