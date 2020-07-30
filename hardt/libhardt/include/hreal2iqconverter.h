@@ -5,7 +5,6 @@
 #include "hwriter.h"
 #include "hwriterconsumer.h"
 #include "hconverter.h"
-#include "hhahnwindow.h"
 
 /** Convert from realvalued samples to IQ samples.
     IQ samples is stored intermixed, with the I (real) samples first, then the Q (imaginary) sample.

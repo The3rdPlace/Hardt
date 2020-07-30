@@ -92,9 +92,10 @@ Include api function declarations
 #include "hsubtracter.cpp"
 #include "hhilbertfilter.h"
 #include "hreal2iqconverter.cpp"
-#include "hiq2realconverter.cpp"
 #include "hmultiplexed2complexconverter.h"
 #include "hcomplex2multiplexedconverter.h"
+#include "htypeconverter.cpp"
+#include "hcomplexconverter.cpp"
 
 /********************************************************************
 Debug and diagnostics
