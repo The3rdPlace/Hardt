@@ -1651,11 +1651,12 @@ int RunFft()
 
     // Convert signal
     T input[Config.Blocksize];
-    std::complex<double> output[Config.Blocksize];
+    std::complex<double>* output = new std::complex<double>[Config.Blocksize];
     while( rd->Read(input, Config.Blocksize) == Config.Blocksize ) {
         fft.FFT(input, output);
         wr->Write(output, Config.Blocksize);
     }
+    delete[] output;
 
     // Stop reader and writer
     rd->Stop();
@@ -1707,12 +1708,13 @@ int RunIfft()
     HFft<T> fft(Config.Blocksize, &window);
 
     // Convert fft
-    std::complex<double> input[Config.Blocksize];
+    std::complex<double>* input = new std::complex<double>[Config.Blocksize];
     T output[Config.Blocksize];
     while( rd->Read(input, Config.Blocksize) == Config.Blocksize ) {
         fft.IFFT(input, output);
         wr->Write(output, Config.Blocksize);
     }
+    delete[] input;
 
     // Stop reader and writer
     rd->Stop();
