@@ -26,13 +26,30 @@ class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
 
     public:
 
-        /** Construct a new HDecimator that handle writers */
+        /** Construct a new HDecimator that handle writers.
+
+            Parameters:
+              writer = The downstream writer
+              factor = Decimation factor, 1 or larger
+              blocksize = The expected input and output blocksize
+         */
         HDecimator(HWriter<T>* writer, int factor, size_t blocksize);
 
-        /** Construct a new HDecimator that handle writer consumers */
+        /** Construct a new HDecimator that handle writer consumers.
+
+            Parameters:
+              consumer = The upstream consumer to receive this as a writer
+              factor = Decimation factor, 1 or larger
+              blocksize = The expected input and output blocksize
+         */
         HDecimator(HWriterConsumer<T>* consumer, int factor, size_t blocksize);
 
-        /** Construct a new HDecimator that handle readers */
+        /** Construct a new HDecimator that handle readers.
+
+              reader = The upstream reader
+              factor = Decimation factor, 1 or larger
+              blocksize = The expected input and output blocksize
+         */
         HDecimator(HReader<T>* reader, int factor, size_t blocksize);
 
         /** Implements HWriterConsumer::SetWriter() */
