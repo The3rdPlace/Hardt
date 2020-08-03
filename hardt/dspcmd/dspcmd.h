@@ -523,6 +523,33 @@
     Syntax: dspcmd -mat num
 
     Run a file through a moving average filter with the averaging factor M set to 'num'
+
+    \page riq
+    Syntax: dspcmd -riq
+
+    Convert realvalued samples to IQ samples
+
+    \page fft
+    Syntax: dspcmd -fft
+
+    Convert input signal to FFT
+
+    \page ifft
+    Syntax: dspcmd -ifft
+
+    Convert input FFT to IFFT (signal)
+
+
+    \page dmx
+    Syntax: dspcmd -dmx
+
+    Demultiplex samples into two separate files
+
+    \page dcm
+    Syntax: dspcmd -dcm factor
+
+    Decimate input samples by a factor
+
 */
 
 #ifndef __DSPCMD_H

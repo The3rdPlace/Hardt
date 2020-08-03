@@ -106,6 +106,9 @@ bool parseArguments(int argc, char** argv)
 
             Config.IsMovingAverage = argBoolCmp(argv[argNo], "-mat", Config.IsMovingAverage);
             Config.M = argIntCmp(argv[argNo], "-mat", argv[argNo + 1], Config.M);
+
+            Config.IsDecimator = argBoolCmp(argv[argNo], "-dcm", Config.IsDecimator);
+            Config.DecimateFactor = argIntCmp(argv[argNo], "-dcm", argv[argNo + 1], Config.DecimateFactor);
         }
 
         if( argNo < argc - 2 )
@@ -281,6 +284,9 @@ bool parseArguments(int argc, char** argv)
             std::cout << "-dmx                       Demultiplex samples into two separate files" << std::endl;
             std::cout << std::endl;
 
+            std::cout << "-dcm factor                Decimate input samples by a factor" << std::endl;
+            std::cout << std::endl;
+
             // Force exit
             return true;
         }
@@ -371,14 +377,14 @@ bool VerifyConfig()
     }
     if( Config.InputFile != NULL && Config.InFileFormat == NULL )
     {
-        if( Config.IsReal2Iq || Config.IsFft || Config.IsDemux ) {
+        if( Config.IsReal2Iq || Config.IsFft || Config.IsDemux || Config.IsDecimator ) {
             std::cout << "File formats for the in- and/or output file can not be guessed from the file extension" << std::endl;
             return true;
         }
     }
     if( Config.OutputFile != NULL && Config.OutFileFormat == NULL )
     {
-        if( Config.IsIfft ) {
+        if( Config.IsIfft | Config.IsDecimator ) {
             std::cout << "File formats for the in- and/or output file can not be guessed from the file extension" << std::endl;
             return true;
         }
