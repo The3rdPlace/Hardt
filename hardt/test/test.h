@@ -174,6 +174,8 @@ class Test
                 T* _data;
                 bool _first;
                 bool _multipleReads;
+                bool _continuedReads;
+                int _continuedPosition;
 
             public:
 
@@ -185,12 +187,14 @@ class Test
                 HCommand LastCommand;
                 void* LastContent;
 
-                TestReader(T* data, int blocksize, bool multipleReads = true):
+                TestReader(T* data, int blocksize, bool multipleReads = true, bool continuedReads = false):
                         Reads(0),
                         Samples(0),
                         _data(data),
                         _first(true),
                         _multipleReads(multipleReads),
+                        _continuedReads(continuedReads),
+                        _continuedPosition(0),
                         Started(0),
                         Stopped(0),
                         Commands(0),
@@ -213,7 +217,12 @@ class Test
                     }
 
                     _first = false;
-                    memcpy(dest, _data, blocksize * sizeof(T));
+                    if( !_continuedReads ) {
+                        memcpy(dest, _data, blocksize * sizeof(T));
+                    } else {
+                        memcpy(dest, &_data[_continuedPosition], blocksize * sizeof(T));
+                        _continuedPosition += blocksize;
+                    }
                     Reads++;
                     Samples += blocksize;
                     return blocksize;

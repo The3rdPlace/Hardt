@@ -96,6 +96,7 @@ Include api function declarations
 #include "hcomplex2multiplexedconverter.h"
 #include "htypeconverter.cpp"
 #include "hcomplexconverter.cpp"
+#include "hdecimator.cpp"
 
 /********************************************************************
 Debug and diagnostics

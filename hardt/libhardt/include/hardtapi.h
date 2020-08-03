@@ -85,5 +85,6 @@
 #include "hcomplex2multiplexedconverter.h"
 #include "htypeconverter.h"
 #include "hcomplexconverter.h"
+#include "hdecimator.h"
 
 #endif
