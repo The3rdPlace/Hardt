@@ -9,6 +9,7 @@
 #include "hexceptions.h"
 #include "htimer.h"
 #include "hfft.h"
+#include "hfir.h"
 
 #include "hwriter.h"
 #include "hwriterconsumer.h"

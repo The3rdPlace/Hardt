@@ -14,6 +14,7 @@ Initialization, logging and other basic functions.
 #include "hmetrics.h"
 #include "hobject.h"
 #include "hfft.h"
+#include "hfir.h"
 
 /********************************************************************
 Abstract base classes with no, or little implementation

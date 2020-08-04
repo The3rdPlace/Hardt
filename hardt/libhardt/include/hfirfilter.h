@@ -1,6 +1,8 @@
 #ifndef __HFIRFILTER_H
 #define __HFIRFILTER_H
 
+#include "hfir.h"
+
 #include <fstream>
 
 /**
@@ -17,10 +19,10 @@ class HFirFilter : public HFilter<T>
 {
     private:
 
+        HFir<T>* _fir;
         float* _coefficients;
         int _length;
         T* _taps;
-        int _firstLength;
 
         void Init(float* coefficients, int length);
 

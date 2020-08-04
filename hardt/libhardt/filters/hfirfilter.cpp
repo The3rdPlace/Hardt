@@ -6,22 +6,20 @@
 template <class T>
 HFirFilter<T>::HFirFilter(HWriter<T>* writer, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
     HFilter<T>(writer, blocksize, probe),
-    _length(length),
-    _firstLength(length)
-{
+    _length(length) {
+
     HLog("HFirFilter(HWriter*)");
-    HLog("_length = %d, _firstLength = %d", _length, _firstLength);
+    HLog("_length = %d", _length);
     Init(coefficients, length);
 }
 
 template <class T>
 HFirFilter<T>::HFirFilter(HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
     HFilter<T>(consumer, blocksize, probe),
-    _length(length),
-    _firstLength(length)
-{
+    _length(length) {
+
     HLog("HFirFilter(HWriterConsumer*)");
-    HLog("_length = %d, _firstLength = %d", _length, _firstLength);
+    HLog("_length = %d", _length);
     Init(coefficients, length);
 
     consumer->SetWriter(this);
@@ -30,11 +28,10 @@ HFirFilter<T>::HFirFilter(HWriterConsumer<T>* consumer, float* coefficients, int
 template <class T>
 HFirFilter<T>::HFirFilter(HReader<T>* reader, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
     HFilter<T>(reader, blocksize, probe),
-    _length(length),
-    _firstLength(length)
-{
+    _length(length) {
+
     HLog("HFirFilter(HReader*)");
-    HLog("_length = %d, _firstLength = %d", _length, _firstLength);
+    HLog("_length = %d", _length);
     Init(coefficients, length);
 }
 
@@ -42,81 +39,27 @@ template <class T>
 void HFirFilter<T>::Init(float* coefficients, int length)
 {
     HLog("Init(float*, %d)", length);
-
-    _coefficients = new float[length];
-    SetCoefficients(coefficients, length);
-    HLog("Copied filter coefficients");
-
-    _taps = new T[length];
-    for( int i = 0; i < length; i++ )
-    {
-        _taps[i] = 0;
-    }
-    HLog("Allocated and initialized delay buffer for %d taps", length);
-
-    for( int i = 0; i < length + 1; i++ )
-    {
-        HLog("a%d = %f", i, _coefficients[i]);
-    }
+    _fir = new HFir<T>(coefficients, length);
 }
 
 template <class T>
 HFirFilter<T>::~HFirFilter()
 {
     HLog("~HFirFilter()");
-    delete[] _taps;
-    delete[] _coefficients;
+    delete _fir;
 }
 
 template <class T>
 void HFirFilter<T>::Filter(T* src, T* dest, size_t blocksize)
 {
     // Run FIR filter
-    for( int i = 0; i < blocksize; i++ )
-    {
-        // Advance delay line 1 sample
-        memmove((void*) &_taps[1], (void*) _taps, (_length - 1) * sizeof(T));
-
-        // Add new sample
-        _taps[0] = src[i];
-
-        #ifdef DEEP_DEBUG
-        for( int tap = 0; tap < _length; tap++ )
-        {
-            HLog("_taps[%d]: %d", tap, _taps[tap]);
-        }
-        #endif
-
-        // Sum all taps
-        float result = 0;
-        for( int j = 0; j < _length; j++ )
-        {
-            result += _taps[j] * _coefficients[j];
-            #ifdef DEEP_DEBUG
-            HLog("result + _taps[%d] * a%d = %f", j, j, result);
-            #endif
-        }
-
-        // Store result for 1 sample
-        dest[i] = result;
-        #ifdef DEEP_DEBUG
-        HLog("dest[%d] = %d", i, (T) result);
-        #endif
-    }
+    _fir->Filter(src, dest, blocksize);
 }
 
 template <class T>
 void HFirFilter<T>::SetCoefficients(float* coefficients, int length)
 {
-    // Sanity check
-    if( length != _firstLength )
-    {
-        HError("It is not possible to assign a set of coefficients of different length than the length used at construction (%d)", _firstLength);
-        throw new HFilterInitializationException("Length of coefficients differs from construction length");
-    }
-
-    // Copy coefficients
-    memcpy(_coefficients, coefficients, length * sizeof(float));
+    _fir->SetCoefficients(coefficients, length);
 }
 
 /********************************************************************
