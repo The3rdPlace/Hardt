@@ -11,6 +11,7 @@ private:
     int _length;
     T *_taps;
     int _factor;
+    int _head;
 
     void Init(float* coefficients) {
 
@@ -25,10 +26,33 @@ private:
         HLog("Allocated and initialized delay buffer for %d taps", _length);
     }
 
+    /** Filter a single sample value */
+    inline T Filter(T value) {
+
+        // Add new sample to the head of the delay line
+        _taps[_head] = value;
+
+        // Sum all taps
+        float result = 0;
+        for( int k = 0; k < _length; k++ ) {
+            result += _taps[_head++] * _coefficients[k];
+            if( _head == _length ) {
+                _head = 0;
+            }
+        }
+
+        // Move tip of the delay line ringbuffer
+        _head = _head == 0 ? _length : _head;
+        _head--;
+
+        // Return the result
+        return result;
+    }
+
 public:
 
     /** Create a new FIR block (for calculating output values for a FIR filter) */
-    HFir(float *coefficients, int length) : _length(length), _factor(0) {
+    HFir(float *coefficients, int length) : _length(length), _factor(0), _head(0) {
 
         HLog("HFir(float*, %d)", length);
         Init(coefficients);
@@ -37,7 +61,7 @@ public:
     /** Create a new FIR block (for calculating output values for a FIR filter)
         as an interpolation FIR (thus rearranging the filter coefficients and configure
         as a polyphase FIR filter) */
-    HFir(float *coefficients, int length, int factor) : _length(length), _factor(factor) {
+    HFir(float *coefficients, int length, int factor) : _length(length), _factor(factor), _head(0) {
 
         HLog("HFir(float*, %d, %d) - constructing polyphase FIR for interpolation", length, factor);
         Init(coefficients);
@@ -48,26 +72,6 @@ public:
         HLog("~HFir()");
         delete[] _taps;
         delete[] _coefficients;
-    }
-
-    /** Filter a single sample value */
-    inline T Filter(T value) {
-
-        // Advance delay line 1 sample
-        // Todo: We really should use a ringbuffer!
-        memmove((void *) &_taps[1], (void *) _taps, (_length - 1) * sizeof(T));
-
-        // Add new sample
-        _taps[0] = value;
-
-        // Sum all taps
-        float result = 0;
-        for (int j = 0; j < _length; j++) {
-            result += _taps[j] * _coefficients[j];
-        }
-
-        // Store result for 1 sample
-        return result;
     }
 
     /** Filter a block of values through the FIR block */
