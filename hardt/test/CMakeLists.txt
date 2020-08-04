@@ -59,6 +59,8 @@ target_sources(hardt_test
 	htypeconverter_test.cpp
 	hcomplexconverter_test.cpp
 	hdecimator_test.cpp
+	hinterpolator_test.cpp
+	hupsampler_test.cpp
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")

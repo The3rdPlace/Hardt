@@ -87,5 +87,7 @@
 #include "htypeconverter.h"
 #include "hcomplexconverter.h"
 #include "hdecimator.h"
+#include "hinterpolator.h"
+#include "hupsampler.h"
 
 #endif
