@@ -98,7 +98,7 @@ Include api function declarations
 #include "htypeconverter.cpp"
 #include "hcomplexconverter.cpp"
 #include "hdecimator.cpp"
-#include "hinterpolator.h"
+#include "hinterpolator.cpp"
 #include "hupsampler.h"
 
 /********************************************************************

@@ -129,9 +129,6 @@ int HSubtracter<T>::Read(T* dest, size_t blocksize)
         dest[i] = _buffer_1[i] - _buffer_2[i];
     }
 
-    ((HReader<T>*) this)->Metrics.Reads++;
-    ((HReader<T>*) this)->Metrics.BlocksIn++;
-    ((HReader<T>*) this)->Metrics.BytesIn += blocksize * sizeof(T);
     if( _probe != NULL )
     {
         _probe->Write(dest, blocksize);
@@ -155,7 +152,6 @@ int HSubtracter<T>::Write(T* src, size_t blocksize)
         // Copy first write to buffer-1 then wait for next write
         memcpy((void*) _buffer_1, src, sizeof(T) * blocksize);
         _wait = true;
-        ((HWriter<T>*) this)->Metrics.Writes++;
         return blocksize;
     } else if( _reader_1 == nullptr && _reader_2 == nullptr && _wait == true ) {
 
@@ -186,9 +182,6 @@ int HSubtracter<T>::Write(T* src, size_t blocksize)
         return 0;
     }
 
-    ((HWriter<T>*) this)->Metrics.Writes++;
-    ((HWriter<T>*) this)->Metrics.BlocksOut++;
-    ((HWriter<T>*) this)->Metrics.BytesOut += blocksize * sizeof(T);
     if( _probe != NULL )
     {
         _probe->Write(_buffer_2, blocksize);

@@ -34,12 +34,10 @@ class HDecimator_Test: public Test
 
             ASSERT_IS_EQUAL(dm.Read(received, 12), 12);
             ASSERT_IS_EQUAL(rd.Reads, 2);
-            ASSERT_IS_EQUAL(((HReader<int8_t>*) dm.Reader())->Metrics.Reads, (unsigned long) 1);
             ASSERT_IS_EQUAL(memcmp((void*) received, (void*) expected1, 12), 0);
 
             ASSERT_IS_EQUAL(dm.Read(received, 12), 12);
             ASSERT_IS_EQUAL(rd.Reads, 4);
-            ASSERT_IS_EQUAL(((HReader<int8_t>*) dm.Reader())->Metrics.Reads, (unsigned long) 2);
             ASSERT_IS_EQUAL(memcmp((void*) received, (void*) expected2, 12), 0);
         }
 
@@ -54,18 +52,14 @@ class HDecimator_Test: public Test
             HDecimator<int8_t> dm(wr.Writer(), 2, 12);
 
             ASSERT_IS_EQUAL(dm.Write(input1, 12), 12);
-            ASSERT_IS_EQUAL(((HWriter<int8_t>*) dm.Writer())->Metrics.Writes, (unsigned long) 1);
             ASSERT_IS_EQUAL(wr.Writes, 0);
             ASSERT_IS_EQUAL(dm.Write(input1, 12), 12);
-            ASSERT_IS_EQUAL(((HWriter<int8_t>*) dm.Writer())->Metrics.Writes, (unsigned long) 2);
             ASSERT_IS_EQUAL(wr.Writes, 1);
             ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected1, 12), 0);
 
             ASSERT_IS_EQUAL(dm.Write(input2, 12), 12);
-            ASSERT_IS_EQUAL(((HWriter<int8_t>*) dm.Writer())->Metrics.Writes, (unsigned long) 3);
             ASSERT_IS_EQUAL(wr.Writes, 1);
             ASSERT_IS_EQUAL(dm.Write(input2, 12), 12);
-            ASSERT_IS_EQUAL(((HWriter<int8_t>*) dm.Writer())->Metrics.Writes, (unsigned long) 4);
             ASSERT_IS_EQUAL(wr.Writes, 2);
             ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected2, 12), 0);
         }
@@ -82,18 +76,14 @@ class HDecimator_Test: public Test
             TestWriter<int8_t> wr(dm.Consumer(), 12);
 
             ASSERT_IS_EQUAL(srcWr.Write(input1, 12), 12);
-            ASSERT_IS_EQUAL(((HWriter<int8_t>*) dm.Writer())->Metrics.Writes, (unsigned long) 1);
             ASSERT_IS_EQUAL(wr.Writes, 0);
             ASSERT_IS_EQUAL(srcWr.Write(input1, 12), 12);
-            ASSERT_IS_EQUAL(((HWriter<int8_t>*) dm.Writer())->Metrics.Writes, (unsigned long) 2);
             ASSERT_IS_EQUAL(wr.Writes, 1);
             ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected1, 12), 0);
 
             ASSERT_IS_EQUAL(srcWr.Write(input2, 12), 12);
-            ASSERT_IS_EQUAL(((HWriter<int8_t>*) dm.Writer())->Metrics.Writes, (unsigned long) 3);
             ASSERT_IS_EQUAL(wr.Writes, 1);
             ASSERT_IS_EQUAL(srcWr.Write(input2, 12), 12);
-            ASSERT_IS_EQUAL(((HWriter<int8_t>*) dm.Writer())->Metrics.Writes, (unsigned long) 4);
             ASSERT_IS_EQUAL(wr.Writes, 2);
             ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected2, 12), 0);
         }

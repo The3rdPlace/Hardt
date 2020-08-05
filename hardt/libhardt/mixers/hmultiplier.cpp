@@ -80,8 +80,6 @@ int HMultiplier<T>::Read(T* dest, size_t blocksize)
     // Mix signals
     Mix(_buffer, dest, blocksize);
 
-    ((HReader<T>*) this)->Metrics.Reads++;
-    ((HReader<T>*) this)->Metrics.BytesIn += blocksize * sizeof(T);
     if( _probe != NULL )
     {
         _probe->Write(dest, blocksize);
@@ -110,8 +108,6 @@ int HMultiplier<T>::Write(T* src, size_t blocksize)
         return 0;
     }
 
-    ((HWriter<T>*) this)->Metrics.Writes++;
-    ((HWriter<T>*) this)->Metrics.BytesOut += blocksize * sizeof(T);
     if( _probe != NULL )
     {
         _probe->Write(_buffer, blocksize);

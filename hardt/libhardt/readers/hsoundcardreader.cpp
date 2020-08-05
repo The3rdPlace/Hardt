@@ -115,9 +115,6 @@ int HSoundcardReader<T>::Read(T* dest, size_t blocksize)
         throw new HAudioIOException("Stream is not started, no data to read");
     }
 
-    // Update metrics
-    this->Metrics.Reads++;
-
     // If read and write position is the same (same buffer), then wait for new samples
     if( _cbd.wrloc == _cbd.rdloc )
     {
@@ -130,9 +127,6 @@ int HSoundcardReader<T>::Read(T* dest, size_t blocksize)
     {
         T* ptr = &_cbd.buffer[_cbd.rdloc];
         memcpy((void*) dest, (void*) ptr, _cbd.framesize * sizeof(T));
-
-        this->Metrics.BlocksIn++;
-        this->Metrics.BytesIn += _cbd.framesize * sizeof(T);
 
         // Advance read position to next buffer, if we have read the last buffer,
         // then wrap around to the first buffer.

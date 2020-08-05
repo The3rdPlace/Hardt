@@ -23,7 +23,7 @@ void HStreamProcessor<T>::Run(long unsigned int blocks)
     HProcessor<T>::Run(blocks);
 
     // Dump in- and output metrics to the log
-    HLog(this->GetMetrics("HStreamProcessor").c_str());
+    HLog( this->GetMetrics()->ToString().c_str() );
 }
 
 /********************************************************************

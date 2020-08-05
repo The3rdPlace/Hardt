@@ -16,16 +16,16 @@ class HObject
     public:
 
         /** The metrics object */
-        HMetrics Metrics;
+        //HMetrics Metrics;
 
         /** Construct a new HObject */
         HObject();
 
         /** Get metrics details as a formatted output string */
-        std::string GetMetrics(std::string id);
+        //std::string GetMetrics(std::string id);
 
         /** Reset all metrics */
-        void ResetMetrics();
+        //void ResetMetrics();
 };
 
 #endif

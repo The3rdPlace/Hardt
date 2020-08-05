@@ -26,13 +26,9 @@ void HNetworkWriter<T>::SetSocket(int socket)
 template <class T>
 int HNetworkWriter<T>::Write(T* src, size_t blocksize)
 {
-    this->Metrics.Writes++;
     int out = send(_socket, (void*) src, blocksize *  sizeof(T), 0 );
     if( out >= 0 )
     {
-        this->Metrics.BlocksOut++;
-        this->Metrics.BytesOut += out;
-
         return out / sizeof(T);
     }
     return out;

@@ -37,10 +37,6 @@ class HFileReader : public HReader<T>
                 return 0;
             }
 
-            // Update metrics
-            this->Metrics.Reads++;
-            this->Metrics.BlocksIn += blocksize;
-            this->Metrics.BytesIn += blocksize * sizeof(T);
             return blocksize;
         }
 

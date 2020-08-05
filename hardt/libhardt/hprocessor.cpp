@@ -103,9 +103,9 @@ void HProcessor<T>::Run(long unsigned int blocks)
                 break;
             }
 
-            this->Metrics.Reads++;
-            this->Metrics.BlocksIn++;
-            this->Metrics.BytesIn += len * sizeof(T);
+            _metrics.Reads++;
+            _metrics.BlocksIn++;
+            _metrics.BytesIn += len * sizeof(T);
         }
         catch( std::exception ex )
         {
@@ -117,7 +117,7 @@ void HProcessor<T>::Run(long unsigned int blocks)
         int shipped;
         try
         {
-            this->Metrics.Writes++;
+            _metrics.Writes++;
             shipped = HProcessor<T>::Write(_buffer, len);
             if( shipped <= 0 )
             {
@@ -128,12 +128,12 @@ void HProcessor<T>::Run(long unsigned int blocks)
             {
                 HLog("Not all data was written, %d of %d ", shipped, len);
             }
-            this->Metrics.BlocksOut++;
-            this->Metrics.BytesOut += shipped * sizeof(T);
+            _metrics.BlocksOut++;
+            _metrics.BytesOut += shipped * sizeof(T);
 
-            if( blocks > 0 && this->Metrics.BlocksOut >= blocks )
+            if( blocks > 0 && _metrics.BlocksOut >= blocks )
             {
-                HLog("Reached requested number of blocks (%lu / %lu), stopping", this->Metrics.BlocksOut, blocks);
+                HLog("Reached requested number of blocks (%lu / %lu), stopping", _metrics.BlocksOut, blocks);
                 *_terminated = true;
                 break;
             }

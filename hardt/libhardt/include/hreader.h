@@ -55,7 +55,6 @@ class HReader : public HObject
 		    True if the command was executed correctly
 		    False otherwise. Errors is written to the error log
 	    */
-        //virtual bool Command(HCommand* command) {return true;}
         virtual bool Command(HCommand* command) = 0;
 };
 

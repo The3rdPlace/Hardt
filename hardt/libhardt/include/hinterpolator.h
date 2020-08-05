@@ -19,10 +19,12 @@ class HInterpolator: public HReader<T>, public HWriter<T>, public HWriterConsume
         size_t _blocksize;
 
         int _factor;
-        T* _buffer; 
+        T* _inBuffer; 
+        T* _outBuffer; 
+        int _length;
 
         float * _coefficients;
-        int _length;
+        int _firLength;
 
         void Init(float* coefficients = nullptr);
 

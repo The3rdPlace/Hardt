@@ -76,14 +76,11 @@ int HDecimator<T>::Write(T* src, size_t blocksize)
     }
 
     // Decimate
-    ((HWriter<T>*) this)->Metrics.Writes++;    
     for(int i = 0; i < blocksize; i += _factor) {
         _buffer[_length++] = src[i];
     }
     if( _length == _blocksize ) {
         _writer->Write(_buffer, blocksize);
-        ((HWriter<T>*) this)->Metrics.BlocksOut++;
-        ((HWriter<T>*) this)->Metrics.BytesOut += sizeof(T) * blocksize;
         _length = 0;
     }
 
@@ -105,6 +102,7 @@ int HDecimator<T>::Read(T* dest, size_t blocksize)
         throw new HReaderIOException("Requested blocksize for read is invalid");
     }
 
+   
     // Update metrics
     _length = 0;
     while( _length < _blocksize ) {
@@ -124,8 +122,6 @@ int HDecimator<T>::Read(T* dest, size_t blocksize)
             HError("Received too big read size, memory corruption must be expected. Stopping");
             return 0;
         }
-        ((HReader<T>*) this)->Metrics.BlocksIn++;
-        ((HReader<T>*) this)->Metrics.BytesIn += sizeof(T) * blocksize;
 
         // Decimate the block
         for(int i = 0; i < blocksize; i += _factor) {
@@ -134,7 +130,6 @@ int HDecimator<T>::Read(T* dest, size_t blocksize)
     }
 
     // Return complete decimated read
-    ((HReader<T>*) this)->Metrics.Reads++;    
     return blocksize;
 }
 

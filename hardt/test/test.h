@@ -275,6 +275,8 @@ class Test
                 bool _first;
                 bool _multipleWrites;
                 int _writeDelay;
+                bool _continuedWrites;
+                int _continuedPosition;
 
                 T* Received;
                 int Writes;
@@ -285,7 +287,7 @@ class Test
                 HCommand LastCommand;
                 void* LastContent;
 
-                TestWriter(size_t blocksize, bool multipleWrites = true, int writeDelay = 0):
+                TestWriter(size_t blocksize, bool multipleWrites = true, int writeDelay = 0, bool continuedWrites = false):
                     Writes(0),
                     Samples(0),
                     _writer(nullptr),
@@ -295,13 +297,15 @@ class Test
                     _multipleWrites(multipleWrites),
                     _writeDelay(writeDelay),
                     Commands(0),
-                    LastContent(nullptr)
+                    LastContent(nullptr),
+                    _continuedPosition(0),
+                    _continuedWrites(continuedWrites)
                 {
                     Received = new T[blocksize];
                     memset((void*) Received, 0, blocksize * sizeof(T));
                 }
 
-                TestWriter(HWriter<T>* writer, size_t blocksize, bool multipleWrites = true, int writeDelay = 0):
+                TestWriter(HWriter<T>* writer, size_t blocksize, bool multipleWrites = true, int writeDelay = 0, bool continuedWrites = false):
                         Writes(0),
                         Samples(0),
                         _writer(writer),
@@ -311,13 +315,15 @@ class Test
                         _multipleWrites(multipleWrites),
                         _writeDelay(writeDelay),
                         Commands(0),
-                        LastContent(nullptr)
+                        LastContent(nullptr),
+                        _continuedPosition(0),
+                        _continuedWrites(continuedWrites)
                 {
                     Received = new T[blocksize];
                     memset((void*) Received, 0, blocksize * sizeof(T));
                 }
 
-                TestWriter(HWriterConsumer<T>* consumer, size_t blocksize, bool multipleWrites = true, int writeDelay = 0):
+                TestWriter(HWriterConsumer<T>* consumer, size_t blocksize, bool multipleWrites = true, int writeDelay = 0, bool continuedWrites = false):
                         Writes(0),
                         Samples(0),
                         _writer(nullptr),
@@ -327,7 +333,9 @@ class Test
                         _multipleWrites(multipleWrites),
                         _writeDelay(writeDelay),
                         Commands(0),
-                        LastContent(nullptr)
+                        LastContent(nullptr),
+                        _continuedPosition(0),
+                        _continuedWrites(continuedWrites)
                 {
                     Received = new T[blocksize];
                     memset((void*) Received, 0, blocksize * sizeof(T));
@@ -351,13 +359,17 @@ class Test
                     }
 
                     _first = false;
-                    memcpy((void*) Received, (void*) src, blocksize * sizeof(T));
+                    memcpy((void*) &Received[_continuedPosition], (void*) src, blocksize * sizeof(T));
                     Writes++;
                     Samples += blocksize;
                     if( _writer != nullptr ) {
                         _writer->Write(src, blocksize);
                     }
 
+                    if( _continuedWrites ) {
+                        _continuedPosition += blocksize;
+                    }
+                    
                     usleep(_writeDelay);
 
                     return blocksize;

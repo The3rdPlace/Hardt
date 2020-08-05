@@ -15,10 +15,6 @@ int HNullReader<T>::Read(T* dest, size_t blocksize)
         dest[i] = _zero;
     }
 
-    this->Metrics.Reads++;
-    this->Metrics.BlocksIn++;
-    this->Metrics.BytesIn += blocksize * sizeof(T);
-
     return blocksize;
 }
 

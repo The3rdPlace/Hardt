@@ -40,10 +40,6 @@ int HNetworkReader<T>::Read(T* dest, size_t blocksize)
         total += in;
     }
 
-    this->Metrics.Reads++;
-    this->Metrics.BlocksIn++;
-    this->Metrics.BytesIn += total;
-
     return total / sizeof(T);
 }
 

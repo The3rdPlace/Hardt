@@ -52,8 +52,7 @@ int RunNetworkWriterServer()
     try
     {
         srv.Run();
-        std::cout << rdr.GetMetrics("HSoundcardReader");
-        std::cout << srv.GetMetrics("HNetworkProcessor");
+        std::cout << srv.GetMetrics()->ToString();
     }
     catch( std::exception ex )
     {

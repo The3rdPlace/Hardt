@@ -75,9 +75,6 @@ int HFilter<T>::Write(T* src, size_t blocksize)
     }
     int written = _writer->Write(_buffer, blocksize);
 
-    ((HFilterBase<T>*) this)->Metrics.Writes++;
-    ((HFilterBase<T>*) this)->Metrics.BlocksOut++;
-    ((HFilterBase<T>*) this)->Metrics.BytesOut += blocksize * sizeof(T);
     if( _probe != NULL )
     {
         _probe->Write(_buffer, blocksize);
@@ -102,9 +99,6 @@ int HFilter<T>::Read(T* dest, size_t blocksize)
         memcpy((void*) dest, (void*) _buffer, sizeof(T) * blocksize);
     }
     
-    ((HFilterBase<T>*) this)->Metrics.Reads++;
-    ((HFilterBase<T>*) this)->Metrics.BlocksIn++;
-    ((HFilterBase<T>*) this)->Metrics.BytesIn += blocksize * sizeof(T);
     if( _probe != NULL )
     {
         _probe->Write(_buffer, blocksize);

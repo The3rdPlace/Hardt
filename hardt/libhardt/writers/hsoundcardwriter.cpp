@@ -135,9 +135,6 @@ int HSoundcardWriter<T>::Write(T* src, size_t blocksize)
         throw new HAudioIOException("Stream is not started, no data to read");
     }
 
-    // Update metrics
-    this->Metrics.Writes++;
-
     // If read and write position is the same (same buffer), then wait untill a sample has been taken by the soundcard
     if( _cbd.wrloc == _cbd.rdloc )
     {
@@ -148,9 +145,6 @@ int HSoundcardWriter<T>::Write(T* src, size_t blocksize)
     // Copy bytes to the next output buffer
     T* ptr = &_cbd.buffer[_cbd.wrloc];
     memcpy((void*) ptr, (void*) src, _cbd.framesize * sizeof(T));
-
-    this->Metrics.BlocksOut++;
-    this->Metrics.BytesOut += _cbd.framesize * sizeof(T);
 
     // Advance write position to next buffer, if we have written the last buffer,
     // then wrap around to the first buffer.

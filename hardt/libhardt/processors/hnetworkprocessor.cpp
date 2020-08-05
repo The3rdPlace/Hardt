@@ -278,7 +278,7 @@ template <class T>
 void HNetworkProcessor<T>::Run(long unsigned int blocks)
 {
     _server != NULL ? RunClient(blocks) : RunServer(blocks);
-    HLog(this->GetMetrics("HNetworkProcessor").c_str());
+    HLog( this->GetMetrics()->ToString().c_str() );
 }
 
 template <class T>
@@ -363,9 +363,8 @@ void HNetworkProcessor<T>::RunServer(long unsigned int blocks)
                 _clientSocket = -1;
             }
             HLog("Connection closed");
-            HLog(HProcessor<T>::GetWriter()->GetMetrics("HNetworkProcessor::HProcessor::_writer").c_str());
-            HLog(HProcessor<T>::GetReader()->GetMetrics("HNetworkProcessor::HProcessor::_reader").c_str());
-            HProcessor<T>::GetWriter()->ResetMetrics();
+            HLog(this->GetMetrics()->ToString().c_str());
+            HLog(this->GetMetrics()->ToString().c_str());
         }
     }
     catch( const std::exception& ex )
@@ -398,8 +397,8 @@ void HNetworkProcessor<T>::RunClient(long unsigned int blocks)
         close(_clientSocket);
         _clientSocket = -1;
     }
-    HLog(HProcessor<T>::GetWriter()->GetMetrics("HNetworkProcessor::HProcessor::_writer").c_str());
-    HLog(HProcessor<T>::GetReader()->GetMetrics("HNetworkProcessor::HProcessor::_reader").c_str());
+    HLog(this->GetMetrics()->ToString().c_str());
+    HLog(this->GetMetrics()->ToString().c_str());
 }
 
 template <class T>

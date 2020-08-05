@@ -47,9 +47,6 @@ class HFileWriter : public HWriter<T>
         virtual int Write(T* src, size_t blocksize)
         {
             _stream.write((char*) src, blocksize * sizeof(T));
-            this->Metrics.Writes++;
-            this->Metrics.BlocksOut++;
-            this->Metrics.BytesOut += blocksize * sizeof(T);
             return blocksize;
         }
 
