@@ -3,6 +3,8 @@
 
 #include "hinterpolator.h"
 
+#include <vector>
+
 template <class T>
 HInterpolator<T>::HInterpolator(HWriter<T>* writer, int factor, size_t blocksize):
     _blocksize(blocksize),
@@ -94,8 +96,15 @@ HInterpolator<T>::~HInterpolator()
 {
     delete[] _inBuffer;
     delete[] _outBuffer;
+
     if( _coefficients != nullptr ) {
         delete[] _coefficients;
+    }
+
+    if( _firLength > 0 ) {
+        for( typename std::vector< HFir<T>* >::iterator it = _firs.begin(); it != _firs.end(); it++ ) {
+            delete *it;
+        }
     }
 }
 
@@ -110,19 +119,21 @@ void HInterpolator<T>::Init(float* coefficients) {
         throw new HInitializationException("Interpolation factor is not a valid divisor for the given blocksize");
     }
 
-    if( _length > 0 ) {
+    if( _firLength > 0 ) {
 
-        // Rearrange coefficienets for multiple polyphase filters
-        _coefficients = new float[_length];
+        // Rearrange coefficients for multiple polyphase filters
+        _coefficients = new float[_firLength];
         int k = 0;
         for( int i = 0; i < _factor; i++ ) {
-            for( int j = 0; j < _length / _factor; j += _factor ) {
-                HLog("i=%d  j=%d  k=%d", i, j, k);
+            for( int j = 0; j < _firLength; j += _factor ) {
                 _coefficients[k++] = coefficients[i + j];
             }
         }
 
-        // Todo: Setup filters
+        // Setup fir filter with rearranged coefficients
+        for( int i = 0; i < _factor; i++ ) {
+            _firs.push_back( new HFir<T>(&_coefficients[ i * _firLength / _factor ], _firLength / _factor, _factor) );
+        }
     }
 
     // Temporary buffer for results
@@ -145,8 +156,8 @@ int HInterpolator<T>::Write(T* src, size_t blocksize)
     }
 
     // Upsample and/or filter
-    if( _length == 0 ) {  
-        
+    if( _firLength == 0 ) {
+
         // No filtering = upsampling
         memset((void*) _outBuffer, 0, blocksize * sizeof(T) * _factor);
         for( int i = 0; i < blocksize * _factor; i += _factor) {
@@ -155,8 +166,11 @@ int HInterpolator<T>::Write(T* src, size_t blocksize)
 
     } else {
 
-        // Interpolation
-
+        // Interpolation: upsample and filter in one go using '_factor' polyphase FIR filters
+        int i = 0;
+        for( typename std::vector< HFir<T>* >::iterator it = _firs.begin(); it != _firs.end(); it++ ) {
+            (*it)->Filter(src, &_outBuffer[i++], blocksize);
+        }
     }
 
     // Write
@@ -211,7 +225,7 @@ int HInterpolator<T>::Read(T* dest, size_t blocksize)
     }
 
     // Upsampling or interpolation ?
-    if( _length == 0 ) {  
+    if( _firLength == 0 ) {
 
         // No filtering = upsampling
         memset((void*) _outBuffer, 0, blocksize * sizeof(T) * _factor);
@@ -221,8 +235,11 @@ int HInterpolator<T>::Read(T* dest, size_t blocksize)
 
     } else {
 
-        // Interpolation
-
+        // Interpolation: upsample and filter in one go using '_factor' polyphase FIR filters
+        int i = 0;
+        for( typename std::vector< HFir<T>* >::iterator it = _firs.begin(); it != _firs.end(); it++ ) {
+            (*it)->Filter(_inBuffer, &_outBuffer[i++], blocksize);
+        }
     }
 
     // Return first part of decimated read

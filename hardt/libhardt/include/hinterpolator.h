@@ -25,6 +25,7 @@ class HInterpolator: public HReader<T>, public HWriter<T>, public HWriterConsume
 
         float * _coefficients;
         int _firLength;
+        std::vector<HFir<T>*> _firs;
 
         void Init(float* coefficients = nullptr);
 

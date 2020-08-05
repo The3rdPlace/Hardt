@@ -11,6 +11,7 @@ class HFir {
         int _length;
         T *_taps;
         int _head;
+        int _spacing;
 
         void Init(float* coefficients) {
 
@@ -50,10 +51,18 @@ class HFir {
 
     public:
 
-        /** Create a new FIR block (for calculating output values for a FIR filter) */
-        HFir(float *coefficients, int length) : _length(length), _head(0) {
+        /** Create a new FIR block (for calculating output values for a FIR filter)
 
-            HLog("HFir(float*, %d)", length);
+            Parameters:
+              coefficients = The FIR coefficients
+              length = Length of the FIR filter (number of coefficients)
+              [spacing] = How many positions in the outbuffer to space output values
+                          This is mostly usefull when implementing multiple polyphase FIR
+                          filters (see use in the HInterpolator)
+        */
+        HFir(float *coefficients, int length, int spacing = 1) : _length(length), _head(0), _spacing(spacing) {
+
+            HLog("HFir(float*, %d, %d)", length, spacing);
             Init(coefficients);
         }
 
@@ -66,8 +75,10 @@ class HFir {
 
         /** Filter a block of values through the FIR block */
         inline void Filter(T *values, T* result, size_t blocksize) {
+            int j = 0;
             for( int i = 0; i < blocksize; i++ ) {
-                result[i] = Filter(values[i]);
+                result[j] = Filter(values[i]);
+                j += _spacing;
             }
         }
 
