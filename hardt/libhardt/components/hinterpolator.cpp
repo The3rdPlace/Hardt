@@ -9,12 +9,12 @@ HInterpolator<T>::HInterpolator(HWriter<T>* writer, int factor, size_t blocksize
     _factor(factor),
     _writer(writer),
     _reader(nullptr),
+    _length(0),
     _coefficients(nullptr),
-    _length(0) {
+    _firLength(0) {
 
     HLog("HInterpolator(HWriter*, factor=%d, blocksize=%d)", factor, blocksize);
     Init();
-    
 }
 
 template <class T>
@@ -23,12 +23,12 @@ HInterpolator<T>::HInterpolator(HWriter<T>* writer, int factor, float* coefficie
     _factor(factor),
     _writer(writer),
     _reader(nullptr),
+    _length(0),
     _coefficients(nullptr),
-    _length(length) {
+    _firLength(length) {
 
     HLog("HInterpolator(HWriter*, factor=%d, float*, length=%d, blocksize=%d)", factor, length, blocksize);
     Init(coefficients);
-    
 }
 
 template <class T>
@@ -37,8 +37,9 @@ HInterpolator<T>::HInterpolator(HWriterConsumer<T>* consumer, int factor, size_t
     _factor(factor),
     _writer(nullptr),
     _reader(nullptr),
+    _length(0),
     _coefficients(nullptr),
-    _length(0) {
+    _firLength(0) {
 
     HLog("HInterpolator(HWriterConsumer*, factor=%d, blocksize=%d)", factor, blocksize);
     Init();
@@ -51,8 +52,9 @@ HInterpolator<T>::HInterpolator(HWriterConsumer<T>* consumer, int factor, float*
     _factor(factor),
     _writer(nullptr),
     _reader(nullptr),
+    _length(0),
     _coefficients(nullptr),
-    _length(length) {
+    _firLength(length) {
 
     HLog("HInterpolator(HWriterConsumer*, factor=%d, length=%d, blocksize=%d)", factor, length, blocksize);
     Init(coefficients);
@@ -65,8 +67,9 @@ HInterpolator<T>::HInterpolator(HReader<T>* reader, int factor, size_t blocksize
     _factor(factor),
     _writer(nullptr),
     _reader(reader),
+    _length(0),
     _coefficients(nullptr),
-    _length(0) {
+    _firLength(0) {
 
     HLog("HInterpolator(HReader*, factor=%d, blocksize=%d)", factor, blocksize);
     Init();
@@ -78,8 +81,9 @@ HInterpolator<T>::HInterpolator(HReader<T>* reader, int factor, float* coefficie
     _factor(factor),
     _writer(nullptr),
     _reader(reader),
+    _length(0),
     _coefficients(nullptr),
-    _length(length) {
+    _firLength(length) {
         
     HLog("HInterpolator(HReader*, factor=%d, length=%d, blocksize=%d)", factor, length, blocksize);
     Init(coefficients);
@@ -88,7 +92,8 @@ HInterpolator<T>::HInterpolator(HReader<T>* reader, int factor, float* coefficie
 template <class T>
 HInterpolator<T>::~HInterpolator()
 {
-    delete[] _buffer;
+    delete[] _inBuffer;
+    delete[] _outBuffer;
     if( _coefficients != nullptr ) {
         delete[] _coefficients;
     }
@@ -105,15 +110,13 @@ void HInterpolator<T>::Init(float* coefficients) {
         throw new HInitializationException("Interpolation factor is not a valid divisor for the given blocksize");
     }
 
-    _buffer = new T[_blocksize * _factor];
-
     if( _length > 0 ) {
 
         // Rearrange coefficienets for multiple polyphase filters
         _coefficients = new float[_length];
         int k = 0;
         for( int i = 0; i < _factor; i++ ) {
-            for( int j = 0; j < _length / _factor; j += factor ) {
+            for( int j = 0; j < _length / _factor; j += _factor ) {
                 HLog("i=%d  j=%d  k=%d", i, j, k);
                 _coefficients[k++] = coefficients[i + j];
             }
@@ -121,6 +124,10 @@ void HInterpolator<T>::Init(float* coefficients) {
 
         // Todo: Setup filters
     }
+
+    // Temporary buffer for results
+    _inBuffer = new T[_blocksize];
+    _outBuffer = new T[_blocksize * _factor];
 }
 
 template <class T>
@@ -138,13 +145,12 @@ int HInterpolator<T>::Write(T* src, size_t blocksize)
     }
 
     // Upsample and/or filter
-    int j = 0;
-    memset((void*) _buffer, 0, blocksize * sizeof(T) * _factor);
     if( _length == 0 ) {  
         
         // No filtering = upsampling
+        memset((void*) _outBuffer, 0, blocksize * sizeof(T) * _factor);
         for( int i = 0; i < blocksize * _factor; i += _factor) {
-            _buffer[i] = src[j++];
+            _outBuffer[i] = src[i / _factor];
         }
 
     } else {
@@ -154,11 +160,8 @@ int HInterpolator<T>::Write(T* src, size_t blocksize)
     }
 
     // Write
-    ((HWriter<T>*) this)->Metrics.Writes++;    
     for( int i = 0; i < _factor; i++ ) {
-        _writer->Write(&_buffer[i * blocksize], blocksize);
-        ((HWriter<T>*) this)->Metrics.BlocksOut++;
-        ((HWriter<T>*) this)->Metrics.BytesOut += sizeof(T) * blocksize;
+        _writer->Write(&_outBuffer[i * blocksize], blocksize);
     }
 
     // Always return the full input blocksize
@@ -173,38 +176,48 @@ int HInterpolator<T>::Read(T* dest, size_t blocksize)
         throw new HInitializationException("This HInterpolator is not a reader");
     }
 
-    if( blocksize > _blocksize )
+    if( blocksize != _blocksize )
     {
         HError("Requested blocksize for read is invalid: %d requested, expected is %d", blocksize, _blocksize);
         throw new HReaderIOException("Requested blocksize for read is invalid");
     }
 
+    // Already have data available ?
+    if( _length > 0 ) {
+        memcpy((void*) dest, (void*) &_outBuffer[_length], blocksize);
+        _length += blocksize;
+
+        if( _length == _blocksize * _factor ) {
+            _length = 0;
+        }
+
+        return blocksize;
+    }
+
     // Read a block
-    int read = _reader->Read(_buffer, blocksize);
+    int read = _reader->Read(_inBuffer, blocksize);
     if( read == 0 ) {
         HLog("Received zero-read, returning zero");
         return 0;
     }
     else if( read < _blocksize ) {
         HLog("Received too low read size, inserting silence");
-        memset((void*) &_buffer[read], 0, _blocksize - read);
+        memset((void*) &_inBuffer[read], 0, _blocksize - read);
 
     }
     else if( read > _blocksize ) {
         HError("Received too big read size, memory corruption must be expected. Stopping");
         return 0;
     }
-    ((HReader<T>*) this)->Metrics.BlocksIn++;
-    ((HReader<T>*) this)->Metrics.BytesIn += sizeof(T) * blocksize;
 
-    // Upsamle and/or filter
-    int j = 0;
-    memset((void*) dest, 0, blocksize * sizeof(T) * _factor);
+    // Upsampling or interpolation ?
     if( _length == 0 ) {  
-        
+
         // No filtering = upsampling
+        memset((void*) _outBuffer, 0, blocksize * sizeof(T) * _factor);
         for( int i = 0; i < blocksize * _factor; i += _factor) {
-            _dest[i] = _buffer[j++];
+            _outBuffer[i] = _inBuffer[i / _factor];
+        }
 
     } else {
 
@@ -212,8 +225,9 @@ int HInterpolator<T>::Read(T* dest, size_t blocksize)
 
     }
 
-    // Return complete decimated read
-    ((HReader<T>*) this)->Metrics.Reads++;    
+    // Return first part of decimated read
+    memcpy((void*) dest, (void*) &_outBuffer[0], blocksize);
+    _length += blocksize;    
     return blocksize;
 }
 
