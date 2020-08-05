@@ -89,5 +89,6 @@
 #include "hdecimator.h"
 #include "hinterpolator.h"
 #include "hupsampler.h"
+#include "hkaiserbessel.h"
 
 #endif
