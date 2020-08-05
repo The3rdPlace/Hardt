@@ -1856,6 +1856,127 @@ int RunDecimator()
 }
 
 template <typename T>
+int RunUpsampler()
+{
+    // Create reader
+    HReader<T>* rd;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        rd = new HWavReader<T>(Config.InputFile);
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        rd = new HFileReader<T>(Config.InputFile);
+    }
+    else
+    {
+        std::cout << "Unknown input file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+    // Create writer
+    HWriter<T>* wr;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        wr = new HFileWriter<T>(Config.OutputFile);
+    }
+    else
+    {
+        std::cout << "Unknown output file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+    // Create  upsampler
+    HUpsampler<T> up(wr, Config.UpsampleFactor, Config.Blocksize);
+
+    // Create processor
+    HStreamProcessor<T> proc(up.Writer(), rd->Reader(), Config.Blocksize, &terminated);
+    proc.Run();
+
+    // Delete the reader and writer
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        delete (HWavReader<T>*) rd;
+        delete (HWavWriter<T>*) wr;
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        delete (HFileReader<T>*) rd;
+        delete (HFileWriter<T>*) wr;
+    }
+
+    return 0;
+}
+
+template <typename T>
+int RunInterpolator()
+{
+    // Create reader
+    HReader<T>* rd;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        rd = new HWavReader<T>(Config.InputFile);
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        rd = new HFileReader<T>(Config.InputFile);
+    }
+    else
+    {
+        std::cout << "Unknown input file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+    // Create writer
+    HWriter<T>* wr;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        wr = new HFileWriter<T>(Config.OutputFile);
+    }
+    else
+    {
+        std::cout << "Unknown output file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+    // Read filter coefficients
+    std::vector<float> coeffs = HFilter<T>::ReadCoeffsFromFile(Config.FilterCoeffs);
+    float coefficients[coeffs.size()];
+    for( int i = 0; i < coeffs.size(); i++ ) {
+        coefficients[i] = coeffs[i];
+    }
+
+    // Create  interpolator
+    HInterpolator<T> ip(wr, Config.UpsampleFactor, coefficients, coeffs.size(), Config.Blocksize);
+
+    // Create processor
+    HStreamProcessor<T> proc(ip.Writer(), rd->Reader(), Config.Blocksize, &terminated);
+    proc.Run();
+
+    // Delete the reader and writer
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        delete (HWavReader<T>*) rd;
+        delete (HWavWriter<T>*) wr;
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        delete (HFileReader<T>*) rd;
+        delete (HFileWriter<T>*) wr;
+    }
+
+    return 0;
+}
+
+template <typename T>
 int RunOperation()
 {
     // Wait for start time ?
@@ -2517,6 +2638,46 @@ int RunOperation()
         }
 
         return RunDecimator<T>();
+    }
+
+    if( Config.IsUpsampler )
+    {
+        if( Config.InputFile == NULL )
+        {
+            std::cout << "No input file (-if)" << std::endl;
+            return -1;
+        }
+
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file (-of)" << std::endl;
+            return -1;
+        }
+
+        return RunUpsampler<T>();
+    }
+
+    if( Config.IsInterpolator )
+    {
+        if( Config.InputFile == NULL )
+        {
+            std::cout << "No input file (-if)" << std::endl;
+            return -1;
+        }
+
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file (-of)" << std::endl;
+            return -1;
+        }
+
+        if( Config.FilterCoeffs == NULL )
+        {
+            std::cout << "No filter coeffs. filename (-ip factor coeffs)" << std::endl;
+            return -1;
+        }
+
+        return RunInterpolator<T>();
     }
 
     // No known operation could be determined from the input arguments

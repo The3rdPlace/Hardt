@@ -550,6 +550,16 @@
 
     Decimate input samples by a factor
 
+    \page up
+    Syntax: dspcmd -up factor
+    
+    Upsample input samples by a factor
+
+    \page ip
+    Syntax: dspcmd -ip factor coeffs
+    
+    Interpolate input samples by a factor with FIR coefficients read from the file 'coeffs'
+
 */
 
 #ifndef __DSPCMD_H

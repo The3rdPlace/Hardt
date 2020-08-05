@@ -109,6 +109,9 @@ bool parseArguments(int argc, char** argv)
 
             Config.IsDecimator = argBoolCmp(argv[argNo], "-dcm", Config.IsDecimator);
             Config.DecimateFactor = argIntCmp(argv[argNo], "-dcm", argv[argNo + 1], Config.DecimateFactor);
+
+            Config.IsUpsampler = argBoolCmp(argv[argNo], "-up", Config.IsUpsampler);
+            Config.UpsampleFactor = argIntCmp(argv[argNo], "-up", argv[argNo + 1], Config.UpsampleFactor);
         }
 
         if( argNo < argc - 2 )
@@ -159,6 +162,10 @@ bool parseArguments(int argc, char** argv)
             Config.IsHumSpectrum = argBoolCmp(argv[argNo], "-hm", Config.IsHumSpectrum);
             Config.Frequency = argIntCmp(argv[argNo], "-hm", argv[argNo + 1], Config.Frequency);
             Config.FCutOff = argIntCmp(argv[argNo], "-hm", argv[argNo + 2], Config.FCutOff);
+
+            Config.IsInterpolator = argBoolCmp(argv[argNo], "-ip", Config.IsInterpolator);
+            Config.UpsampleFactor = argIntCmp(argv[argNo], "-ip", argv[argNo + 1], Config.UpsampleFactor);
+            Config.FilterCoeffs = argCharCmp(argv[argNo], "-ip", argv[argNo + 2], Config.FilterCoeffs);
         }
 
         if( argNo < argc - 3 )
@@ -285,6 +292,8 @@ bool parseArguments(int argc, char** argv)
             std::cout << std::endl;
 
             std::cout << "-dcm factor                Decimate input samples by a factor" << std::endl;
+            std::cout << "-up factor                 Upsample input samples by a factor" << std::endl;
+            std::cout << "-ip factor coeffs          Interpolate input samples by a factor with FIR coefficients from 'coeffs'" << std::endl;
             std::cout << std::endl;
 
             // Force exit
@@ -377,14 +386,14 @@ bool VerifyConfig()
     }
     if( Config.InputFile != NULL && Config.InFileFormat == NULL )
     {
-        if( Config.IsReal2Iq || Config.IsFft || Config.IsDemux || Config.IsDecimator ) {
+        if( Config.IsReal2Iq || Config.IsFft || Config.IsDemux || Config.IsDecimator || Config.IsUpsampler || Config.IsInterpolator ) {
             std::cout << "File formats for the in- and/or output file can not be guessed from the file extension" << std::endl;
             return true;
         }
     }
     if( Config.OutputFile != NULL && Config.OutFileFormat == NULL )
     {
-        if( Config.IsIfft | Config.IsDecimator ) {
+        if( Config.IsIfft | Config.IsDecimator || Config.IsUpsampler || Config.IsInterpolator ) {
             std::cout << "File formats for the in- and/or output file can not be guessed from the file extension" << std::endl;
             return true;
         }

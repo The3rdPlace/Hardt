@@ -42,6 +42,8 @@ struct DspCmdConfig
     bool IsIfft = false;
     bool IsDemux = false;
     bool IsDecimator = false;
+    bool IsUpsampler = false;
+    bool IsInterpolator = false;
 
     char* InFileFormat = NULL;
     char* OutFileFormat = NULL;
@@ -91,6 +93,7 @@ struct DspCmdConfig
     int Amplitude;
 
     int DecimateFactor;
+    int UpsampleFactor;
 };
 
 extern DspCmdConfig Config;
