@@ -95,6 +95,17 @@ class HFir {
             // Copy coefficients
             memcpy(_coefficients, coefficients, length * sizeof(float));
         }
+
+        /** get the coefficients for the FIR block */
+        std::vector<float> GetCoefficients() {
+
+            std::vector<float> coefficients;
+            for (int i = 0; i < _length; i++) {
+                coefficients.push_back(_coefficients[i]);
+            }
+            return coefficients;
+        }
+
 };
 
 #endif

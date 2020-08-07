@@ -20,9 +20,8 @@ class HFirFilter : public HFilter<T>
     private:
 
         HFir<T>* _fir;
-        float* _coefficients;
-        int _length;
-        T* _taps;
+        //int _length;
+        //T* _taps;
 
         void Init(float* coefficients, int length);
 
@@ -49,12 +48,7 @@ class HFirFilter : public HFilter<T>
         /** Get the filter coefficients */
         std::vector<float> GetCoefficients()
         {
-            std::vector<float> coefficients;
-            for( int i = 0; i < _length; i++ )
-            {
-                coefficients.push_back(_coefficients[i]);
-            }
-            return coefficients;
+            return _fir->GetCoefficients();
         }
 
         /** Factory function to create a new HFirFilter that writes to a  writer */
