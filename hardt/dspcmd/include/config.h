@@ -44,6 +44,8 @@ struct DspCmdConfig
     bool IsDecimator = false;
     bool IsUpsampler = false;
     bool IsInterpolator = false;
+    bool IsKaiserBesselSpectrum = false;
+    bool IsKaiserBessel = false;
 
     char* InFileFormat = NULL;
     char* OutFileFormat = NULL;
@@ -94,6 +96,11 @@ struct DspCmdConfig
 
     int DecimateFactor;
     int UpsampleFactor;
+
+    int FStart;
+    int FStop;
+    int Attenuation;
+    int Points;
 };
 
 extern DspCmdConfig Config;

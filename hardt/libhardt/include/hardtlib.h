@@ -102,6 +102,9 @@ Include api function declarations
 #include "hupsampler.h"
 #include "hkaiserbessel.cpp"
 #include "hlowpasskaiserbessel.h"
+#include "hhighpasskaiserbessel.h"
+#include "hbandpasskaiserbessel.h"
+#include "hbandstopkaiserbessel.h"
 
 /********************************************************************
 Debug and diagnostics

@@ -5,21 +5,19 @@
 
 template <class T>
 HFirFilter<T>::HFirFilter(HWriter<T>* writer, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
-    HFilter<T>(writer, blocksize, probe),
-    _length(length) {
+    HFilter<T>(writer, blocksize, probe) {
 
     HLog("HFirFilter(HWriter*)");
-    HLog("_length = %d", _length);
+    HLog("_length = %d", length);
     Init(coefficients, length);
 }
 
 template <class T>
 HFirFilter<T>::HFirFilter(HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
-    HFilter<T>(consumer, blocksize, probe),
-    _length(length) {
+    HFilter<T>(consumer, blocksize, probe) {
 
     HLog("HFirFilter(HWriterConsumer*)");
-    HLog("_length = %d", _length);
+    HLog("_length = %d", length);
     Init(coefficients, length);
 
     consumer->SetWriter(this);
@@ -27,11 +25,10 @@ HFirFilter<T>::HFirFilter(HWriterConsumer<T>* consumer, float* coefficients, int
 
 template <class T>
 HFirFilter<T>::HFirFilter(HReader<T>* reader, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
-    HFilter<T>(reader, blocksize, probe),
-    _length(length) {
+    HFilter<T>(reader, blocksize, probe) {
 
     HLog("HFirFilter(HReader*)");
-    HLog("_length = %d", _length);
+    HLog("_length = %d", length);
     Init(coefficients, length);
 }
 

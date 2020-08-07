@@ -143,9 +143,9 @@ bool parseArguments(int argc, char** argv)
             Config.FilterName = argCharCmp(argv[argNo], "-flt", argv[argNo + 1], Config.FilterName);
             Config.FilterCoeffs = argCharCmp(argv[argNo], "-flt", argv[argNo + 2], Config.FilterCoeffs);
 
-            Config.IsFilterSpectrumGnuPlot = argBoolCmp(argv[argNo], "-flgp", Config.IsFilterSpectrumGnuPlot);
-            Config.FilterName = argCharCmp(argv[argNo], "-flgp", argv[argNo + 1], Config.FilterName);
-            Config.FilterCoeffs = argCharCmp(argv[argNo], "-flgp", argv[argNo + 2], Config.FilterCoeffs);
+            Config.IsFilterSpectrumGnuPlot = argBoolCmp(argv[argNo], "-fl", Config.IsFilterSpectrumGnuPlot);
+            Config.FilterName = argCharCmp(argv[argNo], "-fl", argv[argNo + 1], Config.FilterName);
+            Config.FilterCoeffs = argCharCmp(argv[argNo], "-fl", argv[argNo + 2], Config.FilterCoeffs);
 
             Config.IsComb = argBoolCmp(argv[argNo], "-cbt", Config.IsComb);
             Config.Frequency = argIntCmp(argv[argNo], "-cbt", argv[argNo + 1], Config.Frequency);
@@ -200,100 +200,128 @@ bool parseArguments(int argc, char** argv)
             Config.Duration = argIntCmp(argv[argNo], "-sg", argv[argNo + 4], Config.Duration);
         }
 
+        if( argNo < argc - 4 )
+        {
+            Config.IsKaiserBesselSpectrum = argBoolCmp(argv[argNo], "-kb", Config.IsKaiserBesselSpectrum);
+            Config.FilterName = argCharCmp(argv[argNo], "-kb", argv[argNo + 1], Config.FilterName);
+            Config.FStart = argIntCmp(argv[argNo], "-kb", argv[argNo + 2], Config.FStart);
+            Config.FStop = argIntCmp(argv[argNo], "-kb", argv[argNo + 3], Config.FStop);
+            Config.Attenuation = argIntCmp(argv[argNo], "-kb", argv[argNo + 4], Config.Attenuation);
+            Config.Points = argIntCmp(argv[argNo], "-kb", argv[argNo + 5], Config.Points);
+
+            Config.IsKaiserBessel = argBoolCmp(argv[argNo], "-kbt", Config.IsKaiserBessel);
+            Config.FilterName = argCharCmp(argv[argNo], "-kbt", argv[argNo + 1], Config.FilterName);
+            Config.FStart = argIntCmp(argv[argNo], "-kbt", argv[argNo + 2], Config.FStart);
+            Config.FStop = argIntCmp(argv[argNo], "-kbt", argv[argNo + 3], Config.FStop);
+            Config.Attenuation = argIntCmp(argv[argNo], "-kbt", argv[argNo + 4], Config.Attenuation);
+            Config.Points = argIntCmp(argv[argNo], "-kbt", argv[argNo + 5], Config.Points);
+        }
+
         if( argBoolCmp(argv[argNo], "-h", false) )
         {
             std::cout << "Usage: dspcmd [option [value]]" << std::endl << std::endl;
-            std::cout << "-a                         Show a list of available audio devices" << std::endl;
-            std::cout << "-h                         Show this help" << std::endl;
-            std::cout << "-v                         Be verbose, dont write to logfiles but to stdout" << std::endl;
+            std::cout << "-a                            Show a list of available audio devices" << std::endl;
+            std::cout << "-h                            Show this help" << std::endl;
+            std::cout << "-v                            Be verbose, dont write to logfiles but to stdout" << std::endl;
             std::cout << std::endl;
             std::cout << "Get further help for each option below in the documentation which is installed" << std::endl;
             std::cout << "locally here: /usr/local/share/doc/hardt/html/index.html, or on the Hardt website" << std::endl;
             std::cout << "found at http://hardttoolkit.org/dspcmd.html" << std::endl;
             std::cout << std::endl;
-            std::cout << "-bs blocksize              Blocksize used by readers and writers (default = 1024)" << std::endl;
-            std::cout << "-f format                  Sample format (" << H_SAMPLE_FORMAT_INT_8 << "=Int8, " << H_SAMPLE_FORMAT_UINT_8 << "=UInt8, " << H_SAMPLE_FORMAT_INT_16 << "=Int16, " /*<< H_SAMPLE_FORMAT_INT_24 << "=Int24, "*/ << H_SAMPLE_FORMAT_INT_32 << "=Int32) (default " << H_SAMPLE_FORMAT_INT_16 << " = Int16)" << std::endl;
-            std::cout << "-ff pcm|wav                Type of filereader/filewriterwriter" << std::endl;
-            std::cout << "-id device                 Input audio device" << std::endl;
-            std::cout << "-if name                   Name and path of input file" << std::endl;
-            std::cout << "-od device                 Output audio device" << std::endl;
-            std::cout << "-of name                   Name and path of output file" << std::endl;
-            std::cout << "-force                     Force overwrite of existing file" << std::endl;
-            std::cout << "-r rate                    Sample rate (" << H_SAMPLE_RATE_8K << ", " << H_SAMPLE_RATE_11K << ", " << H_SAMPLE_RATE_22K << ", " << H_SAMPLE_RATE_32K << ", " << H_SAMPLE_RATE_44K1 << ", " << H_SAMPLE_RATE_48K << ", " << H_SAMPLE_RATE_96K << ", " << H_SAMPLE_RATE_192K << ") (default 48000)" << std::endl;
-            std::cout << "-start [YYYY-MM-DD ]hh:mm  Start time" << std::endl;
-            std::cout << "-stop [YYYY-MM-DD ]hh:mm   Stop time" << std::endl;
+            std::cout << "-bs blocksize                 Blocksize used by readers and writers (default = 1024)" << std::endl;
+            std::cout << "-f format                     Sample format (" << H_SAMPLE_FORMAT_INT_8 << "=Int8, " << H_SAMPLE_FORMAT_UINT_8 << "=UInt8, " << H_SAMPLE_FORMAT_INT_16 << "=Int16, " /*<< H_SAMPLE_FORMAT_INT_24 << "=Int24, "*/ << H_SAMPLE_FORMAT_INT_32 << "=Int32) (default " << H_SAMPLE_FORMAT_INT_16 << " = Int16)" << std::endl;
+            std::cout << "-ff pcm|wav                   Type of filereader/filewriterwriter" << std::endl;
+            std::cout << "-id device                    Input audio device" << std::endl;
+            std::cout << "-if name                      Name and path of input file" << std::endl;
+            std::cout << "-od device                    Output audio device" << std::endl;
+            std::cout << "-of name                      Name and path of output file" << std::endl;
+            std::cout << "-force                        Force overwrite of existing file" << std::endl;
+            std::cout << "-r rate                       Sample rate (" << H_SAMPLE_RATE_8K << ", " << H_SAMPLE_RATE_11K << ", " << H_SAMPLE_RATE_22K << ", " << H_SAMPLE_RATE_32K << ", " << H_SAMPLE_RATE_44K1 << ", " << H_SAMPLE_RATE_48K << ", " << H_SAMPLE_RATE_96K << ", " << H_SAMPLE_RATE_192K << ") (default 48000)" << std::endl;
+            std::cout << "-start [YYYY-MM-DD ]hh:mm     Start time" << std::endl;
+            std::cout << "-stop [YYYY-MM-DD ]hh:mm      Stop time" << std::endl;
             std::cout << std::endl;
-            std::cout << "-sg f p a d                Run as signalgenerator. f=frequency,p=phase,a=amplitude,d=duration(sec.)" << std::endl;
-            std::cout << std::endl;
-
-            std::cout << "-nc server port            Run as network client, reading from the network and writing to a local writer" << std::endl;
-            std::cout << "-ns port                   Run as network server, reading from a local reader and writing to the network" << std::endl;
+            std::cout << "-sg f p a d                   Run as signalgenerator. f=frequency,p=phase,a=amplitude,d=duration(sec.)" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-rf                        Record file" << std::endl;
-            std::cout << "-pf                        Play file" << std::endl;
+            std::cout << "-nc server port               Run as network client, reading from the network and writing to a local writer" << std::endl;
+            std::cout << "-ns port                      Run as network server, reading from a local reader and writing to the network" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-fmgp size                 Run FFT on a file and plot the magnitude spectrum on screen using GnuPlot" << std::endl;
-            std::cout << "-avg number                Take 'number' FFT's and return the average spectrum" << std::endl;
-            std::cout << "-pr xmin xmax              Set minimum and maximum on the x-axis when plotting (only GnuPlot)" << std::endl;
-            std::cout << "-pr xmin xmax ymin ymax    Set minimum and maximum on the x-axis when plotting (only GnuPlot)" << std::endl;
+            std::cout << "-rf                           Record file" << std::endl;
+            std::cout << "-pf                           Play file" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-fc in-format out-format   Convert input file format to output file format (same as in -ff)" << std::endl;
+            std::cout << "-fmgp size                    Run FFT on a file and plot the magnitude spectrum on screen using GnuPlot" << std::endl;
+            std::cout << "-avg number                   Take 'number' FFT's and return the average spectrum" << std::endl;
+            std::cout << "-pr xmin xmax                 Set minimum and maximum on the x-axis when plotting (only GnuPlot)" << std::endl;
+            std::cout << "-pr xmin xmax ymin ymax       Set minimum and maximum on the x-axis when plotting (only GnuPlot)" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-cr in-format out-format   Run the input file through a clickremoval filter." << std::endl;
+            std::cout << "-fc in-format out-format      Convert input file format to output file format (same as in -ff)" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-mx file1 file2            Mix (linear) file1 and file2" << std::endl;
-            std::cout << "-sb file1 file2            Subtract file1 and file2" << std::endl;
-            std::cout << "-mp frequency              Multiply (mix nonlinear) with localoscilator signal running at frequency" << std::endl;
+            std::cout << "-cr in-format out-format      Run the input file through a clickremoval filter." << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-flt filtername coeffs     Read coefficients from coeffs and run file through filter name (HIirFilter|HFirFilter)" << std::endl;
-            std::cout << "-flgp filtername coeffs    Read coefficients from coeffs and (Gnu)plot filter response for filter name  (HIirFilter|HFirFilter)" << std::endl;
+            std::cout << "-mx file1 file2               Mix (linear) file1 and file2" << std::endl;
+            std::cout << "-sb file1 file2               Subtract file1 and file2" << std::endl;
+            std::cout << "-mp frequency                 Multiply (mix nonlinear) with localoscilator signal running at frequency" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-bq name Fcutoff Q G       Create biquad filter, dump coefficients and run sweep" << std::endl;
-            std::cout << "-bqt name Fcutoff Q G      Create biquad filter and run file through the filter" << std::endl;
+            std::cout << "-flt name coeffs              Read coefficients from coeffs and run file through filter name (HIirFilter|HFirFilter)" << std::endl;
+            std::cout << "-fl name coeffs               Read coefficients from coeffs and (Gnu)plot filter response for filter name  (HIirFilter|HFirFilter)" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-bqc coeffs                Create cascaded biquad filter from the given coefficients in 'coeffs' and run sweep" << std::endl;
-            std::cout << "-bgct coeffs               Create cascaded biquad filter from the given coefficients in 'coeffs' and run file through the filter" << std::endl;
+            std::cout << "-bq name Fcutoff Q G          Create biquad filter, dump coefficients and run sweep" << std::endl;
+            std::cout << "-bqt name Fcutoff Q G         Create biquad filter and run file through the filter" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-g gain                    Run file through gain filter" << std::endl;
+            std::cout << "-bqc coeffs                   Create cascaded biquad filter from the given coefficients in 'coeffs' and run sweep" << std::endl;
+            std::cout << "-bgct coeffs                  Create cascaded biquad filter from the given coefficients in 'coeffs' and run file through the filter" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-cb fBase alpha            Sweep a comb filter with base frequency fBase and alpha (gain)" << std::endl;
-            std::cout << "-cbt fBase alpha           Run a file through a comb filter with base frequency fBase and alpha (gain)" << std::endl;
+            std::cout << "-kb name start stop att pts   Create Kaiser-Bessel filter, dump coefficients and run sweep" << std::endl;
+            std::cout << "-kbt name start stop att pts  Create Kaiser-Bessel filter and run file through the filter" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-hm fBase fCutoff          Sweep a hum filter with base frequency fBase and cutoff frequency fCutoff" << std::endl;
-            std::cout << "-hmt fBase fCutoff         Run a file through a hum filter with base frequency fBase and cutoff frequency fCutoff" << std::endl;
+            std::cout << "-g gain                       Run file through gain filter" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-gz                        Sweep a file by running the individual bins through a Goertzl filter" << std::endl;
+            std::cout << "-cb fBase alpha               Sweep a comb filter with base frequency fBase and alpha (gain)" << std::endl;
+            std::cout << "-cbt fBase alpha              Run a file through a comb filter with base frequency fBase and alpha (gain)" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-ma num                    Create moving average filter and run sweep" << std::endl;
-            std::cout << "-mat num                   Create moving average filter and run file through the filter" << std::endl;
+            std::cout << "-hm fBase fCutoff             Sweep a hum filter with base frequency fBase and cutoff frequency fCutoff" << std::endl;
+            std::cout << "-hmt fBase fCutoff            Run a file through a hum filter with base frequency fBase and cutoff frequency fCutoff" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-riq                       Convert realvalued samples to IQ samples" << std::endl;
+            std::cout << "-gz                           Sweep a file by running the individual bins through a Goertzl filter" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-fft                       Convert input signal to FFT" << std::endl;
-            std::cout << "-ifft                      Convert input FFT to IFFT (signal)" << std::endl;
+            std::cout << "-ma num                       Create moving average filter and run sweep" << std::endl;
+            std::cout << "-mat num                      Create moving average filter and run file through the filter" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-dmx                       Demultiplex samples into two separate files" << std::endl;
+            std::cout << "-riq                          Convert realvalued samples to IQ samples" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "-dcm factor                Decimate input samples by a factor" << std::endl;
-            std::cout << "-up factor                 Upsample input samples by a factor" << std::endl;
-            std::cout << "-ip factor coeffs          Interpolate input samples by a factor with FIR coefficients from 'coeffs'" << std::endl;
+            std::cout << "-fft                          Convert input signal to FFT" << std::endl;
+            std::cout << "-ifft                         Convert input FFT to IFFT (signal)" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "-dmx                          Demultiplex samples into two separate files" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "-dcm factor                   Decimate input samples by a factor" << std::endl;
+            std::cout << "-up factor                    Upsample input samples by a factor" << std::endl;
+            std::cout << "-ip factor coeffs             Interpolate input samples by a factor with FIR coefficients from 'coeffs'" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "When creating filters, 'name' is the corresponding API name for the filter or calculator.:" << std::endl;
+            std::cout << "* Regular filters (-fl/-flt)......: HFirFilter, HIirFilter" << std::endl;
+            std::cout << "* BiQuad filters (-bq/-bqt).......: HLowpassBiQuad, HhighpassBiQuad, HbandpassBiQuad, HNotchBiQuad, HAllpassBiQuad" << std::endl;
+            std::cout << "                                    HPeakingEQBiQuad, HLowShelvingBiQuad, HHighShelvingBiQuad" << std::endl;
+            std::cout << "* Kaiser-Bessel filter (-kb/-kbt).: HLowpassKaiserBessel, HHighpassKaiserBessel, HBandpassKaiserBessel, HBandstopKaiserBessel" << std::endl;
             std::cout << std::endl;
 
             // Force exit

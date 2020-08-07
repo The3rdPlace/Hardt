@@ -1143,6 +1143,151 @@ int RunBiQuadFilter()
 }
 
 template <typename T>
+int RunKaiserBesselSpectrum()
+{
+    // Create reader
+    FilterSpectrumReader<T> rd;
+
+    // Create  filter
+    HFirFilter<T>* filter;
+    if( strcmp(Config.FilterName, "HLowpassKaiserBessel") == 0 )
+    {
+        HLowpassKaiserBessel<T> kb(Config.FStop, Config.Rate, Config.Points, Config.Attenuation);
+        filter = new HFirFilter<T>(rd.Reader(), kb.Calculate(), Config.Points, Config.Blocksize );
+    }
+    else if( strcmp(Config.FilterName, "HHighpassKaiserBessel") == 0 )
+    {
+        HHighpassKaiserBessel<T> kb(Config.FStart, Config.Rate, Config.Points, Config.Attenuation);
+        filter = new HFirFilter<T>(rd.Reader(), kb.Calculate(), Config.Points, Config.Blocksize );
+    }
+    else if( strcmp(Config.FilterName, "HBandpassKaiserBessel") == 0 )
+    {
+        HBandpassKaiserBessel<T> kb(Config.FStart, Config.FStop, Config.Rate, Config.Points, Config.Attenuation);
+        filter = new HFirFilter<T>(rd.Reader(), kb.Calculate(), Config.Points, Config.Blocksize );
+    }
+    else if( strcmp(Config.FilterName, "HBandstopKaiserBessel") == 0 )
+    {
+        HBandstopKaiserBessel<T> kb(Config.FStart, Config.FStop, Config.Rate, Config.Points, Config.Attenuation);
+        filter = new HFirFilter<T>(rd.Reader(), kb.Calculate(), Config.Points, Config.Blocksize );
+    }
+    else
+    {
+        std::cout << "Unknown filtername " << Config.FilterName << std::endl;
+        return -1;
+    }
+
+    // Dump the filter coefficients
+    std::vector<float> coeffs = filter->GetCoefficients();
+    std::ofstream stream;
+    stream.open(Config.OutputFile);
+    for( int i = 0; i < coeffs.size(); i++ ) {
+        stream << coeffs[i] << std::endl;
+    }
+    stream.close();
+
+    // Create writer
+    HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
+
+    // Create FFT
+    HFftOutput<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
+
+    // Buffer for the accumulated spectrum values
+    aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
+
+    // Create processor
+    HStreamProcessor<T> proc(&fft, filter->Reader(), Config.Blocksize, &terminated);
+    std::cout << "Sweep from 0Hz - " << (Config.Rate / 2) << "Hz" << std::endl;
+    proc.Run();
+
+    // Display the final plot
+    FFTMagnitudeShowGnuDBPlot<T>(rd.GetRef());
+
+    return 0;
+}
+
+template <typename T>
+int RunKaiserBesselFilter()
+{
+    // Create reader
+    HReader<T>* rd;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        rd = new HWavReader<T>(Config.InputFile);
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        rd = new HFileReader<T>(Config.InputFile);
+    }
+    else
+    {
+        std::cout << "Unknown input file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+    // Create writer
+    HWriter<T>* wr;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        wr = new HFileWriter<T>(Config.OutputFile);
+    }
+    else
+    {
+        std::cout << "Unknown output file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+    // Create  filter
+    HFilter<T>* filter;
+    if( strcmp(Config.FilterName, "HLowpasskaiserBessel") == 0 )
+    {
+        HLowpassKaiserBessel<T> kb(Config.FStop, Config.Rate, Config.Points, Config.Attenuation);
+        filter = new HFirFilter<T>(rd, kb.Calculate(), Config.Points, Config.Blocksize);
+    }
+    else if( strcmp(Config.FilterName, "HHighpassKaiserBessel") == 0 )
+    {
+        HHighpassKaiserBessel<T> kb(Config.FStart, Config.Rate, Config.Points, Config.Attenuation);
+        filter = new HFirFilter<T>(rd, kb.Calculate(), Config.Points, Config.Blocksize );
+    }
+    else if( strcmp(Config.FilterName, "HBandpassKaiserBessel") == 0 )
+    {
+        HBandpassKaiserBessel<T> kb(Config.FStart, Config.FStop, Config.Rate, Config.Points, Config.Attenuation);
+        filter = new HFirFilter<T>(rd, kb.Calculate(), Config.Points, Config.Blocksize );
+    }
+    else if( strcmp(Config.FilterName, "HBandstopKaiserBessel") == 0 )
+    {
+        HBandstopKaiserBessel<T> kb(Config.FStart, Config.FStop, Config.Rate, Config.Points, Config.Attenuation);
+        filter = new HFirFilter<T>(rd, kb.Calculate(), Config.Points, Config.Blocksize );
+    }
+    else
+    {
+        std::cout << "Unknown filtername " << Config.FilterName << std::endl;
+        return -1;
+    }
+
+    // Create processor
+    HStreamProcessor<T> proc(wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
+    proc.Run();
+
+    // Delete the reader and writer
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        delete (HWavReader<T>*) rd;
+        delete (HWavWriter<T>*) wr;
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        delete (HFileReader<T>*) rd;
+        delete (HFileWriter<T>*) wr;
+    }
+
+    return 0;
+}
+
+template <typename T>
 int RunGain()
 {
     // Create reader
@@ -2406,6 +2551,43 @@ int RunOperation()
         }
 
         return RunBiQuadFilter<T>();
+    }
+
+    if( Config.IsKaiserBesselSpectrum )
+    {
+        if( Config.FilterName == NULL )
+        {
+            std::cout << "No filter name (-kb name start stop att)" << std::endl;
+            return -1;
+        }
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file, for the coefficients (-of)" << std::endl;
+            return -1;
+        }
+
+        return RunKaiserBesselSpectrum<T>();
+    }
+
+    if( Config.IsKaiserBessel )
+    {
+        if( Config.FilterName == NULL )
+        {
+            std::cout << "No filter name (-kbt name start stop att)" << std::endl;
+            return -1;
+        }
+        if( Config.InputFile == NULL )
+        {
+            std::cout << "No input file (-if)" << std::endl;
+            return -1;
+        }
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file (-of)" << std::endl;
+            return -1;
+        }
+
+        return RunKaiserBesselFilter<T>();
     }
 
     if( Config.IsGain )

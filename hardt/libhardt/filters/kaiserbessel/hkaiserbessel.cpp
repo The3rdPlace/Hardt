@@ -19,7 +19,7 @@ template <class T>
 float* HKaiserBessel<T>::Calculate() {
 
     // Let specific filter implementations carry out any needed modifications to the coefficients
-    Calculate(_coefficients, _points);
+    Modify(_coefficients, _points);
 
     // return the finished coefficients
     return _coefficients;

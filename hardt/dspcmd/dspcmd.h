@@ -454,6 +454,17 @@
     given with the -if parameter through the filter and write the results to the file given
     with the -of parameter.
 
+    \page kb
+    Syntax: dspcmd -kb name start stop att
+
+    Create Kaiser-Bessel filter with F-start = 'start' and F-stop = 'stop' and attenuation 'add'.
+    dump coefficients and run sweep.
+
+     \page kbt
+    Syntax: dspcmd -kbt name start stop att
+
+    Create Kaiser-Bessel filter with F-start = 'start' and F-stop = 'stop' and attenuation 'add',
+    then run the file given with '-if' through the filter.
 
     \page g
     Syntax: dspcmd -g gain

@@ -20,11 +20,11 @@ class HKaiserBessel
 
         int _points;
         float* _coefficients;
-        
-        // Called to do additional calculations 
+
+        // Called to do additional calculations
         // (only a band-stop filter requires manipulation of the coefficients)
-        virtual void Calculate(float* coefficients, int points) {
-            // Most filter types require no further coefficients manipulation
+        virtual void Modify(float* coefficients, int points) {
+
         };
 
     protected:
