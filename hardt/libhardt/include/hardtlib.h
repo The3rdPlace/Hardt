@@ -101,6 +101,7 @@ Include api function declarations
 #include "hinterpolator.cpp"
 #include "hupsampler.h"
 #include "hkaiserbessel.cpp"
+#include "hlowpasskaiserbessel.h"
 
 /********************************************************************
 Debug and diagnostics

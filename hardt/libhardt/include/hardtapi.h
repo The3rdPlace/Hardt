@@ -90,5 +90,9 @@
 #include "hinterpolator.h"
 #include "hupsampler.h"
 #include "hkaiserbessel.h"
+#include "hlowpasskaiserbessel.h"
+#include "hhighpasskaiserbessel.h"
+#include "hbandpasskaiserbessel.h"
+#include "hbandstopkaiserbessel.h"
 
 #endif

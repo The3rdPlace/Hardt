@@ -18,20 +18,31 @@ class HKaiserBessel
 {
     private:
 
-        // Todo: add coefficients
-
-        // Todo: add parameters 
+        int _points;
+        float* _coefficients;
         
         // Called to do additional calculations 
         // (only a band-stop filter requires manipulation of the coefficients)
-        virtual float Calculate(float* coefficients, int points) = 0;
+        virtual void Calculate(float* coefficients, int points) {
+            // Most filter types require no further coefficients manipulation
+        };
 
     protected:
 
-        /** Construct a new HBiQuad */
+        /** Construct a new Kaiser-Bessel */
         HKaiserBessel(int fa, int fb, float rate, int points, int att);
 
+        /** Destroy an instance of af KaiserBessel object */
+        ~HKaiserBessel() {
+            delete _coefficients;
+        }
+
     public:
+
+        /** Get the coefficients as they where calculated by the last call to Calculate() */
+        float GetCoefficients() {
+            return _coefficients;
+        }
 
         /** Get FIR coefficients */
         float* Calculate();

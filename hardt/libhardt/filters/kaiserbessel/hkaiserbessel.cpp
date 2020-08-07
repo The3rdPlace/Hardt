@@ -4,20 +4,25 @@
 #include "hkaiserbessel.h"
 
 template <class T>
-HKaiserBessel<T>::HKaiserBessel(int fa, int fb, float rate, int points, int att)
-{
+HKaiserBessel<T>::HKaiserBessel(int fa, int fb, float rate, int points, int att): _points(points) {
+
     // Todo: Calculate filter coefficients. These will cover lowpass, highpass,
     //       and bandpass filters. Bandstop filters requires further manipulation
     //       which must be done by implementing the pure virtual 'void Calculate()' 
     //       function in the relevant filter class.
+
+    // Coefficients buffer
+    _coefficients = new float[_points];
 }
 
 template <class T>
-float* HKaiserBessel<T>::Calculate()
-{
-    // Todo: Return the filter coefficints
-    // return Calculate( coefficients, points );
-    return nullptr;
+float* HKaiserBessel<T>::Calculate() {
+
+    // Let specific filter implementations carry out any needed modifications to the coefficients
+    Calculate(_coefficients, _points);
+
+    // return the finished coefficients
+    return _coefficients;
 }
 
 /********************************************************************
