@@ -40,7 +40,7 @@ class HKaiserBessel
     public:
 
         /** Get the coefficients as they where calculated by the last call to Calculate() */
-        float GetCoefficients() {
+        float* GetCoefficients() {
             return _coefficients;
         }
 
