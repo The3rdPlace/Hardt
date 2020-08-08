@@ -20,15 +20,21 @@ class HKaiserBessel
 
         int _points;
         float* _coefficients;
+        int _fa;
+        int _fb;
+        int _rate;
+        int _att;
 
         // Called to do additional calculations
         // (only a band-stop filter requires manipulation of the coefficients)
         virtual void Modify(float* coefficients, int points) {};
 
+        float ZeroOrderBessel(float x);
+
     protected:
 
         /** Construct a new Kaiser-Bessel */
-        HKaiserBessel(int fa, int fb, float rate, int points, int att);
+        HKaiserBessel(int fa, int fb, int rate, int points, int att);
 
         /** Destroy an instance of af KaiserBessel object */
         ~HKaiserBessel() {

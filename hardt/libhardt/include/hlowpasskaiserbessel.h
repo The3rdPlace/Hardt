@@ -11,7 +11,7 @@ class HLowpassKaiserBessel : public HKaiserBessel<T>
 
         /** Construct a new Kaiser-Bessel filter */
         HLowpassKaiserBessel(int fstop, H_SAMPLE_RATE rate, int points, int att):
-            HKaiserBessel<T>(0, fstop, (float) rate, points, att) {}
+            HKaiserBessel<T>(0, fstop, rate, points, att) {}
 };
 
 #endif

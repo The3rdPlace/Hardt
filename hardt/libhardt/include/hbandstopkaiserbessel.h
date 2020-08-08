@@ -18,7 +18,7 @@ class HBandstopKaiserBessel : public HKaiserBessel<T>
 
         /** Construct a new Kaiser-Bessel filter */
         HBandstopKaiserBessel(int fstart, int fstop, H_SAMPLE_RATE rate, int points, int att):
-            HKaiserBessel<T>(fstart, fstop, (float) rate, points, att) {}
+            HKaiserBessel<T>(fstart, fstop, rate, points, att) {}
 };
 
 #endif
