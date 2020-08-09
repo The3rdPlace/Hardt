@@ -1156,11 +1156,13 @@ int RunKaiserBesselSpectrum()
     {
         HLowpassKaiserBessel<T> kb(Config.FStop, Config.Rate, Config.Points, Config.Attenuation);
         filter = new HFirFilter<T>(rd.Reader(), kb.Calculate(), Config.Points, Config.Blocksize );
+        std::cout << "Ignoring Fstart for lowpass Kaiser-Bessel filter" << std::endl;
     }
     else if( strcmp(Config.FilterName, "HHighpassKaiserBessel") == 0 )
     {
         HHighpassKaiserBessel<T> kb(Config.FStart, Config.Rate, Config.Points, Config.Attenuation);
         filter = new HFirFilter<T>(rd.Reader(), kb.Calculate(), Config.Points, Config.Blocksize );
+        std::cout << "Ignoring Fstop for highpass Kaiser-Bessel filter" << std::endl;
     }
     else if( strcmp(Config.FilterName, "HBandpassKaiserBessel") == 0 )
     {

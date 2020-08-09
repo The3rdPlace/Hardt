@@ -40,12 +40,12 @@ float HKaiserBessel<T>::ZeroOrderBessel(float x)
 template <class T>
 float* HKaiserBessel<T>::Calculate() {
 
-    int Np = (_points / 2);
+    int Np = ((_points - 1) / 2);
     float* A = new float[Np];
 
     // Calculate the impulse response of the ideal filter
     // (Split up the parts of the calculation to ensure proper casting)
-    A[0] = 2 * (_fb - _fa) / _rate;
+    A[0] = 2 * ((float) _fb - (float) _fa) / (float) _rate;
     for( int j = 1; j <= Np; j++ )
     {
         float x = 2 * j * M_PI * ((float) _fb / (float) _rate);

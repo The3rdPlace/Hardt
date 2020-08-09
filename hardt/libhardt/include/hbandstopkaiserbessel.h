@@ -11,7 +11,15 @@ class HBandstopKaiserBessel : public HKaiserBessel<T>
     private:
 
         void Modify(float* coefficients, int points) {
-            // Todo: modify coefficients
+
+            int Np = ((points - 1) / 2);
+
+            coefficients[Np] = 1- coefficients[Np];
+            for( int i = 0; i < Np; i++ ) {
+                coefficients[i] *= -1;
+                coefficients[Np + 1 + i] *= -1;
+            }
+
         };
 
     public:

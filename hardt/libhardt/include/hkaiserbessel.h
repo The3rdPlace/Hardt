@@ -3,7 +3,9 @@
 
 /**
     Kaiser-Bessel filter FIR coefficients can be calculated using standard equations.
-    One example is here: https://arc.id.au/FilterDesign.html 
+
+     The calculation of the coefficients are heavily inspired by
+    the excelent page here: https://arc.id.au/FilterDesign.html
 
     Create a new Kaiser-Bessel filter of a specific type, then get the coefficients
     by calling 'Calculate()' and pass them to a HFirFilter (or HFir if you need to do
