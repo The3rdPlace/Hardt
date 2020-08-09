@@ -939,6 +939,7 @@ int RunFilterSpectrum()
     HFilter<T>* filter;
     if( strcmp(Config.FilterName, "HFirFilter") == 0 )
     {
+        std::cout << "coefs: " << Config.FilterCoeffs << std::endl;
         filter = HFirFilter<T>::Create((HReader<T>*) &rd, Config.Blocksize, Config.FilterCoeffs);
     }
     else if( strcmp(Config.FilterName, "HIirFilter") == 0 )
@@ -1021,6 +1022,7 @@ int RunBiQuadSpectrum()
     std::vector<float> coeffs = ((HIirFilter<T>*) filter)->GetCoefficients();
     std::ofstream stream;
     stream.open(Config.OutputFile);
+    stream << std::fixed;
     stream << coeffs[0] << std::endl;
     stream << coeffs[1] << std::endl;
     stream << coeffs[2] << std::endl;
@@ -1180,6 +1182,7 @@ int RunKaiserBesselSpectrum()
     std::vector<float> coeffs = filter->GetCoefficients();
     std::ofstream stream;
     stream.open(Config.OutputFile);
+    stream << std::fixed;
     for( int i = 0; i < coeffs.size(); i++ ) {
         stream << coeffs[i] << std::endl;
     }
