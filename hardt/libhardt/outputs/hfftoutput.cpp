@@ -11,26 +11,29 @@
 #include <valarray>
 
 template <class T>
-HFftOutput<T>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* window):
+HFftOutput<T>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* window, int zoom, int center):
     HOutput<T, HFftResults>(writer, size),
     _size(size),
     _average(average),
     _count(0),
-    _window(window)
+    _window(window),
+    _zoom(zoom),
+    _center(center)
 {
-    HLog("HFftOutput(%d, %d, ...)", size, average);
+    HLog("HFftOutput(%d, %d, ..., %d, %d)", size, average, zoom, center);
     Init();
 }
 
 template <class T>
-HFftOutput<T>::HFftOutput(int size, int average, HWriterConsumer<T>* consumer, HWindow<T>* window):
+HFftOutput<T>::HFftOutput(int size, int average, HWriterConsumer<T>* consumer, HWindow<T>* window, int zoom, int center):
     HOutput<T, HFftResults>(size, consumer),
     _size(size),
     _average(average),
     _count(0),
-    _window(window)
+    _window(window),
+    _center(center)
 {
-    HLog("HFftOutput(%d, %d, ...)", size, average);
+    HLog("HFftOutput(%d, %d, ..., %d, %d)", size, average, zoom, center);
     Init();
 }
 
@@ -60,6 +63,18 @@ void HFftOutput<T>::Init()
 template <class T>
 int HFftOutput<T>::Output(T* src, size_t size)
 {
+    /*
+    HBlockProcessor proc(size);
+    mult = proc.Add(HMultiplier.Writer());
+    filt = proc.Add(HFirFilter.Writer());
+    dec = proc.Add(HDecimator.Writer());
+    T* scaled = proc.Run();
+    if( scaled == nullptr ) {
+        return size;
+    }
+    */
+
+    //_fft->FFT(scaled, _fftResult);
     _fft->FFT(src, _fftResult);
     for( int i = 0; i < size / 2; i++ ) {
         _result[i] += _fftResult[i];
@@ -103,28 +118,28 @@ Explicit instantiation
 //! @cond Doxygen_Suppress
 
 template
-HFftOutput<int8_t>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<int8_t>* window);
+HFftOutput<int8_t>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<int8_t>* window, int zoom, int center);
 
 template
-HFftOutput<uint8_t>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<uint8_t>* window);
+HFftOutput<uint8_t>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<uint8_t>* window, int zoom, int center);
 
 template
-HFftOutput<int16_t>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<int16_t>* window);
+HFftOutput<int16_t>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<int16_t>* window, int zoom, int center);
 
 template
-HFftOutput<int32_t>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<int32_t>* window);
+HFftOutput<int32_t>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<int32_t>* window, int zoom, int center);
 
 template
-HFftOutput<int8_t>::HFftOutput(int size, int average, HWriterConsumer<int8_t>* consumer, HWindow<int8_t>* window);
+HFftOutput<int8_t>::HFftOutput(int size, int average, HWriterConsumer<int8_t>* consumer, HWindow<int8_t>* window, int zoom, int center);
 
 template
-HFftOutput<uint8_t>::HFftOutput(int size, int average, HWriterConsumer<uint8_t>* consumer, HWindow<uint8_t>* window);
+HFftOutput<uint8_t>::HFftOutput(int size, int average, HWriterConsumer<uint8_t>* consumer, HWindow<uint8_t>* window, int zoom, int center);
 
 template
-HFftOutput<int16_t>::HFftOutput(int size, int average, HWriterConsumer<int16_t>* consumer, HWindow<int16_t>* window);
+HFftOutput<int16_t>::HFftOutput(int size, int average, HWriterConsumer<int16_t>* consumer, HWindow<int16_t>* window, int zoom, int center);
 
 template
-HFftOutput<int32_t>::HFftOutput(int size, int average, HWriterConsumer<int32_t>* consumer, HWindow<int32_t>* window);
+HFftOutput<int32_t>::HFftOutput(int size, int average, HWriterConsumer<int32_t>* consumer, HWindow<int32_t>* window, int zoom, int center);
 
 template
 int HFftOutput<int8_t>::Output(int8_t* src, size_t size);
