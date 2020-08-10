@@ -4,6 +4,7 @@
 class Test;
 extern std::vector<Test*> tests;
 
+extern bool run_unit_tests;
 extern bool run_integration_tests;
 
 class Test
@@ -432,7 +433,8 @@ class Test
         virtual const char* name() = 0;
 };
 
-#define UNITTEST(a) std::cout << "* Running unittest: " << #a << std::endl; a();
+#define TEST(a) std::cout << "* Running test: " << #a << std::endl; a();
+#define UNITTEST(a) if( run_unit_tests ) { std::cout << "* Running unittest: " << #a << std::endl; a(); } else { std::cout << "- Skipping unittest: " << #a << std::endl; }
 #define INTEGRATIONTEST(a) if( run_integration_tests ) { std::cout << "* Running integrationtest: " << #a << std::endl; a(); } else { std::cout << "- Skipping integrationtest: " << #a << std::endl; }
 
 #define ASSERT_IS_EQUAL(a, b) assertIsEqual(__FILE__,__LINE__, a, b)

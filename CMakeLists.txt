@@ -72,7 +72,7 @@ if(DOXYGEN_FOUND)
 	    COMMAND sudo chown -R $ENV{USER} dist
 	    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 
-    	add_dependencies( dist integrationtest documentation )
+    	add_dependencies( dist integrationtests documentation )
 
      	ADD_CUSTOM_TARGET( publish
             COMMAND ../publish.sh)

@@ -10,6 +10,7 @@ std::vector<Test*> tests;
 int Test::failed;
 char* Test::sourceDir;
 
+bool run_unit_tests = false;
 bool run_integration_tests = false;
 
 int main(int argc, char **argv)
@@ -20,9 +21,13 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    // Should we run integration tests ?
+    // Should we run unit or integration tests ?
     for( int i = 1; i < argc; i++ )
     {
+        if( strcmp(argv[i], "-ut") == 0 )
+        {
+            run_unit_tests = true;
+        }
         if( strcmp(argv[i], "-it") == 0 )
         {
             run_integration_tests = true;
