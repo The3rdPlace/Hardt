@@ -39,10 +39,10 @@ float HKaiserBessel<T>::ZeroOrderBessel(float x)
     do
     {
         d += 2;
-        ds *= x*x/(d*d);
+        ds *= pow(x, 2) / pow(d, 2);
         s += ds;
     }
-    while (ds > s*1e-6);
+    while (ds > s * 1e-6);
 
     return s;
 }
@@ -90,9 +90,6 @@ float* HKaiserBessel<T>::Calculate() {
         _coefficients[Np + j] = A[j] * ZeroOrderBessel( Alpha * sqrt(1 - (j*j/(Np*Np)) ) ) / Inoalpha;
     }
 
-    // Cleanup, unused variable
-    delete[] A;
-
     // Fill in the right-side coefficients since these are
     // equal to the left-side coefficients.
     for( int j=0; j < Np; j++ )
@@ -102,6 +99,9 @@ float* HKaiserBessel<T>::Calculate() {
 
     // Let specific filter implementations carry out any needed modifications to the coefficients
     Modify(_coefficients, _points);
+
+    // Cleanup, unused variable
+    delete[] A;
 
     // return the finished coefficients
     return _coefficients;
