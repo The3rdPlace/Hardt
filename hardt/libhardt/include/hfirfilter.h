@@ -20,8 +20,6 @@ class HFirFilter : public HFilter<T>
     private:
 
         HFir<T>* _fir;
-        //int _length;
-        //T* _taps;
 
         void Init(float* coefficients, int length);
 

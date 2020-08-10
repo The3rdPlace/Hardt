@@ -51,7 +51,7 @@ template <class T>
 float* HKaiserBessel<T>::Calculate() {
 
     int Np = ((_points - 1) / 2);
-    float* A = new float[Np];
+    float* A = new float[Np + 1];
 
     // Calculate the impulse response of the ideal filter
     // (Split up the parts of the calculation to ensure proper casting)
@@ -88,9 +88,11 @@ float* HKaiserBessel<T>::Calculate() {
     for( int j = 0; j <= Np; j++ )
     {
         _coefficients[Np + j] = A[j] * ZeroOrderBessel( Alpha * sqrt(1 - (j*j/(Np*Np)) ) ) / Inoalpha;
-        printf("%f, ", _coefficients[Np + j]);
     }
-printf("\n-----\n");
+
+    // Cleanup, unused variable
+    delete[] A;
+
     // Fill in the right-side coefficients since these are
     // equal to the left-side coefficients.
     for( int j=0; j < Np; j++ )
