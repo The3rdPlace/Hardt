@@ -9,16 +9,18 @@ class HKaiserBessels_Test: public Test
 
         void run()
         {
-            // Since the HKaiserBessel filter is merely a thin wrapper on
-            // top of the HFirFilter, we only test the various Kaiser-Bessel
-            // filters as writer. Reading and using the consumer pattern is
-            // tested thoroughly by the FirFilter tests etc. We also do not
-            // need to test command passing as this is also tested elsewhere
-
-            UNITTEST(test_lowpass);
-            UNITTEST(test_highpass);
-            UNITTEST(test_bandpass);
-            UNITTEST(test_bandstop);
+            UNITTEST(test_lowpass_low);
+            UNITTEST(test_lowpass_med);
+            UNITTEST(test_lowpass_high);
+            UNITTEST(test_highpass_low);
+            UNITTEST(test_highpass_med);
+            UNITTEST(test_highpass_high);
+            UNITTEST(test_bandpass_low);
+            UNITTEST(test_bandpass_med);
+            UNITTEST(test_bandpass_high);
+            UNITTEST(test_bandstop_low);
+            UNITTEST(test_bandstop_med);
+            UNITTEST(test_bandstop_high);
         }
 
         const char* name()
@@ -28,33 +30,173 @@ class HKaiserBessels_Test: public Test
 
     private:
 
-        void test_lowpass()
+        void test_lowpass_low()
         {
-            /*
-            int16_t input[6] = {1, 2, 3, 4, 5, 6};
-            int16_t expected[6] = {0, 0, 0, 0, 0, 0};
+            float expected[15] = {-0.045125, -0.037555, -0.008351, 0.039747, 0.097985, 0.153690, 0.193733, 0.208292, 0.193733, 0.153690, 0.097985, 0.039747, -0.008351, -0.037555, -0.045125};
 
-            TestWriter<int16_t> wr(6);
-            HFirFilter<int16_t> filter(wr.Writer(), HLowpassKaiserBessel( ... ).Calculate() );
+            HLowpassKaiserBessel<int16_t> kb(5000, H_SAMPLE_RATE_48K, 15, 20);
+            float* coefficients = kb.Calculate();
 
-            ASSERT_IS_EQUAL(filter.Write(input, 6), 6);
-            for( int i = 0; i < 6; i++ ) {
-                std::cout << "received[" << i << "] = " << std::to_string(wr.Received[i]) << std::endl;
+            for( int i = 0; i < 15; i++ ) {
+                if( round( coefficients[i] * 1000000 ) != round( expected[i] * 1000000 ) ) {
+                    ASSERT_FAIL("Coefficients differ: " + std::to_string(coefficients[i]) + " != " + std::to_string(expected[i]));
+                }
             }
-            //ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, 6), 0);
-            */
         }
 
-        void test_highpass()
+        void test_lowpass_med()
         {
+            float expected[15] = {-0.002506, -0.037555, -0.008351, 0.039747, 0.097985, 0.153690, 0.193733, 0.208292, 0.193733, 0.153690, 0.097985, 0.039747, -0.008351, -0.037555, -0.002506};
+
+            HLowpassKaiserBessel<int16_t> kb(5000, H_SAMPLE_RATE_48K, 15, 50);
+            float* coefficients = kb.Calculate();
+
+            for( int i = 0; i < 15; i++ ) {
+                if( round( coefficients[i] * 1000000 ) != round( expected[i] * 1000000 ) ) {
+                    ASSERT_FAIL("Coefficients differ: " + std::to_string(coefficients[i]) + " != " + std::to_string(expected[i]));
+                }
+            }
         }
 
-        void test_bandpass()
+        void test_lowpass_high()
         {
+            float expected[15] = {-0.000920, -0.037555, -0.008351, 0.039747, 0.097985, 0.153690, 0.193733, 0.208292, 0.193733, 0.153690, 0.097985, 0.039747, -0.008351, -0.037555, -0.000920};
+
+            HLowpassKaiserBessel<int16_t> kb(5000, H_SAMPLE_RATE_48K, 15, 60);
+            float* coefficients = kb.Calculate();
+
+            for( int i = 0; i < 15; i++ ) {
+                if( round( coefficients[i] * 1000000 ) != round( expected[i] * 1000000 ) ) {
+                    ASSERT_FAIL("Coefficients differ: " + std::to_string(coefficients[i]) + " != " + std::to_string(expected[i]));
+                }
+            }
         }
 
-        void test_bandstop()
+        void test_highpass_low()
         {
+            float expected[15] = {0.045084, 0.037513, 0.008310, -0.039789, -0.098027, -0.153732, -0.193775, 0.791667, -0.193775, -0.153732, -0.098027, -0.039789, 0.008310, 0.037513, 0.045084};
+
+            HHighpassKaiserBessel<int16_t> kb(5000, H_SAMPLE_RATE_48K, 15, 20);
+            float* coefficients = kb.Calculate();
+
+            for( int i = 0; i < 15; i++ ) {
+                if( round( coefficients[i] * 1000000 ) != round( expected[i] * 1000000 ) ) {
+                    ASSERT_FAIL("Coefficients differ: " + std::to_string(coefficients[i]) + " != " + std::to_string(expected[i]));
+                }
+            }
         }
+
+        void test_highpass_med()
+        {
+            float expected[15] = {0.002504, 0.037513, 0.008310, -0.039789, -0.098027, -0.153732, -0.193775, 0.791667, -0.193775, -0.153732, -0.098027, -0.039789, 0.008310, 0.037513, 0.002504};
+
+            HHighpassKaiserBessel<int16_t> kb(5000, H_SAMPLE_RATE_48K, 15, 50);
+            float* coefficients = kb.Calculate();
+
+            for( int i = 0; i < 15; i++ ) {
+                if( round( coefficients[i] * 1000000 ) != round( expected[i] * 1000000 ) ) {
+                    ASSERT_FAIL("Coefficients differ: " + std::to_string(coefficients[i]) + " != " + std::to_string(expected[i]));
+                }
+            }
+        }
+
+        void test_highpass_high()
+        {
+            float expected[15] = {0.000919, 0.037513, 0.008310, -0.039789, -0.098027, -0.153732, -0.193775, 0.791667, -0.193775, -0.153732, -0.098027, -0.039789, 0.008310, 0.037513, 0.000919};
+
+            HHighpassKaiserBessel<int16_t> kb(5000, H_SAMPLE_RATE_48K, 15, 60);
+            float* coefficients = kb.Calculate();
+
+            for( int i = 0; i < 15; i++ ) {
+                if( round( coefficients[i] * 1000000 ) != round( expected[i] * 1000000 ) ) {
+                    ASSERT_FAIL("Coefficients differ: " + std::to_string(coefficients[i]) + " != " + std::to_string(expected[i]));
+                }
+            }
+        }
+
+        void test_bandpass_low()
+        {
+            float expected[15] = {0.056853, 0.090565, 0.024786, -0.108705, -0.173053, -0.074154, 0.113689, 0.208333, 0.113689, -0.074154, -0.173053, -0.108705, 0.024786, 0.090565, 0.056853};
+
+            HBandpassKaiserBessel<int16_t> kb(5000, 10000, H_SAMPLE_RATE_48K, 15, 20);
+            float* coefficients = kb.Calculate();
+
+            for( int i = 0; i < 15; i++ ) {
+                if( round( coefficients[i] * 1000000 ) != round( expected[i] * 1000000 ) ) {
+                    ASSERT_FAIL("Coefficients differ: " + std::to_string(coefficients[i]) + " != " + std::to_string(expected[i]));
+                }
+            }
+        }
+
+        void test_bandpass_med()
+        {
+            float expected[15] = {0.003158, 0.090565, 0.024786, -0.108705, -0.173053, -0.074154, 0.113689, 0.208333, 0.113689, -0.074154, -0.173053, -0.108705, 0.024786, 0.090565, 0.003158};
+
+            HBandpassKaiserBessel<int16_t> kb(5000, 10000, H_SAMPLE_RATE_48K, 15, 50);
+            float* coefficients = kb.Calculate();
+
+            for( int i = 0; i < 15; i++ ) {
+                if( round( coefficients[i] * 1000000 ) != round( expected[i] * 1000000 ) ) {
+                    ASSERT_FAIL("Coefficients differ: " + std::to_string(coefficients[i]) + " != " + std::to_string(expected[i]));
+                }
+            }
+        }
+
+        void test_bandpass_high()
+        {
+            float expected[15] = {0.001159, 0.090565, 0.024786, -0.108705, -0.173053, -0.074154, 0.113689, 0.208333, 0.113689, -0.074154, -0.173053, -0.108705, 0.024786, 0.090565, 0.001159};
+
+            HBandpassKaiserBessel<int16_t> kb(5000, 10000, H_SAMPLE_RATE_48K, 15, 60);
+            float* coefficients = kb.Calculate();
+
+            for( int i = 0; i < 15; i++ ) {
+                if( round( coefficients[i] * 1000000 ) != round( expected[i] * 1000000 ) ) {
+                    ASSERT_FAIL("Coefficients differ: " + std::to_string(coefficients[i]) + " != " + std::to_string(expected[i]));
+                }
+            }
+        }
+
+        void test_bandstop_low()
+        {
+            float expected[15] = {0.045084, 0.037513, 0.008310, -0.039789, -0.098027, -0.153732, -0.193775, 0.791667, -0.193775, -0.153732, -0.098027, -0.039789, 0.008310, 0.037513, 0.045084};
+
+            HHighpassKaiserBessel<int16_t> kb(5000, H_SAMPLE_RATE_48K, 15, 20);
+            float* coefficients = kb.Calculate();
+
+            for( int i = 0; i < 15; i++ ) {
+                if( round( coefficients[i] * 1000000 ) != round( expected[i] * 1000000 ) ) {
+                    ASSERT_FAIL("Coefficients differ: " + std::to_string(coefficients[i]) + " != " + std::to_string(expected[i]));
+                }
+            }
+        }
+
+        void test_bandstop_med()
+        {
+            float expected[15] = {0.002504, 0.037513, 0.008310, -0.039789, -0.098027, -0.153732, -0.193775, 0.791667, -0.193775, -0.153732, -0.098027, -0.039789, 0.008310, 0.037513, 0.002504};
+
+            HHighpassKaiserBessel<int16_t> kb(5000, H_SAMPLE_RATE_48K, 15, 50);
+            float* coefficients = kb.Calculate();
+
+            for( int i = 0; i < 15; i++ ) {
+                if( round( coefficients[i] * 1000000 ) != round( expected[i] * 1000000 ) ) {
+                    ASSERT_FAIL("Coefficients differ: " + std::to_string(coefficients[i]) + " != " + std::to_string(expected[i]));
+                }
+            }
+        }
+
+        void test_bandstop_high()
+        {
+            float expected[15] = {0.000919, 0.037513, 0.008310, -0.039789, -0.098027, -0.153732, -0.193775, 0.791667, -0.193775, -0.153732, -0.098027, -0.039789, 0.008310, 0.037513, 0.000919};
+
+            HHighpassKaiserBessel<int16_t> kb(5000, H_SAMPLE_RATE_48K, 15, 60);
+            float* coefficients = kb.Calculate();
+
+            for( int i = 0; i < 15; i++ ) {
+                if( round( coefficients[i] * 1000000 ) != round( expected[i] * 1000000 ) ) {
+                    ASSERT_FAIL("Coefficients differ: " + std::to_string(coefficients[i]) + " != " + std::to_string(expected[i]));
+                }
+            }
+        }
+
 
 } hkaiserbessels_test;

@@ -12,7 +12,6 @@ class HHighpassKaiserBessel : public HKaiserBessel<T>
         /** Construct a new Kaiser-Bessel filter */
         HHighpassKaiserBessel(int fstart, H_SAMPLE_RATE rate, int points, int att):
             HKaiserBessel<T>(fstart, rate / 2, rate, points, att) {
-            std::cout << "highpass" << std::endl;
         }
 };
 

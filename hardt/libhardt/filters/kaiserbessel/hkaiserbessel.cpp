@@ -8,11 +8,21 @@ HKaiserBessel<T>::HKaiserBessel(int fa, int fb, int rate, int points, int att):
     _points(points),
     _fa(fa),
     _fb(fb),
-    _rate(rate) {
+    _rate(rate),
+    _att(att) {
 
     // Sanity check
     if( points % 2 == 0 ) {
         throw new HFilterInitializationException("Number of points in a Kaiser-Bessel filter must be an uneven number");
+    }
+    if( fa < 0 || fb < 0 ) {
+        throw new HFilterInitializationException("Fstart and Fstop can not be negative");
+    }
+    if( fa > fb ) {
+        throw new HFilterInitializationException("Fstart must be smaller than Fstop");
+    }
+    if( fa == 0 ) {
+        _fa = 1;
     }
 
     // Coefficients buffer
@@ -78,8 +88,9 @@ float* HKaiserBessel<T>::Calculate() {
     for( int j = 0; j <= Np; j++ )
     {
         _coefficients[Np + j] = A[j] * ZeroOrderBessel( Alpha * sqrt(1 - (j*j/(Np*Np)) ) ) / Inoalpha;
+        printf("%f, ", _coefficients[Np + j]);
     }
-
+printf("\n-----\n");
     // Fill in the right-side coefficients since these are
     // equal to the left-side coefficients.
     for( int j=0; j < Np; j++ )
