@@ -43,6 +43,7 @@ Include api function declarations
 #include "hwavwriter.cpp"
 #include "hwavreader.cpp"
 #include "hnetworkwriter.cpp"
+#include "hinputwriter.h"
 #include "hnetworkreader.cpp"
 #include "hnetworkprocessor.cpp"
 #include "hsinegenerator.cpp"

@@ -31,6 +31,7 @@
 #include "hwavwriter.h"
 #include "hwavreader.h"
 #include "hnetworkwriter.h"
+#include "hinputwriter.h"
 #include "hnetworkreader.h"
 #include "hnetworkprocessor.h"
 #include "hsoundcardreader.h"
