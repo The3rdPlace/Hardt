@@ -49,6 +49,8 @@ class HFftOutput : public HOutput<T, HFftResults>
 
         void Init();
 
+        T* Zoom(T* src, size_t size);
+
     public:
 
         /** Create a new HFft output that writes to a writer

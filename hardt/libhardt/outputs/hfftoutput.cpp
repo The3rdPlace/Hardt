@@ -59,10 +59,22 @@ void HFftOutput<T>::Init()
     _fft = new HFft<T>(_size, _window);
 }
 
+template <class T>
+T* HFftOutput<T>::Zoom(T* src, size_t size) {
+
+    // No zooming ?
+    if( _zoom == 1 ) {
+        return src;
+    }
+
+    return src;
+}
 
 template <class T>
 int HFftOutput<T>::Output(T* src, size_t size)
 {
+    T* input = Zoom(src, size);
+
     /*
     HBlockProcessor proc(size);
     mult = proc.Add(HMultiplier.Writer());
@@ -75,7 +87,7 @@ int HFftOutput<T>::Output(T* src, size_t size)
     */
 
     //_fft->FFT(scaled, _fftResult);
-    _fft->FFT(src, _fftResult);
+    _fft->FFT(input, _fftResult);
     for( int i = 0; i < size / 2; i++ ) {
         _result[i] += _fftResult[i];
     }
