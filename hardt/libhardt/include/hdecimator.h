@@ -104,6 +104,13 @@ class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
             }
             return true;
         }
+
+        /** Set the decimation factor. Warning: This will reset the buffer position
+            and start collecting samples for a write from position 0 (zero) */
+        void SetFactor(int factor) {
+            _factor = factor;
+            _length = 0;
+        }
 };
 
 #endif

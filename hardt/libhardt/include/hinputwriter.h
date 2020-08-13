@@ -30,19 +30,15 @@ class HInputWriter : public HWriter<T>, public HWriterConsumer<T>
             _autostart(autostart),
             _started(false) {}
 
-        /** Construct a new HInputWriter with an upstream writerconsumer
+        /** Construct a new HInputWriter
 
             Arguments:
-              writer = A downstream writer
               autostart = Set to true to make the input-writer call Start() on the downstream writer on first Write(..)
         */
-        HInputWriter(HWriterConsumer<T>* consumer, bool autostart = true):
+        HInputWriter(bool autostart = true):
             _writer(nullptr),
             _autostart(autostart),
-            _started(false) {
-
-            consumer->SetWriter(this->Writer());
-        }
+            _started(false) {}
 
         /** Write a block of samples */
         int Write(T* src, size_t blocksize) {
