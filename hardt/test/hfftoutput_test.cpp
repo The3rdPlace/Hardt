@@ -13,9 +13,9 @@ class HFftOutput_Test: public Test
             UNITTEST(test_fft_static_callback_with_factory);
             UNITTEST(test_fft_member_callback);
 
-            TEST(test_fft);
+            UNITTEST(test_fft);
 
-            TEST(test_zoom_helpers);
+            UNITTEST(test_zoom_helpers);
 
             INTEGRATIONTEST(test_fft_speed);
             INTEGRATIONTEST(test_fft_speed_with_chunking);
