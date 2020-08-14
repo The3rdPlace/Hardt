@@ -1,6 +1,8 @@
 #ifndef __HLOWPASSKAISERBESSEL_H
 #define __HLOWPASSKAISERBESSEL_H
 
+#include "hkaiserbessel.h"
+
 /**
     Calculate the FIR coefficients for a Kaiser-Bessel lowpass filter
 */

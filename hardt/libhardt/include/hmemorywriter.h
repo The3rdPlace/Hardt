@@ -32,7 +32,7 @@ class HMemoryWriter : public HWriter<T>, public HWriterConsumer<T>
         {}
 
         /** Construct a new HMemoryWriter that registers with the upstream writer */
-        HMemoryWriter(HWriterConsumer<T>* consumer, T* buffer, size_t size, bool infinite):
+        HMemoryWriter(HWriterConsumer<T>* consumer, T* buffer, size_t size, bool infinite = false):
             _buffer(buffer),
             _size(size),
             _pos(0),
