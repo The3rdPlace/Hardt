@@ -62,6 +62,7 @@ class HFftOutput : public HOutput<T, HFftResults>
         HMemoryWriter<T>* _zoomMemoryWriter;
         void SetZoom();
         T* Zoom(T* src, size_t size);
+        bool _zoomEnabled;
 
     public:
 
@@ -79,21 +80,24 @@ class HFftOutput : public HOutput<T, HFftResults>
 
               window = The window to use before calculating the FFT
 
-              zoomFactor = Zoom factor. If larger than 1, then the spectrum is zoomed around 'center' (in relation to 'size').
-                           The factor must divide up into 'size' with an integer result (1024/4 = ok, 1024/3 = not-ok!).
-
-              zoomCenter = The center bin (frequency), must be in the [0-size/2] range. Use the static HFftOutput::BinAtFrequency()
-                           method if you do not already know the bin number.
-
               zoomPoints = The number of FIR coefficients used to filter the input before resampling. Use something like 15 if
                            you need speed instead of precision, something in the range 51-101 for moderate speed and acceptable
                            precision and go high if you need precision and no degradation of signals in the zoomed range (257 or higher)
 
               zoomRate = The samplerate of the input samples
 
-              If a zoomFactor of 1 (default value) is given, the parameters zoomCenter and zoomPoints is not used at all.
+              zoomFactor = Zoom factor. If larger than 1, then the spectrum is zoomed around 'center' (in relation to 'size').
+                           The factor must divide up into 'size' with an integer result (1024/4 = ok, 1024/3 = not-ok!).
+
+              zoomCenter = The center bin (frequency), must be in the [0-size/2] range. Use the static HFftOutput::BinAtFrequency()
+                           method if you do not already know the bin number.
+
+              If you intend to use scaling, you _must_ initialize the HFftOutput with a samplerate and number of points for the FIR
+              filter needed before decimation. You can set the factor to 1 initially to disable zooming. But if you have not provided
+              zoomPoints != 0 and zoomRate != 0, zooming will not be setup and be available.!
+
         */
-        HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* window, int zoomFactor = 1, int zoomCenter = 0, int zoomPoints = 0, H_SAMPLE_RATE zoomRate = 0);
+        HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* window, int zoomPoints = 0, H_SAMPLE_RATE zoomRate = 0, int zoomFactor = 1, int zoomCenter = 0);
 
         /** Create a new HFft output that registers with an upstream writer
 
@@ -111,21 +115,23 @@ class HFftOutput : public HOutput<T, HFftResults>
 
               window = The window to use before calculating the FFT
 
-              zoomFactor = Zoom factor. If larger than 1, then the spectrum is zoomed around 'center' (in relation to 'size').
-                           The factor must divide up into 'size' with an integer result (1024/4 = ok, 1024/3 = not-ok!).
-
-              zoomCenter = The center bin (frequency), must be in the [0-size/2] range. Use the static HFftOutput::BinAtFrequency()
-                           method if you do not already know the bin number.
-
               zoomPoints = The number of FIR coefficients used to filter the input before resampling. Use something like 15 if
                            you need speed instead of precision, something in the range 51-101 for moderate speed and acceptable
                            precision and go high if you need precision and no degradation of signals in the zoomed range (257 or higher)
 
               zoomRate = The samplerate of the input samples
 
-              If a zoomFactor of 1 (default value) is given, the parameters zoomCenter and zoomPoints is not used at all.
+              zoomFactor = Zoom factor. If larger than 1, then the spectrum is zoomed around 'center' (in relation to 'size').
+                           The factor must divide up into 'size' with an integer result (1024/4 = ok, 1024/3 = not-ok!).
+
+              zoomCenter = The center bin (frequency), must be in the [0-size/2] range. Use the static HFftOutput::BinAtFrequency()
+                           method if you do not already know the bin number.
+
+              If you intend to use scaling, you _must_ initialize the HFftOutput with a samplerate and number of points for the FIR
+              filter needed before decimation. You can set the factor to 1 initially to disable zooming. But if you have not provided
+              zoomPoints != 0 and zoomRate != 0, zooming will not be setup and be available.!
         */
-        HFftOutput(int size, int average, HWriterConsumer<T>* consumer, HWindow<T>* window, int zoomFactor = 1, int zoomCenter = 0, int zoomPoints = 0, H_SAMPLE_RATE zoomRate = 0);
+        HFftOutput(int size, int average, HWriterConsumer<T>* consumer, HWindow<T>* window, int zoomPoints = 0, H_SAMPLE_RATE zoomRate = 0, int zoomFactor = 1, int zoomCenter = 0);
 
         /** Default destructor */
         ~HFftOutput()
@@ -135,11 +141,13 @@ class HFftOutput : public HOutput<T, HFftResults>
             delete _buffer;
             delete _fft;
 
-            delete _zoomInputWriter;
-            delete _zoomMultiplier;
-            delete _zoomFilter;
-            delete _zoomDecimator;
-            delete _zoomOutput;
+            if( _zoomEnabled ) {
+                delete _zoomInputWriter;
+                delete _zoomMultiplier;
+                delete _zoomFilter;
+                delete _zoomDecimator;
+                delete _zoomOutput;
+            }
         }
 
         /** Process a block of samples */
@@ -147,50 +155,75 @@ class HFftOutput : public HOutput<T, HFftResults>
 
         /** Execute or carry through a command */
         bool Command(HCommand* command) {
-            // No ruther propagation of commands
+            // No Further propagation of commands
             return true;
         }
 
-        /** Given the sampling rate, return the right frequency of the first bin */
-        int StartFrequency(H_SAMPLE_RATE rate) {
-            if( _zoomFactor == 1 ) {
-                return FrequenciesPerBin(rate);
+        /** Get the width of the FFT spectrum (how many frequencies is covered) */
+        int Width() {
+            if( !_zoomEnabled ) {
+                HError("HFftOutput with zoom disabled cannot report FFT frequency span");
+                return 0;
             }
-            return (float) CenterFrequency(rate) - (((float) _size / 4) * FrequenciesPerBin(rate)) + FrequenciesPerBin(rate);
+
+            return (_zoomRate / 2) / _zoomFactor;
         }
 
-        /** Given the sampling rate, return the right frequency of the last bin */
-        int StopFrequency(H_SAMPLE_RATE rate) {
-            if( _zoomFactor == 1 ) {
-                return FrequenciesPerBin(rate) * ((float) _size / 2);
+        /** Get the leftmost frequency of the selected fft window */
+        int Left() {
+            if( !_zoomEnabled ) {
+                HError("HFftOutput with zoom disabled cannot report left FFT frequency");
+                return 0;
             }
-            return (float) CenterFrequency(rate) + (((float) _size / 4) * FrequenciesPerBin(rate));
+
+            return Center() - (Width() / 2);
         }
 
-        /** Given the sampling rate, return the center frequency - if zoom is used */
-        int CenterFrequency(H_SAMPLE_RATE rate) {
+        /** Get the rightmost frequency of the selected fft window */
+        int Right() {
+            if( !_zoomEnabled ) {
+                HError("HFftOutput with zoom disabled cannot report right FFT frequency");
+                return 0;
+            }
 
-            if( _zoomFactor == 1 ) {
-                return rate / 4;
+            return Center() + (Width() / 2);
+        }
+
+        /** Get the center FFT frequency */
+        int Center() {
+            if( !_zoomEnabled ) {
+                HError("HFftOutput with zoom disabled cannot report center FFT frequency");
+                return 0;
             }
 
             return _zoomCenter == 0
-                           ? rate / 4
+                           ? _zoomRate / 4
                            : _zoomCenter;
         }
 
-        /** Given the sampling rate, return the number of frequencies per bin */
-        float FrequenciesPerBin(H_SAMPLE_RATE rate) {
-            return (((float) rate / 2) / ((float) _size / 2)) / (float) _zoomFactor;
+        /** Return the number of frequencies per bin */
+        float BinSize() {
+            if( !_zoomEnabled ) {
+                HError("HFftOutput with zoom disabled cannot report FFT bin size");
+                return 0;
+            }
+
+            return (((float) _zoomRate / 2) / ((float) _size / 2)) / (float) _zoomFactor;
         }
 
-        /** Given the input sample rate and having a zoom factor, return the
-            output sample rate after resampling */
-        int Rate(H_SAMPLE_RATE rate) {
-            if( _zoomFactor == 1 ) {
-                return rate;
+        /** Given a samplerate, return the number of frequencies per bin */
+        float BinSize(H_SAMPLE_RATE rate) {
+            return ((float) rate / 2) / ((float) _size / 2);
+        }
+
+        /** Return the output sample rate after resampling */
+        H_SAMPLE_RATE Rate() {
+            if( !_zoomEnabled ) {
+                HError("HFftOutput with zoom disabled cannot report FFT rate");
+                return 0;
             }
-            return rate / _zoomFactor;
+
+            return _zoomRate / _zoomFactor;
         }
 };
 

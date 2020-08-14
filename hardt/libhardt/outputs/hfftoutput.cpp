@@ -11,34 +11,36 @@
 #include <valarray>
 
 template <class T>
-HFftOutput<T>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* window, int zoomFactor, int zoomCenter, int zoomPoints, H_SAMPLE_RATE zoomRate):
+HFftOutput<T>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* window, int zoomPoints, H_SAMPLE_RATE zoomRate, int zoomFactor, int zoomCenter):
     HOutput<T, HFftResults>(writer, size),
     _size(size),
     _average(average),
     _count(0),
     _window(window),
+    _zoomPoints(zoomPoints),
+    _zoomRate(zoomRate),
     _zoomFactor(zoomFactor),
     _zoomCenter(zoomCenter),
-    _zoomPoints(zoomPoints),
-    _zoomRate(zoomRate)
+    _zoomEnabled(false)
 {
-    HLog("HFftOutput(%d, %d, ..., %d, %d, %d, %d)", size, average, zoomFactor, zoomCenter, zoomPoints, zoomRate);
+    HLog("HFftOutput(%d, %d, ..., %d, %d, %d, %d)", size, average, zoomPoints, zoomRate, zoomFactor, zoomCenter);
     Init();
 }
 
 template <class T>
-HFftOutput<T>::HFftOutput(int size, int average, HWriterConsumer<T>* consumer, HWindow<T>* window,          int zoomFactor, int zoomCenter, int zoomPoints, H_SAMPLE_RATE zoomRate):
+HFftOutput<T>::HFftOutput(int size, int average, HWriterConsumer<T>* consumer, HWindow<T>* window, int zoomPoints, H_SAMPLE_RATE zoomRate, int zoomFactor, int zoomCenter):
     HOutput<T, HFftResults>(size, consumer),
     _size(size),
     _average(average),
     _count(0),
     _window(window),
+    _zoomPoints(zoomPoints),
+    _zoomRate(zoomRate),
     _zoomFactor(zoomFactor),
     _zoomCenter(zoomCenter),
-    _zoomPoints(zoomPoints),
-    _zoomRate(zoomRate)
+    _zoomEnabled(false)
 {
-    HLog("HFftOutput(%d, %d, ..., %d, %d, %d)", size, average, zoomFactor, zoomCenter, zoomPoints, zoomRate);
+    HLog("HFftOutput(%d, %d, ..., %d, %d, %d)", size, average, zoomPoints, zoomRate, zoomFactor, zoomCenter);
     Init();
 }
 
@@ -64,26 +66,45 @@ void HFftOutput<T>::Init()
     _fft = new HFft<T>(_size, _window);
 
     // Setup zooming - even if the factor is 1 at the moment
-    _zoomInputWriter = new HInputWriter<T>();
-    _zoomMultiplier = new HMultiplier<T>(_zoomInputWriter->Consumer(), _zoomRate, 1000, 10, _size);
-    _zoomFilter = new HFirFilter<T>(_zoomMultiplier->Consumer(), HLowpassKaiserBessel<T>(2000, _zoomRate, _zoomPoints, 50).Calculate(), _zoomPoints, _size);
-    _zoomDecimator = new HDecimator<T>(_zoomFilter->Consumer(), _zoomFactor, _size);
-    _zoomOutput = new T[_size];
-    _zoomMemoryWriter = new HMemoryWriter<T>(_zoomDecimator->Consumer(), _zoomOutput, _size);
+    if( _zoomPoints != 0 && _zoomRate != 0 ) {
+        _zoomEnabled = true;
+
+        // Check that the requested window is sane
+        if( Left() < 0 || Right() > _zoomRate / 2) {
+            throw new HInitializationException("The left or right bound of the zoomed frequency spectrum falls outside the range supported by the sampling rate");
+        }
+
+        // Setup zoom chain
+        _zoomInputWriter = new HInputWriter<T>();
+        int multiplierFreq = Left() == 0 ? 1 : Left(); // Handle cornercase with the left side located at zero
+        std::cout << "left=" << Left() << ", multiplier=" << multiplierFreq << std::endl;
+        _zoomMultiplier = new HMultiplier<T>(_zoomInputWriter->Consumer(), _zoomRate, multiplierFreq, 10, _size);
+        _zoomFilter = new HFirFilter<T>(_zoomMultiplier->Consumer(),
+                                        HLowpassKaiserBessel<T>(Width() * 0.95, _zoomRate, _zoomPoints, 50).Calculate(),
+                                        _zoomPoints, _size);
+        _zoomDecimator = new HDecimator<T>(_zoomFilter->Consumer(), _zoomFactor, _size);
+        _zoomOutput = new T[_size];
+        _zoomMemoryWriter = new HMemoryWriter<T>(_zoomDecimator->Consumer(), _zoomOutput, _size);
+    }
 }
 
 template <class T>
 void HFftOutput<T>::SetZoom() {
-    _zoomMultiplier->SetFrequency(3000);
-    _zoomFilter->SetCoefficients(HLowpassKaiserBessel<T>(2000, _zoomRate, _zoomPoints, 50).Calculate(), _zoomPoints, _size);
-    _zoomDecimator->SetFactor(_zoomFactor);
+    if( _zoomEnabled ) {
+        _zoomMultiplier->SetFrequency(3000);
+        _zoomFilter->SetCoefficients(HLowpassKaiserBessel<T>(2000, _zoomRate, _zoomPoints, 50).Calculate(), _zoomPoints,
+                                     _size);
+        _zoomDecimator->SetFactor(_zoomFactor);
+    } else {
+        throw new HInitializationException("You can not set zooming on a HFftOutput not initialized with a zoomrate and zoompoints!");
+    }
 }
 
 template <class T>
 T* HFftOutput<T>::Zoom(T* src, size_t size) {
 
     // No zooming ?
-    if( _zoomFactor == 1 ) {
+    if( _zoomFactor == 1 || !_zoomEnabled ) {
         return src;
     }
 
@@ -101,6 +122,12 @@ template <class T>
 int HFftOutput<T>::Output(T* src, size_t size)
 {
     T* input = Zoom(src, size);
+
+    // Check if zooming returned any data - which it will not for a number of
+    // calls when zooming (depending on the decimation factcor)
+    if( input == nullptr ) {
+        return size;
+    }
 
     /*
     HBlockProcessor proc(size);
