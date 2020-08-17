@@ -1,6 +1,8 @@
 #ifndef __HHIGHPASSKAISERBESSEL_H
 #define __HHIGHPASSKAISERBESSEL_H
 
+#include "hkaiserbessel.h"
+
 /**
     Calculate the FIR coefficients for a Kaiser-Bessel highpass filter
 */

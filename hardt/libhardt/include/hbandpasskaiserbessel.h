@@ -1,6 +1,8 @@
 #ifndef __HBANDPASSKAISERBESSEL_H
 #define __HBANDPASSKAISERBESSEL_H
 
+#include "hkaiserbessel.h"
+
 /**
     Calculate the FIR coefficients for a Kaiser-Bessel bandpass filter
 */

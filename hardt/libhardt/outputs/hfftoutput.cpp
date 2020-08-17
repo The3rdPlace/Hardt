@@ -2,13 +2,12 @@
 #define __HFFTOUTPUT_CPP
 
 #include "hfftoutput.h"
-#include "hwriter.h"
-#include "hwriterconsumer.h"
-#include "hlowpasskaiserbessel.h"
 
+#include <cstring>
 #include <cmath>
 #include <complex>
 #include <valarray>
+#include <stdio.h>
 
 template <class T>
 HFftOutput<T>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* window, int zoomPoints, H_SAMPLE_RATE zoomRate, int zoomFactor, int zoomCenter):
@@ -63,7 +62,7 @@ void HFftOutput<T>::Init()
     _window->SetSize(_size);
 
     // Create the fft
-    _fft = new HFft<T>(_size, _window);
+    _fft = new HFft<T>(_size);//, _window);
 
     // Setup zooming - even if the factor is 1 at the moment
     if( _zoomPoints != 0 && _zoomRate != 0 ) {
@@ -76,11 +75,12 @@ void HFftOutput<T>::Init()
 
         // Setup zoom chain
         _zoomInputWriter = new HInputWriter<T>();
-        int multiplierFreq = Left() == 0 ? 1 : Left(); // Handle cornercase with the left side located at zero
-        std::cout << "left=" << Left() << ", multiplier=" << multiplierFreq << std::endl;
-        _zoomMultiplier = new HMultiplier<T>(_zoomInputWriter->Consumer(), _zoomRate, multiplierFreq, 10, _size);
-        _zoomFilter = new HFirFilter<T>(_zoomMultiplier->Consumer(),
-                                        HLowpassKaiserBessel<T>(Width() * 0.95, _zoomRate, _zoomPoints, 50).Calculate(),
+        //int multiplierFreq = Left(); // == 0 ? 1 : Left(); // Handle cornercase with the left side located at zero
+        std::cout << "RATE " << _zoomRate << std::endl;
+        //_zoomMultiplier = new HMultiplier<T>(_zoomInputWriter->Consumer(), _zoomRate, 10000, 10, _size);
+
+        _zoomFilter = new HFirFilter<T>(_zoomInputWriter->Consumer(),
+                                        HLowpassKaiserBessel<T>(Right(), _zoomRate, _zoomPoints, 50).Calculate(),
                                         _zoomPoints, _size);
         _zoomDecimator = new HDecimator<T>(_zoomFilter->Consumer(), _zoomFactor, _size);
         _zoomOutput = new T[_size];
@@ -90,14 +90,14 @@ void HFftOutput<T>::Init()
 
 template <class T>
 void HFftOutput<T>::SetZoom() {
-    if( _zoomEnabled ) {
+    /*if( _zoomEnabled ) {
         _zoomMultiplier->SetFrequency(3000);
-        _zoomFilter->SetCoefficients(HLowpassKaiserBessel<T>(2000, _zoomRate, _zoomPoints, 50).Calculate(), _zoomPoints,
+        _zoomFilter->SetCoefficients(HBandpassKaiserBessel<T>(Left(), Right() * 0.95, _zoomRate, _zoomPoints, 50).Calculate(), _zoomPoints,
                                      _size);
         _zoomDecimator->SetFactor(_zoomFactor);
     } else {
         throw new HInitializationException("You can not set zooming on a HFftOutput not initialized with a zoomrate and zoompoints!");
-    }
+    }*/
 }
 
 template <class T>
@@ -108,14 +108,45 @@ T* HFftOutput<T>::Zoom(T* src, size_t size) {
         return src;
     }
 
+
+
+    std::complex<double> cx[size];
+    for( int i = 0; i < size; i++ ) {
+        cx[i] = std::complex<double>((double) src[i] * cos( ((double) 2 * M_PI * (double) _zoomCenter * (double) i) / (double) _zoomRate), -1.0 * (double) src[i] * sin( ((double) 2 * M_PI * (double) _zoomCenter * (double) i) / (double) _zoomRate ));
+        //cx[i] = std::complex<double>(src[i]);
+    }
+
+
+
+    _fft->FFT(cx, _fftResult);
+    for( int i = size / 4; i < size / 2; i++) {
+        _fftResult[i] = 0;
+    }
+    T tmp[size];
+    _fft->IFFT(_fftResult, tmp);
+
+
+    _zoomInputWriter->Write(tmp, size);
+    return _zoomOutput;
+
+
+
+#ifdef NOTDEFINED
     // Send samples through zoom chain. Return nullptr as long as we dont have accumulated enough
     // decimated samples to fill a block
-    _zoomInputWriter->Write(src, _size);
-    if( _zoomMemoryWriter->GetPosition() < _size ) {
+    std::complex<T> cx[size];
+    T tmp[size];
+    for( int i = 0; i < size; i++ ) {
+        cx[i] = std::complex<T>((float) src[i] * cos( (float) 2 * M_PI * (float) _zoomCenter * (float) i) / (float) _zoomRate, -1.0 * src[i] * sin( ((float) 2 * M_PI * (float) _zoomCenter * (float) i) / (float) _zoomRate ));
+        tmp[i] = std::abs(cx[i]);
+    }
+    _zoomInputWriter->Write(tmp, size);
+    if( _zoomMemoryWriter->GetPosition() < size ) {
         return nullptr;
     }
     _zoomMemoryWriter->Reset();
     return _zoomOutput;
+#endif
 }
 
 template <class T>

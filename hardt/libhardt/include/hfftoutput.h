@@ -8,6 +8,9 @@
 #include "hfirfilter.h"
 #include "hdecimator.h"
 #include "hmemorywriter.h"
+#include "houtput.h"
+#include "hbandpasskaiserbessel.h"
+#include "hlowpasskaiserbessel.h"
 
 /**
     Holds the result of a number of dfft's
@@ -143,7 +146,7 @@ class HFftOutput : public HOutput<T, HFftResults>
 
             if( _zoomEnabled ) {
                 delete _zoomInputWriter;
-                delete _zoomMultiplier;
+                //delete _zoomMultiplier;
                 delete _zoomFilter;
                 delete _zoomDecimator;
                 delete _zoomOutput;

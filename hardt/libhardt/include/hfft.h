@@ -71,7 +71,33 @@ class HFft {
             delete _hilbertBuffer;
         }
 
-        /** Calculate the fft for samples and place the complex results into a buffer 
+        /** Calculate the fft for complex samples and place the complex results into a buffer
+
+        Parameters:
+            src = Input buffer, must contain 'size' number of complex samples
+            result = The output result array, must have enough room for 'size' values
+        */
+        void FFT(std::complex<double>* src, std::complex<double>* result, bool window = true) {
+
+            // Prepare a set of complex values
+            std::valarray<std::complex<double>> x(_size);
+            for( int i = 0; i < _size ; i++ )
+            {
+                //x[i] = std::complex<double>(_fftBuffer[i], 0);
+                x[i] = src[i];
+            }
+
+            // Calculate the FFT
+            FFT(x);
+
+            // Convert to simple array with bins for positive AND negative frequencies
+            for( int i = 0; i < _size; i++ )
+            {
+                result[i] = x[i];
+            }
+        }
+
+        /** Calculate the fft for samples and place the complex results into a buffer
             
             Parameters:
                 src = Input buffer, must contain 'size' number of samples

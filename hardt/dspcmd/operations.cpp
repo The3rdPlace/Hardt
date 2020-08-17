@@ -311,22 +311,22 @@ void FFTMagnitudeShowGnuDBPlot(double reference, double ignore, bool skipInfinit
     double displayedSpectrum[Config.FFTSize / 2];
     double ref = NormalizeFFTPlot<T>(reference, ignore, aggregatedMagnitudeSpectrum, displayedSpectrum);
 
+    // Use zooming ?
+    int rate = Config.Rate;
+    if( Config.ZoomFactor > 0 ) {
+        rate /= Config.ZoomFactor;
+        Config.FStart = Config.FCenter - ((rate / 2) / 2);
+        Config.FStop = Config.FCenter + ((rate / 2) / 2);
+    }
+
     // Calculate frequency span per bin
-    double fdelta = ((double) Config.Rate / 2) / ((double)Config.FFTSize / 2);
+    double fdelta = ((double) rate / 2) / ((double)Config.FFTSize / 2);
 
     // Plot lines
     FILE* gnuplotPipe = popen ("gnuplot -persistent", "w");
     fprintf(gnuplotPipe, "set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2 pointtype -1\n");
     fprintf(gnuplotPipe, "set xlabel \"Hz\" offset 0,0\n");
     fprintf(gnuplotPipe, "set ylabel \"DB\" offset 0,0\n");
-    if( Config.XMax > 0 )
-    {
-        fprintf(gnuplotPipe, "set xrange [%d:%d]\n",Config.XMin, Config.XMax);
-    }
-    if( Config.YMax > 0 )
-    {
-        fprintf(gnuplotPipe, "set yrange [%d:%d]\n", Config.YMin, Config.YMax);
-    }
     fprintf(gnuplotPipe, "plot '-' with linespoints linestyle 1 title \"%d point fft\"\n", Config.Blocksize);
     for( int bin = 3; bin < (Config.FFTSize / 2) - 3; bin++ )
     {
@@ -342,7 +342,7 @@ void FFTMagnitudeShowGnuDBPlot(double reference, double ignore, bool skipInfinit
             }
         }
         if( !isnan(db) ) {
-            fprintf(gnuplotPipe, "%lf %lf\n", (double) bin * fdelta, db);
+            fprintf(gnuplotPipe, "%lf %lf\n", ((double) bin * fdelta) + Config.FStart, db);
         }
     }
     fprintf(gnuplotPipe, "e");
@@ -363,14 +363,17 @@ void FFTMagnitudeShowGnuDBPlot(double reference)
 }
 
 template <class T>
-void FFTMagnitudeShowGnuPlot()
+void
+FFTMagnitudeShowGnuPlot()
 {
     // Same f-delta as used by the FilterSpectrumReader during sweeps
     double fdelta = (((double) Config.Rate / 2) / ((double) Config.FFTSize / 2)) / 10;
 
-    // Get reference value (smallest measureable value
-    int start = Config.XMin == 0 ? fdelta : Config.XMin;
-    int stop = (Config.XMax == 0 ? (Config.Rate / 2) : Config.XMax);
+    // Get reference value (smallest measureable value.
+    // These do not change when using zoom, so just keep the base values for a non-zoomed fft
+    // Todo: Cleanup
+    int start = fdelta; // Config.XMin == 0 ? fdelta : Config.XMin;
+    int stop = (Config.Rate / 2); //(Config.XMax == 0 ? (Config.Rate / 2) : Config.XMax);
     double ref = GetCalibratedReference<T>(fdelta, start, stop, 1, false);
 
     // The scaling factor based on blocksize 1024 is applied when calculating 
@@ -410,14 +413,20 @@ int RunFFTMagnitudePlot()
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFftOutput<T> fft(Config.FFTSize, Config.Average, &fftWriter, new HHahnWindow<T>());
+    HFftOutput<T>* fft;
+    if( Config.FCenter > 0 ) {
+        std::cout << "points " << Config.Points << ", rate " << Config.Rate << ", factor " << Config.ZoomFactor << ", center " << Config.FCenter << std::endl;
+        fft = new HFftOutput<T>(Config.FFTSize, Config.Average, &fftWriter, new HHahnWindow<T>(), Config.Points, Config.Rate, Config.ZoomFactor, Config.FCenter);
+    } else {
+        fft = new HFftOutput<T>(Config.FFTSize, Config.Average, &fftWriter, new HHahnWindow<T>());
+    }
 
     // Buffer for the accumulated spectrum values
     numFfts = 0;
     aggregatedMagnitudeSpectrum = new double[Config.FFTSize / 2];
 
     // Create processor
-    HStreamProcessor<T> proc(&fft, rd, Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc(fft->Writer(), rd, Config.Blocksize, &terminated);
     proc.Run();
 
     // Delete reader
@@ -429,6 +438,9 @@ int RunFFTMagnitudePlot()
     {
         delete (HFileReader<T>*) rd;
     }
+
+    // Delete fft output
+    delete fft;
 
     // Display the final plot
     FFTMagnitudeShowGnuPlot<T>();
@@ -881,8 +893,9 @@ class FilterSpectrumReader : public HReader<T>
             }
 
             // Initialize initial starting and stopping frequencies
-            _freqStart = Config.XMin == 0 ? _fDelta : Config.XMin;
-            _freqStop = (Config.XMax == 0 ? (Config.Rate / 2) : Config.XMax);
+            // Todo:: Cleanup
+            _freqStart = _fDelta; // Config.XMin == 0 ? _fDelta : Config.XMin;
+            _freqStop = (Config.Rate / 2); // (Config.XMax == 0 ? (Config.Rate / 2) : Config.XMax);
             _freq = _freqStart;
             _lastDisplayedFreq = _freq;
 

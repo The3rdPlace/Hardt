@@ -55,10 +55,6 @@ struct DspCmdConfig
 
     int FFTSize = 1024;
     int Average = 1;
-    int XMin = 0;
-    int XMax = 0;
-    int YMin = 0;
-    int YMax = 0;
 
     char *InputFile = NULL;
     char *OutputFile = NULL;
@@ -97,10 +93,12 @@ struct DspCmdConfig
     int DecimateFactor;
     int UpsampleFactor;
 
-    int FStart;
-    int FStop;
-    int Attenuation;
-    int Points;
+    int FStart = 0;
+    int FStop = 0;
+    int Attenuation = 50;
+    int Points = 257;
+    int FCenter = 0;
+    int ZoomFactor = 0;
 };
 
 extern DspCmdConfig Config;
