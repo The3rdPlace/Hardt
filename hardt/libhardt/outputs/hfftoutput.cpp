@@ -75,14 +75,13 @@ void HFftOutput<T>::Init()
 
         // Setup zoom chain
         _zoomInputWriter = new HInputWriter<T>();
-        //int multiplierFreq = Left(); // == 0 ? 1 : Left(); // Handle cornercase with the left side located at zero
         std::cout << "RATE " << _zoomRate << std::endl;
-        //_zoomMultiplier = new HMultiplier<T>(_zoomInputWriter->Consumer(), _zoomRate, 10000, 10, _size);
-
         _zoomFilter = new HFirFilter<T>(_zoomInputWriter->Consumer(),
-                                        HLowpassKaiserBessel<T>(Right(), _zoomRate, _zoomPoints, 50).Calculate(),
+                                        HLowpassKaiserBessel<T>(Width(), _zoomRate, _zoomPoints, 50).Calculate(),
                                         _zoomPoints, _size);
+
         _zoomDecimator = new HDecimator<T>(_zoomFilter->Consumer(), _zoomFactor, _size);
+
         _zoomOutput = new T[_size];
         _zoomMemoryWriter = new HMemoryWriter<T>(_zoomDecimator->Consumer(), _zoomOutput, _size);
     }
@@ -118,13 +117,15 @@ T* HFftOutput<T>::Zoom(T* src, size_t size) {
 
 
 
-    _fft->FFT(cx, _fftResult);
-    for( int i = size / 4; i < size / 2; i++) {
-        _fftResult[i] = 0;
-    }
+//    _fft->FFT(cx, _fftResult);
+//    for( int i = size / 4; i < size / 2; i++) {
+//        _fftResult[i] = 0;
+//    }
     T tmp[size];
-    _fft->IFFT(_fftResult, tmp);
-
+//    _fft->IFFT(_fftResult, tmp);
+for(int i = 0; i < size; i++ ) {
+    tmp[i] = cx[i].real();//std::abs(cx[i]);
+}
 
     _zoomInputWriter->Write(tmp, size);
     return _zoomOutput;
