@@ -4,10 +4,8 @@
 #include "hfftoutput.h"
 
 #include <cstring>
-#include <cmath>
 #include <complex>
 #include <valarray>
-#include <stdio.h>
 
 template <class T>
 HFftOutput<T>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* window, int zoomPoints, H_SAMPLE_RATE zoomRate, int zoomFactor, int zoomCenter):
@@ -73,18 +71,17 @@ void HFftOutput<T>::Init()
 
         // Setup zoom chain
         _zoomInputWriter = new HInputWriter<T>();
-        _zoomDecimator = new HDecimator<T>(_zoomInputWriter->Consumer(), _zoomFactor, _size);
-        _zoomTranslated = new std::complex<double>[_size];
-        _zoomTranslatedSpectrum = new std::complex<double>[_size];
-        _zoomFiltered = new T[_size];
+        _zoomBaseband = new HBaseband<T>(_zoomInputWriter->Consumer(), _zoomRate, _zoomCenter, (_zoomRate / 2) / _zoomFactor, _size);
+        _zoomDecimator = new HDecimator<T>(_zoomBaseband->Consumer(), _zoomFactor, _size);
         _zoomOutput = new T[_size];
-        _zoomMemoryWriter = new HMemoryWriter<T>(_zoomDecimator->Consumer(), _zoomOutput, _size, true);
+        _zoomMemoryWriter = new HMemoryWriter<T>(_zoomDecimator->Consumer(), _zoomOutput, _size);
     }
 }
 
 template <class T>
 void HFftOutput<T>::SetZoom() {
     if( _zoomEnabled ) {
+        _zoomBaseband->SetSegment(_zoomCenter, (_zoomRate / 2) / _zoomFactor);
         _zoomDecimator->SetFactor(_zoomFactor);
     } else {
         throw new HInitializationException("You can not set zooming on a HFftOutput not initialized with a zoomrate and zoompoints!");
@@ -99,20 +96,13 @@ T* HFftOutput<T>::Zoom(T* src, size_t size) {
         return src;
     }
 
-    double x = Left();
-    double y = _zoomRate;
-    for( int i = 0; i < size; i++ ) {
-        _zoomTranslated[i] = std::complex<double>((double) src[i] * cos( ((double) 2 * M_PI * (double) x * (double) i) / (double) y), -1.0 * (double) src[i] * sin( ((double) 2 * M_PI * (double) x * (double) i) / (double) y ));
+    _zoomInputWriter->Write(src, size);
+    if( _zoomMemoryWriter->GetPosition() >= size ) {
+        _zoomMemoryWriter->Reset();
+        return _zoomOutput;
     }
+    return nullptr;
 
-    _fft->FFT(_zoomTranslated, _zoomTranslatedSpectrum);
-    for( int i = size / (_zoomFactor * 2); i < size; i++) {
-        _zoomTranslatedSpectrum[i] = 0;
-    }
-    _fft->IFFT(_zoomTranslatedSpectrum, _zoomFiltered);
-
-    _zoomInputWriter->Write(_zoomFiltered, size);
-    return _zoomOutput;
 }
 
 template <class T>
@@ -126,17 +116,8 @@ int HFftOutput<T>::Output(T* src, size_t size)
         return size;
     }
 
-    /*
-    HBlockProcessor proc(size);
-    mult = proc.Add(HMultiplier.Writer());
-    filt = proc.Add(HFirFilter.Writer());
-    dec = proc.Add(HDecimator.Writer());
-    T* scaled = proc.Run();
-    if( scaled == nullptr ) {
-        return size;
-    }
-    */
-
+    // Get the spectrum of the (possibly zoomed) input data
+    // and add to the averaging buffer
     _fft->FFT(input, _fftResult);
     for( int i = 0; i < size / 2; i++ ) {
         _result[i] += _fftResult[i];

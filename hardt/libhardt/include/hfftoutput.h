@@ -9,8 +9,7 @@
 #include "hdecimator.h"
 #include "hmemorywriter.h"
 #include "houtput.h"
-#include "hbandpasskaiserbessel.h"
-#include "hlowpasskaiserbessel.h"
+#include "hbaseband.h"
 
 /**
     Holds the result of a number of dfft's
@@ -57,11 +56,9 @@ class HFftOutput : public HOutput<T, HFftResults>
         int _zoomCenter;
         int _zoomPoints;
         H_SAMPLE_RATE _zoomRate;
-        std::complex<double>* _zoomTranslated;
-        std::complex<double>* _zoomTranslatedSpectrum;
-        T* _zoomFiltered;
         T* _zoomOutput;
         HInputWriter<T>* _zoomInputWriter;
+        HBaseband<T>* _zoomBaseband;
         HDecimator<T>* _zoomDecimator;
         HMemoryWriter<T>* _zoomMemoryWriter;
         void SetZoom();
@@ -147,10 +144,8 @@ class HFftOutput : public HOutput<T, HFftResults>
 
             if( _zoomEnabled ) {
                 delete _zoomInputWriter;
+                delete _zoomBaseband;
                 delete _zoomDecimator;
-                delete _zoomTranslated;
-                delete _zoomTranslatedSpectrum;
-                delete _zoomFiltered;
                 delete _zoomOutput;
             }
         }
