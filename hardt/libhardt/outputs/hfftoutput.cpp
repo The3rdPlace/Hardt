@@ -106,7 +106,7 @@ T* HFftOutput<T>::Zoom(T* src, size_t size) {
     }
 
     _fft->FFT(_zoomTranslated, _zoomTranslatedSpectrum);
-    for( int i = size / 4; i < size; i++) {
+    for( int i = size / (_zoomFactor * 2); i < size; i++) {
         _zoomTranslatedSpectrum[i] = 0;
     }
     _fft->IFFT(_zoomTranslatedSpectrum, _zoomFiltered);
