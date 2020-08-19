@@ -316,7 +316,6 @@ void FFTMagnitudeShowGnuDBPlot(double reference, double ignore, bool skipInfinit
     if( Config.ZoomFactor > 0 ) {
         rate /= Config.ZoomFactor;
         Config.FStart = Config.FCenter - ((rate / 2) / 2);
-        Config.FStop = Config.FCenter + ((rate / 2) / 2);
     }
 
     // Calculate frequency span per bin
@@ -328,7 +327,7 @@ void FFTMagnitudeShowGnuDBPlot(double reference, double ignore, bool skipInfinit
     fprintf(gnuplotPipe, "set xlabel \"Hz\" offset 0,0\n");
     fprintf(gnuplotPipe, "set ylabel \"DB\" offset 0,0\n");
     fprintf(gnuplotPipe, "plot '-' with linespoints linestyle 1 title \"%d point fft\"\n", Config.Blocksize);
-    for( int bin = 3; bin < (Config.FFTSize / 2) - 3; bin++ )
+    for( int bin = 0; bin < (Config.FFTSize / 2); bin++ )
     {
         // Plot DB value
         double ratio = displayedSpectrum[bin] / ref;
@@ -415,7 +414,6 @@ int RunFFTMagnitudePlot()
     // Create FFT
     HFftOutput<T>* fft;
     if( Config.FCenter > 0 ) {
-        std::cout << "points " << Config.Points << ", rate " << Config.Rate << ", factor " << Config.ZoomFactor << ", center " << Config.FCenter << std::endl;
         fft = new HFftOutput<T>(Config.FFTSize, Config.Average, &fftWriter, new HHahnWindow<T>(), Config.Points, Config.Rate, Config.ZoomFactor, Config.FCenter);
     } else {
         fft = new HFftOutput<T>(Config.FFTSize, Config.Average, &fftWriter, new HHahnWindow<T>());

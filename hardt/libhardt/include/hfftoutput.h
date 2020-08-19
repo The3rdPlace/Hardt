@@ -57,10 +57,11 @@ class HFftOutput : public HOutput<T, HFftResults>
         int _zoomCenter;
         int _zoomPoints;
         H_SAMPLE_RATE _zoomRate;
+        std::complex<double>* _zoomTranslated;
+        std::complex<double>* _zoomTranslatedSpectrum;
+        T* _zoomFiltered;
         T* _zoomOutput;
         HInputWriter<T>* _zoomInputWriter;
-        HMultiplier<T>* _zoomMultiplier;
-        HFirFilter<T>* _zoomFilter;
         HDecimator<T>* _zoomDecimator;
         HMemoryWriter<T>* _zoomMemoryWriter;
         void SetZoom();
@@ -146,9 +147,10 @@ class HFftOutput : public HOutput<T, HFftResults>
 
             if( _zoomEnabled ) {
                 delete _zoomInputWriter;
-                //delete _zoomMultiplier;
-                delete _zoomFilter;
                 delete _zoomDecimator;
+                delete _zoomTranslated;
+                delete _zoomTranslatedSpectrum;
+                delete _zoomFiltered;
                 delete _zoomOutput;
             }
         }

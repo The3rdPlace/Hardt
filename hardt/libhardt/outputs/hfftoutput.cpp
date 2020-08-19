@@ -47,8 +47,6 @@ template <class T>
 void HFftOutput<T>::Init()
 {
     // Allocate a buffer for the spectrum and phase values
-    // Do not forget to zero the result buffer as new results are being added to the 
-    // current values, not overriding them!
     _spectrum = new double[_size];
     memset((void*) _spectrum, 0, _size * sizeof(double));
     _fftResult = new std::complex<double>[_size];
@@ -75,28 +73,22 @@ void HFftOutput<T>::Init()
 
         // Setup zoom chain
         _zoomInputWriter = new HInputWriter<T>();
-        std::cout << "RATE " << _zoomRate << std::endl;
-        _zoomFilter = new HFirFilter<T>(_zoomInputWriter->Consumer(),
-                                        HLowpassKaiserBessel<T>(Width(), _zoomRate, _zoomPoints, 50).Calculate(),
-                                        _zoomPoints, _size);
-
-        _zoomDecimator = new HDecimator<T>(_zoomFilter->Consumer(), _zoomFactor, _size);
-
+        _zoomDecimator = new HDecimator<T>(_zoomInputWriter->Consumer(), _zoomFactor, _size);
+        _zoomTranslated = new std::complex<double>[_size];
+        _zoomTranslatedSpectrum = new std::complex<double>[_size];
+        _zoomFiltered = new T[_size];
         _zoomOutput = new T[_size];
-        _zoomMemoryWriter = new HMemoryWriter<T>(_zoomDecimator->Consumer(), _zoomOutput, _size);
+        _zoomMemoryWriter = new HMemoryWriter<T>(_zoomDecimator->Consumer(), _zoomOutput, _size, true);
     }
 }
 
 template <class T>
 void HFftOutput<T>::SetZoom() {
-    /*if( _zoomEnabled ) {
-        _zoomMultiplier->SetFrequency(3000);
-        _zoomFilter->SetCoefficients(HBandpassKaiserBessel<T>(Left(), Right() * 0.95, _zoomRate, _zoomPoints, 50).Calculate(), _zoomPoints,
-                                     _size);
+    if( _zoomEnabled ) {
         _zoomDecimator->SetFactor(_zoomFactor);
     } else {
         throw new HInitializationException("You can not set zooming on a HFftOutput not initialized with a zoomrate and zoompoints!");
-    }*/
+    }
 }
 
 template <class T>
@@ -107,47 +99,20 @@ T* HFftOutput<T>::Zoom(T* src, size_t size) {
         return src;
     }
 
-
-
-    std::complex<double> cx[size];
+    double x = Left();
+    double y = _zoomRate;
     for( int i = 0; i < size; i++ ) {
-        cx[i] = std::complex<double>((double) src[i] * cos( ((double) 2 * M_PI * (double) _zoomCenter * (double) i) / (double) _zoomRate), -1.0 * (double) src[i] * sin( ((double) 2 * M_PI * (double) _zoomCenter * (double) i) / (double) _zoomRate ));
-        //cx[i] = std::complex<double>(src[i]);
+        _zoomTranslated[i] = std::complex<double>((double) src[i] * cos( ((double) 2 * M_PI * (double) x * (double) i) / (double) y), -1.0 * (double) src[i] * sin( ((double) 2 * M_PI * (double) x * (double) i) / (double) y ));
     }
 
+    _fft->FFT(_zoomTranslated, _zoomTranslatedSpectrum);
+    for( int i = size / 4; i < size; i++) {
+        _zoomTranslatedSpectrum[i] = 0;
+    }
+    _fft->IFFT(_zoomTranslatedSpectrum, _zoomFiltered);
 
-
-//    _fft->FFT(cx, _fftResult);
-//    for( int i = size / 4; i < size / 2; i++) {
-//        _fftResult[i] = 0;
-//    }
-    T tmp[size];
-//    _fft->IFFT(_fftResult, tmp);
-for(int i = 0; i < size; i++ ) {
-    tmp[i] = cx[i].real();//std::abs(cx[i]);
-}
-
-    _zoomInputWriter->Write(tmp, size);
+    _zoomInputWriter->Write(_zoomFiltered, size);
     return _zoomOutput;
-
-
-
-#ifdef NOTDEFINED
-    // Send samples through zoom chain. Return nullptr as long as we dont have accumulated enough
-    // decimated samples to fill a block
-    std::complex<T> cx[size];
-    T tmp[size];
-    for( int i = 0; i < size; i++ ) {
-        cx[i] = std::complex<T>((float) src[i] * cos( (float) 2 * M_PI * (float) _zoomCenter * (float) i) / (float) _zoomRate, -1.0 * src[i] * sin( ((float) 2 * M_PI * (float) _zoomCenter * (float) i) / (float) _zoomRate ));
-        tmp[i] = std::abs(cx[i]);
-    }
-    _zoomInputWriter->Write(tmp, size);
-    if( _zoomMemoryWriter->GetPosition() < size ) {
-        return nullptr;
-    }
-    _zoomMemoryWriter->Reset();
-    return _zoomOutput;
-#endif
 }
 
 template <class T>
