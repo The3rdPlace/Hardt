@@ -95,5 +95,6 @@
 #include "hhighpasskaiserbessel.h"
 #include "hbandpasskaiserbessel.h"
 #include "hbandstopkaiserbessel.h"
+#include "hbaseband.h"
 
 #endif
