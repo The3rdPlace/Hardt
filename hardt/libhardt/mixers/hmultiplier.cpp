@@ -1,5 +1,5 @@
-#ifndef __HMultiplier_CPP
-#define __HMultiplier_CPP
+#ifndef __HMULTIPLIER_CPP
+#define __HMULTIPLIER_CPP
 
 #include "hreader.h"
 #include "hmultiplier.h"

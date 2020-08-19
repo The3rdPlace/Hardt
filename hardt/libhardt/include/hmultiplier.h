@@ -1,5 +1,5 @@
-#ifndef __HMultiplier_H
-#define __HMultiplier_H
+#ifndef __HMULTIPLIER_H
+#define __HMULTIPLIER_H
 
 /**
     Multiplier (unlinear mixer).
