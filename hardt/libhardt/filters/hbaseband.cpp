@@ -2,6 +2,8 @@
 #define __HBASEBAND_CPP
 
 #include "hbaseband.h"
+#include "hlowpasskaiserbessel.h"
+#include "hfir.h"
 
 template <class T>
 HBaseband<T>::HBaseband(HWriter<T>* writer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<T>* probe):
@@ -59,6 +61,11 @@ HBaseband<T>::~HBaseband()
 template <class T>
 void HBaseband<T>::Filter(T* src, T* dest, size_t blocksize)
 {
+    // Sanity check
+    if( blocksize != _blocksize ) {
+        throw new HFilterIOException("A HBaseband filter can not be called with other blocksizes than the one it was initialized with");
+    }
+
     // Translate
     for( int i = 0; i < blocksize; i++ ) {
         _translated[i] = std::complex<double>(src[i] * _cos[i], src[i] * _sin[i]);
