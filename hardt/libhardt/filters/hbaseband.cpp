@@ -6,63 +6,99 @@
 template <class T>
 HBaseband<T>::HBaseband(HWriter<T>* writer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<T>* probe):
     HFilter<T>(writer, blocksize, probe),
+    _blocksize(blocksize),
     _rate(rate),
     _center(center),
     _width(width)
 {
     HLog("HBaseband(HWriter*, %d, %d, %d, %d)", rate, center, width, blocksize);
+
+    Init();
 }
 
 template <class T>
 HBaseband<T>::HBaseband(HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<T>* probe):
     HFilter<T>(consumer, blocksize, probe),
+    _blocksize(blocksize),
     _rate(rate),
     _center(center),
     _width(width)
 {
     HLog("HBaseband(HWriterConsumer*, %d, %%d, %d, %d)", rate, center, width, blocksize);
+
+    Init();
+    consumer->SetWriter(this->Writer());
 }
 
 template <class T>
 HBaseband<T>::HBaseband(HReader<T>* reader, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<T>* probe):
     HFilter<T>(reader, blocksize, probe),
+    _blocksize(blocksize),
     _rate(rate),
     _center(center),
     _width(width)
 {
     HLog("HBaseband(HReader*, %d, %d, %d, %d)", rate, center, width, blocksize);
+
+    Init();
 }
 
 template <class T>
 HBaseband<T>::~HBaseband()
 {
     HLog("~HBaseband()");
+
+    delete _translated;
+    delete _spectrum;
+    delete _fft;
+
+    delete _cos;
+    delete _sin;
 }
 
 template <class T>
 void HBaseband<T>::Filter(T* src, T* dest, size_t blocksize)
 {
-    // Todo: Optimize !
-
-
-    std::complex<double> translated[blocksize];
-    std::complex<double> spectrum[blocksize];
-    HFft<T> fft(blocksize);
-
     // Translate
-    double x = _center - (_width / 2);
-    double y = _rate;
     for( int i = 0; i < blocksize; i++ ) {
-        translated[i] = std::complex<double>((double) src[i] * cos( ((double) 2 * M_PI * (double) x * (double) i) / (double) y), -1.0 * (double) src[i] * sin( ((double) 2 * M_PI * (double) x * (double) i) / (double) y ));
+        _translated[i] = std::complex<double>(src[i] * _cos[i], src[i] * _sin[i]);
     }
 
     // Filter
     int factor = (_rate / 2) / _width;
-    fft.FFT(translated, spectrum);
+    _fft->FFT(_translated, _spectrum);
     for( int i = blocksize / (factor * 2); i < blocksize; i++) {
-        spectrum[i] = 0;
+        _spectrum[i] = 0;
     }
-    fft.IFFT(spectrum, dest);
+    _fft->IFFT(_spectrum, dest);
+}
+
+template <class T>
+void HBaseband<T>::Init() {
+
+    _translated = new std::complex<double>[_blocksize];
+    _spectrum = new std::complex<double>[_blocksize];
+    _fft = new HFft<T>(_blocksize);
+
+    _cos = new double[_blocksize];
+    _sin = new double[_blocksize];
+
+    PreCalculate();
+}
+
+template <class T>
+void HBaseband<T>::PreCalculate() {
+    for( int i = 0; i < _blocksize; i++ ) {
+        _cos[i] =        cos( ( 2 * M_PI * (_center - (_width / 2)) * i) / _rate),
+        _sin[i] = -1.0 * sin( ( 2 * M_PI * (_center - (_width / 2)) * i) / _rate);
+    }
+}
+
+template <class T>
+void HBaseband<T>::SetSegment(int center, int width) {
+    _center = center;
+    _width = width;
+    PreCalculate();
 }
 
 /********************************************************************
@@ -132,6 +168,45 @@ void HBaseband<int16_t>::Filter(int16_t* src, int16_t* dest, size_t blocksize);
 
 template
 void HBaseband<int32_t>::Filter(int32_t* src, int32_t* dest, size_t blocksize);
+
+// Init
+template
+void HBaseband<int8_t>::Init();
+
+template
+void HBaseband<uint8_t>::Init();
+
+template
+void HBaseband<int16_t>::Init();
+
+template
+void HBaseband<int32_t>::Init();
+
+// PreCalculate
+template
+void HBaseband<int8_t>::PreCalculate();
+
+template
+void HBaseband<uint8_t>::PreCalculate();
+
+template
+void HBaseband<int16_t>::PreCalculate();
+
+template
+void HBaseband<int32_t>::PreCalculate();
+
+// SetSegment
+template
+void HBaseband<int8_t>::SetSegment(int center, int width);
+
+template
+void HBaseband<uint8_t>::SetSegment(int center, int width);
+
+template
+void HBaseband<int16_t>::SetSegment(int center, int width);
+
+template
+void HBaseband<int32_t>::SetSegment(int center, int width);
 
 //! @endcond
 #endif
