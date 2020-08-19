@@ -97,6 +97,7 @@ struct DspCmdConfig
     int FStop = 0;
     int Attenuation = 50;
     int Points = 257;
+
     int FCenter = 0;
     int ZoomFactor = 0;
 };

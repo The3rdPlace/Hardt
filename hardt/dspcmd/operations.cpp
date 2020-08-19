@@ -414,7 +414,7 @@ int RunFFTMagnitudePlot()
     // Create FFT
     HFftOutput<T>* fft;
     if( Config.FCenter > 0 ) {
-        fft = new HFftOutput<T>(Config.FFTSize, Config.Average, &fftWriter, new HHahnWindow<T>(), Config.Points, Config.Rate, Config.ZoomFactor, Config.FCenter);
+        fft = new HFftOutput<T>(Config.FFTSize, Config.Average, &fftWriter, new HHahnWindow<T>(), Config.Rate, Config.ZoomFactor, Config.FCenter);
     } else {
         fft = new HFftOutput<T>(Config.FFTSize, Config.Average, &fftWriter, new HHahnWindow<T>());
     }

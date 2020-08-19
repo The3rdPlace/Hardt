@@ -90,14 +90,13 @@ class HFftOutput_Test: public Test
             ASSERT_IS_EQUAL(ready, 2);
         }
 
-        int test_fft_rate_frequency_N(int fs, int fg, int N, int factor = 1, int center = 0, int points = 0, int iterations = 1)
+        int test_fft_rate_frequency_N(int fs, int fg, int N, int factor = 1, int center = 0, int iterations = 1)
         {
             // Get local buffer for the spectrum
             staticSpectrum = new double[N / 2];
 
             // Create the fft
-            HFftOutput<int16_t> fft(N, 1, new HCustomWriter<HFftResults>(staticCallback), new TestWindow, points,
-                                    fs, factor, center);
+            HFftOutput<int16_t> fft(N, 1, new HCustomWriter<HFftResults>(staticCallback), new TestWindow, fs, factor, center);
 
             // Get a sinewave at 'fg' with samplerate 'fs' and amplitude '100'
             HSineGenerator<int16_t> g(fs, fg, 100);
@@ -293,34 +292,34 @@ class HFftOutput_Test: public Test
             ASSERT_IS_EQUAL( test_fft_rate_frequency_N(H_SAMPLE_RATE_8K, 1000, 1024), 1000 );
 
             // Zoom = 2, center = 0 (middle)
-            HFftOutput<int16_t> fft_2(1024, 1, new HCustomWriter<HFftResults>(staticCallback), new TestWindow, 15, H_SAMPLE_RATE_8K, 2, 0);
+            HFftOutput<int16_t> fft_2(1024, 1, new HCustomWriter<HFftResults>(staticCallback), new TestWindow, H_SAMPLE_RATE_8K, 2, 0);
             ASSERT_IS_EQUAL(fft_2.Rate(), 4000);
             ASSERT_IS_EQUAL(fft_2.Width(), 2000);
             ASSERT_IS_EQUAL(fft_2.Center(), 2000);
             ASSERT_IS_EQUAL(fft_2.Left(), 1000);
             ASSERT_IS_EQUAL(fft_2.Right(), 3000);
             ASSERT_IS_EQUAL((int) (fft_2.BinSize() * 100000), 390625);
-            ASSERT_IS_EQUAL( test_fft_rate_frequency_N(H_SAMPLE_RATE_8K, 1500, 1024, 2, 0, 257, 2) / 2, 500 );
+            ASSERT_IS_EQUAL( test_fft_rate_frequency_N(H_SAMPLE_RATE_8K, 1500, 1024, 2, 0, 2) / 2, 500 );
 
             // Zoom = 2, center = 1000
-            HFftOutput<int16_t> fft_3(1024, 1, new HCustomWriter<HFftResults>(staticCallback), new TestWindow, 15, H_SAMPLE_RATE_8K, 2, 1000);
+            HFftOutput<int16_t> fft_3(1024, 1, new HCustomWriter<HFftResults>(staticCallback), new TestWindow, H_SAMPLE_RATE_8K, 2, 1000);
             ASSERT_IS_EQUAL(fft_3.Rate(), 4000);
             ASSERT_IS_EQUAL(fft_3.Width(), 2000);
             ASSERT_IS_EQUAL(fft_3.Center(), 1000);
             ASSERT_IS_EQUAL(fft_3.Left(), 0);
             ASSERT_IS_EQUAL(fft_3.Right(), 2000);
             ASSERT_IS_EQUAL((int) (fft_3.BinSize() * 100000), 390625);
-            ASSERT_IS_EQUAL( test_fft_rate_frequency_N(H_SAMPLE_RATE_8K, 800, 1024, 2, 1000, 257, 2) / 2, 800 );
+            ASSERT_IS_EQUAL( test_fft_rate_frequency_N(H_SAMPLE_RATE_8K, 800, 1024, 2, 1000, 2) / 2, 800 );
 
             // Zoom = 4, center = 2500
-            HFftOutput<int16_t> fft_4(1024, 1, new HCustomWriter<HFftResults>(staticCallback), new TestWindow, 15, H_SAMPLE_RATE_8K, 4, 2500);
+            HFftOutput<int16_t> fft_4(1024, 1, new HCustomWriter<HFftResults>(staticCallback), new TestWindow, H_SAMPLE_RATE_8K, 4, 2500);
             ASSERT_IS_EQUAL(fft_4.Rate(), 2000);
             ASSERT_IS_EQUAL(fft_4.Width(), 1000);
             ASSERT_IS_EQUAL(fft_4.Center(), 2500);
             ASSERT_IS_EQUAL(fft_4.Left(), 2000);
             ASSERT_IS_EQUAL(fft_4.Right(), 3000);
             ASSERT_IS_EQUAL((int) (fft_4.BinSize() * 100000), 195312);
-            ASSERT_IS_EQUAL( test_fft_rate_frequency_N(H_SAMPLE_RATE_8K, 2800, 1024, 4, 2500, 257, 4) / 4, 800 );
+            ASSERT_IS_EQUAL( test_fft_rate_frequency_N(H_SAMPLE_RATE_8K, 2800, 1024, 4, 2500, 4) / 4, 800 );
         }
 
 } hfftoutput_test;

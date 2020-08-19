@@ -91,12 +91,6 @@ bool parseArguments(int argc, char** argv)
             if( argNo < argc - 3 && argv[argNo + 2][0] != '-' ) {
                 Config.FCenter = argIntCmp(argv[argNo], "-fmgp", argv[argNo + 2], Config.FCenter);
                 Config.ZoomFactor = argIntCmp(argv[argNo], "-fmgp", argv[argNo + 3], Config.ZoomFactor);
-                if( argNo < argc - 4 && argv[argNo + 4][0] != '-' ) {
-                    Config.Points = argIntCmp(argv[argNo], "-fmgp", argv[argNo + 4], Config.Points);
-                    if( argNo < argc - 5 && argv[argNo + 5][0] != '-') {
-                        Config.Attenuation = argIntCmp(argv[argNo], "-fmgp", argv[argNo + 5], Config.Attenuation);
-                    }
-                }
             }
 
             Config.IsMultiplier = argBoolCmp(argv[argNo], "-mp", Config.IsMultiplier);
@@ -306,11 +300,9 @@ bool parseArguments(int argc, char** argv)
             std::cout << "Play file" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "$ -fmgp size [fcenter factor [points [attenuation]]] " << std::endl;
+            std::cout << "$ -fmgp size [fcenter factor] " << std::endl;
             std::cout << "Run FFT on a file and plot the magnitude spectrum on screen using GnuPlot" << std::endl;
-            std::cout << "If a center frequency and a factor is given, zooming is applied. Zooming" << std::endl;
-            std::cout << "can be adjusted by stating the number of points and optionally the attenuation" << std::endl;
-            std::cout << "of the Kaiser-Bessel lowpass filter that is used internally." << std::endl;
+            std::cout << "If a center frequency and a factor is given, zooming is applied." << std::endl;
             std::cout << std::endl;
 
             std::cout << "$ dpscmd -fc in-format out-format" << std::endl;

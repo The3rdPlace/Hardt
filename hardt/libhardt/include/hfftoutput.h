@@ -54,7 +54,6 @@ class HFftOutput : public HOutput<T, HFftResults>
 
         int _zoomFactor;
         int _zoomCenter;
-        int _zoomPoints;
         H_SAMPLE_RATE _zoomRate;
         T* _zoomOutput;
         HInputWriter<T>* _zoomInputWriter;
@@ -80,10 +79,6 @@ class HFftOutput : public HOutput<T, HFftResults>
 
               window = The window to use before calculating the FFT
 
-              zoomPoints = The number of FIR coefficients used to filter the input before resampling. Use something like 15 if
-                           you need speed instead of precision, something in the range 51-101 for moderate speed and acceptable
-                           precision and go high if you need precision and no degradation of signals in the zoomed range (257 or higher)
-
               zoomRate = The samplerate of the input samples
 
               zoomFactor = Zoom factor. If larger than 1, then the spectrum is zoomed around 'center' (in relation to 'size').
@@ -92,12 +87,11 @@ class HFftOutput : public HOutput<T, HFftResults>
               zoomCenter = The center bin (frequency), must be in the [0-size/2] range. Use the static HFftOutput::BinAtFrequency()
                            method if you do not already know the bin number.
 
-              If you intend to use scaling, you _must_ initialize the HFftOutput with a samplerate and number of points for the FIR
-              filter needed before decimation. You can set the factor to 1 initially to disable zooming. But if you have not provided
-              zoomPoints != 0 and zoomRate != 0, zooming will not be setup and be available.!
+              If you intend to use scaling, you _must_ initialize the HFftOutput with a samplerate. You can set the factor to 1
+              initially to disable zooming. But if you have not provided zoomRate != 0, zooming will not be setup and be available.!
 
         */
-        HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* window, int zoomPoints = 0, H_SAMPLE_RATE zoomRate = 0, int zoomFactor = 1, int zoomCenter = 0);
+        HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* window, H_SAMPLE_RATE zoomRate = 0, int zoomFactor = 1, int zoomCenter = 0);
 
         /** Create a new HFft output that registers with an upstream writer
 
@@ -115,10 +109,6 @@ class HFftOutput : public HOutput<T, HFftResults>
 
               window = The window to use before calculating the FFT
 
-              zoomPoints = The number of FIR coefficients used to filter the input before resampling. Use something like 15 if
-                           you need speed instead of precision, something in the range 51-101 for moderate speed and acceptable
-                           precision and go high if you need precision and no degradation of signals in the zoomed range (257 or higher)
-
               zoomRate = The samplerate of the input samples
 
               zoomFactor = Zoom factor. If larger than 1, then the spectrum is zoomed around 'center' (in relation to 'size').
@@ -127,11 +117,10 @@ class HFftOutput : public HOutput<T, HFftResults>
               zoomCenter = The center bin (frequency), must be in the [0-size/2] range. Use the static HFftOutput::BinAtFrequency()
                            method if you do not already know the bin number.
 
-              If you intend to use scaling, you _must_ initialize the HFftOutput with a samplerate and number of points for the FIR
-              filter needed before decimation. You can set the factor to 1 initially to disable zooming. But if you have not provided
-              zoomPoints != 0 and zoomRate != 0, zooming will not be setup and be available.!
+              If you intend to use scaling, you _must_ initialize the HFftOutput with a samplerate. You can set the factor to 1
+              initially to disable zooming. But if you have not provided zoomRate != 0, zooming will not be setup and be available.!
         */
-        HFftOutput(int size, int average, HWriterConsumer<T>* consumer, HWindow<T>* window, int zoomPoints = 0, H_SAMPLE_RATE zoomRate = 0, int zoomFactor = 1, int zoomCenter = 0);
+        HFftOutput(int size, int average, HWriterConsumer<T>* consumer, HWindow<T>* window, H_SAMPLE_RATE zoomRate = 0, int zoomFactor = 1, int zoomCenter = 0);
 
         /** Default destructor */
         ~HFftOutput()
