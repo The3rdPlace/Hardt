@@ -69,6 +69,11 @@ void HFftOutput<T>::Init()
             throw new HInitializationException("The left or right bound of the zoomed frequency spectrum falls outside the range supported by the sampling rate");
         }
 
+        // If center = 0, we should use the middle of the input spectrum
+        if( _zoomCenter == 0 ) {
+            _zoomCenter = _zoomRate / 4;
+        }
+
         // Setup zoom chain
         _zoomInputWriter = new HInputWriter<T>();
         _zoomBaseband = new HBaseband<T>(_zoomInputWriter->Consumer(), _zoomRate, _zoomCenter, (_zoomRate / 2) / _zoomFactor, _size);
@@ -79,8 +84,19 @@ void HFftOutput<T>::Init()
 }
 
 template <class T>
-void HFftOutput<T>::SetZoom() {
+void HFftOutput<T>::SetZoom(int zoomFactor, int zoomCenter) {
+
     if( _zoomEnabled ) {
+
+        // Store new settings
+        _zoomFactor = zoomFactor;
+        if( zoomCenter == 0 ) {
+            _zoomCenter = _zoomRate / 4;
+        } else {
+            _zoomCenter = zoomCenter;
+        }
+
+        // Set new zoom settings
         _zoomBaseband->SetSegment(_zoomCenter, (_zoomRate / 2) / _zoomFactor);
         _zoomDecimator->SetFactor(_zoomFactor);
     } else {

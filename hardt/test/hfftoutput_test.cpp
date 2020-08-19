@@ -23,7 +23,7 @@ class HFftOutput_Test: public Test
 
         const char* name()
         {
-            return "HFft";
+            return "HFftOutput";
         }
 
     private:

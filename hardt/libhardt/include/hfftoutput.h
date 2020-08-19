@@ -61,7 +61,6 @@ class HFftOutput : public HOutput<T, HFftResults>
         HBaseband<T>* _zoomBaseband;
         HDecimator<T>* _zoomDecimator;
         HMemoryWriter<T>* _zoomMemoryWriter;
-        void SetZoom();
         T* Zoom(T* src, size_t size);
         bool _zoomEnabled;
 
@@ -225,6 +224,9 @@ class HFftOutput : public HOutput<T, HFftResults>
 
             return _zoomRate / _zoomFactor;
         }
+
+        /** Change zoom factor and center */
+        void SetZoom(int zoomFactor, int zoomCenter);
 };
 
 #endif
