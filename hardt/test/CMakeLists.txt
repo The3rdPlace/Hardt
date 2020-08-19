@@ -64,6 +64,7 @@ target_sources(hardt_test
 	hkaiserbessels_test.cpp
 	hfftoutput_test.cpp
 	hinputwriter_test.cpp
+	hbaseband_test.cpp
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
