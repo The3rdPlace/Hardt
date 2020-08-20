@@ -575,7 +575,7 @@
     Syntax: dpscmd -bb center width
 
     Move segment around 'center' with 'width' to baseband
-    
+
 */
 
 #ifndef __DSPCMD_H
