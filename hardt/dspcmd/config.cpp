@@ -167,6 +167,10 @@ bool parseArguments(int argc, char** argv)
             Config.IsInterpolator = argBoolCmp(argv[argNo], "-ip", Config.IsInterpolator);
             Config.UpsampleFactor = argIntCmp(argv[argNo], "-ip", argv[argNo + 1], Config.UpsampleFactor);
             Config.FilterCoeffs = argCharCmp(argv[argNo], "-ip", argv[argNo + 2], Config.FilterCoeffs);
+
+            Config.IsBaseband = argBoolCmp(argv[argNo], "-bb", Config.IsBaseband);
+            Config.FCenter = argIntCmp(argv[argNo], "-bb", argv[argNo + 1], Config.FCenter);
+            Config.Width = argIntCmp(argv[argNo], "-bb", argv[argNo + 2], Config.Width);
         }
 
         if( argNo < argc - 3 )
@@ -415,6 +419,10 @@ bool parseArguments(int argc, char** argv)
 
             std::cout << "$ dpscmd -ip factor coeffs" << std::endl;
             std::cout << "Interpolate input samples by a factor with FIR coefficients from 'coeffs'" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "$ dpscmd -bb center width" << std::endl;
+            std::cout << "Move segment around 'center' with 'width' to baseband." << std::endl;
             std::cout << std::endl;
 
             std::cout << "When creating filters, 'name' is the corresponding API name for the filter or calculator.:" << std::endl;

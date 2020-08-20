@@ -2138,6 +2138,63 @@ int RunInterpolator()
 }
 
 template <typename T>
+int RunBaseband()
+{
+    // Create reader
+    HReader<T>* rd;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        rd = new HWavReader<T>(Config.InputFile);
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        rd = new HFileReader<T>(Config.InputFile);
+    }
+    else
+    {
+        std::cout << "Unknown input file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+    // Create writer
+    HWriter<T>* wr;
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        wr = new HFileWriter<T>(Config.OutputFile);
+    }
+    else
+    {
+        std::cout << "Unknown output file format " << Config.FileFormat << std::endl;
+        return -1;
+    }
+
+    // Create Baseband translator
+    HBaseband<T> bb(wr, Config.Rate, Config.FCenter, Config.Width, Config.Blocksize);
+
+    // Create processor
+    HStreamProcessor<T> proc(bb.Writer(), rd->Reader(), Config.Blocksize, &terminated);
+    proc.Run();
+
+    // Delete the reader and writer
+    if( strcmp(Config.FileFormat, "wav") == 0 )
+    {
+        delete (HWavReader<T>*) rd;
+        delete (HWavWriter<T>*) wr;
+    }
+    else if( strcmp(Config.FileFormat, "pcm") == 0 )
+    {
+        delete (HFileReader<T>*) rd;
+        delete (HFileWriter<T>*) wr;
+    }
+
+    return 0;
+}
+
+template <typename T>
 int RunOperation()
 {
     // Wait for start time ?
@@ -2876,6 +2933,50 @@ int RunOperation()
         }
 
         return RunInterpolator<T>();
+    }
+
+    if( Config.IsBaseband )
+    {
+        if( Config.InputFile == NULL )
+        {
+            std::cout << "No input file (-if)" << std::endl;
+            return -1;
+        }
+
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file (-of)" << std::endl;
+            return -1;
+        }
+
+        if( Config.FCenter == 0 )
+        {
+            std::cout << "No center frequency (-bb CENTER ...)" << std::endl;
+            return -1;
+        }
+
+        if( Config.Width == 0 )
+        {
+            std::cout << "No width (-bb ... WIDTH)" << std::endl;
+            return -1;
+        }
+
+        if( (Config.Rate / 2) % Config.Width != 0 ) {
+            std::cout << "Illegal width A" << std::endl;
+            return -1;
+        }
+
+        if( Config.Width > (Config.Rate / 2) /2 ) {
+            std::cout << "Illegal width B" << std::endl;
+            return -1;
+        }
+
+        if( Config.FCenter - (Config.Width / 2) <= 0 || Config.FCenter + (Config.Width / 2) >= (Config.Rate / 2 ) ) {
+            std::cout << "Illegal center frequency" << std::endl;
+            return -1;
+        }
+
+        return RunBaseband<T>();
     }
 
     // No known operation could be determined from the input arguments

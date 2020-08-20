@@ -46,6 +46,7 @@ struct DspCmdConfig
     bool IsInterpolator = false;
     bool IsKaiserBesselSpectrum = false;
     bool IsKaiserBessel = false;
+    bool IsBaseband = false;
 
     char* InFileFormat = NULL;
     char* OutFileFormat = NULL;
@@ -100,6 +101,7 @@ struct DspCmdConfig
 
     int FCenter = 0;
     int ZoomFactor = 0;
+    int Width = 0;
 };
 
 extern DspCmdConfig Config;

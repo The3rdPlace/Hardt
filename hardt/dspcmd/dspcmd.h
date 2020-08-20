@@ -571,6 +571,11 @@
     
     Interpolate input samples by a factor with FIR coefficients read from the file 'coeffs'
 
+    \page bb
+    Syntax: dpscmd -bb center width
+
+    Move segment around 'center' with 'width' to baseband
+    
 */
 
 #ifndef __DSPCMD_H
