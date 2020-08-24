@@ -77,13 +77,13 @@ class HFft {
             src = Input buffer, must contain 'size' number of complex samples
             result = The output result array, must have enough room for 'size' values
         */
-        void FFT(std::complex<double>* src, std::complex<double>* result) {
+        void FFT(std::complex<T>* src, std::complex<double>* result) {
 
             // Prepare a set of complex values
             std::valarray<std::complex<double>> x(_size);
             for( int i = 0; i < _size ; i++ )
             {
-                x[i] = src[i];
+                x[i] = std::complex<double>(src[i].real(), src[i].imag());
             }
 
             // Calculate the FFT
