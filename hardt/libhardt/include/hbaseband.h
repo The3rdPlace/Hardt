@@ -26,7 +26,7 @@ class HBaseband : public HFilter<T>
         int _width;
         int _rate;
 
-        std::complex<double>* _translated;
+        std::complex<T>* _translated;
         std::complex<double>* _spectrum;
         HFft<T>* _fft;
 

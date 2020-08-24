@@ -70,14 +70,14 @@ void HBaseband<T>::Filter(T* src, T* dest, size_t blocksize)
 
     // Translate
     for( int i = 0; i < blocksize; i++ ) {
-        _translated[i] = std::complex<double>(src[i] * _cos[i], src[i] * _sin[i]);
+        _translated[i] = std::complex<T>(src[i] * _cos[i], src[i] * _sin[i]);
     }
 
     // Filter
     int factor = (_rate / 2) / _width;
     _fft->FFT(_translated, _spectrum);
     for( int i = blocksize / (factor * 2); i < blocksize; i++) {
-        _spectrum[i] = std::numeric_limits<int8_t>::lowest();
+        _spectrum[i] = 0;
     }
     _fft->IFFT(_spectrum, dest);
 }
@@ -85,7 +85,7 @@ void HBaseband<T>::Filter(T* src, T* dest, size_t blocksize)
 template <class T>
 void HBaseband<T>::Init() {
 
-    _translated = new std::complex<double>[_blocksize];
+    _translated = new std::complex<T>[_blocksize];
     _spectrum = new std::complex<double>[_blocksize];
     _fft = new HFft<T>(_blocksize);
 
@@ -105,8 +105,9 @@ void HBaseband<T>::PreCalculate() {
     double center = _center - (_width / 2);
 
     for( int i = 0; i < _blocksize; i++ ) {
-        _cos[i] =        cos( ( 2.0 * M_PI * (double) center * i) / (double) _rate);
-        _sin[i] = -1.0 * sin( ( 2.0 * M_PI * (double) center * i) / (double) _rate);
+        double arg = (2.0 * M_PI * (double) center * i) / (double) _rate;
+        _cos[i] =        cos( arg );
+        _sin[i] = -1.0 * sin( arg );
     }
 }
 
