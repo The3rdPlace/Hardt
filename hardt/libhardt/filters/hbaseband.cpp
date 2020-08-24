@@ -5,6 +5,8 @@
 #include "hlowpasskaiserbessel.h"
 #include "hfir.h"
 
+#include <numeric>
+
 template <class T>
 HBaseband<T>::HBaseband(HWriter<T>* writer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<T>* probe):
     HFilter<T>(writer, blocksize, probe),
@@ -75,7 +77,7 @@ void HBaseband<T>::Filter(T* src, T* dest, size_t blocksize)
     int factor = (_rate / 2) / _width;
     _fft->FFT(_translated, _spectrum);
     for( int i = blocksize / (factor * 2); i < blocksize; i++) {
-        _spectrum[i] = 0;
+        _spectrum[i] = std::numeric_limits<int8_t>::lowest();
     }
     _fft->IFFT(_spectrum, dest);
 }
@@ -95,9 +97,16 @@ void HBaseband<T>::Init() {
 
 template <class T>
 void HBaseband<T>::PreCalculate() {
+
+    // Translation moves the center frequency towards
+    // zero, so to move a segment of width W with center C
+    // down towards zero so that Wmin = 0, we need to use a
+    // center of C - W/2 = Wmin - 0 = Wmin
+    double center = _center - (_width / 2);
+
     for( int i = 0; i < _blocksize; i++ ) {
-        _cos[i] =        cos( ( 2 * M_PI * (_center - (_width / 2)) * i) / _rate),
-        _sin[i] = -1.0 * sin( ( 2 * M_PI * (_center - (_width / 2)) * i) / _rate);
+        _cos[i] =        cos( ( 2.0 * M_PI * (double) center * i) / (double) _rate);
+        _sin[i] = -1.0 * sin( ( 2.0 * M_PI * (double) center * i) / (double) _rate);
     }
 }
 
