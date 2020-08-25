@@ -56,7 +56,7 @@ void HFftOutput<T>::Init()
     _window->SetSize(_size);
 
     // Create the fft
-    _fft = new HFft<T>(_size);//, _window);
+    _fft = new HFft<T>(_size, _window);
 
     // Setup zooming - even if the factor is 1 at the moment
     if( _zoomRate != 0 ) {
