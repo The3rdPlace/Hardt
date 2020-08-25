@@ -2,10 +2,6 @@
 #define __HBASEBAND_CPP
 
 #include "hbaseband.h"
-#include "hlowpasskaiserbessel.h"
-#include "hfir.h"
-
-#include <numeric>
 
 template <class T>
 HBaseband<T>::HBaseband(HWriter<T>* writer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<T>* probe):
@@ -72,48 +68,15 @@ void HBaseband<T>::Filter(T* src, T* dest, size_t blocksize)
     for( int i = 0; i < blocksize; i++ ) {
         _translated[i] = std::complex<T>(src[i] * _cos[i], src[i] * _sin[i]);
     }
+    _fft->FFT(_translated, _spectrum);
 
     // Filter
-    /*int factor = (_rate / 2) / _width;
+    int factor = (_rate / 2) / _width;
     _fft->FFT(_translated, _spectrum);
     for( int i = blocksize / (factor * 2); i < blocksize; i++) {
         _spectrum[i] = 0;
     }
-    _fft->IFFT(_spectrum, dest);*/
-
-    HBandpassKaiserBessel<T> lowpass(0, 6000, _rate, 115, 96);
-    float *coefs = lowpass.Calculate();
-    float fcoefs[blocksize];
-    for (int j = 0; j < blocksize; j++)
-    {
-        fcoefs[j] = 0;
-    }
-    // put filter coeffs in real array (centered on x=0, wrapping around 1024 pts)
-    //fcoefs[0] = coefs[0];
-    for (int j = 0; j <= 115; j++)
-    {
-        std::cout << "coefs[" << j << "] " << coefs[j] << std::endl;
-        fcoefs[j] = coefs[j];
-        //fcoefs[blocksize - 1 - j] = fcoefs[j];
-    }
-    HFft<float> lpfft(blocksize);
-    std::complex<double> fr[1024];
-    lpfft.FFT(fcoefs, fr);
-
-    for ( int i = 0; i < blocksize; i++ ) {
-        double tr = _translated[i].real() * fr[i].real() - _translated[i].imag() * fr[i].imag();
-        double ti = _translated[i].real() * fr[i].imag() + _translated[i].imag() * fr[i].real();
-        _spectrum[i] = std::complex<double>(tr, ti);
-    }
-    float out[blocksize];
-    lpfft.IFFT(_spectrum, out);
-    //lpfft.IFFT(fr, out);
-    for( int i = 0; i < blocksize; i++ ) {
-        dest[i] = out[i] * blocksize;
-        std::cout << "out[" << i << "] " << out[i] << std::endl;
-    }
-
-
+    _fft->IFFT(_spectrum, dest);
 }
 
 template <class T>
