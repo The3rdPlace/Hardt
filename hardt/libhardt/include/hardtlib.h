@@ -109,6 +109,7 @@ Include api function declarations
 #include "hbaseband.cpp"
 #include "htranslatebytwo.cpp"
 #include "htranslatebyfour.cpp"
+#include "hcomplexfilter.cpp"
 
 /********************************************************************
 Debug and diagnostics

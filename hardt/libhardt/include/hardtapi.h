@@ -98,5 +98,6 @@
 #include "hbaseband.h"
 #include "htranslatebytwo.h"
 #include "htranslatebyfour.h"
+#include "hcomplexfilter.h"
 
 #endif

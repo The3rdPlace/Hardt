@@ -35,5 +35,11 @@ float HHammingWindow<int16_t>::ValueAt(int N, int n);
 template
 float HHammingWindow<int32_t>::ValueAt(int N, int n);
 
+template
+float HHammingWindow<float>::ValueAt(int N, int n);
+
+template
+float HHammingWindow<double>::ValueAt(int N, int n);
+
 //! @endcond
 #endif

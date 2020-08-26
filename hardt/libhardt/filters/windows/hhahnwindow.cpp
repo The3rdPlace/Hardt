@@ -34,5 +34,11 @@ float HHahnWindow<int16_t>::ValueAt(int N, int n);
 template
 float HHahnWindow<int32_t>::ValueAt(int N, int n);
 
+template
+float HHahnWindow<float>::ValueAt(int N, int n);
+
+template
+float HHahnWindow<double>::ValueAt(int N, int n);
+
 //! @endcond
 #endif

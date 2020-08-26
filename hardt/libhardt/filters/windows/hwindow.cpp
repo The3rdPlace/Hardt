@@ -72,6 +72,12 @@ HWindow<int16_t>::HWindow();
 template
 HWindow<int32_t>::HWindow();
 
+template
+HWindow<float>::HWindow();
+
+template
+HWindow<double>::HWindow();
+
 // ~HWindow()
 template
 HWindow<int8_t>::~HWindow();
@@ -84,6 +90,12 @@ HWindow<int16_t>::~HWindow();
 
 template
 HWindow<int32_t>::~HWindow();
+
+template
+HWindow<float>::~HWindow();
+
+template
+HWindow<double>::~HWindow();
 
 // SetSize()
 template
@@ -98,6 +110,12 @@ void HWindow<int16_t>::SetSize(int N);
 template
 void HWindow<int32_t>::SetSize(int N);
 
+template
+void HWindow<float>::SetSize(int N);
+
+template
+void HWindow<double>::SetSize(int N);
+
 // Apply()
 template
 void HWindow<int8_t>::Apply(int8_t* src, int8_t* dest, size_t blocksize);
@@ -110,6 +128,12 @@ void HWindow<int16_t>::Apply(int16_t* src, int16_t* dest, size_t blocksize);
 
 template
 void HWindow<int32_t>::Apply(int32_t* src, int32_t* dest, size_t blocksize);
+
+template
+void HWindow<float>::Apply(float* src, float* dest, size_t blocksize);
+
+template
+void HWindow<double>::Apply(double* src, double* dest, size_t blocksize);
 
 //! @endcond
 #endif

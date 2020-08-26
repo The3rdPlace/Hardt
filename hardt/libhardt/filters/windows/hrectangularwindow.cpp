@@ -26,5 +26,11 @@ float HRectangularWindow<int16_t>::ValueAt(int N, int n);
 template
 float HRectangularWindow<int32_t>::ValueAt(int N, int n);
 
+template
+float HRectangularWindow<float>::ValueAt(int N, int n);
+
+template
+float HRectangularWindow<double>::ValueAt(int N, int n);
+
 //! @endcond
 #endif

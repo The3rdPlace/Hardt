@@ -24,7 +24,11 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
 
         bool _enabled;
 
-        void Init();
+        void Init() {
+
+            _buffer = new T[_blocksize];
+            HLog("Allocated %d as local buffer", _blocksize * sizeof(T));
+        }
 
     protected:
 
@@ -32,13 +36,41 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
         int _blocksize;
 
         /** Construct a new HFilter that writes to a writer */
-        HFilter(HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL);
+        HFilter(HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL):
+            _writer(writer),
+            _reader(NULL),
+            _blocksize(blocksize),
+            _probe(probe),
+            _enabled(true) {
+
+            HLog("HFilter(HWriter*)");
+            Init();
+        }
 
         /** Construct a new HFilter that registers with an upstream writer */
-        HFilter(HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL);
+        HFilter(HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL):
+            _reader(NULL),
+            _blocksize(blocksize),
+            _probe(probe),
+            _enabled(true) {
+
+            HLog("HFilter(HWriter*)");
+            Init();
+
+            consumer->SetWriter(this);
+        }
 
         /** Construct a new HFilter that reads from a reader */
-        HFilter(HReader<T>* reader, size_t blocksize, HProbe<T>* probe = NULL);
+        HFilter(HReader<T>* reader, size_t blocksize, HProbe<T>* probe = NULL):
+            _writer(NULL),
+            _reader(reader),
+            _blocksize(blocksize),
+            _probe(probe),
+            _enabled(true) {
+
+            HLog("HFilter(HReader*)");
+            Init();
+        }
 
         /** Implements HWriterConsumer::SetWriter() */
         void SetWriter(HWriter<T>* writer)
@@ -49,22 +81,93 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
     public:
 
         /** Default destructor */
-        ~HFilter();
+        ~HFilter() {
+            HLog("~HFilter()");
+            delete _buffer;
+        }
 
         /** Write a block of samples */
-        int Write(T* src, size_t blocksize);
+        int Write(T* src, size_t blocksize) {
+
+            if( blocksize > _blocksize )
+            {
+                HError("Illegal blocksize in Write() to HFilter. Initialized with %d called with %d", _blocksize, blocksize);
+                throw new HFilterIOException("It is not allowed to write more data than the size given at creation of the filter");
+            }
+
+            if( _enabled ) {
+                Filter(src, _buffer, blocksize);
+            } else {
+                memcpy((void*) _buffer, (void*) src, sizeof(T) * blocksize);
+            }
+            int written = _writer->Write(_buffer, blocksize);
+
+            if( _probe != NULL )
+            {
+                _probe->Write(_buffer, blocksize);
+            }
+
+            return written;
+        }
 
         /** Read a block of samples */
-        int Read(T* dest, size_t blocksize);
+        int Read(T* dest, size_t blocksize) {
+
+            if( blocksize > _blocksize )
+            {
+                HError("Illegal blocksize in Read() to HFilter. Initialized with %d called with %d", _blocksize, blocksize);
+                throw new HFilterIOException("It is not possible to read more data than the size given at creation of the filter");
+            }
+
+            int received = _reader->Read(_buffer, blocksize);
+            if( _enabled ) {
+                Filter(_buffer, dest, received);
+            } else {
+                memcpy((void*) dest, (void*) _buffer, sizeof(T) * blocksize);
+            }
+
+            if( _probe != NULL )
+            {
+                _probe->Write(_buffer, blocksize);
+            }
+
+            return received;
+        }
 
         /** Run a block of samples through the filter */
         virtual void Filter(T* src, T* dest, size_t blocksize) = 0;
 
         /** Initialize before first read/write */
-        bool Start();
+        bool Start() {
+
+            if( _reader != NULL )
+            {
+                HLog("Calling Start() on reader");
+                return _reader->Start();
+            }
+            if( _writer != NULL )
+            {
+                HLog("Calling Start() on writer");
+                return _writer->Start();
+            }
+            return false;
+        }
 
         /** Cleanup after last read/write */
-        bool Stop();
+        bool Stop() {
+
+            if( _reader != NULL )
+            {
+                HLog("Calling Stop() on reader");
+                return _reader->Stop();
+            }
+            if( _writer != NULL )
+            {
+                HLog("Calling Stop() on writer");
+                return _writer->Stop();
+            }
+            return false;
+        }
 
         /** Execute or carry through a command */
         bool Command(HCommand* command) {
