@@ -1,7 +1,7 @@
 Needed:
-  - Decimator
-  - Upconverter
   - Encoder base (cw, rtty etc. needs this.. Use HFilter as example)
+  - Complex mixer (filtering in frequency domain)
+  - decimating FIR
 
 Nice2have:
   - cw encode
