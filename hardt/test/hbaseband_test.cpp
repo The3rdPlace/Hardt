@@ -10,11 +10,11 @@ public:
     void run()
     {
         // Full test to check the output of the HBaseband component
-        TEST(test_gain_as_writer);
+        TEST(test_baseband_as_writer);
 
         // Simple tests, just to check that read and write behaves as expected
-        TEST(test_gain_as_consumer);
-        TEST(test_gain_as_reader);
+        TEST(test_baseband_as_consumer);
+        TEST(test_baseband_as_reader);
     }
 
     const char* name()
@@ -24,7 +24,7 @@ public:
 
 private:
 
-    void test_gain_as_writer()
+    void test_baseband_as_writer()
     {
         // Input signal
         HCosineGenerator<int8_t> inputGenerator(H_SAMPLE_RATE_48K, 6000, 100);
@@ -97,7 +97,7 @@ private:
         ASSERT_IS_EQUAL(wr.Commands, 1);
     }
 
-    void test_gain_as_consumer()
+    void test_baseband_as_consumer()
     {
         TestWriter<int8_t> srcWr(8);
         int8_t input[8] = {1, 2, 3, 4, 5, 6, 7, 8};
@@ -135,7 +135,7 @@ private:
         ASSERT_IS_EQUAL(wr.Commands, 1);
     }
 
-    void test_gain_as_reader()
+    void test_baseband_as_reader()
     {
         int8_t output[8] = {1, 2, 3, 4, 5, 6, 7, 8};
         TestReader<int8_t> rd(output, 8);
