@@ -561,6 +561,11 @@
 
     Decimate input samples by a factor
 
+    \page dcm2
+    Syntax: dspcmd -dcm2
+
+    Decimate input samples by two using a fast(er) algorithm
+
     \page up
     Syntax: dspcmd -up factor
     

@@ -47,6 +47,9 @@ struct DspCmdConfig
     bool IsKaiserBesselSpectrum = false;
     bool IsKaiserBessel = false;
     bool IsBaseband = false;
+    bool IsTranslateByTwo = false;
+    bool IsTranslateByFourI = false;
+    bool IsTranslateByFourQ = false;
 
     char* InFileFormat = NULL;
     char* OutFileFormat = NULL;

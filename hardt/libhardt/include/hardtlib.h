@@ -107,6 +107,8 @@ Include api function declarations
 #include "hbandpasskaiserbessel.h"
 #include "hbandstopkaiserbessel.h"
 #include "hbaseband.cpp"
+#include "htranslatebytwo.cpp"
+#include "htranslatebyfour.cpp"
 
 /********************************************************************
 Debug and diagnostics

@@ -56,6 +56,11 @@ bool parseArguments(int argc, char** argv)
 
         Config.IsDemux = argBoolCmp(argv[argNo], "-dmx", Config.IsDemux);
 
+        Config.IsTranslateByTwo = argBoolCmp(argv[argNo], "-tr2", Config.IsTranslateByTwo);
+
+        Config.IsTranslateByFourI = argBoolCmp(argv[argNo], "-tr4i", Config.IsTranslateByFourI);
+        Config.IsTranslateByFourQ = argBoolCmp(argv[argNo], "-tr4q", Config.IsTranslateByFourQ);
+
         if( argNo < argc - 1)
         {
             Config.InputFile = argCharCmp(argv[argNo], "-if", argv[argNo + 1], Config.InputFile);
@@ -411,6 +416,18 @@ bool parseArguments(int argc, char** argv)
 
             std::cout << "$ dpscmd -dcm factor" << std::endl;
             std::cout << "Decimate input samples by a factor" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "$ dpscmd -tr2" << std::endl;
+            std::cout << "Translate input samples by two (invert spectrum)" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "$ dpscmd -tr4i" << std::endl;
+            std::cout << "Translate input samples by four and output I branch" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "$ dpscmd -tr4q" << std::endl;
+            std::cout << "Translate input samples by four and output Q branch" << std::endl;
             std::cout << std::endl;
 
             std::cout << "$ dpscmd -up factor" << std::endl;

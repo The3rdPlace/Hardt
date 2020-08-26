@@ -96,5 +96,7 @@
 #include "hbandpasskaiserbessel.h"
 #include "hbandstopkaiserbessel.h"
 #include "hbaseband.h"
+#include "htranslatebytwo.h"
+#include "htranslatebyfour.h"
 
 #endif
