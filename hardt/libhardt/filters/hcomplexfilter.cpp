@@ -11,11 +11,8 @@ void HComplexFilter<T>::Filter(std::complex<T>* src, std::complex<T>* dest, size
     T j;
     for( int i = 0; i < blocksize; i++ )
     {
-        std::cout << "src real() " << std::to_string(src[i].real()) << ", imag() " << std::to_string(src[i].imag()) << std::endl;
-        std::cout << "response real() " << std::to_string(_response[i].real()) << ", imag() " << std::to_string(_response[i].imag()) << std::endl;
         r = src[i].real() * _response[i].real() + src[i].imag() * _response[i].imag();
         j = src[i].real() * _response[i].imag() - src[i].imag() * _response[i].real();
-        std::cout << "r " << std::to_string(r) << ", j " << std::to_string(j) << std::endl;
         dest[i] = std::complex<T>(r, j);
     }
 }

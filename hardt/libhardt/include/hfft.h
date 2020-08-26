@@ -197,26 +197,29 @@ class HFft {
             IFFT(_hilbertBuffer, dest);
         }
 
-        /* Return the spectrum for a frequency response. For use when
-           one needs the spectrum of a filter, for example do do
-           frequency domain filtering.
+        /** Return the spectrum for a frequency response. For use when
+            one needs the spectrum of a filter, for example to do
+            frequency domain filtering.
 
-           This would typically be a set of FIR coefficients, but
-           can be any frequency response as long as it is not infinite.
+            This would typically be a set of FIR coefficients, but
+            can be any frequency response as long as it is not infinite
+            and has a length <= fft-size/2.
 
-           The response must contain less than, or exactly as many samples
-           as the given fft size.
-
-           'spectrum' must have enough room for 'fft-size' samples.
+            'spectrum' must have enough room for 'fft-size' samples.
         */
         void SPECTRUM(T* response, int length, std::complex<double>* spectrum) {
 
+            // Sanity check
+            if( length > _size / 2 ) {
+                throw new HInitializationException("Length must not exceed fft-size/2 in call to HFft::SPECTRUM");
+            }
+
             // Initialize buffer
             T* buffer = new T[_size];
-            memset((void*) spectrum, 0, sizeof(std::complex<double>) * _size);
+            memset((void*) buffer, 0, sizeof(T) * _size);
 
             // Copy frequency response into buffer
-            memcpy((void*) buffer, response, length);
+            memcpy((void*) buffer, (void*) response, sizeof(T) * length);
 
             // Take FFT of the frequency response
             FFT(buffer, spectrum);

@@ -188,35 +188,46 @@ private:
         // Build input signals
         HVfo<int16_t> osc(H_SAMPLE_RATE_48K, 1000, 100);
         int16_t osc1000[1024];
-        int16_t osc1500[1024];
-        int16_t osc2500[1024];
-        int16_t osc3500[1024];
+        int16_t osc4000[1024];
+        int16_t osc10000[1024];
+        int16_t osc14000[1024];
         osc.Read(osc1000, 1024);
-        osc.SetFrequency(1500);
-        osc.Read(osc1500, 1024);
-        osc.SetFrequency(2500);
-        osc.Read(osc2500, 1024);
-        osc.SetFrequency(3500);
-        osc.Read(osc3500, 1024);
+        osc.SetFrequency(4000);
+        osc.Read(osc4000, 1024);
+        osc.SetFrequency(10000);
+        osc.Read(osc10000, 1024);
+        osc.SetFrequency(14000);
+        osc.Read(osc14000, 1024);
 
         // Mix inputs
         int16_t input[1024];
         for( int i = 0; i < 1024; i++ ) {
-            input[i] = osc1000[i] + osc1500[i] + osc2500[i] + osc3500[i];
+            input[i] = osc1000[i] + osc4000[i] + osc10000[i] + osc14000[i];
         }
-
-        HFileWriter<int16_t> fw("/home/henrik/Git/Hardt/build/input.pcm");
-        fw.Start();
-        fw.Write(input, 1024);
-        fw.Stop();
 
         // Get the input signal spectrum
         std::complex<double> inputSpectrum[1024];
         HFft<int16_t> inputFft(1024);
         inputFft.FFT(input, inputSpectrum);
 
+        // Verify that the input has peaks at bin 21, 85, 213, 299 (1KHz, 4KHZ, 10KHz, 14KHz)
+        for( int i = 0; i < 512; i++ ) {
+            if( i == 21 || i == 85 || i == 213 || i == 299 ) {
+                if( std::abs(inputSpectrum[i]) < 42000 || std::abs(inputSpectrum[i]) > 43000 ) {
+                    HError("Invalid value %ld in bin %d", std::abs(inputSpectrum[i]), i);
+                    ASSERT_FAIL("Invalid value in input bin");
+                    std::cout << "i = " << i << ", value = " << std::abs(inputSpectrum[i]) << std::endl;
+                }
+            }
+            else if( std::abs(inputSpectrum[i]) >22000 ) {
+                HError("Invalid value %ld in bin %d", std::abs(inputSpectrum[i]), i);
+                std::cout << "i = " << i << ", value = " << std::abs(inputSpectrum[i]) << std::endl;
+                ASSERT_FAIL("Invalid value in input bin");
+            }
+        }
+
         // Get a Kaiser-Bessel lowpass filter
-        HLowpassKaiserBessel<int16_t> filter(2000, H_SAMPLE_RATE_48K, 115, 96);
+        HLowpassKaiserBessel<int16_t> filter(6000, H_SAMPLE_RATE_48K, 115, 96);
         float* filtercoefs = filter.Calculate();
 
         // Get filter spectrum
@@ -228,16 +239,23 @@ private:
         HInputWriter<std::complex<double>> inputWriter;
         HComplexFilter<double> cfilter(inputWriter.Consumer(), 1024, filterSpectrum);
         std::complex<double> filteredSpectrum[1024];
-        HMemoryWriter<std::complex<double>> outputWriter(filteredSpectrum, 1024);
+        HMemoryWriter<std::complex<double>> outputWriter(cfilter.Consumer(), filteredSpectrum, 1024);
         inputWriter.Write(inputSpectrum, 1024);
 
-        int16_t output[1024];
-        inputFft.IFFT(filteredSpectrum, output);
-
-        HFileWriter<int16_t> fwOut("/home/henrik/Git/Hardt/build/output.pcm");
-        fwOut.Start();
-        fwOut.Write(output, 1024);
-        fwOut.Stop();
-
+        // Verify that only the peaks at bin 21 and 85 (1KHz and 4KHz) remains
+        for( int i = 0; i < 512; i++ ) {
+            if( i == 21 || i == 85 ) {
+                if( std::abs(filteredSpectrum[i]) < 42000 || std::abs(filteredSpectrum[i]) > 44000 ) {
+                    HError("Invalid value %ld in bin %d", std::abs(inputSpectrum[i]), i);
+                    std::cout << "i = " << i << ", value = " << std::abs(filteredSpectrum[i]) << std::endl;
+                    ASSERT_FAIL("Invalid value in input bin");
+                }
+            }
+            else if( std::abs(filteredSpectrum[i]) >22000 ) {
+                HError("Invalid value %ld in bin %d", std::abs(inputSpectrum[i]), i);
+                std::cout << "i = " << i << ", value = " << std::abs(filteredSpectrum[i]) << std::endl;
+                ASSERT_FAIL("Invalid value in input bin");
+            }
+        }
     }
 } hcomplexfilter_test;
