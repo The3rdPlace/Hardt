@@ -8,7 +8,7 @@
 
 #include <vector>
 
-/** Impements a decimator that can reduce the incomming samplerate by a given factor */
+/** Implements a decimator that can reduce the incomming samplerate by a given factor */
 template <class T>
 class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
 {

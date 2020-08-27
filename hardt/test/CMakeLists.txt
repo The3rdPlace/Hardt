@@ -68,6 +68,7 @@ target_sources(hardt_test
 	htranslatebytwo_test.cpp
 	htranslatebyfour_test.cpp
 	hcomplexfilter_test.cpp
+	hfirdecimator_test.cpp
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")

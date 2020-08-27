@@ -99,5 +99,6 @@
 #include "htranslatebytwo.h"
 #include "htranslatebyfour.h"
 #include "hcomplexfilter.h"
+#include "hfirdecimator.h"
 
 #endif

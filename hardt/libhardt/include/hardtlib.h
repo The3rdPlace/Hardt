@@ -110,6 +110,7 @@ Include api function declarations
 #include "htranslatebytwo.cpp"
 #include "htranslatebyfour.cpp"
 #include "hcomplexfilter.cpp"
+#include "hfirdecimator.cpp"
 
 /********************************************************************
 Debug and diagnostics
