@@ -49,6 +49,26 @@ class HFir {
             return result;
         }
 
+    /** Filter a single sample value then add a further number of samples
+        to the buffer without summing - polyphase filtering in a fir-decimator */
+    inline T Filter(T* value, int steps) {
+
+        T result = Filter(*value);
+
+        for( int i = 1; i < steps; i++ ) {
+
+            // Add new sample to the head of the delay line
+            _taps[_head] = value[i];
+
+            // Move tip of the delay line ringbuffer
+            _head = _head == 0 ? _length : _head;
+            _head--;
+        }
+
+        // Return the result
+        return result;
+    }
+
     public:
 
         /** Create a new FIR block (for calculating output values for a FIR filter)

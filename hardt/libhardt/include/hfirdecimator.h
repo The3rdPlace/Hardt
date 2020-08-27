@@ -10,6 +10,8 @@ class HFirDecimator: public HDecimator<T>
 {
     private:
 
+        int _factor;
+
         void Init();
 
     public:

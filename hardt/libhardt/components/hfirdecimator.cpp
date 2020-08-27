@@ -5,14 +5,18 @@
 
 template <class T>
 HFirDecimator<T>::HFirDecimator(HWriter<T>* writer, int factor, size_t blocksize):
-    HDecimator<T>(writer, factor, blocksize) {
+    HDecimator<T>(writer, 1, blocksize),
+    _factor(factor) {
+
     HLog("HFirDecimator(HWriter*, blocksize=%d)", blocksize);
     Init();
 }
 
 template <class T>
 HFirDecimator<T>::HFirDecimator(HWriterConsumer<T>* consumer, int factor, size_t blocksize):
-    HDecimator<T>(consumer, factor, blocksize) {
+    HDecimator<T>(consumer, 1, blocksize),
+    _factor(factor) {
+
     HLog("HFirDecimator(HWriterConsumer*, blocksize=%d)", blocksize);
     Init();
     consumer->SetWriter(this);
@@ -20,7 +24,9 @@ HFirDecimator<T>::HFirDecimator(HWriterConsumer<T>* consumer, int factor, size_t
 
 template <class T>
 HFirDecimator<T>::HFirDecimator(HReader<T>* reader, int factor, size_t blocksize):
-    HDecimator<T>(reader, factor, blocksize) {
+    HDecimator<T>(reader, 1, blocksize),
+    _factor(factor){
+
     HLog("HFirDecimator(HReader*, blocksize=%d)", blocksize);
     Init();
 }
@@ -36,7 +42,11 @@ void HFirDecimator<T>::Init() {
 template <class T>
 int HFirDecimator<T>::Write(T* src, size_t blocksize)
 {
-    return HDecimator<T>::Write(src, blocksize);
+    T results[blocksize / _factor];
+    for( int i = 0; i < blocksize; i += _factor ) {
+        results[i] = 0;
+    }
+    return HDecimator<T>::Write(results, blocksize / _factor);
 }
 
 template <class T>

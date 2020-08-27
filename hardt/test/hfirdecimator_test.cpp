@@ -10,7 +10,7 @@ class HFirDecimator_Test: public Test
         void run()
         {
             UNITTEST(test_read);
-            UNITTEST(test_write);
+            TEST(test_write);
             UNITTEST(test_writerConsumer);
         }
 
