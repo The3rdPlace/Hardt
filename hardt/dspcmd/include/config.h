@@ -50,6 +50,7 @@ struct DspCmdConfig
     bool IsTranslateByTwo = false;
     bool IsTranslateByFourI = false;
     bool IsTranslateByFourQ = false;
+    bool IsFirDecimator = false;
 
     char* InFileFormat = NULL;
     char* OutFileFormat = NULL;

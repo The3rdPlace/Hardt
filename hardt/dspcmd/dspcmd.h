@@ -567,7 +567,7 @@
     Decimate input samples by a factor
 
     \page fdcm
-    Syntax: dpscmd -fdcm coeffs
+    Syntax: dpscmd -fdcm factor coeffs
 
     Filter input file through a FIR decimator
 

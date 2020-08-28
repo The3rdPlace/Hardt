@@ -178,6 +178,11 @@ bool parseArguments(int argc, char** argv)
             Config.IsBaseband = argBoolCmp(argv[argNo], "-bb", Config.IsBaseband);
             Config.FCenter = argIntCmp(argv[argNo], "-bb", argv[argNo + 1], Config.FCenter);
             Config.Width = argIntCmp(argv[argNo], "-bb", argv[argNo + 2], Config.Width);
+
+            Config.IsFirDecimator = argBoolCmp(argv[argNo], "-fdcm", Config.IsFirDecimator);
+            Config.DecimateFactor = argIntCmp(argv[argNo], "-fdcm", argv[argNo + 1], Config.DecimateFactor);
+            Config.FilterCoeffs = argCharCmp(argv[argNo], "-fdcm", argv[argNo + 2], Config.FilterCoeffs);
+
         }
 
         if( argNo < argc - 3 )
@@ -430,6 +435,10 @@ bool parseArguments(int argc, char** argv)
 
             std::cout << "$ dpscmd -tr4q" << std::endl;
             std::cout << "Translate input samples by four and output Q branch" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "$ dpscmd -fdcm factor coeffs" << std::endl;
+            std::cout << "Filter input file through a FIR decimator" << std::endl;
             std::cout << std::endl;
 
             std::cout << "$ dpscmd -up factor" << std::endl;
