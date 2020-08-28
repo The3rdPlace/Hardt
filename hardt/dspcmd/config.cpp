@@ -61,6 +61,15 @@ bool parseArguments(int argc, char** argv)
         Config.IsTranslateByFourI = argBoolCmp(argv[argNo], "-tr4i", Config.IsTranslateByFourI);
         Config.IsTranslateByFourQ = argBoolCmp(argv[argNo], "-tr4q", Config.IsTranslateByFourQ);
 
+        Config.IsFFTMagnitudeGnuPlot = argBoolCmp(argv[argNo], "-fmgp", Config.IsFFTMagnitudeGnuPlot);
+        if( argNo < argc - 1 && argv[argNo + 1][0] != '-' ) {
+            Config.FFTSize = argIntCmp(argv[argNo], "-fmgp", argv[argNo + 1], Config.FFTSize);
+            if (argNo < argc - 3 && argv[argNo + 2][0] != '-') {
+                Config.FCenter = argIntCmp(argv[argNo], "-fmgp", argv[argNo + 2], Config.FCenter);
+                Config.ZoomFactor = argIntCmp(argv[argNo], "-fmgp", argv[argNo + 3], Config.ZoomFactor);
+            }
+        }
+
         if( argNo < argc - 1)
         {
             Config.InputFile = argCharCmp(argv[argNo], "-if", argv[argNo + 1], Config.InputFile);
@@ -90,13 +99,6 @@ bool parseArguments(int argc, char** argv)
             }
 
             Config.Average = argIntCmp(argv[argNo], "-avg", argv[argNo + 1], Config.Average);
-
-            Config.IsFFTMagnitudeGnuPlot = argBoolCmp(argv[argNo], "-fmgp", Config.IsFFTMagnitudeGnuPlot);
-            Config.FFTSize = argIntCmp(argv[argNo], "-fmgp", argv[argNo + 1], Config.FFTSize);
-            if( argNo < argc - 3 && argv[argNo + 2][0] != '-' ) {
-                Config.FCenter = argIntCmp(argv[argNo], "-fmgp", argv[argNo + 2], Config.FCenter);
-                Config.ZoomFactor = argIntCmp(argv[argNo], "-fmgp", argv[argNo + 3], Config.ZoomFactor);
-            }
 
             Config.IsMultiplier = argBoolCmp(argv[argNo], "-mp", Config.IsMultiplier);
             Config.Frequency = argIntCmp(argv[argNo], "-mp", argv[argNo + 1], Config.Frequency);
