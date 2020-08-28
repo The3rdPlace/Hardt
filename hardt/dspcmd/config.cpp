@@ -311,7 +311,7 @@ bool parseArguments(int argc, char** argv)
             std::cout << "Play file" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "$ -fmgp size [fcenter factor] " << std::endl;
+            std::cout << "$ -fmgp [size [fcenter factor]]" << std::endl;
             std::cout << "Run FFT on a file and plot the magnitude spectrum on screen using GnuPlot" << std::endl;
             std::cout << "If a center frequency and a factor is given, zooming is applied." << std::endl;
             std::cout << std::endl;

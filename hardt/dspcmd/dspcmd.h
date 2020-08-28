@@ -288,9 +288,14 @@
 
 
     \page fmgp
-    Syntax: dspcmd -fmgp size
+    Syntax: dspcmd -fmgp [size [fcenter factor]]
 
-    Run FFT on a file and plot the magnitude spectrum on screen using GnuPlot
+            std::cout << "Run FFT on a file and plot the magnitude spectrum on screen using GnuPlot" << std::endl;
+            std::cout << "If a center frequency and a factor is given, zooming is applied." << std::endl;
+            std::cout << std::endl;
+
+    Run FFT on a file and plot the magnitude spectrum on screen using GnuPlot.
+    If a center frequency and a factor is given, zooming is applied.
 
     The FFT is calculated for the number of bins given by the choosen blocksize (-bs), samples
     are read from the file given by the -if parameter.
@@ -561,10 +566,25 @@
 
     Decimate input samples by a factor
 
-    \page dcm2
-    Syntax: dspcmd -dcm2
+    \page fdcm
+    Syntax: dpscmd -fdcm coeffs
 
-    Decimate input samples by two using a fast(er) algorithm
+    Filter input file through a FIR decimator
+
+    \page tr2
+    Syntax: dpscmd -tr2
+
+    Translate input samples by two (invert spectrum)"
+
+    \page tr4i
+    Syntax: dpscmd -tr4i
+
+    Translate input samples by four and output I branch
+
+    \page tr4q
+    dpscmd -tr4q
+
+    Translate input samples by four and output Q branch
 
     \page up
     Syntax: dspcmd -up factor
