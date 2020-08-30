@@ -12,6 +12,7 @@ class HFir {
         T *_taps;
         int _head;
         int _spacing;
+        int _skip;
 
         void Init(float* coefficients) {
 
@@ -76,13 +77,30 @@ class HFir {
             Parameters:
               coefficients = The FIR coefficients
               length = Length of the FIR filter (number of coefficients)
-              [spacing] = How many positions in the outbuffer to space output values
-                          This is mostly usefull when implementing multiple polyphase FIR
-                          filters (see use in the HInterpolator)
         */
-        HFir(float *coefficients, int length, int spacing = 1) : _length(length), _head(0), _spacing(spacing) {
+        HFir(float *coefficients, int length) : _length(length), _head(0), _spacing(1), _skip(0) {
 
-            HLog("HFir(float*, %d, %d)", length, spacing);
+            HLog("HFir(float*, %d)", length);
+            Init(coefficients);
+        }
+
+        /** Create a new FIR block (for calculating output values for a FIR filter)
+
+            Parameters:
+              coefficients = The FIR coefficients
+              length = Length of the FIR filter (number of coefficients)
+              spacing = How many positions in the outbuffer to space output values
+                          This is mostly usefull when implementing multiple polyphase FIR
+                          filters (see use in the HInterpolator). A normal FIR filter uses
+                          a spacing of 1 (write output to adjacent locations)
+              skip = How many steps to advance the delay line before next filter output
+                     value is being calculated (see use in HFirDecimator). A normal FIR filter
+                     uses skip=0 (do not skip forward)
+        */
+        HFir(float *coefficients, int length, int spacing, int skip):
+            _length(length), _head(0), _spacing(spacing), _skip(skip) {
+
+            HLog("HFir(float*, %d, %d, %d)", length, spacing, skip);
             Init(coefficients);
         }
 
@@ -96,9 +114,17 @@ class HFir {
         /** Filter a block of values through the FIR block */
         inline void Filter(T *values, T* result, size_t blocksize) {
             int j = 0;
-            for( int i = 0; i < blocksize; i++ ) {
-                result[j] = Filter(values[i]);
-                j += _spacing;
+            if( _skip == 0 ) {
+                for( int i = 0; i < blocksize; i++ ) {
+                    result[j] = Filter(values[i]);
+                    j += _spacing;
+                }
+            } else {
+                for( int i = 0; i < blocksize; i += _skip ) {
+                    result[i] = Filter(values[i]);
+                    Filter(&values[i + 1], _skip - 1);
+                    //j += _spacing;
+                }
             }
         }
 

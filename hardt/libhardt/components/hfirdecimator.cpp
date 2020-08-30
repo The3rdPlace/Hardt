@@ -4,55 +4,81 @@
 #include "hfirdecimator.h"
 
 template <class T>
-HFirDecimator<T>::HFirDecimator(HWriter<T>* writer, int factor, size_t blocksize):
-    HDecimator<T>(writer, 1, blocksize),
-    _factor(factor) {
+HFirDecimator<T>::HFirDecimator(HWriter<T>* writer, int factor, float* coefficients, int points, size_t blocksize):
+    HDecimator<T>(writer, factor, blocksize),
+    _factor(factor),
+    _points(points),
+    _size(blocksize) {
 
-    HLog("HFirDecimator(HWriter*, blocksize=%d)", blocksize);
-    Init();
+    HLog("HFirDecimator(HWriter*, float*, points=%d, blocksize=%d)", points, blocksize);
+    Init(coefficients);
 }
 
 template <class T>
-HFirDecimator<T>::HFirDecimator(HWriterConsumer<T>* consumer, int factor, size_t blocksize):
-    HDecimator<T>(consumer, 1, blocksize),
-    _factor(factor) {
+HFirDecimator<T>::HFirDecimator(HWriterConsumer<T>* consumer, int factor, float* coefficients, int points, size_t blocksize):
+    HDecimator<T>(consumer, factor, blocksize),
+    _factor(factor),
+    _points(points),
+    _size(blocksize) {
 
-    HLog("HFirDecimator(HWriterConsumer*, blocksize=%d)", blocksize);
-    Init();
+    HLog("HFirDecimator(HWriterConsumer*, float*, points=%d, blocksize=%d)", points, blocksize);
+    Init(coefficients);
     consumer->SetWriter(this);
 }
 
 template <class T>
-HFirDecimator<T>::HFirDecimator(HReader<T>* reader, int factor, size_t blocksize):
-    HDecimator<T>(reader, 1, blocksize),
-    _factor(factor){
+HFirDecimator<T>::HFirDecimator(HReader<T>* reader, int factor, float* coefficients, int points, size_t blocksize):
+    HDecimator<T>(reader, factor, blocksize),
+    _factor(factor),
+    _points(points),
+    _size(blocksize) {
 
-    HLog("HFirDecimator(HReader*, blocksize=%d)", blocksize);
-    Init();
+    HLog("HFirDecimator(HReader*, float*, points=%d, blocksize=%d)", points, blocksize);
+    Init(coefficients);
 }
 
 template <class T>
 HFirDecimator<T>::~HFirDecimator() {
+    delete _buffer;
+    delete _fir;
 }
 
 template <class T>
-void HFirDecimator<T>::Init() {
+void HFirDecimator<T>::Init(float* coefficients) {
+    _buffer = new T[_size];
+    _fir = new HFir<T>(coefficients, _points, 1, _factor);
 }
 
 template <class T>
 int HFirDecimator<T>::Write(T* src, size_t blocksize)
 {
-    T results[blocksize / _factor];
-    for( int i = 0; i < blocksize; i += _factor ) {
-        results[i] = 0;
+    std::cout << "FIRDEC WRITE " << blocksize << std::endl;
+    T results[blocksize];
+    memset((void*) results, 0, sizeof(T) * blocksize);
+    _fir->Filter(src, results, blocksize);
+    for( int i = 0; i < blocksize; i++ ) {
+        std::cout << "FIRDEC [" << i << "] = " << std::to_string(results[i]) << std::endl;
     }
-    return HDecimator<T>::Write(results, blocksize / _factor);
+    return HDecimator<T>::Write(results, blocksize);
 }
 
 template <class T>
 int HFirDecimator<T>::Read(T* dest, size_t blocksize)
 {
-    return HDecimator<T>::Read(dest, blocksize);
+
+    std::cout << "FIRDEC READ " << blocksize << std::endl;
+    T results[blocksize];
+    if( HDecimator<T>::Read(results, blocksize) == 0 ) {
+        std::cout << "FIRDEC zero read" << std::endl;
+        return 0;
+    }
+
+    _fir->Filter(results, dest, blocksize);
+
+    std::cout << "read " << blocksize << std::endl;
+
+
+    return blocksize;
 }
 
 /********************************************************************
@@ -62,40 +88,40 @@ Explicit instantiation
 
 // HDecimator()
 template
-HFirDecimator<int8_t>::HFirDecimator(HWriter<int8_t>* writer, int factor, size_t blocksize);
+HFirDecimator<int8_t>::HFirDecimator(HWriter<int8_t>* writer, int factor, float* coefficients, int points, size_t blocksize);
 
 template
-HFirDecimator<uint8_t>::HFirDecimator(HWriter<uint8_t>* writer, int factor, size_t blocksize);
+HFirDecimator<uint8_t>::HFirDecimator(HWriter<uint8_t>* writer, int factor, float* coefficients, int points, size_t blocksize);
 
 template
-HFirDecimator<int16_t>::HFirDecimator(HWriter<int16_t>* writer, int factor, size_t blocksize);
+HFirDecimator<int16_t>::HFirDecimator(HWriter<int16_t>* writer, int factor, float* coefficients, int points, size_t blocksize);
 
 template
-HFirDecimator<int32_t>::HFirDecimator(HWriter<int32_t>* writer, int factor, size_t blocksize);
+HFirDecimator<int32_t>::HFirDecimator(HWriter<int32_t>* writer, int factor, float* coefficients, int points, size_t blocksize);
 
 template
-HFirDecimator<int8_t>::HFirDecimator(HWriterConsumer<int8_t>* consumer, int factor, size_t blocksize);
+HFirDecimator<int8_t>::HFirDecimator(HWriterConsumer<int8_t>* consumer, int factor, float* coefficients, int points, size_t blocksize);
 
 template
-HFirDecimator<uint8_t>::HFirDecimator(HWriterConsumer<uint8_t>* consumer, int factor, size_t blocksize);
+HFirDecimator<uint8_t>::HFirDecimator(HWriterConsumer<uint8_t>* consumer, int factor, float* coefficients, int points, size_t blocksize);
 
 template
-HFirDecimator<int16_t>::HFirDecimator(HWriterConsumer<int16_t>* consumer, int factor, size_t blocksize);
+HFirDecimator<int16_t>::HFirDecimator(HWriterConsumer<int16_t>* consumer, int factor, float* coefficients, int points, size_t blocksize);
 
 template
-HFirDecimator<int32_t>::HFirDecimator(HWriterConsumer<int32_t>* consumer, int factor, size_t blocksize);
+HFirDecimator<int32_t>::HFirDecimator(HWriterConsumer<int32_t>* consumer, int factor, float* coefficients, int points, size_t blocksize);
 
 template
-HFirDecimator<int8_t>::HFirDecimator(HReader<int8_t>* reader, int factor, size_t blocksize);
+HFirDecimator<int8_t>::HFirDecimator(HReader<int8_t>* reader, int factor, float* coefficients, int points, size_t blocksize);
 
 template
-HFirDecimator<uint8_t>::HFirDecimator(HReader<uint8_t>* reader, int factor, size_t blocksize);
+HFirDecimator<uint8_t>::HFirDecimator(HReader<uint8_t>* reader, int factor, float* coefficients, int points, size_t blocksize);
 
 template
-HFirDecimator<int16_t>::HFirDecimator(HReader<int16_t>* reader, int factor, size_t blocksize);
+HFirDecimator<int16_t>::HFirDecimator(HReader<int16_t>* reader, int factor, float* coefficients, int points, size_t blocksize);
 
 template
-HFirDecimator<int32_t>::HFirDecimator(HReader<int32_t>* reader, int factor, size_t blocksize);
+HFirDecimator<int32_t>::HFirDecimator(HReader<int32_t>* reader, int factor, float* coefficients, int points, size_t blocksize);
 
 // ~HDecimator()
 template
@@ -112,16 +138,16 @@ HFirDecimator<int32_t>::~HFirDecimator();
 
 // Init()
 template
-void HFirDecimator<int8_t>::Init();
+void HFirDecimator<int8_t>::Init(float* coefficients);
 
 template
-void HFirDecimator<uint8_t>::Init();
+void HFirDecimator<uint8_t>::Init(float* coefficients);
 
 template
-void HFirDecimator<int16_t>::Init();
+void HFirDecimator<int16_t>::Init(float* coefficients);
 
 template
-void HFirDecimator<int32_t>::Init();
+void HFirDecimator<int32_t>::Init(float* coefficients);
 
 // Write()
 template

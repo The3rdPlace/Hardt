@@ -91,6 +91,7 @@ int HDecimator<T>::Write(T* src, size_t blocksize)
 template <class T>
 int HDecimator<T>::Read(T* dest, size_t blocksize)
 {
+    std::cout << "DEC READ " << blocksize << std::endl;
     if( _reader == nullptr )
     {
         throw new HInitializationException("This HDecimator is not a reader");

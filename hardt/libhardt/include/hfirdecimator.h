@@ -10,9 +10,13 @@ class HFirDecimator: public HDecimator<T>
 {
     private:
 
+        int _size;
         int _factor;
+        T* _buffer;
+        int _points;
+        HFir<T>* _fir;
 
-        void Init();
+        void Init(float* coefficients);
 
     public:
 
@@ -23,7 +27,7 @@ class HFirDecimator: public HDecimator<T>
           factor = Decimation factor, 1 or larger
           blocksize = The expected input and output blocksize
      */
-    HFirDecimator(HWriter<T>* writer, int factor, size_t blocksize);
+    HFirDecimator(HWriter<T>* writer, int factor, float* coefficients, int points, size_t blocksize);
 
     /** Construct a new HDecimator that handle writer consumers.
 
@@ -32,7 +36,7 @@ class HFirDecimator: public HDecimator<T>
           factor = Decimation factor, 1 or larger
           blocksize = The expected input and output blocksize
      */
-    HFirDecimator(HWriterConsumer<T>* consumer, int factor, size_t blocksize);
+    HFirDecimator(HWriterConsumer<T>* consumer, int factor, float* coefficients, int points, size_t blocksize);
 
     /** Construct a new HDecimator that handle readers.
 
@@ -40,7 +44,7 @@ class HFirDecimator: public HDecimator<T>
           factor = Decimation factor, 1 or larger
           blocksize = The expected input and output blocksize
      */
-    HFirDecimator(HReader<T>* reader, int factor, size_t blocksize);
+    HFirDecimator(HReader<T>* reader, int factor, float* coefficients, int points, size_t blocksize);
 
     /** Default destructor */
     ~HFirDecimator();
