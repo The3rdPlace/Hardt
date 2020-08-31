@@ -1,3 +1,15 @@
+hardt (1.0-27) RELEASED; urgency=medium
+
+  [ Henrik Witt-Hansen ]
+  * Added decimators (several types)
+  * Added interpolator
+  * Added a complex filter
+  * Added IFFT
+  * Various minor fixes
+  * Added FFT zooming (and made it available in dspcmd)
+
+ -- Mackie <henrik@hardttoolkit.org>  Thu, 31 Aug 2020 18:30:00 +0200
+
 hardt (1.0-26) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
