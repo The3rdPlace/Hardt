@@ -36,6 +36,9 @@ class HFirDecimator_Test: public Test
             ASSERT_IS_EQUAL(rd.Reads, 4);
 
             ASSERT_IS_EQUAL(memcmp((void*) received, (void*) expected, 12), 0);
+
+            ASSERT_IS_TRUE(fdm.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(rd.Commands, 1);
         }
 
         void test_write()
@@ -55,6 +58,9 @@ class HFirDecimator_Test: public Test
             ASSERT_IS_EQUAL(wr.Writes, 1);
 
             ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, 12), 0);
+
+            ASSERT_IS_TRUE(fdm.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
         }
 
         void test_writerConsumer()
@@ -75,6 +81,9 @@ class HFirDecimator_Test: public Test
             ASSERT_IS_EQUAL(wr.Writes, 1);
 
             ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, 12), 0);
+
+            ASSERT_IS_TRUE(srcWr.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
         }
 
 } hfirdecimator_test;
