@@ -7,6 +7,7 @@ hardt (1.0-27) RELEASED; urgency=medium
   * Added IFFT
   * Various minor fixes
   * Added FFT zooming (and made it available in dspcmd)
+  * Added Kaiser-Bessel FIR calculation objects
 
  -- Mackie <henrik@hardttoolkit.org>  Thu, 31 Aug 2020 18:30:00 +0200
 
