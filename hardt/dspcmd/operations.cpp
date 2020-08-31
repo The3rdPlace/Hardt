@@ -2279,7 +2279,7 @@ int RunFirDecimator()
     }
 
     // Create writer
-    /*HWriter<T>* wr;
+    HWriter<T>* wr;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
         wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
@@ -2292,35 +2292,14 @@ int RunFirDecimator()
     {
         std::cout << "Unknown output file format " << Config.FileFormat << std::endl;
         return -1;
-    }*/
-
-    HStreamProcessor<T> proc(rd->Reader(), Config.Blocksize, &terminated);
+    }
 
     // Create  filter
-    std::cout << "FIRDECIMATOR" << std::endl;
     std::vector<float> coefs = HFilter<T>::ReadCoeffsFromFile(Config.FilterCoeffs);
-    //HFirDecimator<T>* filter = new HFirDecimator<T>(rd->Reader(), Config.DecimateFactor, &coefs[0], coefs.size(), Config.Blocksize);
-    HFirDecimator<T>* filter = new HFirDecimator<T>(proc.Consumer(), Config.DecimateFactor, &coefs[0], coefs.size(), Config.Blocksize);
-
-    // Create writer
-    HWriter<T>* wr;
-    if( strcmp(Config.FileFormat, "wav") == 0 )
-    {
-        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate, filter->Consumer());
-    }
-    else if( strcmp(Config.FileFormat, "pcm") == 0 )
-    {
-        wr = new HFileWriter<T>(Config.OutputFile, filter->Consumer());
-    }
-    else
-    {
-        std::cout << "Unknown output file format " << Config.FileFormat << std::endl;
-        return -1;
-    }
+    HFirDecimator<T>* filter = new HFirDecimator<T>(rd->Reader(), Config.DecimateFactor, &coefs[0], coefs.size(), Config.Blocksize);
 
     // Create processor
-    //HStreamProcessor<T> proc(wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
-
+    HStreamProcessor<T> proc(wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
     proc.Run();
 
     // Delete the reader and writer
