@@ -67,36 +67,36 @@ class HTranslateByFour : public HFilter<T>
 
         /** Convert the realvalued input signal 'src' to a complex IQ signal */
         static void Translate(T* src, std::complex<T>* dest, size_t blocksize) {
-            T* I;
-            T* Q;
+            T* IChannel;
+            T* QChannel;
 
-            I = new T[blocksize];
-            Q = new T[blocksize];
+            IChannel = new T[blocksize];
+            QChannel = new T[blocksize];
 
-            HTranslateByFour<T>::DoFilter(src, I, blocksize, false);
-            HTranslateByFour<T>::DoFilter(src, Q, blocksize, true);
+            HTranslateByFour<T>::DoFilter(src, IChannel, blocksize, false);
+            HTranslateByFour<T>::DoFilter(src, QChannel, blocksize, true);
 
             for( int i = 0; i < blocksize; i++ ) {
-                dest[i] = std::complex<T>(I[i], Q[i]);
+                dest[i] = std::complex<T>(IChannel[i], QChannel[i]);
             }
 
-            delete I;
-            delete Q;
+            delete IChannel;
+            delete QChannel;
         }
 
         /** Convert the realvalued input signal 'src' to a complex IQ signal */
         static void Translate(T* src, std::complex<double>* dest, size_t blocksize) {
-            T* I;
-            T* Q;
+            T* IChannel;
+            T* QChannel;
 
-            I = new T[blocksize];
-            Q = new T[blocksize];
+            IChannel = new T[blocksize];
+            QChannel = new T[blocksize];
 
-            HTranslateByFour<T>::DoFilter(src, I, blocksize, false);
-            HTranslateByFour<T>::DoFilter(src, Q, blocksize, true);
+            HTranslateByFour<T>::DoFilter(src, IChannel, blocksize, false);
+            HTranslateByFour<T>::DoFilter(src, QChannel, blocksize, true);
 
             for( int i = 0; i < blocksize; i++ ) {
-                dest[i] = std::complex<double>((double) I[i], (double) Q[i]);
+                dest[i] = std::complex<double>((double) IChannel[i], (double) QChannel[i]);
             }
         }
 };
