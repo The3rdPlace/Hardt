@@ -10,11 +10,11 @@ public:
     void run()
     {
         // Full test to check the output of the HTranslateByTwo component
-        TEST(test_translate_as_writer);
+        UNITTEST(test_translate_as_writer);
 
         // Simple tests, just to check that read and write behaves as expected
-        TEST(test_translate_as_consumer);
-        TEST(test_translate_as_reader);
+        UNITTEST(test_translate_as_consumer);
+        UNITTEST(test_translate_as_reader);
     }
 
     const char* name()

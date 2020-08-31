@@ -17,7 +17,7 @@ public:
         UNITTEST(test_filter_as_reader);
 
         // Test some input signals filtered by a bessel FIR
-        TEST(test_filter_with_real_signal);
+        UNITTEST(test_filter_with_real_signal);
     }
 
     const char* name()

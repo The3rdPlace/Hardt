@@ -9,8 +9,8 @@ public:
 
     void run()
     {
-        TEST(test_writer);
-        TEST(test_writer_autostart);
+        UNITTEST(test_writer);
+        UNITTEST(test_writer_autostart);
     }
 
     const char* name()
