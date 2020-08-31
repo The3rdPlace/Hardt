@@ -320,6 +320,10 @@ void FFTMagnitudeShowGnuDBPlot(double reference, double ignore, bool skipInfinit
 
     // Calculate frequency span per bin
     double fdelta = ((double) rate / 2) / ((double)Config.FFTSize / 2);
+    if( fdelta < 1 ) {
+        std::cout << "Too low fft size. Unable to display plot! (reduce blocksize)" << std::endl;
+        return;
+    }
 
     // Plot lines
     FILE* gnuplotPipe = popen ("gnuplot -persistent", "w");
@@ -362,17 +366,20 @@ void FFTMagnitudeShowGnuDBPlot(double reference)
 }
 
 template <class T>
-void
-FFTMagnitudeShowGnuPlot()
+void FFTMagnitudeShowGnuPlot()
 {
     // Same f-delta as used by the FilterSpectrumReader during sweeps
     double fdelta = (((double) Config.Rate / 2) / ((double) Config.FFTSize / 2)) / 10;
+    if( fdelta < 1 ) {
+        std::cout << "Too low fft size. Unable to show plot. (reduce blocksize)" << std::endl;
+        return;
+    }
 
     // Get reference value (smallest measureable value.
     // These do not change when using zoom, so just keep the base values for a non-zoomed fft
     // Todo: Cleanup
-    int start = fdelta; // Config.XMin == 0 ? fdelta : Config.XMin;
-    int stop = (Config.Rate / 2); //(Config.XMax == 0 ? (Config.Rate / 2) : Config.XMax);
+    int start = fdelta;
+    int stop = (Config.Rate / 2);
     double ref = GetCalibratedReference<T>(fdelta, start, stop, 1, false);
 
     // The scaling factor based on blocksize 1024 is applied when calculating 
@@ -886,14 +893,14 @@ class FilterSpectrumReader : public HReader<T>
 
             if( _fDelta < 1 )
             {
-                std::cout << "Too low fft size" << std::endl;
+                std::cout << "Warning: Too low fft size (reduce blocksize)" << std::endl;
                 _fDelta = 1;
             }
 
             // Initialize initial starting and stopping frequencies
             // Todo:: Cleanup
-            _freqStart = _fDelta; // Config.XMin == 0 ? _fDelta : Config.XMin;
-            _freqStop = (Config.Rate / 2); // (Config.XMax == 0 ? (Config.Rate / 2) : Config.XMax);
+            _freqStart = _fDelta;
+            _freqStop = (Config.Rate / 2);
             _freq = _freqStart;
             _lastDisplayedFreq = _freq;
 
@@ -1533,6 +1540,10 @@ int RunGoertzlSweep()
 
         // Show progress
         int fDelta = (Config.Rate / Config.Blocksize) / 2;
+        if( fDelta < 1 ) {
+            std::cout << "Too low fftsize. (reduce blocksize)" << std::endl;
+            return -1;
+        }
         if( CurrentGoertzlBin % (Config.Blocksize / 10) == 0 && CurrentGoertzlBin > 0 )
         {
             std::cout << "  - " << (i * fDelta) << "Hz" << " = bin " << i << std::endl;
