@@ -33,6 +33,17 @@ float argFloatCmp(const char* arg, const char* option, char* value, float curren
     return strcmp(arg, option) == 0 ? atof(value) : currentValue;
 }
 
+int argDeviceTypeCmp(const char* arg, const char* option, char* value, int currentValue)
+{
+    if( strcmp(arg, option) == 0 ) {
+        if( strcmp(value, "AUDIO") == 0 ) return DspCmdConfig::DeviceType::AUDIO;
+        if( strcmp(value, "RTL") == 0 ) return DspCmdConfig::DeviceType::RTL;
+        return DspCmdConfig::DeviceType::NONE;
+    }
+    return currentValue;
+
+}
+
 bool parseArguments(int argc, char** argv)
 {
     int PhaseIntValue = 0;
@@ -80,6 +91,7 @@ bool parseArguments(int argc, char** argv)
             Config.FFTSize = argIntCmp(argv[argNo], "-bs", argv[argNo + 1], Config.FFTSize); // also set default fft size
 
             Config.InputDevice = argIntCmp(argv[argNo], "-id", argv[argNo + 1], Config.InputDevice);
+            Config.InputDeviceType = argDeviceTypeCmp(argv[argNo], "-it", argv[argNo + 1], Config.InputDeviceType);
             Config.OutputDevice = argIntCmp(argv[argNo], "-od", argv[argNo + 1], Config.OutputDevice);
             Config.Rate = argIntCmp(argv[argNo], "-r", argv[argNo + 1], Config.Rate);
             Config.Format = argIntCmp(argv[argNo], "-f", argv[argNo + 1], Config.Format);
@@ -271,7 +283,11 @@ bool parseArguments(int argc, char** argv)
             std::cout << std::endl;
 
             std::cout << "$ dpscmd -id device" << std::endl;
-            std::cout << "Input audio device" << std::endl;
+            std::cout << "Input device id" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "$ dpscmd -it [AUDIO|RTL]" << std::endl;
+            std::cout << "Input device type" << std::endl;
             std::cout << std::endl;
 
             std::cout << "$ dpscmd -if name" << std::endl;
@@ -279,7 +295,7 @@ bool parseArguments(int argc, char** argv)
             std::cout << std::endl;
 
             std::cout << "$ dpscmd -od device" << std::endl;
-            std::cout << "Output audio device" << std::endl;
+            std::cout << "Output device id" << std::endl;
             std::cout << std::endl;
 
             std::cout << "$ dpscmd -of name" << std::endl;
@@ -302,8 +318,8 @@ bool parseArguments(int argc, char** argv)
             std::cout << "hh:mm      Stop time" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "$ dpscmd -sg f p a d" << std::endl;
-            std::cout << "Run as signalgenerator. f=frequency,p=phase,a=amplitude,d=duration(sec.)" << std::endl;
+            std::cout << "$ dpscmd -sg frequency phase amplitude duration" << std::endl;
+            std::cout << "Generate a signal with the given frequency, phase and amplitude" << std::endl;
             std::cout << std::endl;
 
             std::cout << "$ dpscmd -nc server port" << std::endl;

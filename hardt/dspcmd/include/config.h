@@ -9,6 +9,8 @@
 // Settings
 struct DspCmdConfig
 {
+    enum DeviceType { NONE = 0, AUDIO = 1, RTL = 2 };
+
     bool Verbose = false;
     bool ShowAudioDevices = false;
     bool ShowRtl2832Devices = false;
@@ -67,7 +69,8 @@ struct DspCmdConfig
     char* FileFormat = NULL;
     bool ForceOverwrite = false;
 
-    int InputDevice = -1; // not implemented
+    int InputDevice = -1;
+    int InputDeviceType = DeviceType::AUDIO;
     int OutputDevice = -1;
     int Rate = H_SAMPLE_RATE_48K;
     int Format = H_SAMPLE_FORMAT_INT_16;

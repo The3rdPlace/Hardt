@@ -179,7 +179,20 @@ template <typename T>
 int RunFileRecorder()
 {
     // Create reader
-    HSoundcardReader<T> rd(Config.InputDevice, Config.Rate, 1, Config.Format, Config.Blocksize);
+    HReader<T>* rd;
+    if( Config.InputDeviceType == DspCmdConfig::DeviceType::AUDIO )
+    {
+        rd = new HSoundcardReader<T>(Config.InputDevice, Config.Rate, 1, Config.Format, Config.Blocksize);
+    }
+    else if ( Config.InputDeviceType == DspCmdConfig::DeviceType::RTL )
+    {
+        rd = new HRtl2832Reader<T>(Config.InputDevice, Config.Rate, 1, Config.Format, Config.Blocksize);
+    }
+    else
+    {
+        std::cout << "Unknown input device type " << Config.InputDeviceType << std::endl;
+        return -1;
+    }
 
     // Create writer
     HWriter<T>* wr;
@@ -197,9 +210,8 @@ int RunFileRecorder()
         return -1;
     }
 
-
     // Create processor
-    HStreamProcessor<T> proc(wr, &rd, Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc(wr, rd, Config.Blocksize, &terminated);
     if( Config.Timer.Duration() > 0 )
     {
         unsigned long int blocks = (Config.Timer.Duration() * Config.Rate) / Config.Blocksize;
@@ -218,6 +230,16 @@ int RunFileRecorder()
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
         delete (HFileWriter<T>*) wr;
+    }
+
+    // Delete input device
+    if( Config.InputDeviceType == DspCmdConfig::DeviceType::AUDIO )
+    {
+        delete (HSoundcardReader<T>*) rd;
+    }
+    else if ( Config.InputDeviceType == DspCmdConfig::DeviceType::RTL )
+    {
+        delete (HRtl2832Reader<T>*) rd;
     }
 
     return 0;
@@ -2473,6 +2495,11 @@ int RunOperation()
         if( Config.InputDevice == -1 )
         {
             std::cout << "No input device (-id)" << std::endl;
+            return -1;
+        }
+        if( Config.InputDeviceType == DspCmdConfig::DeviceType::NONE )
+        {
+            std::cout << "No input device type (-it)" << std::endl;
             return -1;
         }
         if( Config.OutputFile == NULL )
