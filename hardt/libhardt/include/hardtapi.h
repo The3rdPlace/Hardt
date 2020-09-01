@@ -101,5 +101,6 @@
 #include "htranslatebyfour.h"
 #include "hcomplexfilter.h"
 #include "hfirdecimator.h"
+#include "hrtl2832reader.h"
 
 #endif

@@ -112,6 +112,7 @@ Include api function declarations
 #include "htranslatebyfour.cpp"
 #include "hcomplexfilter.cpp"
 #include "hfirdecimator.cpp"
+#include "hrtl2832reader.cpp"
 
 /********************************************************************
 Debug and diagnostics
