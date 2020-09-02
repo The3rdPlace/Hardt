@@ -14,57 +14,104 @@ Class implementation
 ********************************************************************/
 
 template <class T>
-HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer):
+HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int blocksize):
         _isInitialized(false),
-        _isStarted(false)
+        _isStarted(false),
+        _mode(mode),
+        _blocksize(blocksize)
 {
-    HLog("HRtl2832Reader(device=%d, rate=%d, channels=%d, format=%d, framesPerBuffer=%d)", device, rate, channels, format, framesPerBuffer);
+    HLog("HRtl2832Reader(device=%d, rate=%d, framesPerBuffer=%d)", device, rate, blocksize);
+
+    // Blocksize must be a multiple of 512 and maximum 16384
+    if( blocksize % 512 > 0 ) {
+        HError("Blocksize must be a multiple of 512 and not more than 16384");
+        throw new HInitializationException("Blocksize must be a multiple of 512 and not more than 16384");
+    }
 
     // Initialize resources used by the callback function
-    _cbd.channels = channels;
-    _cbd.framesize = framesPerBuffer;
     _cbd.wrloc = 0;
     _cbd.rdloc = 0;
-    _cbd.buffer = new T[NUMBER_OF_BUFFERS * framesPerBuffer];
+    _cbd.buffer = new unsigned char[NUMBER_OF_BUFFERS * blocksize];
     if( _cbd.buffer == NULL )
     {
-        HError("Unable to allocate %d buffers for %d frames á %d bytes", NUMBER_OF_BUFFERS, framesPerBuffer, sizeof(T));
+        HError("Unable to allocate %d buffers for %d frames á %d bytes", NUMBER_OF_BUFFERS, blocksize, sizeof(unsigned char));
         throw new HInitializationException("Out of memory when allocating buffers");
     }
     HLog("Buffers allocated");
 
-    /*PaError err = Pa_Initialize();
-    if( err != paNoError )
-    {
-        HError("Pa_Initialize() error: %s", Pa_GetErrorText(err));
-        throw new HInitializationException(Pa_GetErrorText(err));
+    // Pass these as fields
+    uint32_t dev_index = 0;
+    int ppm_correction = 0;
+    uint32_t freq = 50471000;
+    int gain = 0;
+    int direct_sampling = 1;
+    bool enable_biastee = false;
+
+    rtlsdr_open(&dev, dev_index);
+    if (NULL == dev) {
+        HError("Failed to open RTL-2832 device %d", dev_index);
+        throw new HInitializationException("Failed to open device");
     }
-    HLog("PortAudio initialized");
 
-    // Setup input parameters
-    PaStreamParameters inputParameters;
-    inputParameters.device = device;
-    inputParameters.channelCount = channels;
-    inputParameters.sampleFormat = HSoundcard::GetPortAudioFormat(format);
-    inputParameters.suggestedLatency = Pa_GetDeviceInfo(device)->defaultLowInputLatency ;
-    inputParameters.hostApiSpecificStreamInfo = NULL;
-
-    // Get an input stream
-    PaStreamFlags flags = paNoFlag;
-    err = Pa_OpenStream(&_stream, &inputParameters, NULL,
-                        rate,
-                        framesPerBuffer,
-                        flags,
-                        callback,
-                        &_cbd);
-
-    if( err != paNoError )
-    {
-        HError("Pa_OpenStream() error: %s", Pa_GetErrorText(err));
-        throw new HInitializationException(Pa_GetErrorText(err));
+    /* Set the tuner error */
+    int r = rtlsdr_set_freq_correction(dev, ppm_correction);
+    if (r < 0) {
+        fprintf(stderr, "WARNING: Failed to set ppm error.\n");
+    } else {
+        fprintf(stderr, "Tuner error set to %i ppm.\n", ppm_correction);
     }
-    HLog("Got input stream");
-*/
+
+    /* Set the sample rate */
+    r = rtlsdr_set_sample_rate(dev, 2048000); //(uint32_t) rate);
+    if (r < 0)
+        fprintf(stderr, "WARNING: Failed to set sample rate.\n");
+
+    /* Set the frequency */
+    r = rtlsdr_set_center_freq(dev, freq);
+    if (r < 0)
+        fprintf(stderr, "WARNING: Failed to set center freq.\n");
+    else
+        fprintf(stderr, "Tuned to %i Hz.\n", freq);
+
+    if (0 == gain) {
+        /* Enable automatic gain */
+        r = rtlsdr_set_tuner_gain_mode(dev, 0);
+        if (r < 0)
+            fprintf(stderr, "WARNING: Failed to enable automatic gain.\n");
+    } else {
+        /* Enable manual gain */
+        r = rtlsdr_set_tuner_gain_mode(dev, 1);
+        if (r < 0)
+            fprintf(stderr, "WARNING: Failed to enable manual gain.\n");
+
+        /* Set the tuner gain */
+        r = rtlsdr_set_tuner_gain(dev, gain);
+        if (r < 0)
+            fprintf(stderr, "WARNING: Failed to set tuner gain.\n");
+        else
+            fprintf(stderr, "Tuner gain set to %f dB.\n", gain/10.0);
+    }
+
+    rtlsdr_set_bias_tee(dev, enable_biastee ? 1 : 0);
+    if (enable_biastee)
+        fprintf(stderr, "activated bias-T on GPIO PIN 0\n");
+
+    /* Reset endpoint before we start reading from it (mandatory) */
+    r = rtlsdr_reset_buffer(dev);
+    if (r < 0)
+        fprintf(stderr, "WARNING: Failed to reset buffers.\n");
+
+    rtlsdr_set_direct_sampling(dev, direct_sampling);
+
+    HLog("center_freq = %d", rtlsdr_get_center_freq(dev));
+    HLog("direct_sampling = %d", rtlsdr_get_direct_sampling(dev));
+    HLog("freq_correction = %d", rtlsdr_get_freq_correction(dev));
+    HLog("offset_tuning = %d", rtlsdr_get_offset_tuning(dev));
+    HLog("sample_rate = %d", rtlsdr_get_sample_rate(dev));
+    HLog("tuner_gain = %d", rtlsdr_get_tuner_gain(dev));
+
+
+    //--------------------------------------------------------------------------------------------------
     // Ready
     _isInitialized = true;
 }
@@ -80,19 +127,8 @@ HRtl2832Reader<T>::~HRtl2832Reader()
         Stop();
         HLog("Stream is stopped");
 
-        // Terminate PortAudio
-        /*PaError err = Pa_Terminate();
-        if ( err != paNoError )
-        {
-            HError("Could not terminate PortAudio: %s", Pa_GetErrorText(err));
-        }
-        else
-        {
-            HLog("PortAudio terminated");
-        }*/
-
         // Delete shared resources
-        delete _cbd.buffer;
+        //delete _cbd.buffer;
         HLog("Buffers released");
     }
 }
@@ -100,13 +136,11 @@ HRtl2832Reader<T>::~HRtl2832Reader()
 template <class T>
 int HRtl2832Reader<T>::Read(T* dest, size_t blocksize)
 {
-    // Requested blocksize can not be larger than the device blocksize
-    // (actively preventing large reads that would inhibit performance and
-    // responsiveness when working with a synchroneous device such as a soundcard)
-    if( blocksize > _cbd.framesize )
+    // Always read the configured blocksize
+    if( blocksize != _blocksize )
     {
         Stop();
-        throw new HAudioIOException("It is not allowed to read  more data than what the card ships per synchroneous callback");
+        throw new HAudioIOException("It is not allowed to read  more or less data than what was configured");
     }
 
     // Make sure we are running
@@ -125,19 +159,39 @@ int HRtl2832Reader<T>::Read(T* dest, size_t blocksize)
     // If we have samples available, then read the next buffer
     if( _cbd.wrloc != _cbd.rdloc )
     {
-        T* ptr = &_cbd.buffer[_cbd.rdloc];
-        memcpy((void*) dest, (void*) ptr, _cbd.framesize * sizeof(T));
+        // Cast to correct datatype
+        unsigned char* src = &_cbd.buffer[_cbd.rdloc];
+        switch( _mode ) {
+            case MODE::IQ: {
+                for( int i = 0; i < blocksize; i++ ) {
+                    dest[i] = (T) src[i];
+                }
+                break;
+            }
+            case MODE::I: {
+                for( int i = 0; i < blocksize; i += 2 ) {
+                    dest[i / 2] = (T) src[i];
+                }
+                break;
+            }
+            case MODE::Q: {
+                for( int i = 1; i < blocksize; i += 2 ) {
+                    dest[i / 2] = (T) src[i];
+                }
+                break;
+            }
+        }
 
         // Advance read position to next buffer, if we have read the last buffer,
         // then wrap around to the first buffer.
-        _cbd.rdloc += _cbd.framesize;
-        if( _cbd.rdloc >= (NUMBER_OF_BUFFERS * _cbd.framesize) )
+        _cbd.rdloc += blocksize;
+        if( _cbd.rdloc >= (NUMBER_OF_BUFFERS * blocksize) )
         {
             _cbd.rdloc = 0;
         }
 
         // We always reads the entire buffer as given
-        return _cbd.framesize;
+        return blocksize;
     }
 
     // No new data available, return zero write.
@@ -146,28 +200,20 @@ int HRtl2832Reader<T>::Read(T* dest, size_t blocksize)
     return 0;
 }
 
-/*
 template <class T>
-int HRtl2832Reader<T>::callback( const void *inputBuffer, void *outputBuffer,
-                                   unsigned long framesPerBuffer,
-                                   const PaStreamCallbackTimeInfo* timeInfo,
-                                   PaStreamCallbackFlags statusFlags,
-                                   void *userData )
-{
-    // Cast data passed through stream to our structure.
-    CallbackData *data = (CallbackData*) userData;
+void HRtl2832Reader<T>::callback(unsigned char* buffer, uint32_t length, void* ctx) {
 
-    // Cast input- and outputbuffers to our specific data type
-    T* src = (T*) inputBuffer;
-    T* dest = (T*) &data->buffer[data->wrloc];
+    // Cast data passed through stream to our structure.
+    CallbackData *data = (CallbackData*) ctx;
 
     // Copy new data from the soundcard to the buffer
-    memcpy((void*) dest, (void*) src, framesPerBuffer * sizeof(T));
+    // Buffer is always unsigned char, so no need to use 'sizeof(unsigned char)'
+    memcpy((void*) &data->buffer[data->wrloc], (void*) buffer, length);
 
     // Advance write position to next buffer, if we have written the last buffer,
     // then wrap around to the first buffer.
-    data->wrloc += data->framesize;
-    if( data->wrloc >= (NUMBER_OF_BUFFERS * data->framesize) )
+    data->wrloc += length;
+    if( data->wrloc >= (NUMBER_OF_BUFFERS * length) )
     {
         data->wrloc = 0;
     }
@@ -176,11 +222,7 @@ int HRtl2832Reader<T>::callback( const void *inputBuffer, void *outputBuffer,
     // Since we are not waiting on the mutex, using it here should be fine.
     std::unique_lock<std::mutex> lck(data->mtx);
     data->lock.notify_one();
-
-    // Done, continue sampling
-    return paContinue;
 }
-*/
 
 template <class T>
 bool HRtl2832Reader<T>::Start()
@@ -191,43 +233,52 @@ bool HRtl2832Reader<T>::Start()
         return false;
     }
 
-    HLog("Starting input stream");
-    /*PaError err = Pa_StartStream( _stream );
-    if( err != paNoError )
-    {
-        HError("Could not start input stream: %s", Pa_GetErrorText(err));
-        return false;
-    }*/
-    _isStarted = true;
+    if( !_isStarted ) {
+
+        HLog("Starting input stream");
+        _current = new std::thread([this]() {
+
+            // Start async reader thread
+            HLog("Starting async reader thread");
+            if( rtlsdr_read_async(dev, callback, (void *) &_cbd, 1, 1024) < 0 ) {
+                HError("Failed to start the rtl device");
+                _isStarted = false;
+            }
+
+            // Reset when the read thread returns
+            _current = NULL;
+            _isStarted = false;
+            HLog("Async reader thread stopped");
+        });
+    } else {
+        HLog("Already started");
+    }
+
     HLog("Input stream started");
+    _isStarted = true;
     return true;
 }
 
 template <class T>
 bool HRtl2832Reader<T>::Stop()
 {
-    if( !_isInitialized )
-    {
+    if( !_isInitialized ) {
+
         HLog("Refusing to stop a stream when not initialized");
         return false;
     }
 
-    HLog("Stopping input stream");
-    /*if( !Pa_IsStreamStopped( _stream ) )
-    {
-        PaError err = Pa_StopStream( _stream );
-        if( err != paNoError )
-        {
-            HError("Could not stop input stream: %s", Pa_GetErrorText(err));
-            return false;
-        }
+    if( _isStarted) {
+
+        HLog("Stopping input stream");
+        rtlsdr_cancel_async(dev);
+        _current->join();
         _isStarted = false;
-        HLog("Input stream stopped");
+        HLog("Joined reader thread");
+    } else {
+        HLog("Stream is already stopped, all is good");
     }
-    else
-    {
-        HLog("Stream is already stopped");
-    }*/
+
     return true;
 }
 
@@ -239,16 +290,16 @@ Explicit instantiation
 
 // HRtl2832Reader()
 template
-HRtl2832Reader<int8_t>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer = DEFAULT_FRAMESIZE);
+HRtl2832Reader<int8_t>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int blocksize);
 
 template
-HRtl2832Reader<uint8_t>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer = DEFAULT_FRAMESIZE);
+HRtl2832Reader<uint8_t>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int blocksize);
 
 template
-HRtl2832Reader<int16_t>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer = DEFAULT_FRAMESIZE);
+HRtl2832Reader<int16_t>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int blocksize);
 
 template
-HRtl2832Reader<int32_t>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer = DEFAULT_FRAMESIZE);
+HRtl2832Reader<int32_t>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int blocksize);
 
 // ~HRtl2832Reader()
 template
