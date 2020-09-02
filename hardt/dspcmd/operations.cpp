@@ -391,7 +391,7 @@ template <class T>
 void FFTMagnitudeShowGnuPlot()
 {
     // Same f-delta as used by the FilterSpectrumReader during sweeps
-    double fdelta = (((double) Config.Rate / 2) / ((double) Config.FFTSize / 2)) / 10;
+    double fdelta = (((double) Config.Rate / 2) / ((double) Config.FFTSize / 2)) / (Config.Rate > 48000 ? 1 : 10);
     if( fdelta < 1 ) {
         std::cout << "Too low fft size. Unable to show plot. (reduce blocksize)" << std::endl;
         return;

@@ -76,6 +76,7 @@ struct DspCmdConfig
     int Format = H_SAMPLE_FORMAT_INT_16;
 
     int Blocksize = 1024;
+    int BlockCount = 0;
 
     int Frequency = 1000;
     float Phase = 0;

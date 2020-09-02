@@ -89,6 +89,7 @@ bool parseArguments(int argc, char** argv)
 
             Config.Blocksize = argIntCmp(argv[argNo], "-bs", argv[argNo + 1], Config.Blocksize);
             Config.FFTSize = argIntCmp(argv[argNo], "-bs", argv[argNo + 1], Config.FFTSize); // also set default fft size
+            Config.BlockCount = argIntCmp(argv[argNo], "-bc", argv[argNo + 1], Config.BlockCount);
 
             Config.InputDevice = argIntCmp(argv[argNo], "-id", argv[argNo + 1], Config.InputDevice);
             Config.InputDeviceType = argDeviceTypeCmp(argv[argNo], "-it", argv[argNo + 1], Config.InputDeviceType);
@@ -272,6 +273,10 @@ bool parseArguments(int argc, char** argv)
 
             std::cout << "$ dpscmd -bs blocksize" << std::endl;
             std::cout << "Blocksize used by readers and writers (default = 1024)" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "$ dpscmd -bc count" << std::endl;
+            std::cout << "Number of blocks read before stopping. Default 0 (unlimited)" << std::endl;
             std::cout << std::endl;
 
             std::cout << "$ dpscmd -f format" << std::endl;
