@@ -22,19 +22,32 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int
 {
     HLog("HRtl2832Reader(device=%d, rate=%d, framesPerBuffer=%d)", device, rate, blocksize);
 
-    // Blocksize must be a multiple of 512 and maximum 16384
+    // Buffer length must be a multiple of 512 and maximum 16384/8192
     if( blocksize % 512 > 0 ) {
-        HError("Blocksize must be a multiple of 512 and not more than 16384");
-        throw new HInitializationException("Blocksize must be a multiple of 512 and not more than 16384");
+        HError("Blocksize must be a multiple of 512");
+        throw new HInitializationException("Blocksize must be a multiple of 512");
     }
+    if( blocksize > 16384 && mode == MODE::IQ ) {
+        HError("Blocksize must be less than or equal to 16384");
+        throw new HInitializationException("Blocksize must be less than or equal to 16384");
+    }
+    if( blocksize > 8192 && (mode == MODE::I || mode == MODE::Q) ) {
+        HError("Blocksize must be less than or equal to 8192");
+        throw new HInitializationException("Blocksize must be less than or equal to 8192");
+    }
+
+    // Set the size of the receive buffer from the device. If we are reading
+    // pure I or Q values, then we must collect twice as many samples from
+    // the device before we can return 'blocksize' samples
+    _buflen = _blocksize * (_mode == MODE::IQ ? 1 : 2);
 
     // Initialize resources used by the callback function
     _cbd.wrloc = 0;
     _cbd.rdloc = 0;
-    _cbd.buffer = new unsigned char[NUMBER_OF_BUFFERS * blocksize];
+    _cbd.buffer = new unsigned char[NUMBER_OF_BUFFERS * _buflen];
     if( _cbd.buffer == NULL )
     {
-        HError("Unable to allocate %d buffers for %d frames á %d bytes", NUMBER_OF_BUFFERS, blocksize, sizeof(unsigned char));
+        HError("Unable to allocate %d buffers for %d frames á %d bytes", NUMBER_OF_BUFFERS, _buflen, sizeof(unsigned char));
         throw new HInitializationException("Out of memory when allocating buffers");
     }
     HLog("Buffers allocated");
@@ -42,7 +55,7 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int
     // Pass these as fields
     uint32_t dev_index = 0;
     int ppm_correction = 0;
-    uint32_t freq = 50471000;
+    uint32_t freq = 50371000; //1440000; //50271000;//126798600;
     int gain = 0;
     int direct_sampling = 1;
     bool enable_biastee = false;
@@ -62,7 +75,7 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int
     }
 
     /* Set the sample rate */
-    r = rtlsdr_set_sample_rate(dev, 2048000); //(uint32_t) rate);
+    r = rtlsdr_set_sample_rate(dev, 1152000); //(uint32_t) rate);
     if (r < 0)
         fprintf(stderr, "WARNING: Failed to set sample rate.\n");
 
@@ -169,13 +182,13 @@ int HRtl2832Reader<T>::Read(T* dest, size_t blocksize)
                 break;
             }
             case MODE::I: {
-                for( int i = 0; i < blocksize; i += 2 ) {
+                for( int i = 0; i < blocksize * 2; i += 2 ) {
                     dest[i / 2] = (T) src[i];
                 }
                 break;
             }
             case MODE::Q: {
-                for( int i = 1; i < blocksize; i += 2 ) {
+                for( int i = 1; i < blocksize * 2; i += 2 ) {
                     dest[i / 2] = (T) src[i];
                 }
                 break;
@@ -185,7 +198,7 @@ int HRtl2832Reader<T>::Read(T* dest, size_t blocksize)
         // Advance read position to next buffer, if we have read the last buffer,
         // then wrap around to the first buffer.
         _cbd.rdloc += blocksize;
-        if( _cbd.rdloc >= (NUMBER_OF_BUFFERS * blocksize) )
+        if( _cbd.rdloc >= (NUMBER_OF_BUFFERS * _buflen) )
         {
             _cbd.rdloc = 0;
         }
@@ -205,7 +218,7 @@ void HRtl2832Reader<T>::callback(unsigned char* buffer, uint32_t length, void* c
 
     // Cast data passed through stream to our structure.
     CallbackData *data = (CallbackData*) ctx;
-
+HLog("Length %d", length);
     // Copy new data from the soundcard to the buffer
     // Buffer is always unsigned char, so no need to use 'sizeof(unsigned char)'
     memcpy((void*) &data->buffer[data->wrloc], (void*) buffer, length);
@@ -240,7 +253,7 @@ bool HRtl2832Reader<T>::Start()
 
             // Start async reader thread
             HLog("Starting async reader thread");
-            if( rtlsdr_read_async(dev, callback, (void *) &_cbd, 1, 1024) < 0 ) {
+            if( rtlsdr_read_async(dev, callback, (void *) &_cbd, 1, _buflen) < 0 ) {
                 HError("Failed to start the rtl device");
                 _isStarted = false;
             }

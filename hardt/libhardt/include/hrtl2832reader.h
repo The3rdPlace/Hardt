@@ -30,6 +30,8 @@ class HRtl2832Reader : public HReader<T>
 
         MODE _mode;
 
+        int _buflen;
+
         std::thread* _current;
         rtlsdr_dev_t *dev;
         std::mutex mtx;
