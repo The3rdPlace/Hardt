@@ -2355,6 +2355,26 @@ int RunFirDecimator()
 }
 
 template <typename T>
+int RunSampleTypeConverter()
+{
+    std::cout << "scale " << Config.TypeConverterScale << std::endl;
+    // Create reader
+    HFileReader<float> rd(Config.InputFile);
+
+    // Create converter
+    HTypeConverter<float, T> cnv(rd.Reader(), Config.Blocksize, Config.TypeConverterScale);
+
+    // Create writer
+    HFileWriter<T> wr(Config.OutputFile);
+
+    // Create processor
+    HStreamProcessor<T> proc(wr.Writer(), cnv.Reader(), Config.Blocksize, &terminated);
+    proc.Run(Config.BlockCount);
+
+    return 0;
+}
+
+template <typename T>
 int RunOperation()
 {
     // Wait for start time ?
@@ -3208,6 +3228,35 @@ int RunOperation()
         }
 
         return RunFirDecimator<T>();
+    }
+
+    if( Config.IsSampleTypeConverter )
+    {
+        if( Config.InputFile == NULL )
+        {
+            std::cout << "No input file (-if)" << std::endl;
+            return -1;
+        }
+
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file (-of)" << std::endl;
+            return -1;
+        }
+
+        if( Config.SampleInType == 0 )
+        {
+            std::cout << "No input sample type" << std::endl;
+            return -1;
+        }
+
+        if( Config.SampleOutType == 0 )
+        {
+            std::cout << "No output sample type" << std::endl;
+            return -1;
+        }
+
+        return RunSampleTypeConverter<T>();
     }
 
     // No known operation could be determined from the input arguments

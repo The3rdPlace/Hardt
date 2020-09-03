@@ -54,9 +54,14 @@ struct DspCmdConfig
     bool IsTranslateByFourI = false;
     bool IsTranslateByFourQ = false;
     bool IsFirDecimator = false;
+    bool IsSampleTypeConverter = false;
 
     char* InFileFormat = NULL;
     char* OutFileFormat = NULL;
+
+    H_SAMPLE_FORMAT SampleInType;
+    H_SAMPLE_FORMAT SampleOutType;
+    double TypeConverterScale = 1;
 
     int Port = 8080;
     char *Address = NULL;

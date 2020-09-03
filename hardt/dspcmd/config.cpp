@@ -197,6 +197,12 @@ bool parseArguments(int argc, char** argv)
             Config.DecimateFactor = argIntCmp(argv[argNo], "-fdcm", argv[argNo + 1], Config.DecimateFactor);
             Config.FilterCoeffs = argCharCmp(argv[argNo], "-fdcm", argv[argNo + 2], Config.FilterCoeffs);
 
+            Config.IsSampleTypeConverter = argBoolCmp(argv[argNo], "-stc", Config.IsSampleTypeConverter);
+            Config.SampleInType = argIntCmp(argv[argNo], "-stc", argv[argNo + 1], Config.SampleInType);
+            Config.SampleOutType = argIntCmp(argv[argNo], "-stc", argv[argNo + 2], Config.SampleOutType);
+            if( argNo < argc - 3 && argv[argNo + 3][0] != '-' ) {
+                Config.TypeConverterScale = argIntCmp(argv[argNo], "-stc", argv[argNo + 3], Config.TypeConverterScale);
+            }
         }
 
         if( argNo < argc - 3 )
@@ -280,7 +286,7 @@ bool parseArguments(int argc, char** argv)
             std::cout << std::endl;
 
             std::cout << "$ dpscmd -f format" << std::endl;
-            std::cout << "Sample format (" << H_SAMPLE_FORMAT_INT_8 << "=Int8, " << H_SAMPLE_FORMAT_UINT_8 << "=UInt8, " << H_SAMPLE_FORMAT_INT_16 << "=Int16, " /*<< H_SAMPLE_FORMAT_INT_24 << "=Int24, "*/ << H_SAMPLE_FORMAT_INT_32 << "=Int32) (default " << H_SAMPLE_FORMAT_INT_16 << " = Int16)" << std::endl;
+            std::cout << "Sample format (" << H_SAMPLE_FORMAT_INT_8 << "=Int8, " << H_SAMPLE_FORMAT_UINT_8 << "=UInt8, " << H_SAMPLE_FORMAT_INT_16 << "=Int16, " /*<< H_SAMPLE_FORMAT_INT_24 << "=Int24, "*/ << H_SAMPLE_FORMAT_INT_32 << "=Int32, " << H_SAMPLE_FORMAT_FLOAT << "=Float) (default " << H_SAMPLE_FORMAT_INT_16 << " = Int16)" << std::endl;
             std::cout << std::endl;
 
             std::cout << "$ dpscmd -ff pcm|wav" << std::endl;
@@ -478,6 +484,10 @@ bool parseArguments(int argc, char** argv)
 
             std::cout << "$ dpscmd -bb center width" << std::endl;
             std::cout << "Move segment around 'center' with 'width' to baseband." << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "$ dpscmd -stc in out" << std::endl;
+            std::cout << "Convert sample type. 'in' and 'out' must be one of the sample formats. See '-f'" << std::endl;
             std::cout << std::endl;
 
             std::cout << "When creating filters, 'name' is the corresponding API name for the filter or calculator.:" << std::endl;
