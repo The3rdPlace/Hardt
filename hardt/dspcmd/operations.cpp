@@ -2357,7 +2357,6 @@ int RunFirDecimator()
 template <typename T>
 int RunSampleTypeConverter()
 {
-    std::cout << "scale " << Config.TypeConverterScale << std::endl;
     // Create reader
     HFileReader<float> rd(Config.InputFile);
 

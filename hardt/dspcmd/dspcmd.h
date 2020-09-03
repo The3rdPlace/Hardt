@@ -603,6 +603,11 @@
 
     Move segment around 'center' with 'width' to baseband
 
+    \page stc
+    Syntax: dpscmd -stc in out [scale]
+
+    Convert sample type. 'in' and 'out' must be one of the sample formats. (See '-f').
+    If a scale factor is given (floating point), the samples is scaled (up or down)
 */
 
 #ifndef __DSPCMD_H

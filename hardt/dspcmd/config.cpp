@@ -33,6 +33,11 @@ float argFloatCmp(const char* arg, const char* option, char* value, float curren
     return strcmp(arg, option) == 0 ? atof(value) : currentValue;
 }
 
+float argDoubleCmp(const char* arg, const char* option, char* value, double currentValue)
+{
+    return strcmp(arg, option) == 0 ? atof(value) : currentValue;
+}
+
 int argDeviceTypeCmp(const char* arg, const char* option, char* value, int currentValue)
 {
     if( strcmp(arg, option) == 0 ) {
@@ -201,7 +206,7 @@ bool parseArguments(int argc, char** argv)
             Config.SampleInType = argIntCmp(argv[argNo], "-stc", argv[argNo + 1], Config.SampleInType);
             Config.SampleOutType = argIntCmp(argv[argNo], "-stc", argv[argNo + 2], Config.SampleOutType);
             if( argNo < argc - 3 && argv[argNo + 3][0] != '-' ) {
-                Config.TypeConverterScale = argIntCmp(argv[argNo], "-stc", argv[argNo + 3], Config.TypeConverterScale);
+                Config.TypeConverterScale = argDoubleCmp(argv[argNo], "-stc", argv[argNo + 3], Config.TypeConverterScale);
             }
         }
 
