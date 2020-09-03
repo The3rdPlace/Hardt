@@ -143,7 +143,7 @@ class HTypeConverter_Test: public Test
             int16_t expected[8] = {0, 516, 774, 1032, 1290, 1548, 1806, 32766};
 
             TestWriter<int16_t > wr(8);
-            HTypeConverter<int8_t, int16_t> converter(wr.Writer(), 8, true);
+            HTypeConverter<int8_t, int16_t> converter(wr.Writer(), 8, INT8_TO_INT16);
 
             ASSERT_IS_EQUAL(converter.Write(input, 8), 8);
             ASSERT_IS_EQUAL(wr.Writes, 1);
@@ -201,7 +201,7 @@ class HTypeConverter_Test: public Test
             int32_t expected[8] = {0, 2147483640, 0, 0 ,0 ,0 ,0 ,0};
 
             TestWriter<int32_t > wr(8);
-            HTypeConverter<int8_t, int32_t> converter(wr.Writer(), 8, true);
+            HTypeConverter<int8_t, int32_t> converter(wr.Writer(), 8, INT8_TO_INT32);
 
             ASSERT_IS_EQUAL(converter.Write(input, 8), 8);
             ASSERT_IS_EQUAL(wr.Writes, 1);
@@ -259,7 +259,7 @@ class HTypeConverter_Test: public Test
             int32_t expected[8] = {0, 2147450879, 0, 0 ,0 ,0 ,0 ,0};
 
             TestWriter<int32_t > wr(8);
-            HTypeConverter<int16_t, int32_t> converter(wr.Writer(), 8, true);
+            HTypeConverter<int16_t, int32_t> converter(wr.Writer(), 8, INT16_TO_INT32);
 
             ASSERT_IS_EQUAL(converter.Write(input, 8), 8);
             ASSERT_IS_EQUAL(wr.Writes, 1);
@@ -317,7 +317,7 @@ class HTypeConverter_Test: public Test
             float expected[8] = {0, 516, 774, 1032, 1290, 1548, 1806, 32766};
 
             TestWriter<float> wr(8);
-            HTypeConverter<int8_t, float> converter(wr.Writer(), 8, true);
+            HTypeConverter<int8_t, float> converter(wr.Writer(), 8, INT8_TO_FLOAT);
 
             ASSERT_IS_EQUAL(converter.Write(input, 8), 8);
             ASSERT_IS_EQUAL(wr.Writes, 1);
@@ -375,7 +375,7 @@ class HTypeConverter_Test: public Test
             double expected[8] = {0, 2147483640, 0, 0 ,0 ,0 ,0 ,0};
 
             TestWriter<double > wr(8);
-            HTypeConverter<int8_t, double> converter(wr.Writer(), 8, true);
+            HTypeConverter<int8_t, double> converter(wr.Writer(), 8, INT8_TO_DOUBLE);
 
             ASSERT_IS_EQUAL(converter.Write(input, 8), 8);
             ASSERT_IS_EQUAL(wr.Writes, 1);
@@ -462,7 +462,7 @@ class HTypeConverter_Test: public Test
             double expected[8] = {0, 2147450879, 0, 0 ,0 ,0 ,0 ,0};
 
             TestWriter<double> wr(8);
-            HTypeConverter<int16_t, double> converter(wr.Writer(), 8, true);
+            HTypeConverter<int16_t, double> converter(wr.Writer(), 8, INT16_TO_DOUBLE);
 
             ASSERT_IS_EQUAL(converter.Write(input, 8), 8);
             ASSERT_IS_EQUAL(wr.Writes, 1);
@@ -581,7 +581,7 @@ class HTypeConverter_Test: public Test
 
             try
             {
-                converter.Write(input, 8);
+                converter.Write(input, 6);
                 ASSERT_FAIL("Expected HConverterIOException");
             }
             catch(HConverterIOException*)
@@ -598,7 +598,7 @@ class HTypeConverter_Test: public Test
             int16_t expected[8] = {0, 32767,      0, 0 ,0 ,0 ,0 ,0};
 
             TestWriter<int16_t > wr(8);
-            HTypeConverter<int32_t, int16_t> converter(wr.Writer(), 8, true);
+            HTypeConverter<int32_t, int16_t> converter(wr.Writer(), 8, INT32_TO_INT16);
 
             ASSERT_IS_EQUAL(converter.Write(input, 8), 8);
             ASSERT_IS_EQUAL(wr.Writes, 1);
@@ -630,7 +630,7 @@ class HTypeConverter_Test: public Test
 
             try
             {
-                converter.Write(input, 8);
+                converter.Write(input, 6);
                 ASSERT_FAIL("Expected HConverterIOException");
             }
             catch(HConverterIOException*)
@@ -647,7 +647,7 @@ class HTypeConverter_Test: public Test
             int8_t expected[8] = {0, 126,        0, 0 ,0 ,0 ,0 ,0};
 
             TestWriter<int8_t > wr(8);
-            HTypeConverter<int32_t, int8_t> converter(wr.Writer(), 8, true);
+            HTypeConverter<int32_t, int8_t> converter(wr.Writer(), 8, INT32_TO_INT8);
             ASSERT_IS_EQUAL(converter.Write(input, 8), 8);
             ASSERT_IS_EQUAL(wr.Writes, 1);
             ASSERT_IS_EQUAL(wr.Samples, 8);
@@ -678,7 +678,7 @@ class HTypeConverter_Test: public Test
 
             try
             {
-                converter.Write(input, 8);
+                converter.Write(input, 6);
                 ASSERT_FAIL("Expected HConverterIOException");
             }
             catch(HConverterIOException*)
@@ -695,7 +695,7 @@ class HTypeConverter_Test: public Test
             int8_t expected[8] = {0, 2,   3,   4,    5,    6,    7,    127};
 
             TestWriter<int8_t > wr(8);
-            HTypeConverter<int16_t, int8_t> converter(wr.Writer(), 8, true);
+            HTypeConverter<int16_t, int8_t> converter(wr.Writer(), 8, INT16_TO_INT8);
 
             ASSERT_IS_EQUAL(converter.Write(input, 8), 8);
             ASSERT_IS_EQUAL(wr.Writes, 1);
