@@ -55,9 +55,9 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int
     // Pass these as fields
     uint32_t dev_index = 0;
     int ppm_correction = 0;
-    uint32_t freq = 50371000; //1440000; //50271000;//126798600;
+    uint32_t freq = 126800000;//144570200;//122650000;//126900000; //144470200; //126800000; //50371000; //1440000; //50271000;//126798600;
     int gain = 0;
-    int direct_sampling = 1;
+    int direct_sampling = 0;
     bool enable_biastee = false;
 
     rtlsdr_open(&dev, dev_index);
@@ -82,9 +82,9 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int
     /* Set the frequency */
     r = rtlsdr_set_center_freq(dev, freq);
     if (r < 0)
-        fprintf(stderr, "WARNING: Failed to set center freq.\n");
+        HLog("WARNING: Failed to set center freq");
     else
-        fprintf(stderr, "Tuned to %i Hz.\n", freq);
+        HLog("Tuned to %i Hz.", freq);
 
     if (0 == gain) {
         /* Enable automatic gain */
@@ -100,9 +100,9 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int
         /* Set the tuner gain */
         r = rtlsdr_set_tuner_gain(dev, gain);
         if (r < 0)
-            fprintf(stderr, "WARNING: Failed to set tuner gain.\n");
+            HLog("WARNING: Failed to set tuner gain.");
         else
-            fprintf(stderr, "Tuner gain set to %f dB.\n", gain/10.0);
+            HLog("Tuner gain set to %f dB.", gain/10.0);
     }
 
     rtlsdr_set_bias_tee(dev, enable_biastee ? 1 : 0);
@@ -182,8 +182,14 @@ int HRtl2832Reader<T>::Read(T* dest, size_t blocksize)
                 break;
             }
             case MODE::I: {
+                /*for( int i = 0; i < blocksize * 2; i += 2 ) {
+                    dest[i / 2] = ((T) src[i]) - 127;
+                }*/
+
                 for( int i = 0; i < blocksize * 2; i += 2 ) {
-                    dest[i / 2] = (T) src[i];
+                    T A = std::abs(std::complex<T>(((T) src[i]) - 127, ((T) src[i+1]) - 127));
+                    T x = atan2((((T) src[i + 1]) - 127), (((T) src[i]) - 127));
+                    dest[i / 2] = A * x;
                 }
                 break;
             }
@@ -218,7 +224,7 @@ void HRtl2832Reader<T>::callback(unsigned char* buffer, uint32_t length, void* c
 
     // Cast data passed through stream to our structure.
     CallbackData *data = (CallbackData*) ctx;
-HLog("Length %d", length);
+
     // Copy new data from the soundcard to the buffer
     // Buffer is always unsigned char, so no need to use 'sizeof(unsigned char)'
     memcpy((void*) &data->buffer[data->wrloc], (void*) buffer, length);
