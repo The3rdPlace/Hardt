@@ -36,18 +36,28 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int
         throw new HInitializationException("Blocksize must be less than or equal to 8192");
     }
 
-    // Set the size of the receive buffer from the device. If we are reading
-    // pure I or Q values, then we must collect twice as many samples from
-    // the device before we can return 'blocksize' samples
+    // Determine how many samples we need from the device per read.
+    // Unless running in IQ mode (multiplexed I and Q values), we
+    // need 2 times the number of samples from the device in order to
+    // return 'blocksize' samples
     _buflen = _blocksize * (_mode == MODE::IQ ? 1 : 2);
+
+    // Allocate a temporary buffer for internal use
+    _buffer = new T[_buflen];
+
+    // If we are asked to return real samples, then allocate a FFT object
+    // to handle the IQ-2-Real conversion
+    if( mode == MODE::REAL ) {
+        _fft = new HFft<T>(_blocksize);
+    }
 
     // Initialize resources used by the callback function
     _cbd.wrloc = 0;
     _cbd.rdloc = 0;
-    _cbd.buffer = new unsigned char[NUMBER_OF_BUFFERS * _buflen];
+    _cbd.buffer = new unsigned char[NUMBER_OF_RTL_BUFFERS * _buflen];
     if( _cbd.buffer == NULL )
     {
-        HError("Unable to allocate %d buffers for %d frames á %d bytes", NUMBER_OF_BUFFERS, _buflen, sizeof(unsigned char));
+        HError("Unable to allocate %d buffers for %d frames á %d bytes", NUMBER_OF_RTL_BUFFERS, _buflen, sizeof(unsigned char));
         throw new HInitializationException("Out of memory when allocating buffers");
     }
     HLog("Buffers allocated");
@@ -55,10 +65,11 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int
     // Pass these as fields
     uint32_t dev_index = 0;
     int ppm_correction = 0;
-    uint32_t freq = 126800000;//144570200;//122650000;//126900000; //144470200; //126800000; //50371000; //1440000; //50271000;//126798600;
+    uint32_t freq = 126600000;//144570200;//122650000;//126900000; //144470200; //126800000; //50371000; //1440000; //50271000;//126798600;
     int gain = 0;
     int direct_sampling = 0;
     bool enable_biastee = false;
+    int r;
 
     rtlsdr_open(&dev, dev_index);
     if (NULL == dev) {
@@ -67,31 +78,40 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int
     }
 
     /* Set the tuner error */
-    int r = rtlsdr_set_freq_correction(dev, ppm_correction);
+    /*int r = rtlsdr_set_freq_correction(dev, ppm_correction);
     if (r < 0) {
         fprintf(stderr, "WARNING: Failed to set ppm error.\n");
+        HError("stop %d", __LINE__);
     } else {
         fprintf(stderr, "Tuner error set to %i ppm.\n", ppm_correction);
-    }
+        HError("stop %d", __LINE__);
+    }*/
 
     /* Set the sample rate */
     r = rtlsdr_set_sample_rate(dev, 1152000); //(uint32_t) rate);
-    if (r < 0)
+    if (r < 0) {
         fprintf(stderr, "WARNING: Failed to set sample rate.\n");
+        HError("stop %d", __LINE__);
+    }
 
     /* Set the frequency */
     r = rtlsdr_set_center_freq(dev, freq);
-    if (r < 0)
+    if (r < 0) {
         HLog("WARNING: Failed to set center freq");
-    else
+    }
+    else {
         HLog("Tuned to %i Hz.", freq);
+    }
 
     if (0 == gain) {
         /* Enable automatic gain */
         r = rtlsdr_set_tuner_gain_mode(dev, 0);
-        if (r < 0)
+        if (r < 0) {
             fprintf(stderr, "WARNING: Failed to enable automatic gain.\n");
+            HError("stop %d", __LINE__);
+        }
     } else {
+        HError("stop %d", __LINE__);
         /* Enable manual gain */
         r = rtlsdr_set_tuner_gain_mode(dev, 1);
         if (r < 0)
@@ -105,16 +125,25 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int
             HLog("Tuner gain set to %f dB.", gain/10.0);
     }
 
-    rtlsdr_set_bias_tee(dev, enable_biastee ? 1 : 0);
-    if (enable_biastee)
+    /*r = rtlsdr_set_bias_tee(dev, enable_biastee ? 1 : 0);
+    if( r < 0 ) {
+        HError("stop %d", __LINE__);
+    }
+    if (enable_biastee) {
         fprintf(stderr, "activated bias-T on GPIO PIN 0\n");
+    }*/
+    //r = rtlsdr_set_direct_sampling(dev, direct_sampling);
+    /*r = rtlsdr_set_direct_sampling(dev, 0);
+    if( r < 0 ) {
+        HError("stop %d", __LINE__);
+    }*/
 
     /* Reset endpoint before we start reading from it (mandatory) */
     r = rtlsdr_reset_buffer(dev);
-    if (r < 0)
+    if (r < 0) {
         fprintf(stderr, "WARNING: Failed to reset buffers.\n");
-
-    rtlsdr_set_direct_sampling(dev, direct_sampling);
+        HError("stop %d", __LINE__);
+    }
 
     HLog("center_freq = %d", rtlsdr_get_center_freq(dev));
     HLog("direct_sampling = %d", rtlsdr_get_direct_sampling(dev));
@@ -123,8 +152,6 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int
     HLog("sample_rate = %d", rtlsdr_get_sample_rate(dev));
     HLog("tuner_gain = %d", rtlsdr_get_tuner_gain(dev));
 
-
-    //--------------------------------------------------------------------------------------------------
     // Ready
     _isInitialized = true;
 }
@@ -140,10 +167,21 @@ HRtl2832Reader<T>::~HRtl2832Reader()
         Stop();
         HLog("Stream is stopped");
 
+        // Close the device
+        rtlsdr_close(dev);
+
         // Delete shared resources
-        //delete _cbd.buffer;
+        delete _cbd.buffer;
         HLog("Buffers released");
     }
+
+    // If we have an FFT object, delete it
+    if( _mode == MODE::REAL ) {
+        delete _fft;
+    }
+
+    // Delete temporary buffer
+    delete _buffer;
 }
 
 template <class T>
@@ -172,31 +210,39 @@ int HRtl2832Reader<T>::Read(T* dest, size_t blocksize)
     // If we have samples available, then read the next buffer
     if( _cbd.wrloc != _cbd.rdloc )
     {
-        // Cast to correct datatype
         unsigned char* src = &_cbd.buffer[_cbd.rdloc];
         switch( _mode ) {
+
+            // Multiplexed I and Q values
             case MODE::IQ: {
                 for( int i = 0; i < blocksize; i++ ) {
-                    dest[i] = (T) src[i];
+                    dest[i] = ((T) src[i]) - 127;
                 }
                 break;
             }
-            case MODE::I: {
-                /*for( int i = 0; i < blocksize * 2; i += 2 ) {
-                    dest[i / 2] = ((T) src[i]) - 127;
-                }*/
 
-                for( int i = 0; i < blocksize * 2; i += 2 ) {
-                    T A = std::abs(std::complex<T>(((T) src[i]) - 127, ((T) src[i+1]) - 127));
-                    T x = atan2((((T) src[i + 1]) - 127), (((T) src[i]) - 127));
-                    dest[i / 2] = A * x;
+            // Return I channel
+            case MODE::I: {
+                for( int i = 0; i < _buflen; i += 2 ) {
+                    dest[i / 2] = ((T) src[i]) - 127;
                 }
                 break;
             }
+
+            // Return Q channel
             case MODE::Q: {
-                for( int i = 1; i < blocksize * 2; i += 2 ) {
-                    dest[i / 2] = (T) src[i];
+                for( int i = 1; i < _buflen; i += 2 ) {
+                    dest[i / 2] = ((T) src[i]) - 127;
                 }
+                break;
+            }
+
+            // Return realvalued time-domain signal
+            case MODE::REAL: {
+                for( int i = 0; i < _buflen; i++ ) {
+                    _buffer[i] = ((T) src[i]) - 127;
+                }
+                _fft->IQ2REAL(_buffer, dest);
                 break;
             }
         }
@@ -204,7 +250,7 @@ int HRtl2832Reader<T>::Read(T* dest, size_t blocksize)
         // Advance read position to next buffer, if we have read the last buffer,
         // then wrap around to the first buffer.
         _cbd.rdloc += blocksize;
-        if( _cbd.rdloc >= (NUMBER_OF_BUFFERS * _buflen) )
+        if( _cbd.rdloc >= (NUMBER_OF_RTL_BUFFERS * _buflen) )
         {
             _cbd.rdloc = 0;
         }
@@ -232,7 +278,7 @@ void HRtl2832Reader<T>::callback(unsigned char* buffer, uint32_t length, void* c
     // Advance write position to next buffer, if we have written the last buffer,
     // then wrap around to the first buffer.
     data->wrloc += length;
-    if( data->wrloc >= (NUMBER_OF_BUFFERS * length) )
+    if( data->wrloc >= (NUMBER_OF_RTL_BUFFERS * length) )
     {
         data->wrloc = 0;
     }
@@ -258,8 +304,8 @@ bool HRtl2832Reader<T>::Start()
         _current = new std::thread([this]() {
 
             // Start async reader thread
-            HLog("Starting async reader thread");
-            if( rtlsdr_read_async(dev, callback, (void *) &_cbd, 1, _buflen) < 0 ) {
+            HLog("Starting async reader thread with buflen=%d", _buflen);
+            if( rtlsdr_read_async(dev, callback, (void *) &_cbd, NUMBER_OF_RTL_BUFFERS, _buflen) < 0 ) {
                 HError("Failed to start the rtl device");
                 _isStarted = false;
             }

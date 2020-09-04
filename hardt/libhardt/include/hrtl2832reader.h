@@ -8,7 +8,7 @@
 #include "hardt.h"
 #include "hreader.h"
 
-#define NUMBER_OF_BUFFERS 4
+#define NUMBER_OF_RTL_BUFFERS 15
 
 /**
     Read samples from an RTL-2832 device
@@ -23,14 +23,18 @@ class HRtl2832Reader : public HReader<T>
            IQ: Return multiplexed IQ samples
             I: Return only I samples
             Q: Return only Q samples
+            REAL: Return realvalued signal (warning: this might cost cycles, use with care and low samplerate)
         */
-        enum MODE {IQ, I, Q};
+        enum MODE {IQ, I, Q, REAL};
 
     private:
 
         MODE _mode;
 
         int _buflen;
+
+        HFft<T>* _fft;
+        T* _buffer;
 
         std::thread* _current;
         rtlsdr_dev_t *dev;
