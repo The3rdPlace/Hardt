@@ -18,6 +18,8 @@ class HFft {
 
         T* _fftBuffer;
         std::complex<double>* _hilbertBuffer;
+        std::complex<T>* _iqComplex;
+        std::complex<double>* _iqSpectrum;
 
         void FFT(std::valarray<std::complex<double>>& x)
         {
@@ -64,11 +66,17 @@ class HFft {
 
             // Allocate a buffer for intermediate results in the hilbert function
             _hilbertBuffer = new std::complex<double>[_size];
+
+            // Allocate buffers for IQ2REAl operations
+            _iqComplex = new std::complex<T>[_size];
+            _iqSpectrum = new std::complex<double>[_size];
         }
 
         ~HFft() {
             delete _fftBuffer;
             delete _hilbertBuffer;
+            delete _iqComplex;
+            delete _iqSpectrum;
         }
 
         /** Calculate the fft for complex samples and place the complex results into a buffer
@@ -223,6 +231,39 @@ class HFft {
 
             // Take FFT of the frequency response
             FFT(buffer, spectrum);
+        }
+
+        /** Convert IQ data to a real valued signal
+
+            The IQ data must be kept in a multiplexed buffer,
+            alternating I and Q samples. The 'multiplexed' buffer
+            must thus be 2 times the size of the FFT object
+            (2048 multiplexed IQ value yields 1024 output samples)
+        */
+        void IQ2REAL(T *multiplexed, T* real) {
+
+            // Demultiplex into complex signal
+            for( int i = 0; i < _size * 2; i += 2 ) {
+                _iqComplex[i / 2] = {multiplexed[i], multiplexed[i + 1]};
+            }
+
+            // Convert the complex IQ buffer to real valued samples
+            IQ2REAL(_iqComplex, real);
+        }
+
+        /** Convert IQ data to a real valued signal */
+        void IQ2REAL(std::complex<T>* iq, T* real) {
+
+            // FFT -> symmetrical spectrum with positive and negative frequencies
+            FFT(iq, _iqSpectrum);
+
+            // Zero negative frequencies
+            for( int i = _size / 2; i < _size; i++ ) {
+                _iqSpectrum[i] = 0;
+            }
+
+            // IFFT -> real signal with negative frequencies removed
+            IFFT(_iqSpectrum, real);
         }
 };
 
