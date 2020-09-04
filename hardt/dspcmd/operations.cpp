@@ -187,7 +187,7 @@ int RunFileRecorder()
     }
     else if ( Config.InputDeviceType == DspCmdConfig::DeviceType::RTL )
     {
-        rd = new HRtl2832Reader<T>(Config.InputDevice, Config.Rate, HRtl2832Reader<T>::MODE::I, Config.Blocksize);
+        rd = new HRtl2832Reader<T>(Config.InputDevice, Config.Rate, HRtl2832Reader<T>::MODE::REAL, Config.Blocksize);
     }
     else
     {
