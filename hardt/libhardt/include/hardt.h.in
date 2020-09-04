@@ -123,6 +123,7 @@ void HInit(std::string logname, bool verbose = true);
 #define H_SAMPLE_FORMAT_INT_16 3
 //#define H_SAMPLE_FORMAT_INT_24 4 // Need some extra work in the reader before we can enable this
 #define H_SAMPLE_FORMAT_INT_32 5
+#define H_SAMPLE_FORMAT_FLOAT 6
 
 /**
     Supported samplerates. Not all rates are supported by any given card or device.
