@@ -97,6 +97,20 @@ class HRtl2832Reader : public HReader<T>
             // No further propagation of commands
             return true;
         }
+
+        /** Enable the 5 volt bias-tee output voltage on the antenna connector
+
+            Arguments:
+              gpio = gpio pin. Use 0 (zero) to use default gpio pin
+        */
+        bool EnableBiasTee(int gpio = 0);
+
+        /** Disable the 5 volt bias-tee output voltage on the antenna connector
+
+            Arguments:
+              gpio = gpio pin. Use 0 (zero) to use default gpio pin
+        */
+        bool DisableBiasTee(int gpio = 0);
 };
 
 #endif

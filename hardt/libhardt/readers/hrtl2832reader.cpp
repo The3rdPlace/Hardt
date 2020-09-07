@@ -362,6 +362,45 @@ bool HRtl2832Reader<T>::Stop()
     return true;
 }
 
+template <class T>
+bool HRtl2832Reader<T>::EnableBiasTee(int gpio) {
+
+    if( gpio > 0 ) {
+        if( rtlsdr_set_bias_tee_gpio(dev, gpio, 1) == 0 ) {
+            HLog("Enabled bias-tee output voltage on gpio %d", gpio);
+            return true;
+        }
+        HError("Unable to enable bias-tee output voltage on gpio %d", gpio);
+        return false;
+    } else {
+        if (rtlsdr_set_bias_tee(dev, 1) == 0) {
+            HLog("Enabled bias-tee output voltage");
+            return true;
+        }
+        HError("Unable to enable bias-tee output voltage");
+        return false;
+    }
+}
+
+template <class T>
+bool HRtl2832Reader<T>::DisableBiasTee(int gpio) {
+
+    if( gpio > 0 ) {
+        if( rtlsdr_set_bias_tee_gpio(dev, gpio, 0) == 0 ) {
+            HLog("Disabled bias-tee output voltage on gpio %d", gpio);
+            return true;
+        }
+        HError("Unable to disable bias-tee output voltage on gpio %d", gpio);
+        return false;
+    } else {
+        if (rtlsdr_set_bias_tee(dev, 0) == 0) {
+            HLog("Disabled bias-tee output voltage");
+            return true;
+        }
+        HError("Unable to disable bias-tee output voltage");
+        return false;
+    }
+}
 
 /********************************************************************
 Explicit instantiation
