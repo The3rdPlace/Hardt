@@ -7,6 +7,7 @@
 
 #include "hardt.h"
 #include "hreader.h"
+#include "hfft.h"
 
 #define NUMBER_OF_RTL_BUFFERS 15
 
@@ -30,16 +31,11 @@ class HRtl2832Reader : public HReader<T>
     private:
 
         MODE _mode;
-
         int _buflen;
-
         HFft<T>* _fft;
         T* _buffer;
-
         std::thread* _current;
         rtlsdr_dev_t *dev;
-        std::mutex mtx;
-        std::condition_variable lock;
         size_t _blocksize;
 
         // Data accessed by the (static) callback function
@@ -52,11 +48,10 @@ class HRtl2832Reader : public HReader<T>
             std::condition_variable lock;
         } _cbd;
 
-        // The sample stream from the soundcard
-        //PaStream *_stream;
+        // Indicate if the device has been started
         bool _isStarted;
 
-        // Housekeeping
+        // Indicate if the device has been initialize
         bool _isInitialized;
 
         // Implement Start() and Stop() so that we can start sampling whe
@@ -71,14 +66,19 @@ class HRtl2832Reader : public HReader<T>
             Arguments:
               device: The device id of the selected RTL-2832 device (usually 0-indexed)
               rate: The samplerate to set on the RTL-2832 device
-              mode: The reader mode (IQ, I, Q)
+              mode: The reader mode (IQ, I, Q, REAL)
+              gain: The device gain (0 to use automatic)
+              frequency: Initial center- or if frequency
               blocksize: Number of samples to read from the device in a single read operation
                          If mode is set to 'IQ', then the returned amount of samples will be
                          'blocksize/2' since you will get multiplexed IQ samples. The buffer
                          must however still be of length 'blocksize' due to the multiplexing
-
+              directSampling: Set to true to use direct sampling. Most RTL-2832 dongles will then read the
+                              Q-channel, so use mode=Q
+              offset: Set to true to use tuner offset mode (only E4000 tuners)
+              correct: Frequency correction in ppm
          * */
-        HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int blocksize);
+        HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int gain, int32_t frequency, int blocksize, bool directSampling = false, bool offset = 0, int correction = 0);
 
         /** Default destructor */
         ~HRtl2832Reader();
@@ -93,6 +93,7 @@ class HRtl2832Reader : public HReader<T>
 
         /** Execute and/or pass on a command */
         bool Command(HCommand* command) {
+
             // No further propagation of commands
             return true;
         }

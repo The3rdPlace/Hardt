@@ -2,9 +2,7 @@
 #define __HRTL2832READER_CPP
 
 #include <stdio.h>
-#include <iostream>
 #include <mutex>
-#include <condition_variable>
 #include <cstring>
 
 #include "hrtl2832reader.h"
@@ -14,7 +12,7 @@ Class implementation
 ********************************************************************/
 
 template <class T>
-HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int blocksize):
+HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int gain, int32_t frequency, int blocksize, bool directSampling, bool offset, int correction):
         _isInitialized(false),
         _isStarted(false),
         _mode(mode),
@@ -60,69 +58,97 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int
         HError("Unable to allocate %d buffers for %d frames á %d bytes", NUMBER_OF_RTL_BUFFERS, _buflen, sizeof(unsigned char));
         throw new HInitializationException("Out of memory when allocating buffers");
     }
-    HLog("Buffers allocated");
+    HLog("%d buffers allocated for the device output", NUMBER_OF_RTL_BUFFERS * _buflen);
 
-    // Pass these as fields
-    uint32_t dev_index = 0;
-    int ppm_correction = 0;
-    uint32_t freq = 126600000;//144570200;//122650000;//126900000; //144470200; //126800000; //50371000; //1440000; //50271000;//126798600;
-    int gain = 0;
-    int direct_sampling = 0;
-    bool enable_biastee = false;
-    int r;
+    // Error code from rtlsdr library api function calls
+    int result;
 
-    rtlsdr_open(&dev, dev_index);
-    if (NULL == dev) {
-        HError("Failed to open RTL-2832 device %d", dev_index);
+    // Open the RTL-2832 device
+    rtlsdr_open(&dev, device);
+    if( dev == NULL ) {
+        HError("Failed to open RTL-2832 device with index %d", device);
         throw new HInitializationException("Failed to open device");
     }
+    HLog("RTL-2832 device with index %d opened", device);
 
-    /* Set the tuner error */
-    /*int r = rtlsdr_set_freq_correction(dev, ppm_correction);
-    if (r < 0) {
-        fprintf(stderr, "WARNING: Failed to set ppm error.\n");
-        HError("stop %d", __LINE__);
-    } else {
-        fprintf(stderr, "Tuner error set to %i ppm.\n", ppm_correction);
-        HError("stop %d", __LINE__);
-    }*/
-
-    /* Set the sample rate */
-    r = rtlsdr_set_sample_rate(dev, 1152000); //(uint32_t) rate);
-    if (r < 0) {
-        fprintf(stderr, "WARNING: Failed to set sample rate.\n");
-        HError("stop %d", __LINE__);
-    }
-
-    /* Set the frequency */
-    r = rtlsdr_set_center_freq(dev, freq);
-    if (r < 0) {
-        HLog("WARNING: Failed to set center freq");
-    }
-    else {
-        HLog("Tuned to %i Hz.", freq);
-    }
-
-    if (0 == gain) {
-        /* Enable automatic gain */
-        r = rtlsdr_set_tuner_gain_mode(dev, 0);
-        if (r < 0) {
-            fprintf(stderr, "WARNING: Failed to enable automatic gain.\n");
-            HError("stop %d", __LINE__);
+    // Set direct sampling mode if requested
+    if( directSampling ) {
+        result = rtlsdr_set_direct_sampling(dev, 1);
+        if (result < 0) {
+            HError("Failed to set RTL-2832 direct sampling mode");
+            throw new HInitializationException("Failed to set direct sampling mode");
         }
-    } else {
-        HError("stop %d", __LINE__);
-        /* Enable manual gain */
-        r = rtlsdr_set_tuner_gain_mode(dev, 1);
-        if (r < 0)
-            fprintf(stderr, "WARNING: Failed to enable manual gain.\n");
+        HLog("RTL-2832 direct sampling mode enabled");
+    }
 
-        /* Set the tuner gain */
-        r = rtlsdr_set_tuner_gain(dev, gain);
-        if (r < 0)
-            HLog("WARNING: Failed to set tuner gain.");
-        else
-            HLog("Tuner gain set to %f dB.", gain/10.0);
+    /* Set tuner offset, if needed */
+    if( offset ) {
+        result = rtlsdr_set_offset_tuning(dev, 1);
+        if( result < 0 ) {
+            HError("Failed to enable RTL-2832 tuner offset", offset);
+            throw new HInitializationException("Failed to enable tuner offset");
+        }
+        HLog("RTL-2832 tuner offset enabled");
+    } else {
+        HLog("RTL-2832 tuner offset not required");
+    }
+
+    /* Set frequency correction, if needed */
+    if( correction != 0 ) {
+        result = rtlsdr_set_freq_correction(dev, correction);
+        if( result < 0 ) {
+            HError("Failed to set RTL-2832 frequency correction to %d", correction);
+            throw new HInitializationException("Failed to set frequency correction");
+        }
+        HLog("RTL-2832 frequency correction set to %d", rtlsdr_get_offset_tuning(dev));
+    } else {
+        HLog("RTL-2832 frequency correction not required");
+    }
+
+    /* Set sample rate */
+    result = rtlsdr_set_sample_rate(dev, rate);
+    if( result < 0 ) {
+        HError("Failed to set RTL-2832 device samplerate to %d", rate);
+        throw new HInitializationException("Failed to set samplerate");
+    }
+    HLog("RTL-2832 samplerate set to %d", rtlsdr_get_sample_rate(dev));
+
+    /* Set center frequency (when not in direct sampling mode, otherwise it is
+       the of frequency for the Q-branch multiplier) */
+    result = rtlsdr_set_center_freq(dev, frequency);
+    if (result < 0) {
+        if( directSampling ) {
+            HError("Failed to set RTL-2832 device ifl frequency to %d", frequency);
+            throw new HInitializationException("Failed to set if frequency");
+        } else {
+            HError("Failed to set RTL-2832 device center frequency to %d", frequency);
+            throw new HInitializationException("Failed to set center frequency");
+        }
+    }
+    HLog("RTL-2832 %s frequency set to %d", directSampling ? "if" : "center", rtlsdr_get_center_freq(dev));
+
+    // Set gain
+    if( 0 == gain ) {
+        result = rtlsdr_set_tuner_gain_mode(dev, 0);
+        if( result < 0 ) {
+            HError("Failed to set RTL-2832 device to automatic gain", frequency);
+            throw new HInitializationException("Failed to set automatic gain");
+        }
+        HLog("RTL-2832 set to use automatic gain");
+    } else {
+        result = rtlsdr_set_tuner_gain_mode(dev, 1);
+        if( result < 0 ) {
+            HError("Failed to set RTL-2832 to use manual gain");
+            throw new HInitializationException("Failed to set manual gain");
+        }
+        HLog("RTL-2832 manual gain mode enabled");
+
+        result = rtlsdr_set_tuner_gain(dev, gain);
+        if( result < 0 ) {
+            HError("Failed to set RTL-2832 manual gain level %d", gain);
+            throw new HInitializationException("Failed to set manual gain level");
+        }
+        HLog("RTL-2832 gain set to %d (%f dB)", rtlsdr_get_tuner_gain(dev), rtlsdr_get_tuner_gain(dev) / 10.0);
     }
 
     /*r = rtlsdr_set_bias_tee(dev, enable_biastee ? 1 : 0);
@@ -132,25 +158,14 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int
     if (enable_biastee) {
         fprintf(stderr, "activated bias-T on GPIO PIN 0\n");
     }*/
-    //r = rtlsdr_set_direct_sampling(dev, direct_sampling);
-    /*r = rtlsdr_set_direct_sampling(dev, 0);
-    if( r < 0 ) {
-        HError("stop %d", __LINE__);
-    }*/
 
-    /* Reset endpoint before we start reading from it (mandatory) */
-    r = rtlsdr_reset_buffer(dev);
-    if (r < 0) {
-        fprintf(stderr, "WARNING: Failed to reset buffers.\n");
-        HError("stop %d", __LINE__);
+    /* Reset buffers (required) */
+    result = rtlsdr_reset_buffer(dev);
+    if( result < 0 ) {
+        HError("Failed to reset RTL-2832 buffers");
+        throw new HInitializationException("Failed to reset buffers");
     }
-
-    HLog("center_freq = %d", rtlsdr_get_center_freq(dev));
-    HLog("direct_sampling = %d", rtlsdr_get_direct_sampling(dev));
-    HLog("freq_correction = %d", rtlsdr_get_freq_correction(dev));
-    HLog("offset_tuning = %d", rtlsdr_get_offset_tuning(dev));
-    HLog("sample_rate = %d", rtlsdr_get_sample_rate(dev));
-    HLog("tuner_gain = %d", rtlsdr_get_tuner_gain(dev));
+    HLog("RTL-2832 buffers reset");
 
     // Ready
     _isInitialized = true;
@@ -355,16 +370,16 @@ Explicit instantiation
 
 // HRtl2832Reader()
 template
-HRtl2832Reader<int8_t>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int blocksize);
+HRtl2832Reader<int8_t>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int gain, int32_t frequency, int blocksize, bool directSampling, bool offset, int correction);
 
 template
-HRtl2832Reader<uint8_t>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int blocksize);
+HRtl2832Reader<uint8_t>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int gain, int32_t frequency, int blocksize, bool directSampling, bool offset, int correction);
 
 template
-HRtl2832Reader<int16_t>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int blocksize);
+HRtl2832Reader<int16_t>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int gain, int32_t frequency, int blocksize, bool directSampling, bool offset, int correction);
 
 template
-HRtl2832Reader<int32_t>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int blocksize);
+HRtl2832Reader<int32_t>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int gain, int32_t frequency, int blocksize, bool directSampling, bool offset, int correction);
 
 // ~HRtl2832Reader()
 template
