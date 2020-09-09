@@ -1,6 +1,11 @@
 #ifndef __HMUX_H
 #define __HMUX_H
 
+#include "hreader.h"
+#include "hwriter.h"
+#include "hwriterconsumer.h"
+#include "hprobe.h"
+
 /**
     Taking a list of readers, the read from each reader
     and interlace the samples - then return the resulting
