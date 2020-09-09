@@ -5,6 +5,7 @@
 #include <time.h>
 #include "hsoundcard.h"
 #include "htimer.h"
+#include "hrtl2832reader.h"
 
 // Settings
 struct DspCmdConfig
@@ -79,7 +80,8 @@ struct DspCmdConfig
     int OutputDevice = -1;
     int Rate = H_SAMPLE_RATE_48K;
     int Format = H_SAMPLE_FORMAT_INT_16;
-
+    int DirectSampling = false;
+    HRtl2832::MODE Mode = HRtl2832::MODE::REAL;
     int Blocksize = 1024;
     int BlockCount = 0;
 

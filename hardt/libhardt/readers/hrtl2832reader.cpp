@@ -12,7 +12,7 @@ Class implementation
 ********************************************************************/
 
 template <class T>
-HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int gain, int32_t frequency, int blocksize, bool directSampling, bool offset, int correction):
+HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, HRtl2832::MODE mode, int gain, int32_t frequency, int blocksize, bool directSampling, bool offset, int correction):
         _isInitialized(false),
         _isStarted(false),
         _mode(mode),
@@ -25,11 +25,11 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int
         HError("Blocksize must be a multiple of 512");
         throw new HInitializationException("Blocksize must be a multiple of 512");
     }
-    if( blocksize > 16384 && mode == MODE::IQ ) {
+    if( blocksize > 16384 && mode == HRtl2832::MODE::IQ ) {
         HError("Blocksize must be less than or equal to 16384");
         throw new HInitializationException("Blocksize must be less than or equal to 16384");
     }
-    if( blocksize > 8192 && (mode == MODE::I || mode == MODE::Q) ) {
+    if( blocksize > 8192 && (mode == HRtl2832::MODE::I || mode == HRtl2832::MODE::Q) ) {
         HError("Blocksize must be less than or equal to 8192");
         throw new HInitializationException("Blocksize must be less than or equal to 8192");
     }
@@ -38,14 +38,14 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int
     // Unless running in IQ mode (multiplexed I and Q values), we
     // need 2 times the number of samples from the device in order to
     // return 'blocksize' samples
-    _buflen = _blocksize * (_mode == MODE::IQ ? 1 : 2);
+    _buflen = _blocksize * (_mode == HRtl2832::MODE::IQ ? 1 : 2);
 
     // Allocate a temporary buffer for internal use
     _buffer = new T[_buflen];
 
     // If we are asked to return real samples, then allocate a FFT object
     // to handle the IQ-2-Real conversion
-    if( mode == MODE::REAL ) {
+    if( mode == HRtl2832::MODE::REAL ) {
         _fft = new HFft<T>(_blocksize);
     }
 
@@ -191,7 +191,7 @@ HRtl2832Reader<T>::~HRtl2832Reader()
     }
 
     // If we have an FFT object, delete it
-    if( _mode == MODE::REAL ) {
+    if( _mode == HRtl2832::MODE::REAL ) {
         delete _fft;
     }
 
@@ -229,7 +229,7 @@ int HRtl2832Reader<T>::Read(T* dest, size_t blocksize)
         switch( _mode ) {
 
             // Multiplexed I and Q values
-            case MODE::IQ: {
+            case HRtl2832::MODE::IQ: {
                 for( int i = 0; i < blocksize; i++ ) {
                     dest[i] = ((T) src[i]) - 127;
                 }
@@ -237,7 +237,7 @@ int HRtl2832Reader<T>::Read(T* dest, size_t blocksize)
             }
 
             // Return I channel
-            case MODE::I: {
+            case HRtl2832::MODE::I: {
                 for( int i = 0; i < _buflen; i += 2 ) {
                     dest[i / 2] = ((T) src[i]) - 127;
                 }
@@ -245,7 +245,7 @@ int HRtl2832Reader<T>::Read(T* dest, size_t blocksize)
             }
 
             // Return Q channel
-            case MODE::Q: {
+            case HRtl2832::MODE::Q: {
                 for( int i = 1; i < _buflen; i += 2 ) {
                     dest[i / 2] = ((T) src[i]) - 127;
                 }
@@ -253,7 +253,7 @@ int HRtl2832Reader<T>::Read(T* dest, size_t blocksize)
             }
 
             // Return realvalued time-domain signal
-            case MODE::REAL: {
+            case HRtl2832::MODE::REAL: {
                 for( int i = 0; i < _buflen; i++ ) {
                     _buffer[i] = ((T) src[i]) - 127;
                 }
@@ -409,16 +409,16 @@ Explicit instantiation
 
 // HRtl2832Reader()
 template
-HRtl2832Reader<int8_t>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int gain, int32_t frequency, int blocksize, bool directSampling, bool offset, int correction);
+HRtl2832Reader<int8_t>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, HRtl2832::MODE mode, int gain, int32_t frequency, int blocksize, bool directSampling, bool offset, int correction);
 
 template
-HRtl2832Reader<uint8_t>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int gain, int32_t frequency, int blocksize, bool directSampling, bool offset, int correction);
+HRtl2832Reader<uint8_t>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, HRtl2832::MODE mode, int gain, int32_t frequency, int blocksize, bool directSampling, bool offset, int correction);
 
 template
-HRtl2832Reader<int16_t>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int gain, int32_t frequency, int blocksize, bool directSampling, bool offset, int correction);
+HRtl2832Reader<int16_t>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, HRtl2832::MODE mode, int gain, int32_t frequency, int blocksize, bool directSampling, bool offset, int correction);
 
 template
-HRtl2832Reader<int32_t>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int gain, int32_t frequency, int blocksize, bool directSampling, bool offset, int correction);
+HRtl2832Reader<int32_t>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, HRtl2832::MODE mode, int gain, int32_t frequency, int blocksize, bool directSampling, bool offset, int correction);
 
 // ~HRtl2832Reader()
 template

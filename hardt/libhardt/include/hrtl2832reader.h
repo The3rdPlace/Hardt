@@ -3,11 +3,14 @@
 
 #include <mutex>
 #include <condition_variable>
+#include <thread>
 #include "rtl-sdr.h"
 
 #include "hardt.h"
+#include "hobject.h"
 #include "hreader.h"
 #include "hfft.h"
+#include "hrtl2832.h"
 
 #define NUMBER_OF_RTL_BUFFERS 15
 
@@ -19,18 +22,9 @@ class HRtl2832Reader : public HReader<T>
 {
     public:
 
-        /** The reader mode:
-
-           IQ: Return multiplexed IQ samples
-            I: Return only I samples
-            Q: Return only Q samples
-            REAL: Return realvalued signal (warning: this might cost cycles, use with care and low samplerate)
-        */
-        enum MODE {IQ, I, Q, REAL};
-
     private:
 
-        MODE _mode;
+        HRtl2832::MODE _mode;
         int _buflen;
         HFft<T>* _fft;
         T* _buffer;
@@ -78,7 +72,7 @@ class HRtl2832Reader : public HReader<T>
               offset: Set to true to use tuner offset mode (only E4000 tuners)
               correct: Frequency correction in ppm
          * */
-        HRtl2832Reader(int device, H_SAMPLE_RATE rate, MODE mode, int gain, int32_t frequency, int blocksize, bool directSampling = false, bool offset = 0, int correction = 0);
+        HRtl2832Reader(int device, H_SAMPLE_RATE rate, HRtl2832::MODE mode, int gain, int32_t frequency, int blocksize, bool directSampling = false, bool offset = 0, int correction = 0);
 
         /** Default destructor */
         ~HRtl2832Reader();

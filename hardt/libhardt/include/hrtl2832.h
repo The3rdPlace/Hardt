@@ -64,6 +64,15 @@ class HRtl2832
             Get the device number for the default device
         */
         static int GetDefaultDevice();
+
+        /** The device mode:
+
+           IQ: Return multiplexed IQ samples
+            I: Return only I samples
+            Q: Return only Q samples
+            REAL: Return realvalued signal (warning: this might cost cycles, use with care and low samplerate)
+        */
+        enum MODE {IQ, I, Q, REAL};
 };
 
 #endif

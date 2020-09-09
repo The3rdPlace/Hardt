@@ -98,6 +98,29 @@ bool parseArguments(int argc, char** argv)
 
             Config.InputDevice = argIntCmp(argv[argNo], "-id", argv[argNo + 1], Config.InputDevice);
             Config.InputDeviceType = argDeviceTypeCmp(argv[argNo], "-it", argv[argNo + 1], Config.InputDeviceType);
+            if( argNo < argc - 2 && argv[argNo + 2][0] != '-' && Config.InputDeviceType == DspCmdConfig::DeviceType::RTL ) {
+                Config.Frequency = argIntCmp(argv[argNo], "-it", argv[argNo + 2], Config.Frequency);
+                if( argNo < argc - 3 && argv[argNo + 3][0] != '-' && Config.InputDeviceType == DspCmdConfig::DeviceType::RTL ) {
+                    if( strcmp(argv[argNo + 3], "IQ") == 0 ) {
+                        Config.Mode = HRtl2832::MODE::IQ;
+                    } else if( strcmp(argv[argNo + 3], "I") == 0 ) {
+                        Config.Mode = HRtl2832::MODE::I;
+                    } else if( strcmp(argv[argNo + 3], "Q") == 0 ) {
+                        Config.Mode = HRtl2832::MODE::Q;
+                    } else if( strcmp(argv[argNo + 3], "REAL") == 0 ) {
+                        Config.Mode = HRtl2832::MODE::REAL;
+                    } else {
+                        std::cout << "Unknown RTL-2832 mode '" << argv[argNo + 3] << "'" << std::endl;
+                    }
+                    if( argNo < argc - 4 && argv[argNo + 4][0] != '-' && Config.InputDeviceType == DspCmdConfig::DeviceType::RTL ) {
+                        Config.Gain = argIntCmp(argv[argNo], "-it", argv[argNo + 4], Config.Gain);
+                        if( argNo < argc - 5 && argv[argNo + 5][0] != '-' && Config.InputDeviceType == DspCmdConfig::DeviceType::RTL ) {
+                            Config.DirectSampling = argIntCmp(argv[argNo], "-it", argv[argNo + 5], Config.DirectSampling);
+                        }
+                    }
+                }
+            }
+
             Config.OutputDevice = argIntCmp(argv[argNo], "-od", argv[argNo + 1], Config.OutputDevice);
             Config.Rate = argIntCmp(argv[argNo], "-r", argv[argNo + 1], Config.Rate);
             Config.Format = argIntCmp(argv[argNo], "-f", argv[argNo + 1], Config.Format);
@@ -302,8 +325,11 @@ bool parseArguments(int argc, char** argv)
             std::cout << "Input device id" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "$ dpscmd -it [AUDIO|RTL]" << std::endl;
-            std::cout << "Input device type" << std::endl;
+            std::cout << "$ dpscmd -it [AUDIO|RTL frequency [IQ|I|Q|REAL [gain [direct-sampling]]]]" << std::endl;
+            std::cout << "Input device type. AUDIO is for soundcards, RTL is for RTL-2832 devices." << std::endl;
+            std::cout << "For RTL you must give the center frequency and some optional parameters." << std::endl;
+            std::cout << "Default mode is REAL', the device returns realvalued samples." << std::endl;
+            std::cout << "Set gain=0 to use automatic gain (recommended)" << std::endl;
             std::cout << std::endl;
 
             std::cout << "$ dpscmd -if name" << std::endl;
