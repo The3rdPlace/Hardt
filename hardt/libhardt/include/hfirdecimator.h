@@ -21,6 +21,7 @@ class HFirDecimator: public HReader<T>, public HWriter<T>, public HWriterConsume
         int _factor;
         T* _buffer;
         size_t _length;
+        bool _collect;
 
         HFir<T>* _fir;
         T* _filtered;
@@ -37,8 +38,14 @@ class HFirDecimator: public HReader<T>, public HWriter<T>, public HWriterConsume
               coefficients = FIR coefficients
               points = Number of FIR coefficients
               blocksize = The expected input and output blocksize
+              collect = Normally you want to use the same blocksize for alle writers
+                        in a chain, but if you are going to use a decimator in a parallel
+                        demultiplexed chain (processing IQ data), it is very important to
+                        write chunks from both branches alternating. In that case, set
+                        'collect=false'. A write of 1024 samples will then immediately
+                        result in a write of 1024/factor samples to the next writer.
          */
-        HFirDecimator(HWriter<T>* writer, int factor, float* coefficients, int points, size_t blocksize);
+        HFirDecimator(HWriter<T>* writer, int factor, float* coefficients, int points, size_t blocksize, bool collect = true);
 
         /** Construct a new HFirDecimator that handle writer consumers.
 
@@ -48,8 +55,14 @@ class HFirDecimator: public HReader<T>, public HWriter<T>, public HWriterConsume
               coefficients = FIR coefficients
               points = Number of FIR coefficients
               blocksize = The expected input and output blocksize
+              collect = Normally you want to use the same blocksize for alle writers
+                        in a chain, but if you are going to use a decimator in a parallel
+                        demultiplexed chain (processing IQ data), it is very important to
+                        write chunks from both branches alternating. In that case, set
+                        'collect=false'. A write of 1024 samples will then immediately
+                        result in a write of 1024/factor samples to the next writer.
          */
-        HFirDecimator(HWriterConsumer<T>* consumer, int factor, float* coefficients, int points, size_t blocksize);
+        HFirDecimator(HWriterConsumer<T>* consumer, int factor, float* coefficients, int points, size_t blocksize, bool collect = true);
 
         /** Construct a new HFirDecimator that handle readers.
 
@@ -58,8 +71,14 @@ class HFirDecimator: public HReader<T>, public HWriter<T>, public HWriterConsume
               coefficients = FIR coefficients
               points = Number of FIR coefficients
               blocksize = The expected input and output blocksize
+              collect = Normally you want to use the same blocksize for alle readers
+                        in a chain, but if you are going to use a decimator in a parallel
+                        demultiplexed chain (processing IQ data), it is very important to
+                        read chunks from both branches alternating. In that case, set
+                        'collect=false'. Constructing with 'blocksize=1024' then a Read()
+                        with 'blocksize=256' will then be expected.
          */
-        HFirDecimator(HReader<T>* reader, int factor, float* coefficients, int points, size_t blocksize);
+        HFirDecimator(HReader<T>* reader, int factor, float* coefficients, int points, size_t blocksize, bool collect = true);
 
         /** Implements HWriterConsumer::SetWriter() */
         void SetWriter(HWriter<T>* writer) {

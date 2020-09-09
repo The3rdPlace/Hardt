@@ -111,8 +111,7 @@ int HDecimator<T>::Read(T* dest, size_t blocksize)
         }
     }
 
-   
-    // Update metrics
+    // Read
     _length = 0;
     while( _length < _blocksize ) {
 

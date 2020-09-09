@@ -13,9 +13,9 @@ class HDecimator_Test: public Test
             UNITTEST(test_write);
             UNITTEST(test_writerConsumer);
 
-            TEST(test_read_dont_collect);
-            TEST(test_write_dont_collect);
-            TEST(test_writerConsumer_dont_collect);
+            UNITTEST(test_read_dont_collect);
+            UNITTEST(test_write_dont_collect);
+            UNITTEST(test_writerConsumer_dont_collect);
         }
 
         const char* name()
