@@ -21,6 +21,7 @@ class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
         int _factor;
         T* _buffer;        
         size_t _length;
+        bool _collect;
 
         void Init();
 
@@ -32,8 +33,14 @@ class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
               writer = The downstream writer
               factor = Decimation factor, 1 or larger
               blocksize = The expected input and output blocksize
+              collect = Normally you want to use the same blocksize for alle writers
+                        in a chain, but if you are going to use a decimator in a parallel
+                        demultiplexed chain (processing IQ data), it is very important to
+                        write chunks from both branches alternating. In that case, set
+                        'collect=false'. A write of 1024 samples will then immediately
+                        result in a write of 1024/factor samples to the next writer.
          */
-        HDecimator(HWriter<T>* writer, int factor, size_t blocksize);
+        HDecimator(HWriter<T>* writer, int factor, size_t blocksize, bool collect = true);
 
         /** Construct a new HDecimator that handle writer consumers.
 
@@ -41,16 +48,28 @@ class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
               consumer = The upstream consumer to receive this as a writer
               factor = Decimation factor, 1 or larger
               blocksize = The expected input and output blocksize
+              collect = Normally you want to use the same blocksize for alle writers
+                        in a chain, but if you are going to use a decimator in a parallel
+                        demultiplexed chain (processing IQ data), it is very important to
+                        write chunks from both branches alternating. In that case, set
+                        'collect=false'. A write of 1024 samples will then immediately
+                        result in a write of 1024/factor samples to the next writer.
          */
-        HDecimator(HWriterConsumer<T>* consumer, int factor, size_t blocksize);
+        HDecimator(HWriterConsumer<T>* consumer, int factor, size_t blocksize, bool collect = true);
 
         /** Construct a new HDecimator that handle readers.
 
               reader = The upstream reader
               factor = Decimation factor, 1 or larger
               blocksize = The expected input and output blocksize
+              collect = Normally you want to use the same blocksize for alle readers
+                        in a chain, but if you are going to use a decimator in a parallel
+                        demultiplexed chain (processing IQ data), it is very important to
+                        read chunks from both branches alternating. In that case, set
+                        'collect=false'. Constructing with 'blocksize=1024' then a Read()
+                        with 'blocksize=256' will then be expected.
          */
-        HDecimator(HReader<T>* reader, int factor, size_t blocksize);
+        HDecimator(HReader<T>* reader, int factor, size_t blocksize, bool collect = true);
 
         /** Implements HWriterConsumer::SetWriter() */
         void SetWriter(HWriter<T>* writer) {

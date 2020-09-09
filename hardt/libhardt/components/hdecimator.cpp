@@ -4,12 +4,13 @@
 #include "hdecimator.h"
 
 template <class T>
-HDecimator<T>::HDecimator(HWriter<T>* writer, int factor, size_t blocksize):
+HDecimator<T>::HDecimator(HWriter<T>* writer, int factor, size_t blocksize, bool collect):
     _blocksize(blocksize),
     _factor(factor),
     _length(0),
     _writer(writer),
-    _reader(nullptr)
+    _reader(nullptr),
+    _collect(collect)
 {
     HLog("HDecimator(HWriter*, blocksize=%d)", blocksize);
     Init();
@@ -17,12 +18,13 @@ HDecimator<T>::HDecimator(HWriter<T>* writer, int factor, size_t blocksize):
 }
 
 template <class T>
-HDecimator<T>::HDecimator(HWriterConsumer<T>* consumer, int factor, size_t blocksize):
+HDecimator<T>::HDecimator(HWriterConsumer<T>* consumer, int factor, size_t blocksize, bool collect):
     _blocksize(blocksize),
     _factor(factor),
     _length(0),
     _writer(nullptr),
-    _reader(nullptr)
+    _reader(nullptr),
+    _collect(collect)
 {
     HLog("HDecimator(HWriterConsumer*, blocksize=%d)", blocksize);
     Init();
@@ -30,12 +32,13 @@ HDecimator<T>::HDecimator(HWriterConsumer<T>* consumer, int factor, size_t block
 }
 
 template <class T>
-HDecimator<T>::HDecimator(HReader<T>* reader, int factor, size_t blocksize):
+HDecimator<T>::HDecimator(HReader<T>* reader, int factor, size_t blocksize, bool collect):
     _blocksize(blocksize),
     _factor(factor),
     _length(0),
     _writer(nullptr),
-    _reader(reader)
+    _reader(reader),
+    _collect(collect)
 {
     HLog("HDecimator(HReader*, blocksize=%d)", blocksize);
     Init();
@@ -69,7 +72,7 @@ int HDecimator<T>::Write(T* src, size_t blocksize)
         throw new HInitializationException("This HDecimator is not a writer");
     }
 
-    if( blocksize > _blocksize )
+    if( blocksize != _blocksize )
     {
         HError("Requested blocksize for write is invalid: %d requested, expected is %d", blocksize, _blocksize);
         throw new HWriterIOException("Requested blocksize for write is invalid");
@@ -79,8 +82,8 @@ int HDecimator<T>::Write(T* src, size_t blocksize)
     for(int i = 0; i < blocksize; i += _factor) {
         _buffer[_length++] = src[i];
     }
-    if( _length == _blocksize ) {
-        _writer->Write(_buffer, blocksize);
+    if( _length == _blocksize || !_collect ) {
+        _writer->Write(_buffer, _length);
         _length = 0;
     }
 
@@ -96,10 +99,16 @@ int HDecimator<T>::Read(T* dest, size_t blocksize)
         throw new HInitializationException("This HDecimator is not a reader");
     }
 
-    if( blocksize > _blocksize )
-    {
-        HError("Requested blocksize for read is invalid: %d requested, expected is %d", blocksize, _blocksize);
-        throw new HReaderIOException("Requested blocksize for read is invalid");
+    if( _collect ) {
+        if (blocksize != _blocksize) {
+            HError("Requested blocksize for collected read is invalid: %d requested, expected is %d", blocksize, _blocksize);
+            throw new HReaderIOException("Requested blocksize for read is invalid");
+        }
+    } else {
+        if (blocksize != _blocksize / _factor) {
+            HError("Requested blocksize for read is invalid: %d requested, expected is %d", blocksize, _blocksize / _factor);
+            throw new HReaderIOException("Requested blocksize for read is invalid");
+        }
     }
 
    
@@ -108,7 +117,7 @@ int HDecimator<T>::Read(T* dest, size_t blocksize)
     while( _length < _blocksize ) {
 
         // Read a block
-        int read = _reader->Read(_buffer, blocksize);
+        int read = _reader->Read(_buffer, _blocksize);
         if( read == 0 ) {
             HLog("Received zero-read, returning zero");
             return 0;
@@ -124,8 +133,13 @@ int HDecimator<T>::Read(T* dest, size_t blocksize)
         }
 
         // Decimate the block
-        for(int i = 0; i < blocksize; i += _factor) {
+        for(int i = 0; i < _blocksize; i += _factor) {
             dest[_length++] = _buffer[i];
+        }
+
+        // If not doing a collected read, return what we have now
+        if( !_collect ) {
+            break;
         }
     }
 
@@ -140,40 +154,40 @@ Explicit instantiation
 
 // HDecimator()
 template
-HDecimator<int8_t>::HDecimator(HWriter<int8_t>* writer, int factor, size_t blocksize);
+HDecimator<int8_t>::HDecimator(HWriter<int8_t>* writer, int factor, size_t blocksize, bool collect);
 
 template
-HDecimator<uint8_t>::HDecimator(HWriter<uint8_t>* writer, int factor, size_t blocksize);
+HDecimator<uint8_t>::HDecimator(HWriter<uint8_t>* writer, int factor, size_t blocksize, bool collect);
 
 template
-HDecimator<int16_t>::HDecimator(HWriter<int16_t>* writer, int factor, size_t blocksize);
+HDecimator<int16_t>::HDecimator(HWriter<int16_t>* writer, int factor, size_t blocksize, bool collect);
 
 template
-HDecimator<int32_t>::HDecimator(HWriter<int32_t>* writer, int factor, size_t blocksize);
+HDecimator<int32_t>::HDecimator(HWriter<int32_t>* writer, int factor, size_t blocksize, bool collect);
 
 template
-HDecimator<int8_t>::HDecimator(HWriterConsumer<int8_t>* consumer, int factor, size_t blocksize);
+HDecimator<int8_t>::HDecimator(HWriterConsumer<int8_t>* consumer, int factor, size_t blocksize, bool collect);
 
 template
-HDecimator<uint8_t>::HDecimator(HWriterConsumer<uint8_t>* consumer, int factor, size_t blocksize);
+HDecimator<uint8_t>::HDecimator(HWriterConsumer<uint8_t>* consumer, int factor, size_t blocksize, bool collect);
 
 template
-HDecimator<int16_t>::HDecimator(HWriterConsumer<int16_t>* consumer, int factor, size_t blocksize);
+HDecimator<int16_t>::HDecimator(HWriterConsumer<int16_t>* consumer, int factor, size_t blocksize, bool collect);
 
 template
-HDecimator<int32_t>::HDecimator(HWriterConsumer<int32_t>* consumer, int factor, size_t blocksize);
+HDecimator<int32_t>::HDecimator(HWriterConsumer<int32_t>* consumer, int factor, size_t blocksize, bool collect);
 
 template
-HDecimator<int8_t>::HDecimator(HReader<int8_t>* reader, int factor, size_t blocksize);
+HDecimator<int8_t>::HDecimator(HReader<int8_t>* reader, int factor, size_t blocksize, bool collect);
 
 template
-HDecimator<uint8_t>::HDecimator(HReader<uint8_t>* reader, int factor, size_t blocksize);
+HDecimator<uint8_t>::HDecimator(HReader<uint8_t>* reader, int factor, size_t blocksize, bool collect);
 
 template
-HDecimator<int16_t>::HDecimator(HReader<int16_t>* reader, int factor, size_t blocksize);
+HDecimator<int16_t>::HDecimator(HReader<int16_t>* reader, int factor, size_t blocksize, bool collect);
 
 template
-HDecimator<int32_t>::HDecimator(HReader<int32_t>* reader, int factor, size_t blocksize);
+HDecimator<int32_t>::HDecimator(HReader<int32_t>* reader, int factor, size_t blocksize, bool collect);
 
 // ~HDecimator()
 template
