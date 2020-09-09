@@ -9,20 +9,26 @@
     Ex: Having sampled a signal from 2 channels, writing the stream of
     samples from soundcard to an instanse of this class initiaized with
     two writers - would result in the two writers receaving either the
-    left or the right samples.
+    left or the right samples. Another use is to split an IQ stream into
+    an I and Q branch.
 
     The number of samples per block written to the output writers will be
     half the number of incomming samples in the above example.
 */
 
 template <class T>
-class HDeMux : public HWriter<T>, HWriterConsumer<T>
+class HDeMux : public HWriter<T>, public HWriterConsumer<T>, public HReader<T>
 {
     private:
 
         std::vector< HWriter<T>* > _writers;
+        HReader<T>* _reader;
         T** _buffers;
         size_t _blocksize;
+
+        int _readers;
+        T* _readBuffer;
+        int _nextReader;
 
     public:
 
@@ -32,11 +38,17 @@ class HDeMux : public HWriter<T>, HWriterConsumer<T>
         /** Construct a new HDemux object that registers with an upstream writer */
         HDeMux( HWriterConsumer<T>* consumer, size_t blocksize);
 
+        /** Construct a new HDemux object that reads from a reader */
+        HDeMux( HReader<T>* reader, int readers, size_t blocksize);
+
         /** Default destructor */
         ~HDeMux();
 
         /** Write a block of samples */
         int Write(T* src, size_t blocksize);
+
+        /** Read a block of samples */
+        int Read(T* dest, size_t blocksize);
 
         /** Implements HWriterConsumer::SetWriter() */
         void SetWriter(HWriter<T>* writer)

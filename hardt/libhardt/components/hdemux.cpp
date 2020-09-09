@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "hardt.h"
 #include "hwriter.h"
 #include "hreader.h"
 #include "hwriterconsumer.h"
@@ -12,7 +13,11 @@
 template <class T>
 HDeMux<T>::HDeMux( std::vector< HWriter<T>* > writers, size_t blocksize):
     _writers(writers),
-    _blocksize(blocksize)
+    _reader(nullptr),
+    _blocksize(blocksize),
+    _readers(0),
+    _nextReader(0),
+    _readBuffer(nullptr)
 {
     HLog("HDeMux(%d writers)", writers.size());
 
@@ -26,11 +31,27 @@ HDeMux<T>::HDeMux( std::vector< HWriter<T>* > writers, size_t blocksize):
 template <class T>
 HDeMux<T>::HDeMux( HWriterConsumer<T>* consumer, size_t blocksize):
     _buffers(NULL),
-    _blocksize(blocksize)
+    _reader(nullptr),
+    _blocksize(blocksize),
+    _readers(0),
+    _nextReader(0),
+    _readBuffer(nullptr)
 {
     HLog("HDeMux(consumer)");
 
     consumer->SetWriter(this);
+}
+
+template <class T>
+HDeMux<T>::HDeMux( HReader<T>* reader, int readers, size_t blocksize):
+        _buffers(NULL),
+        _reader(reader),
+        _blocksize(blocksize),
+        _readers(readers),
+        _nextReader(0)
+{
+    HLog("HDeMux(reader)");
+    _readBuffer = new T[blocksize * readers];
 }
 
 template <class T>
@@ -42,6 +63,9 @@ HDeMux<T>::~HDeMux()
         delete _buffers[i];
     }
     delete _buffers;
+    if( _readBuffer != nullptr ) {
+        delete _readBuffer;
+    }
 }
 
 template <class T>
@@ -67,6 +91,29 @@ int HDeMux<T>::Write(T* src, size_t blocksize)
             HError("Incorrect write with size %d for writer %d, returning zero", written, writer);
             return 0;
         }
+    }
+
+    return blocksize;
+}
+
+template <class T>
+int HDeMux<T>::Read(T* dest, size_t blocksize)
+{
+    if( _nextReader == 0 ) {
+        if( _reader->Read(_readBuffer, blocksize * _readers) == 0 ) {
+            HLog("Zero length read. Returning 0");
+            return 0;
+        }
+    }
+
+    int j = 0;
+    for( int i = 0; i < blocksize * _readers; i += _readers ) {
+        dest[j++] = _readBuffer[_nextReader + i];
+    }
+
+    _nextReader++;
+    if( _nextReader >= _readers ) {
+        _nextReader = 0;
     }
 
     return blocksize;
@@ -102,6 +149,18 @@ HDeMux<int16_t>::HDeMux( HWriterConsumer<int16_t>* consumer, size_t blocksize);
 template
 HDeMux<int32_t>::HDeMux( HWriterConsumer<int32_t>* consumer, size_t blocksize);
 
+template
+HDeMux<int8_t>::HDeMux( HReader<int8_t>* reader, int readers, size_t blocksize);
+
+template
+HDeMux<uint8_t>::HDeMux( HReader<uint8_t>* reader, int readers, size_t blocksize);
+
+template
+HDeMux<int16_t>::HDeMux( HReader<int16_t>* reader, int readers, size_t blocksize);
+
+template
+HDeMux<int32_t>::HDeMux( HReader<int32_t>* reader, int readers, size_t blocksize);
+
 // ~HDeMux()
 template
 HDeMux<int8_t>::~HDeMux();
@@ -127,6 +186,19 @@ int HDeMux<int16_t>::Write(int16_t* src, size_t blocksize);
 
 template
 int HDeMux<int32_t>::Write(int32_t* src, size_t blocksize);
+
+// Read
+template
+int HDeMux<int8_t>::Read(int8_t * dest, size_t blocksize);
+
+template
+int HDeMux<uint8_t>::Read(uint8_t * dest, size_t blocksize);
+
+template
+int HDeMux<int16_t>::Read(int16_t * dest, size_t blocksize);
+
+template
+int HDeMux<int32_t>::Read(int32_t * dest, size_t blocksize);
 
 //! @endcond
 #endif
