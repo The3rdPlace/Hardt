@@ -11,7 +11,7 @@
     Translating the input samples by four.
 
     This implements the common frequency translation method
-    of translating by four, either cos(PI*n) or sin(PI*n) by
+    of translating by four, either cos(PI*n) or sin(PI*n) at fs/4 by
     multiplying with [1, 0, -1, 0, 1, .... ] or [0, -1, 0, 1, 0, .... ]
 
     The result is either the real or imaginary (I or Q) signal
