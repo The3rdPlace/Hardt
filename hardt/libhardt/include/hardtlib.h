@@ -113,6 +113,7 @@ Include api function declarations
 #include "hcomplexfilter.cpp"
 #include "hfirdecimator.cpp"
 #include "hrtl2832reader.cpp"
+#include "hiq2realconverter.cpp"
 
 /********************************************************************
 Debug and diagnostics

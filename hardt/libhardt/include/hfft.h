@@ -239,6 +239,7 @@ class HFft {
             alternating I and Q samples. The 'multiplexed' buffer
             must thus be 2 times the size of the FFT object
             (2048 multiplexed IQ value yields 1024 output samples)
+            so make sure that you input blocksize*2 samples!
         */
         void IQ2REAL(T *multiplexed, T* real) {
 

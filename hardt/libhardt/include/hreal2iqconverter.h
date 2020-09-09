@@ -9,8 +9,11 @@
 /** Convert from realvalued samples to IQ samples.
     IQ samples is stored intermixed, with the I (real) samples first, then the Q (imaginary) sample.
 
-    Be aware that this doubles to amount of data returned from a read, or written in a write. You
-    need to handle the different blocksizes when you declare buffers and/or other components.
+    Beware that this conversion changes the number of blocks read or written to or from the
+    previous or next component.
+
+    If you Read() 1024 samples, then 1024/2=512 samples will be read from the previous reader.
+    If you Write() 1024 samples, then 1024*2=2048 samples will be written to the next writer.
 
     Typically, you would input the IQ data into a multiplexer, and then build two branches that
     uses the I and Q samples. These branches would then each have the same blocksize as the size
@@ -43,7 +46,7 @@ class HReal2IqConverter: public HConverter<T, T> {
             return blocksize * 2;
         }
 
-        void Init(size_t blocksize, H_SAMPLE_RATE rate) {
+        void Init(size_t blocksize) {
             _fft = new HFft<T>(blocksize);
             _output = new T[blocksize];
         }
@@ -51,21 +54,21 @@ class HReal2IqConverter: public HConverter<T, T> {
     public:
 
         /** Create a new real-2-iq converter with a reader */
-        HReal2IqConverter(HReader<T>* reader, H_SAMPLE_RATE rate, size_t blocksize):
-            HConverter<T, T>(reader, blocksize, blocksize * 2) {
-            Init(blocksize, rate);
+        HReal2IqConverter(HReader<T>* reader, size_t blocksize):
+            HConverter<T, T>(reader, blocksize / 2, blocksize) {
+            Init(blocksize);
         }
 
         /** Create a new real-2-iq converter with a writer */
-        HReal2IqConverter(HWriter<T>* writer, H_SAMPLE_RATE rate, size_t blocksize):
+        HReal2IqConverter(HWriter<T>* writer, size_t blocksize):
             HConverter<T, T>(writer, blocksize, blocksize * 2) {
-            Init(blocksize, rate);
+            Init(blocksize);
         }
 
         /** Create a new real-2-iq converter with a writerconsumer */
-        HReal2IqConverter(HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, size_t blocksize):
+        HReal2IqConverter(HWriterConsumer<T>* consumer, size_t blocksize):
             HConverter<T, T>(consumer, blocksize, blocksize * 2) {
-            Init(blocksize, rate);
+            Init(blocksize);
         }
 
         /** Destruct this real-2-iq converter instance */

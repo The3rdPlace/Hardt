@@ -151,14 +151,6 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, HRtl2832::MODE
         HLog("RTL-2832 gain set to %d (%f dB)", rtlsdr_get_tuner_gain(dev), rtlsdr_get_tuner_gain(dev) / 10.0);
     }
 
-    /*r = rtlsdr_set_bias_tee(dev, enable_biastee ? 1 : 0);
-    if( r < 0 ) {
-        HError("stop %d", __LINE__);
-    }
-    if (enable_biastee) {
-        fprintf(stderr, "activated bias-T on GPIO PIN 0\n");
-    }*/
-
     /* Reset buffers (required) */
     result = rtlsdr_reset_buffer(dev);
     if( result < 0 ) {

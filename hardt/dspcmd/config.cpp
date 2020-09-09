@@ -67,6 +67,7 @@ bool parseArguments(int argc, char** argv)
         Config.IsGoertzl = argBoolCmp(argv[argNo], "-gz", Config.IsGoertzl);
 
         Config.IsReal2Iq = argBoolCmp(argv[argNo], "-riq", Config.IsReal2Iq);
+        Config.IsIq2Real = argBoolCmp(argv[argNo], "-iqr", Config.IsIq2Real);
 
         Config.IsFft = argBoolCmp(argv[argNo], "-fft", Config.IsFft);
         Config.IsIfft = argBoolCmp(argv[argNo], "-ifft", Config.IsIfft);
@@ -471,6 +472,10 @@ bool parseArguments(int argc, char** argv)
 
             std::cout << "$ dpscmd -riq" << std::endl;
             std::cout << "Convert realvalued samples to IQ samples" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "$ dpscmd -irq" << std::endl;
+            std::cout << "Convert IQ samples to realvalued samples" << std::endl;
             std::cout << std::endl;
 
             std::cout << "$ dpscmd -fft" << std::endl;
