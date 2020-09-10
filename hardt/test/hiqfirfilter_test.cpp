@@ -9,8 +9,8 @@ class HIqFirFilter_Test: public Test
 
         void run()
         {
-            TEST(test_filter_as_writer);
-            TEST(test_filter_as_reader);
+            UNITTEST(test_filter_as_writer);
+            UNITTEST(test_filter_as_reader);
         }
 
         const char* name()
