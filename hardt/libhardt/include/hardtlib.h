@@ -116,6 +116,7 @@ Include api function declarations
 #include "hiq2realconverter.cpp"
 #include "hiqfirfilter.cpp"
 #include "hiqfirdecimator.cpp"
+#include "hiq2absconverter.cpp"
 
 /********************************************************************
 Debug and diagnostics

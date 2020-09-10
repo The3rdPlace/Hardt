@@ -8,7 +8,7 @@
 #include "hconverter.h"
 #include "hfft.h"
 
-/** Convert from IQ to realvalued samples samples.
+/** Convert from IQ to realvalued samples.
     IQ samples is stored intermixed, with the I (real) samples first, then the Q (imaginary) sample.
 
     Beware that this conversion changes the number of blocks read or written to or from the
@@ -53,7 +53,7 @@ class HIq2RealConverter: public HConverter<T, T> {
 
     public:
 
-        /** Create a new real-2-iq converter with a reader
+        /** Create a new iq-2-real converter with a reader
 
             BEWARE that reading 'blocksize samples will read
             'blocksize' samples from the previous reader and
@@ -64,7 +64,7 @@ class HIq2RealConverter: public HConverter<T, T> {
             Init(blocksize * 2);
         }
 
-        /** Create a new real-2-iq converter with a writer
+        /** Create a new iq-2-real converter with a writer
 
             BEWARE that writing 'blocksize' samples will write
             'blocksize/2' samples to the next writer
@@ -74,7 +74,7 @@ class HIq2RealConverter: public HConverter<T, T> {
             Init(blocksize);
         }
 
-        /** Create a new real-2-iq converter with a writerconsumer
+        /** Create a new iq-2-realconverter with a writerconsumer
 
             BEWARE that writing 'blocksize' samples will write
             'blocksize/2' samples to the next writer
@@ -84,7 +84,7 @@ class HIq2RealConverter: public HConverter<T, T> {
             Init(blocksize);
         }
 
-        /** Destruct this real-2-iq converter instance */
+        /** Destruct this iq-2-real converter instance */
         ~HIq2RealConverter() {
             delete _fft;
         }

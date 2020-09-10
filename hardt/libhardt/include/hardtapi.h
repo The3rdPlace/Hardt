@@ -105,5 +105,6 @@
 #include "hiq2realconverter.h"
 #include "hiqfirfilter.h"
 #include "hiqfirdecimator.h"
+#include "hiq2absconverter.h"
 
 #endif
