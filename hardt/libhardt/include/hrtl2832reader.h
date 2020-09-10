@@ -29,7 +29,7 @@ class HRtl2832Reader : public HReader<T>
         HFft<T>* _fft;
         T* _buffer;
         std::thread* _current;
-        rtlsdr_dev_t *dev;
+        rtlsdr_dev_t *_dev;
         size_t _blocksize;
 
         // Data accessed by the (static) callback function
@@ -105,6 +105,36 @@ class HRtl2832Reader : public HReader<T>
               gpio = gpio pin. Use 0 (zero) to use default gpio pin
         */
         bool DisableBiasTee(int gpio = 0);
+
+        /**
+         * Set center frequency
+         *
+         * @param frequency The frequency to tune to
+         * @return true if successfull, otherwise false
+         */
+        bool SetCenterFrequency(uint32_t frequency);
+
+        /**
+         * Get current centerfrequency
+         *
+         * @return Current center frequency (in Hz)
+         */
+        uint32_t GetCenterFrequency();
+
+        /**
+         * Set gain. Setting gain to 0 (zero) enables automatic gain
+         *
+         * @param gain Gain value
+         * @return True if successfull, otherwise false
+         */
+        bool SetGain(int gain);
+
+        /**
+         * Get current gain. 0 (zero) means 'automatic'
+         *
+         * @return Gain value
+         */
+        int GetGain();
 };
 
 #endif

@@ -64,8 +64,8 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, HRtl2832::MODE
     int result;
 
     // Open the RTL-2832 device
-    rtlsdr_open(&dev, device);
-    if( dev == NULL ) {
+    rtlsdr_open(&_dev, device);
+    if( _dev == NULL ) {
         HError("Failed to open RTL-2832 device with index %d", device);
         throw new HInitializationException("Failed to open device");
     }
@@ -73,7 +73,7 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, HRtl2832::MODE
 
     // Set direct sampling mode if requested
     if( directSampling ) {
-        result = rtlsdr_set_direct_sampling(dev, 1);
+        result = rtlsdr_set_direct_sampling(_dev, 1);
         if (result < 0) {
             HError("Failed to set RTL-2832 direct sampling mode");
             throw new HInitializationException("Failed to set direct sampling mode");
@@ -81,9 +81,9 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, HRtl2832::MODE
         HLog("RTL-2832 direct sampling mode enabled");
     }
 
-    /* Set tuner offset, if needed */
+    // Set tuner offset, if needed
     if( offset ) {
-        result = rtlsdr_set_offset_tuning(dev, 1);
+        result = rtlsdr_set_offset_tuning(_dev, 1);
         if( result < 0 ) {
             HError("Failed to enable RTL-2832 tuner offset", offset);
             throw new HInitializationException("Failed to enable tuner offset");
@@ -93,66 +93,39 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, HRtl2832::MODE
         HLog("RTL-2832 tuner offset not required");
     }
 
-    /* Set frequency correction, if needed */
+    // Set frequency correction, if needed
     if( correction != 0 ) {
-        result = rtlsdr_set_freq_correction(dev, correction);
+        result = rtlsdr_set_freq_correction(_dev, correction);
         if( result < 0 ) {
             HError("Failed to set RTL-2832 frequency correction to %d", correction);
             throw new HInitializationException("Failed to set frequency correction");
         }
-        HLog("RTL-2832 frequency correction set to %d", rtlsdr_get_offset_tuning(dev));
+        HLog("RTL-2832 frequency correction set to %d", rtlsdr_get_offset_tuning(_dev));
     } else {
         HLog("RTL-2832 frequency correction not required");
     }
 
-    /* Set sample rate */
-    result = rtlsdr_set_sample_rate(dev, rate);
+    // Set sample rate
+    result = rtlsdr_set_sample_rate(_dev, rate);
     if( result < 0 ) {
         HError("Failed to set RTL-2832 device samplerate to %d", rate);
         throw new HInitializationException("Failed to set samplerate");
     }
-    HLog("RTL-2832 samplerate set to %d", rtlsdr_get_sample_rate(dev));
+    HLog("RTL-2832 samplerate set to %d", rtlsdr_get_sample_rate(_dev));
 
-    /* Set center frequency (when not in direct sampling mode, otherwise it is
-       the of frequency for the Q-branch multiplier) */
-    result = rtlsdr_set_center_freq(dev, frequency);
-    if (result < 0) {
-        if( directSampling ) {
-            HError("Failed to set RTL-2832 device ifl frequency to %d", frequency);
-            throw new HInitializationException("Failed to set if frequency");
-        } else {
-            HError("Failed to set RTL-2832 device center frequency to %d", frequency);
-            throw new HInitializationException("Failed to set center frequency");
-        }
+    // Set center frequency (when not in direct sampling mode, otherwise it is
+    // the of frequency for the Q-branch multiplier)
+    if( !SetCenterFrequency(frequency) ) {
+        throw new HInitializationException("Failed to set center frequency");
     }
-    HLog("RTL-2832 %s frequency set to %d", directSampling ? "if" : "center", rtlsdr_get_center_freq(dev));
 
     // Set gain
-    if( 0 == gain ) {
-        result = rtlsdr_set_tuner_gain_mode(dev, 0);
-        if( result < 0 ) {
-            HError("Failed to set RTL-2832 device to automatic gain", frequency);
-            throw new HInitializationException("Failed to set automatic gain");
-        }
-        HLog("RTL-2832 set to use automatic gain");
-    } else {
-        result = rtlsdr_set_tuner_gain_mode(dev, 1);
-        if( result < 0 ) {
-            HError("Failed to set RTL-2832 to use manual gain");
-            throw new HInitializationException("Failed to set manual gain");
-        }
-        HLog("RTL-2832 manual gain mode enabled");
-
-        result = rtlsdr_set_tuner_gain(dev, gain);
-        if( result < 0 ) {
-            HError("Failed to set RTL-2832 manual gain level %d", gain);
-            throw new HInitializationException("Failed to set manual gain level");
-        }
-        HLog("RTL-2832 gain set to %d (%f dB)", rtlsdr_get_tuner_gain(dev), rtlsdr_get_tuner_gain(dev) / 10.0);
+    if( !SetGain(gain) ) {
+        throw new HInitializationException("Failed to set gain");
     }
 
-    /* Reset buffers (required) */
-    result = rtlsdr_reset_buffer(dev);
+    // Reset buffers (required)
+    result = rtlsdr_reset_buffer(_dev);
     if( result < 0 ) {
         HError("Failed to reset RTL-2832 buffers");
         throw new HInitializationException("Failed to reset buffers");
@@ -175,7 +148,7 @@ HRtl2832Reader<T>::~HRtl2832Reader()
         HLog("Stream is stopped");
 
         // Close the device
-        rtlsdr_close(dev);
+        rtlsdr_close(_dev);
 
         // Delete shared resources
         delete _cbd.buffer;
@@ -312,7 +285,7 @@ bool HRtl2832Reader<T>::Start()
 
             // Start async reader thread
             HLog("Starting async reader thread with buflen=%d", _buflen);
-            if( rtlsdr_read_async(dev, callback, (void *) &_cbd, NUMBER_OF_RTL_BUFFERS, _buflen) < 0 ) {
+            if( rtlsdr_read_async(_dev, callback, (void *) &_cbd, NUMBER_OF_RTL_BUFFERS, _buflen) < 0 ) {
                 HError("Failed to start the rtl device");
                 _isStarted = false;
             }
@@ -343,7 +316,7 @@ bool HRtl2832Reader<T>::Stop()
     if( _isStarted) {
 
         HLog("Stopping input stream");
-        rtlsdr_cancel_async(dev);
+        rtlsdr_cancel_async(_dev);
         _current->join();
         _isStarted = false;
         HLog("Joined reader thread");
@@ -358,14 +331,14 @@ template <class T>
 bool HRtl2832Reader<T>::EnableBiasTee(int gpio) {
 
     if( gpio > 0 ) {
-        if( rtlsdr_set_bias_tee_gpio(dev, gpio, 1) == 0 ) {
+        if( rtlsdr_set_bias_tee_gpio(_dev, gpio, 1) == 0 ) {
             HLog("Enabled bias-tee output voltage on gpio %d", gpio);
             return true;
         }
         HError("Unable to enable bias-tee output voltage on gpio %d", gpio);
         return false;
     } else {
-        if (rtlsdr_set_bias_tee(dev, 1) == 0) {
+        if (rtlsdr_set_bias_tee(_dev, 1) == 0) {
             HLog("Enabled bias-tee output voltage");
             return true;
         }
@@ -378,20 +351,64 @@ template <class T>
 bool HRtl2832Reader<T>::DisableBiasTee(int gpio) {
 
     if( gpio > 0 ) {
-        if( rtlsdr_set_bias_tee_gpio(dev, gpio, 0) == 0 ) {
+        if( rtlsdr_set_bias_tee_gpio(_dev, gpio, 0) == 0 ) {
             HLog("Disabled bias-tee output voltage on gpio %d", gpio);
             return true;
         }
         HError("Unable to disable bias-tee output voltage on gpio %d", gpio);
         return false;
     } else {
-        if (rtlsdr_set_bias_tee(dev, 0) == 0) {
+        if (rtlsdr_set_bias_tee(_dev, 0) == 0) {
             HLog("Disabled bias-tee output voltage");
             return true;
         }
         HError("Unable to disable bias-tee output voltage");
         return false;
     }
+}
+
+template <class T>
+bool HRtl2832Reader<T>::SetCenterFrequency(uint32_t frequency) {
+    if (rtlsdr_set_center_freq(_dev, frequency) < 0) {
+        HError("Failed to set RTL-2832 device center frequency to %d", frequency);
+        return false;
+    }
+    HLog("RTL-2832 center frequency set to %d", rtlsdr_get_center_freq(_dev));
+    return true;
+}
+
+template <class T>
+uint32_t HRtl2832Reader<T>::GetCenterFrequency() {
+    return rtlsdr_get_center_freq(_dev);
+}
+
+template <class T>
+bool HRtl2832Reader<T>::SetGain(int gain) {
+    if( 0 == gain ) {
+        if( rtlsdr_set_tuner_gain_mode(_dev, 0) < 0 ) {
+            HError("Failed to set RTL-2832 device to automatic gain");
+            return false;
+        }
+        HLog("RTL-2832 set to use automatic gain");
+    } else {
+        if( rtlsdr_set_tuner_gain_mode(_dev, 1) < 0 ) {
+            HError("Failed to set RTL-2832 to use manual gain");
+            return false;
+        }
+        HLog("RTL-2832 manual gain mode enabled");
+
+        if( rtlsdr_set_tuner_gain(_dev, gain) < 0 ) {
+            HError("Failed to set RTL-2832 manual gain level %d", gain);
+            return false;
+        }
+        HLog("RTL-2832 gain set to %d (%f dB)", rtlsdr_get_tuner_gain(_dev), rtlsdr_get_tuner_gain(_dev) / 10.0);
+    }
+    return true;
+}
+
+template <class T>
+int HRtl2832Reader<T>::GetGain() {
+    return rtlsdr_get_tuner_gain(_dev);
 }
 
 /********************************************************************
@@ -437,6 +454,58 @@ int HRtl2832Reader<int16_t>::Read(int16_t* dest, size_t blocksize);
 
 template
 int HRtl2832Reader<int32_t>::Read(int32_t* dest, size_t blocksize);
+
+// SetCenterFrequency
+template
+bool HRtl2832Reader<int8_t>::SetCenterFrequency(uint32_t frequency);
+
+template
+bool HRtl2832Reader<uint8_t>::SetCenterFrequency(uint32_t frequency);
+
+template
+bool HRtl2832Reader<int16_t>::SetCenterFrequency(uint32_t frequency);
+
+template
+bool HRtl2832Reader<int32_t>::SetCenterFrequency(uint32_t frequency);
+
+// GetCenterFrequency
+template
+uint32_t HRtl2832Reader<int8_t>::GetCenterFrequency();
+
+template
+uint32_t HRtl2832Reader<uint8_t>::GetCenterFrequency();
+
+template
+uint32_t HRtl2832Reader<int16_t>::GetCenterFrequency();
+
+template
+uint32_t HRtl2832Reader<int32_t>::GetCenterFrequency();
+
+// SetGain
+template
+bool HRtl2832Reader<int8_t>::SetGain(int gain);
+
+template
+bool HRtl2832Reader<uint8_t>::SetGain(int gain);
+
+template
+bool HRtl2832Reader<int16_t>::SetGain(int gain);
+
+template
+bool HRtl2832Reader<int32_t>::SetGain(int gain);
+
+// GetGain
+template
+int HRtl2832Reader<int8_t>::GetGain();
+
+template
+int HRtl2832Reader<uint8_t>::GetGain();
+
+template
+int HRtl2832Reader<int16_t>::GetGain();
+
+template
+int HRtl2832Reader<int32_t>::GetGain();
 
 //! @endcond
 #endif
