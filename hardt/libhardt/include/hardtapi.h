@@ -104,5 +104,6 @@
 #include "hrtl2832reader.h"
 #include "hiq2realconverter.h"
 #include "hiqfirfilter.h"
+#include "hiqfirdecimator.h"
 
 #endif

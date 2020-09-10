@@ -115,6 +115,7 @@ Include api function declarations
 #include "hrtl2832reader.cpp"
 #include "hiq2realconverter.cpp"
 #include "hiqfirfilter.cpp"
+#include "hiqfirdecimator.cpp"
 
 /********************************************************************
 Debug and diagnostics
