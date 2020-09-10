@@ -1,7 +1,6 @@
 #ifndef __HRTL2832READER_CPP
 #define __HRTL2832READER_CPP
 
-#include <stdio.h>
 #include <mutex>
 #include <cstring>
 
