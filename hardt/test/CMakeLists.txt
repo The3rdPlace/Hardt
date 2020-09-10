@@ -70,6 +70,7 @@ target_sources(hardt_test
 	hcomplexfilter_test.cpp
 	hfirdecimator_test.cpp
 	hiq2realconverter_test.cpp
+	hiqfirfilter_test.cpp
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
