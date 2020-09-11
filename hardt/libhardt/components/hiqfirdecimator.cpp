@@ -75,8 +75,8 @@ void HIqFirDecimator<T>::Init(float* coefficients, int points) {
 
     _buffer = new T[_blocksize];
 
-    _firI = new HFir<T>(coefficients, points, 1, _factor);
-    _firQ = new HFir<T>(coefficients, points, 1, _factor);
+    _firI = new HFir<T>(coefficients, points, 1, _factor, 1);
+    _firQ = new HFir<T>(coefficients, points, 1, _factor, 1);
 
     _filteredI = new T[_blocksize / 2];
     _filteredQ = new T[_blocksize / 2];

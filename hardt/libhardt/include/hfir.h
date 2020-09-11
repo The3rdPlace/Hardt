@@ -13,6 +13,7 @@ class HFir {
         int _head;
         int _spacing;
         int _advance;
+        int _skip;
 
         /**
          *
@@ -58,14 +59,14 @@ class HFir {
          *  to the buffer without summing - polyphase filtering in a fir-decimator
          *
          *  @param value Value to filter
-         *  @param steps If more than 1, then a futher 'steps' number of samples
+         *  @param advance If more than 1, then a futher 'advance' number of samples
          *               will be steppped into the delay line (used for polyphase filters)
          */
-        inline T Filter(T* value, int steps) {
+        inline T Filter(T* value, int advance) {
 
             T result = Filter(*value);
 
-            for( int i = 1; i < steps; i++ ) {
+            for( int i = 1; i < advance; i++ ) {
 
                 // Add new sample to the head of the delay line
                 _taps[_head] = value[i];
@@ -86,7 +87,7 @@ class HFir {
          *  @param coefficients The FIR coefficients
          *  @param length Length of the FIR filter (number of coefficients)
          */
-        HFir(float *coefficients, int length) : _length(length), _head(0), _spacing(1), _advance(0) {
+        HFir(float *coefficients, int length) : _length(length), _head(0), _spacing(1), _advance(1), _skip(1) {
 
             HLog("HFir(float*, %d)", length);
             Init(coefficients);
@@ -102,14 +103,16 @@ class HFir {
          *                 a spacing of 1 (write output to adjacent locations)
          *  @param advance How many steps to advance the delay line before next filter output
          *                 value is being calculated (see use in HFirDecimator). A normal FIR filter
-         *                 uses advance=0 (do not advance forward after each result) but a decimating
-         *                 FIR filter will calculate 1 result, then step a number of samples into the
+         *                 uses advance=1 (do not further advance forward after each result) but a decimating
+         *                 FIR filter will calculate 1 result, then step further a number of samples into the
          *                 delay line before calculating the next result.
+         *  @param skip Skip this number of values in the input buffer. This allows you to pass in
+         *              sparse buffers and only use, say, each 2. sample.
          */
-        HFir(float *coefficients, int length, int spacing, int advance):
-            _length(length), _head(0), _spacing(spacing), _advance(advance) {
+        HFir(float *coefficients, int length, int spacing, int advance, int skip):
+            _length(length), _head(0), _spacing(spacing), _advance(advance), _skip(skip) {
 
-            HLog("HFir(float*, %d, %d, %d)", length, spacing, advance);
+            HLog("HFir(float*, length=%d, spacing=%d, advance=%d, skip=%d)", length, spacing, advance, skip);
             Init(coefficients);
         }
 
@@ -130,16 +133,9 @@ class HFir {
          * */
         inline void Filter(T *values, T* result, size_t blocksize) {
             int j = 0;
-            if( _advance == 0 ) {
-                for( int i = 0; i < blocksize; i++ ) {
-                    result[j] = Filter(values[i]);
-                    j += _spacing;
-                }
-            } else {
-                for( int i = 0; i < blocksize; i += _advance ) {
-                    result[i] = Filter(values[i]);
-                    Filter(&values[i + 1], _advance - 1);
-                }
+            for( int i = 0; i < blocksize; i += _advance ) {
+                result[j] = Filter(&values[i], _advance);
+                j += _spacing + _advance - 1;
             }
         }
 

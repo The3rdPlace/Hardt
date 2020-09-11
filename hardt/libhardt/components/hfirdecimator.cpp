@@ -65,7 +65,7 @@ void HFirDecimator<T>::Init(float* coefficients, int points) {
 
     _buffer = new T[_blocksize];
 
-    _fir = new HFir<T>(coefficients, points, 1, _factor);
+    _fir = new HFir<T>(coefficients, points, 1, _factor, 1);
     _filtered = new T[_blocksize];
 }
 

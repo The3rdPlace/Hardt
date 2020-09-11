@@ -132,7 +132,7 @@ void HInterpolator<T>::Init(float* coefficients) {
 
         // Setup fir filter with rearranged coefficients
         for( int i = 0; i < _factor; i++ ) {
-            _firs.push_back( new HFir<T>(&_coefficients[ i * _firLength / _factor ], _firLength / _factor, _factor, 0) );
+            _firs.push_back( new HFir<T>(&_coefficients[ i * _firLength / _factor ], _firLength / _factor, _factor, 1, 1) );
         }
     }
 
