@@ -12,8 +12,12 @@ class HFir {
         T *_taps;
         int _head;
         int _spacing;
-        int _skip;
+        int _advance;
 
+        /**
+         *
+         * @param coefficients Fir coefficients
+         */
         void Init(float* coefficients) {
 
             // Copy coefficients
@@ -50,85 +54,100 @@ class HFir {
             return result;
         }
 
-    /** Filter a single sample value then add a further number of samples
-        to the buffer without summing - polyphase filtering in a fir-decimator */
-    inline T Filter(T* value, int steps) {
+        /** Filter a single sample value then add a further number of samples
+         *  to the buffer without summing - polyphase filtering in a fir-decimator
+         *
+         *  @param value Value to filter
+         *  @param steps If more than 1, then a futher 'steps' number of samples
+         *               will be steppped into the delay line (used for polyphase filters)
+         */
+        inline T Filter(T* value, int steps) {
 
-        T result = Filter(*value);
+            T result = Filter(*value);
 
-        for( int i = 1; i < steps; i++ ) {
+            for( int i = 1; i < steps; i++ ) {
 
-            // Add new sample to the head of the delay line
-            _taps[_head] = value[i];
+                // Add new sample to the head of the delay line
+                _taps[_head] = value[i];
 
-            // Move tip of the delay line ringbuffer
-            _head = _head == 0 ? _length : _head;
-            _head--;
+                // Move tip of the delay line ringbuffer
+                _head = _head == 0 ? _length : _head;
+                _head--;
+            }
+
+            // Return the result
+            return result;
         }
-
-        // Return the result
-        return result;
-    }
 
     public:
 
         /** Create a new FIR block (for calculating output values for a FIR filter)
-
-            Parameters:
-              coefficients = The FIR coefficients
-              length = Length of the FIR filter (number of coefficients)
-        */
-        HFir(float *coefficients, int length) : _length(length), _head(0), _spacing(1), _skip(0) {
+         *
+         *  @param coefficients The FIR coefficients
+         *  @param length Length of the FIR filter (number of coefficients)
+         */
+        HFir(float *coefficients, int length) : _length(length), _head(0), _spacing(1), _advance(0) {
 
             HLog("HFir(float*, %d)", length);
             Init(coefficients);
         }
 
         /** Create a new FIR block (for calculating output values for a FIR filter)
+         *
+         *  @param coefficients The FIR coefficients
+         *  @param length Length of the FIR filter (number of coefficients)
+         *  @param spacing How many positions in the outbuffer to space output values
+         *                 This is mostly usefull when implementing multiple polyphase FIR
+         *                 filters (see use in the HInterpolator). A normal FIR filter uses
+         *                 a spacing of 1 (write output to adjacent locations)
+         *  @param advance How many steps to advance the delay line before next filter output
+         *                 value is being calculated (see use in HFirDecimator). A normal FIR filter
+         *                 uses advance=0 (do not advance forward after each result) but a decimating
+         *                 FIR filter will calculate 1 result, then step a number of samples into the
+         *                 delay line before calculating the next result.
+         */
+        HFir(float *coefficients, int length, int spacing, int advance):
+            _length(length), _head(0), _spacing(spacing), _advance(advance) {
 
-            Parameters:
-              coefficients = The FIR coefficients
-              length = Length of the FIR filter (number of coefficients)
-              spacing = How many positions in the outbuffer to space output values
-                          This is mostly usefull when implementing multiple polyphase FIR
-                          filters (see use in the HInterpolator). A normal FIR filter uses
-                          a spacing of 1 (write output to adjacent locations)
-              skip = How many steps to advance the delay line before next filter output
-                     value is being calculated (see use in HFirDecimator). A normal FIR filter
-                     uses skip=0 (do not skip forward)
-        */
-        HFir(float *coefficients, int length, int spacing, int skip):
-            _length(length), _head(0), _spacing(spacing), _skip(skip) {
-
-            HLog("HFir(float*, %d, %d, %d)", length, spacing, skip);
+            HLog("HFir(float*, %d, %d, %d)", length, spacing, advance);
             Init(coefficients);
         }
 
-        /** Destroy this FIR block */
+        /**
+         * Destroy this FIR block
+         */
         ~HFir() {
             HLog("~HFir()");
             delete[] _taps;
             delete[] _coefficients;
         }
 
-        /** Filter a block of values through the FIR block */
+        /** Filter a block of values through the FIR block
+         *
+         * @param values The block to filter
+         * @param result Place filtered block here
+         * @param blocksize The number of samples in the input block
+         * */
         inline void Filter(T *values, T* result, size_t blocksize) {
             int j = 0;
-            if( _skip == 0 ) {
+            if( _advance == 0 ) {
                 for( int i = 0; i < blocksize; i++ ) {
                     result[j] = Filter(values[i]);
                     j += _spacing;
                 }
             } else {
-                for( int i = 0; i < blocksize; i += _skip ) {
+                for( int i = 0; i < blocksize; i += _advance ) {
                     result[i] = Filter(values[i]);
-                    Filter(&values[i + 1], _skip - 1);
-                    //j += _spacing;
+                    Filter(&values[i + 1], _advance - 1);
                 }
             }
         }
 
-        /** Change the coefficients for the FIR block */
+        /** Change the coefficients for the FIR block
+         *
+         *  @param coefficients New coefficients
+         *  @param length number of coefficients
+         * */
         void SetCoefficients(float *coefficients, int length) {
 
             // Sanity check
@@ -142,7 +161,8 @@ class HFir {
             memcpy(_coefficients, coefficients, length * sizeof(float));
         }
 
-        /** get the coefficients for the FIR block */
+        /** Get the coefficients for the FIR block
+         */
         std::vector<float> GetCoefficients() {
 
             std::vector<float> coefficients;
@@ -151,7 +171,6 @@ class HFir {
             }
             return coefficients;
         }
-
 };
 
 #endif
