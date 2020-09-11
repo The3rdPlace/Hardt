@@ -106,5 +106,7 @@
 #include "hiqfirfilter.h"
 #include "hiqfirdecimator.h"
 #include "hiq2absconverter.h"
+#include "hiqtranslatebyfour.h"
+#include "hiqtranslatebytwo.h"
 
 #endif
