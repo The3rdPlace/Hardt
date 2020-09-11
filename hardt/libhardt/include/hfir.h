@@ -66,10 +66,10 @@ class HFir {
 
             T result = Filter(*value);
 
-            for( int i = 1; i < advance; i++ ) {
+            for( int i = 1; i < advance; i ++ ) {
 
                 // Add new sample to the head of the delay line
-                _taps[_head] = value[i];
+                _taps[_head] = value[i * _skip];
 
                 // Move tip of the delay line ringbuffer
                 _head = _head == 0 ? _length : _head;
@@ -134,24 +134,10 @@ class HFir {
          * */
         inline void Filter(T *values, T* result, size_t blocksize) {
 
-            /* TEMPORARY HACK
-             *
-             * Demultiplex incomming samples if skip is set higher
-             * than 1 - usually iq samples
-             *
-             * Todo: This should be done in the filter loop
-             */
-            T tmp[blocksize / _skip];
-            int x = 0;
-            for( int i = 0; i < blocksize; i += _skip ) {
-                tmp[x++] = values[i];
-            }
-            /* END OF HACK */
-
             int j = 0;
-            for( int i = 0; i < blocksize / _skip; i += _advance ) {
-                result[j] = Filter(&tmp[i], _advance);
-                j += (_spacing - 1) + (_advance * _skip) ;//+ _skip;
+            for( int i = 0; i < blocksize; i += _advance * _skip ) {
+                result[j] = Filter(&values[i], _advance);
+                j += (_spacing - 1) + (_advance * _skip);
             }
         }
 
