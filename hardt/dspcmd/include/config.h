@@ -57,6 +57,7 @@ struct DspCmdConfig
     bool IsFirDecimator = false;
     bool IsSampleTypeConverter = false;
     bool IsIq2Real = false;
+    bool IsIq = false;
 
     char* InFileFormat = NULL;
     char* OutFileFormat = NULL;

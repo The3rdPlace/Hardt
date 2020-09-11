@@ -88,6 +88,8 @@ bool parseArguments(int argc, char** argv)
             }
         }
 
+        Config.IsIq = argBoolCmp(argv[argNo], "-iq", Config.IsIq);
+
         if( argNo < argc - 1)
         {
             Config.InputFile = argCharCmp(argv[argNo], "-if", argv[argNo + 1], Config.InputFile);
@@ -287,6 +289,10 @@ bool parseArguments(int argc, char** argv)
 
             std::cout << "$ dspcmd -t" << std::endl;
             std::cout << "Show a list of available RTL2832 devices" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "$ dspcmd -iq" << std::endl;
+            std::cout << "Input signal is IQ data (not all operations supports IQ data!)" << std::endl;
             std::cout << std::endl;
 
             std::cout << "$ dspcmd -h" << std::endl;
@@ -642,6 +648,24 @@ bool VerifyConfig()
         if( !( !!std::ifstream(Config.InputFile) ) )
         {
             std::cout << "Input file does not exist!." << std::endl;
+            return true;
+        }
+    }
+
+    // Only a few select operations supports IQ data
+    if( Config.IsIq ) {
+        if( !Config.IsFirDecimator &&
+            !Config.IsFilter &&
+            !Config.IsTranslateByTwo &&
+            !Config.IsTranslateByFourI &&
+            !Config.IsTranslateByFourQ ) {
+
+            if( Config.IsFilter && strcmp(Config.FilterName, "HFirFilter") != 0 ) {
+                std::cout << "Selected filter operation does not support IQ data." << std::endl;
+                return true;
+            }
+
+            std::cout << "Selected operation does not support IQ data." << std::endl;
             return true;
         }
     }

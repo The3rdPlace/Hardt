@@ -2375,8 +2375,17 @@ int RunFirDecimator()
     }
 
     // Create  filter
+    HReader<T>* filter;
+    HFirDecimator<T>* firDecimator = nullptr;
+    HIqFirDecimator<T>* iqFirDecimator = nullptr;
     std::vector<float> coefs = HFilter<T>::ReadCoeffsFromFile(Config.FilterCoeffs);
-    HFirDecimator<T>* filter = new HFirDecimator<T>(rd->Reader(), Config.DecimateFactor, &coefs[0], coefs.size(), Config.Blocksize);
+    if( Config.IsIq ) {
+        iqFirDecimator = new HIqFirDecimator<T>(rd->Reader(), Config.DecimateFactor, &coefs[0], coefs.size(), Config.Blocksize);
+        filter = iqFirDecimator->Reader();
+    } else {
+        firDecimator = new HFirDecimator<T>(rd->Reader(), Config.DecimateFactor, &coefs[0], coefs.size(), Config.Blocksize);
+        filter = firDecimator->Reader();
+    }
 
     // Create processor
     HStreamProcessor<T> proc(wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
@@ -2395,7 +2404,11 @@ int RunFirDecimator()
     }
 
     // Delete the filter
-    delete filter;
+    if( firDecimator != nullptr ) {
+        delete firDecimator;
+    } else {
+        delete iqFirDecimator;
+    }
 
     return 0;
 }
