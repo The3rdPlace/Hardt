@@ -80,7 +80,6 @@ class HMux : public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
         /** Implements HWriterConsumer::SetWriter() */
         void SetWriter(HWriter<T>* writer)
         {
-            std::cout << "SETWRITER" << std::endl;
             _writer = writer;
         }
 };
