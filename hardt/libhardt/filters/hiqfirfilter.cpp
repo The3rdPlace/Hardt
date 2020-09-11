@@ -37,8 +37,8 @@ void HIqFirFilter<T>::Init(float* coefficients, int length, size_t blocksize)
 {
     HLog("Init(float*, %d)", length);
 
-    _firI = new HFir<T>(coefficients, length);
-    _firQ = new HFir<T>(coefficients, length);
+    _firI = new HFir<T>(coefficients, length, 1, 1, 2);
+    _firQ = new HFir<T>(coefficients, length, 1, 1, 2);
 
     _I = new T[blocksize / 2];
     _IOut = new T[blocksize / 2];
@@ -61,21 +61,9 @@ HIqFirFilter<T>::~HIqFirFilter()
 template <class T>
 void HIqFirFilter<T>::Filter(T* src, T* dest, size_t blocksize)
 {
-    // Split multiplexed stream
-    for( int i = 0; i < blocksize; i += 2 ) {
-        _I[i / 2] = src[i];
-        _Q[i / 2] = src[i + 1];
-    }
-
     // Run FIR filters
-    _firI->Filter(_I, _IOut, blocksize / 2);
-    _firQ->Filter(_Q, _QOut, blocksize / 2);
-
-    // Combine multiplexed stream
-    for( int i = 0; i < blocksize; i += 2 ) {
-        dest[i] = _IOut[i / 2];
-        dest[i + 1] = _QOut[i / 2];
-    }
+    _firI->Filter(src, dest, blocksize);
+    _firQ->Filter(&src[1], &dest[1], blocksize);
 }
 
 template <class T>

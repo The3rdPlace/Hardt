@@ -106,8 +106,9 @@ class HFir {
          *                 uses advance=1 (do not further advance forward after each result) but a decimating
          *                 FIR filter will calculate 1 result, then step further a number of samples into the
          *                 delay line before calculating the next result.
-         *  @param skip Skip this number of values in the input buffer. This allows you to pass in
-         *              sparse buffers and only use, say, each 2. sample.
+         *  @param skip Skip this number of values in the input and output buffer between each value.
+         *              This allows you to pass in sparse buffers and only use, say, each 2. sample. Do note
+         *              that the skip is applied to the input AS WELL as the output
          */
         HFir(float *coefficients, int length, int spacing, int advance, int skip):
             _length(length), _head(0), _spacing(spacing), _advance(advance), _skip(skip) {
@@ -132,10 +133,25 @@ class HFir {
          * @param blocksize The number of samples in the input block
          * */
         inline void Filter(T *values, T* result, size_t blocksize) {
+
+            /* TEMPORARY HACK
+             *
+             * Demultiplex incomming samples if skip is set higher
+             * than 1 - usually iq samples
+             *
+             * Todo: This should be done in the filter loop
+             */
+            T tmp[blocksize / _skip];
+            int x = 0;
+            for( int i = 0; i < blocksize; i += _skip ) {
+                tmp[x++] = values[i];
+            }
+            /* END OF HACK */
+
             int j = 0;
-            for( int i = 0; i < blocksize; i += _advance ) {
-                result[j] = Filter(&values[i], _advance);
-                j += _spacing + _advance - 1;
+            for( int i = 0; i < blocksize / _skip; i += _advance ) {
+                result[j] = Filter(&tmp[i], _advance);
+                j += (_spacing - 1) + (_advance * _skip) ;//+ _skip;
             }
         }
 

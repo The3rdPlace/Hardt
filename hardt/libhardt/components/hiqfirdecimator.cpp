@@ -75,11 +75,11 @@ void HIqFirDecimator<T>::Init(float* coefficients, int points) {
 
     _buffer = new T[_blocksize];
 
-    _firI = new HFir<T>(coefficients, points, 1, _factor, 1);
-    _firQ = new HFir<T>(coefficients, points, 1, _factor, 1);
+    _firI = new HFir<T>(coefficients, points, 1, _factor, 2);
+    _firQ = new HFir<T>(coefficients, points, 1, _factor, 2);
 
-    _filteredI = new T[_blocksize / 2];
-    _filteredQ = new T[_blocksize / 2];
+    _filteredI = new T[_blocksize];
+    _filteredQ = new T[_blocksize];
 
     _I = new T[_blocksize / 2];
     _IOut = new T[_blocksize / 2];
@@ -102,31 +102,19 @@ int HIqFirDecimator<T>::Write(T* src, size_t blocksize)
         throw new HWriterIOException("Requested blocksize for write is invalid");
     }
 
-    // Split multiplexed stream
-    for( int i = 0; i < blocksize; i += 2 ) {
-        _I[i / 2] = src[i];
-        _Q[i / 2] = src[i + 1];
-    }
-
     // Filter
-    _firI->Filter(_I, _IOut, blocksize / 2);
-    _firQ->Filter(_Q, _QOut, blocksize / 2);
+    _firI->Filter(src, _filteredI, blocksize);
+    _firQ->Filter(&src[1], &_filteredI[1], blocksize);
 
     // Decimate
-    for(int i = 0; i < blocksize / 2; i += _factor) {
-        _filteredI[_length] = _IOut[i];
-        _filteredQ[_length] = _QOut[i];
-        _length++;
+    for(int i = 0; i < blocksize; i += _factor * 2) {
+        _buffer[_length++] = _filteredI[i];
+        _buffer[_length++] = _filteredI[i + 1];
     }
-    if( _length == _blocksize / 2 || !_collect) {
 
-        // Combine multiplexed stream
-        for( int i = 0; i < blocksize; i += 2 ) {
-            _buffer[i] = _filteredI[i / 2];
-            _buffer[i + 1] = _filteredQ[i / 2];
-        }
-
-        _writer->Write(_buffer, _length * 2);
+    // Write result if we have reached blocksize (or not collecting)
+    if( _length == _blocksize || !_collect) {
+        _writer->Write(_buffer, _length);
         _length = 0;
     }
 
@@ -174,20 +162,14 @@ int HIqFirDecimator<T>::Read(T* dest, size_t blocksize)
             return 0;
         }
 
-        // Split multiplexed stream
-        for( int i = 0; i < _blocksize; i += 2 ) {
-            _I[i / 2] = _buffer[i];
-            _Q[i / 2] = _buffer[i + 1];
-        }
-
         // Filter
-        _firI->Filter(_I, _IOut, _blocksize / 2);
-        _firQ->Filter(_Q, _QOut, _blocksize / 2);
+        _firI->Filter(_buffer, _filteredI, _blocksize);
+        _firQ->Filter(&_buffer[1], &_filteredI[1], _blocksize);
 
         // Decimate the block
-        for(int i = 0; i < _blocksize / 2; i += _factor) {
-            dest[_length++] = _IOut[i];
-            dest[_length++] = _QOut[i];
+        for( int i = 0; i < _blocksize; i += _factor * 2) {
+            dest[_length++] = _filteredI[i];
+            dest[_length++] = _filteredI[i + 1];
         }
 
         // If not doing a collected read, return what we have now

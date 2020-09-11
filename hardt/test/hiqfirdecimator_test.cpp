@@ -33,13 +33,11 @@ class HIqFirDecimator_Test: public Test
             TestReader<int8_t> rd(input, 24);
 
             HIqFirDecimator<int8_t> fdm(rd.Reader(), 4, coefs, 5, 24);
-
             int8_t received[24];
 
             ASSERT_IS_EQUAL(fdm.Read(received, 24), 24);
             ASSERT_IS_EQUAL(rd.Reads, 4);
             ASSERT_IS_EQUAL(rd.Samples, 96);
-
             ASSERT_IS_EQUAL(memcmp((void*) received, (void*) expected, 24), 0);
 
             ASSERT_IS_TRUE(fdm.Command(&TestNopCommand));
@@ -54,7 +52,6 @@ class HIqFirDecimator_Test: public Test
             TestWriter<int8_t> wr(24);
 
             HIqFirDecimator<int8_t> fdm(wr.Writer(), 4, coefs, 5, 24);
-
             ASSERT_IS_EQUAL(fdm.Write(input, 24), 24);
             ASSERT_IS_EQUAL(wr.Writes, 0);
             ASSERT_IS_EQUAL(fdm.Write(input, 24), 24);
