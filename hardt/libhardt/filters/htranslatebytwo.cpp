@@ -1,5 +1,5 @@
-#ifndef __HDECIMATEBYTWO_CPP
-#define __HDECIMATEBYTWO_CPP
+#ifndef __HTRANSLATEBYTWO_CPP
+#define __HTRANSLATEBYTWO_CPP
 
 #include "htranslatebytwo.h"
 

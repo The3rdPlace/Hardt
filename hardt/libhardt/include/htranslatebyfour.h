@@ -1,5 +1,5 @@
-#ifndef __HDECIMATEBYFOUR_H
-#define __HDECIMATEBYFOUR_H
+#ifndef __HTRANSLATEBYFOUR_H
+#define __HTRANSLATEBYFOUR_H
 
 #include "hfilter.h"
 #include "hwriter.h"
@@ -18,7 +18,7 @@
     of a quadrature signal decimated by 4 and with the center frequency
     shifted to 0.
 
-    Do note that the output is either the I or Q branch of an combined
+    You can think if this as the output being either the I or Q branch of an combined
     IQ signal. If you look at the branches in a realvalued fft, you
     will find that
 
@@ -28,8 +28,7 @@
     Components above fs/4 will be shifted towards 0 not-inverted, but you will
     get an alias centered and to the left of fs/4.
 
-    So..: The output MUST be used as a complex signal - or by carefully filtering it
-    and applying some dsp magic dust to utilize the shifted spectrums.
+    The flag 'isQ' simply signifies if you wants to multiply with cos or sin (isQ)
 */
 template <class T>
 class HTranslateByFour : public HFilter<T>
