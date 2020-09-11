@@ -39,11 +39,6 @@ void HIqFirFilter<T>::Init(float* coefficients, int length, size_t blocksize)
 
     _firI = new HFir<T>(coefficients, length, 1, 1, 2);
     _firQ = new HFir<T>(coefficients, length, 1, 1, 2);
-
-    _I = new T[blocksize / 2];
-    _IOut = new T[blocksize / 2];
-    _Q = new T[blocksize / 2];
-    _QOut = new T[blocksize / 2];
 }
 
 template <class T>
@@ -52,10 +47,6 @@ HIqFirFilter<T>::~HIqFirFilter()
     HLog("~HIqFirFilter()");
     delete _firI;
     delete _firQ;
-    delete _I;
-    delete _IOut;
-    delete _Q;
-    delete _QOut;
 }
 
 template <class T>

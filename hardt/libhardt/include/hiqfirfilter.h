@@ -22,11 +22,6 @@ class HIqFirFilter : public HFilter<T>
         HFir<T>* _firI;
         HFir<T>* _firQ;
 
-        T* _I;
-        T* _IOut;
-        T* _Q;
-        T* _QOut;
-
         void Init(float* coefficients, int length, size_t blocksize);
 
     public:

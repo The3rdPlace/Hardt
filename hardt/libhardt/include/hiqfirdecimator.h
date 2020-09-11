@@ -22,18 +22,13 @@ class HIqFirDecimator: public HReader<T>, public HWriter<T>, public HWriterConsu
 
         int _factor;
         T* _buffer;
+        T* _filtered;
         size_t _length;
         bool _collect;
 
         HFir<T>* _firI;
         HFir<T>* _firQ;
-        T* _filteredI;
-        T* _filteredQ;
 
-        T* _I;
-        T* _IOut;
-        T* _Q;
-        T* _QOut;
 
         void Init(float* coefficients, int points);
 

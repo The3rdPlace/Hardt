@@ -49,17 +49,10 @@ template <class T>
 HIqFirDecimator<T>::~HIqFirDecimator()
 {
     delete[] _buffer;
+    delete[] _filtered;
 
     delete _firI;
     delete _firQ;
-
-    delete _filteredI;
-    delete _filteredQ;
-
-    delete _I;
-    delete _IOut;
-    delete _Q;
-    delete _QOut;
 }
 
 template <class T>
@@ -74,18 +67,10 @@ void HIqFirDecimator<T>::Init(float* coefficients, int points) {
     }
 
     _buffer = new T[_blocksize];
+    _filtered = new T[_blocksize];
 
     _firI = new HFir<T>(coefficients, points, 1, _factor, 2);
     _firQ = new HFir<T>(coefficients, points, 1, _factor, 2);
-
-    _filteredI = new T[_blocksize];
-    _filteredQ = new T[_blocksize];
-
-    _I = new T[_blocksize / 2];
-    _IOut = new T[_blocksize / 2];
-    _Q = new T[_blocksize / 2];
-    _QOut = new T[_blocksize / 2];
-
 }
 
 template <class T>
@@ -103,13 +88,13 @@ int HIqFirDecimator<T>::Write(T* src, size_t blocksize)
     }
 
     // Filter
-    _firI->Filter(src, _filteredI, blocksize);
-    _firQ->Filter(&src[1], &_filteredI[1], blocksize);
+    _firI->Filter(src, _filtered, blocksize);
+    _firQ->Filter(&src[1], &_filtered[1], blocksize);
 
     // Decimate
     for(int i = 0; i < blocksize; i += _factor * 2) {
-        _buffer[_length++] = _filteredI[i];
-        _buffer[_length++] = _filteredI[i + 1];
+        _buffer[_length++] = _filtered[i];
+        _buffer[_length++] = _filtered[i + 1];
     }
 
     // Write result if we have reached blocksize (or not collecting)
@@ -163,13 +148,13 @@ int HIqFirDecimator<T>::Read(T* dest, size_t blocksize)
         }
 
         // Filter
-        _firI->Filter(_buffer, _filteredI, _blocksize);
-        _firQ->Filter(&_buffer[1], &_filteredI[1], _blocksize);
+        _firI->Filter(_buffer, _filtered, _blocksize);
+        _firQ->Filter(&_buffer[1], &_filtered[1], _blocksize);
 
         // Decimate the block
         for( int i = 0; i < _blocksize; i += _factor * 2) {
-            dest[_length++] = _filteredI[i];
-            dest[_length++] = _filteredI[i + 1];
+            dest[_length++] = _filtered[i];
+            dest[_length++] = _filtered[i + 1];
         }
 
         // If not doing a collected read, return what we have now
