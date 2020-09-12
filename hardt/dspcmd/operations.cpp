@@ -2136,15 +2136,29 @@ int RunTranslator()
     // Create  decimator and a processor
     HStreamProcessor<T>* proc;
     if( Config.IsTranslateByTwo ) {
-        HTranslateByTwo<T> tr2(wr, Config.Blocksize);
-        proc = new HStreamProcessor<T>(tr2.Writer(), rd->Reader(), Config.Blocksize, &terminated);
-        proc->Run();
-        delete proc;
+        if( Config.IsIq ) {
+            HIqTranslateByTwo<T> tr2(wr, Config.Blocksize);
+            proc = new HStreamProcessor<T>(tr2.Writer(), rd->Reader(), Config.Blocksize, &terminated);
+            proc->Run();
+            delete proc;
+        } else {
+            HTranslateByTwo<T> tr2(wr, Config.Blocksize);
+            proc = new HStreamProcessor<T>(tr2.Writer(), rd->Reader(), Config.Blocksize, &terminated);
+            proc->Run();
+            delete proc;
+        }
     } else if( Config.IsTranslateByFourI || Config.IsTranslateByFourQ ) {
-        HTranslateByFour<T> tr4(wr, Config.Blocksize, Config.IsTranslateByFourQ);
-        proc = new HStreamProcessor<T>(tr4.Writer(), rd->Reader(), Config.Blocksize, &terminated);
-        proc->Run();
-        delete proc;
+        if( Config.IsIq ) {
+            HIqTranslateByFour<T> tr4(wr, Config.Blocksize, Config.IsTranslateByFourQ);
+            proc = new HStreamProcessor<T>(tr4.Writer(), rd->Reader(), Config.Blocksize, &terminated);
+            proc->Run();
+            delete proc;
+        } else {
+            HTranslateByFour<T> tr4(wr, Config.Blocksize, Config.IsTranslateByFourQ);
+            proc = new HStreamProcessor<T>(tr4.Writer(), rd->Reader(), Config.Blocksize, &terminated);
+            proc->Run();
+            delete proc;
+        }
     } else {
         std::cout << "Called RunTranslator() for an operation that is not translation!" << std::endl;
         return -1;
