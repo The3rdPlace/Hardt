@@ -44,6 +44,7 @@ class HFftOutput : public HOutput<T, HFftResults>
 
         int _size;
         int _average;
+        bool _isIq;
 
         double* _spectrum;
         std::complex<double>* _fftResult;
@@ -123,6 +124,66 @@ class HFftOutput : public HOutput<T, HFftResults>
          * have not provided zoomRate != 0, zooming will not be setup and be available.!
          */
         HFftOutput(int size, int average, HWriterConsumer<T>* consumer, HWindow<T>* window, H_SAMPLE_RATE zoomRate = 0, int zoomFactor = 1, int zoomCenter = 0);
+
+        /** Create a new HFft output that writes to a writer
+        *
+        * @param size The FFT size (1024 is a good choice for analytic use,
+        *        256 is recommended for realtime applications)
+        * @param average The number of FFT's to accumulate and average before
+        *                calling the result writer.
+        * @param writer The result writer (most likely a HCustomerWriter<HFftResults>*)
+        * @param window The window to use before calculating the FFT
+        * @param isIq If set to true then the input must be IQ data and the returned
+        *             spectrum then contains negative as well as positive frequencies.
+        * If you intend to use scaling, you _must_ initialize the HFftOutput with a
+        * samplerate. You can set the factor to 1 initially to disable zooming. But if you
+        * have not provided zoomRate != 0, zooming will not be setup and be available.!
+        */
+        HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* window, bool isIq);
+
+        /** Create a new HFft output that writes to a writer
+        *
+        * @param size The FFT size (1024 is a good choice for analytic use,
+        *        256 is recommended for realtime applications)
+        * @param average The number of FFT's to accumulate and average before
+        *                calling the result writer.
+        * @param consumer The upstream writer that should write to this component
+        * @param window The window to use before calculating the FFT
+        * @param isIq If set to true then the input must be IQ data and the returned
+        *             spectrum then contains negative as well as positive frequencies.
+        * If you intend to use scaling, you _must_ initialize the HFftOutput with a
+        * samplerate. You can set the factor to 1 initially to disable zooming. But if you
+        * have not provided zoomRate != 0, zooming will not be setup and be available.!
+        */
+        HFftOutput(int size, int average, HWriterConsumer<T>* consumer, HWindow<T>* window, bool isIq);
+
+        /** Create a new HFft output that writes to a writer
+        *
+        * @param size The FFT size (1024 is a good choice for analytic use,
+        *        256 is recommended for realtime applications)
+        * @param average The number of FFT's to accumulate and average before
+        *                calling the result writer.
+        * @param writer The result writer (most likely a HCustomerWriter<HFftResults>*)
+        * @param window The window to use before calculating the FFT
+        * If you intend to use scaling, you _must_ initialize the HFftOutput with a
+        * samplerate. You can set the factor to 1 initially to disable zooming. But if you
+        * have not provided zoomRate != 0, zooming will not be setup and be available.!
+        */
+        //HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* window);
+
+        /** Create a new HFft output that writes to a writer
+        *
+        * @param size The FFT size (1024 is a good choice for analytic use,
+        *        256 is recommended for realtime applications)
+        * @param average The number of FFT's to accumulate and average before
+        *                calling the result writer.
+        * @param consumer The upstream writer that should write to this component
+        * @param window The window to use before calculating the FFT
+        * If you intend to use scaling, you _must_ initialize the HFftOutput with a
+        * samplerate. You can set the factor to 1 initially to disable zooming. But if you
+        * have not provided zoomRate != 0, zooming will not be setup and be available.!
+        */
+        //HFftOutput(int size, int average, HWriterConsumer<T>* consumer, HWindow<T>* window);
 
         /**
          * Default destructor

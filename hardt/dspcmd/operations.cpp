@@ -446,7 +446,7 @@ int RunFFTMagnitudePlot()
     if( Config.FCenter > 0 ) {
         fft = new HFftOutput<T>(Config.FFTSize, Config.Average, &fftWriter, new HHahnWindow<T>(), Config.Rate, Config.ZoomFactor, Config.FCenter);
     } else {
-        fft = new HFftOutput<T>(Config.FFTSize, Config.Average, &fftWriter, new HHahnWindow<T>());
+        fft = new HFftOutput<T>(Config.FFTSize, Config.Average, &fftWriter, new HHahnWindow<T>(), Config.IsIq);
     }
 
     // Buffer for the accumulated spectrum values

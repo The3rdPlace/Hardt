@@ -658,7 +658,8 @@ bool VerifyConfig()
             !Config.IsFilter &&
             !Config.IsTranslateByTwo &&
             !Config.IsTranslateByFourI &&
-            !Config.IsTranslateByFourQ ) {
+            !Config.IsTranslateByFourQ &&
+            !Config.IsFFTMagnitudeGnuPlot ) {
 
             if( Config.IsFilter && strcmp(Config.FilterName, "HFirFilter") != 0 ) {
                 std::cout << "Selected filter operation does not support IQ data." << std::endl;

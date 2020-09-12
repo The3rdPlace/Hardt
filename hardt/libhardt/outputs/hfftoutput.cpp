@@ -12,6 +12,7 @@ HFftOutput<T>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, H
     HOutput<T, HFftResults>(writer, size),
     _size(size),
     _average(average),
+    _isIq(false),
     _count(0),
     _window(window),
     _zoomRate(zoomRate),
@@ -28,6 +29,7 @@ HFftOutput<T>::HFftOutput(int size, int average, HWriterConsumer<T>* consumer, H
     HOutput<T, HFftResults>(size, consumer),
     _size(size),
     _average(average),
+    _isIq(false),
     _count(0),
     _window(window),
     _zoomRate(zoomRate),
@@ -36,6 +38,40 @@ HFftOutput<T>::HFftOutput(int size, int average, HWriterConsumer<T>* consumer, H
     _zoomEnabled(false)
 {
     HLog("HFftOutput(%d, %d, ..., %d, %d, %d)", size, average, zoomRate, zoomFactor, zoomCenter);
+    Init();
+}
+
+template <class T>
+HFftOutput<T>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* window, bool isIq):
+    HOutput<T, HFftResults>(writer, size),
+    _size(size),
+    _average(average),
+    _isIq(isIq),
+    _count(0),
+    _window(window),
+    _zoomRate(0),
+    _zoomFactor(1),
+    _zoomCenter(0),
+    _zoomEnabled(false)
+{
+    HLog("HFftOutput(%d, %d, ...)", size, average);
+    Init();
+}
+
+template <class T>
+HFftOutput<T>::HFftOutput(int size, int average, HWriterConsumer<T>* consumer, HWindow<T>* window, bool isIq):
+    HOutput<T, HFftResults>(size, consumer),
+    _size(size),
+    _average(average),
+    _isIq(isIq),
+    _count(0),
+    _window(window),
+    _zoomRate(0),
+    _zoomFactor(1),
+    _zoomCenter(0),
+    _zoomEnabled(false)
+{
+    HLog("HFftOutput(%d, %d, ...)", size, average);
     Init();
 }
 
@@ -132,9 +168,20 @@ int HFftOutput<T>::Output(T* src, size_t size)
 
     // Get the spectrum of the (possibly zoomed) input data
     // and add to the averaging buffer
-    _fft->FFT(input, _fftResult);
-    for( int i = 0; i < size / 2; i++ ) {
-        _result[i] += _fftResult[i];
+    if( _isIq ) {
+        std::complex<T> _cxInput[size];
+        for( int i = 0; i < size; i += 2 ) {
+            _cxInput[i] = std::complex<T>(input[i], input[i + 1]);
+        }
+        _fft->FFT(_cxInput, _fftResult);
+        for (int i = 0; i < size / 2; i++) {
+            _result[i] += _fftResult[i];
+        }
+    } else {
+        _fft->FFT(input, _fftResult);
+        for (int i = 0; i < size / 2; i++) {
+            _result[i] += _fftResult[i];
+        }
     }
 
     // Did we reach averaging target ?
@@ -198,6 +245,31 @@ HFftOutput<int16_t>::HFftOutput(int size, int average, HWriterConsumer<int16_t>*
 template
 HFftOutput<int32_t>::HFftOutput(int size, int average, HWriterConsumer<int32_t>* consumer, HWindow<int32_t>* window, int zoomFactor, int zoomCenter, H_SAMPLE_RATE zoomRate);
 
+template
+HFftOutput<int8_t>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<int8_t>* window, bool isIq);
+
+template
+HFftOutput<uint8_t>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<uint8_t>* window, bool isIq);
+
+template
+HFftOutput<int16_t>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<int16_t>* window, bool isIq);
+
+template
+HFftOutput<int32_t>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<int32_t>* window, bool isIq);
+
+template
+HFftOutput<int8_t>::HFftOutput(int size, int average, HWriterConsumer<int8_t>* consumer, HWindow<int8_t>* window, bool isIq);
+
+template
+HFftOutput<uint8_t>::HFftOutput(int size, int average, HWriterConsumer<uint8_t>* consumer, HWindow<uint8_t>* window, bool isIq);
+
+template
+HFftOutput<int16_t>::HFftOutput(int size, int average, HWriterConsumer<int16_t>* consumer, HWindow<int16_t>* window, bool isIq);
+
+template
+HFftOutput<int32_t>::HFftOutput(int size, int average, HWriterConsumer<int32_t>* consumer, HWindow<int32_t>* window, bool isIq);
+
+// Output
 template
 int HFftOutput<int8_t>::Output(int8_t* src, size_t size);
 
