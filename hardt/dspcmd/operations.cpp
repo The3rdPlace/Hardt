@@ -336,7 +336,7 @@ void FFTMagnitudeShowGnuDBPlot(double reference, double ignore, bool skipInfinit
 
     // Use zooming ?
     int rate = Config.Rate;
-    if( Config.ZoomFactor > 0 ) {
+    if( Config.ZoomFactor > 0 && Config.FCenter > 0 ) {
         rate /= Config.ZoomFactor;
         Config.FStart = Config.FCenter - ((rate / 2) / 2);
     }
