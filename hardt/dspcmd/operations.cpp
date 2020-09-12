@@ -855,7 +855,11 @@ int RunFilter()
     HFilter<T>* filter;
     if( strcmp(Config.FilterName, "HFirFilter") == 0 )
     {
-        filter = HFirFilter<T>::Create((HReader<T>*) rd, Config.Blocksize, Config.FilterCoeffs);
+        if( Config.IsIq ) {
+            filter = HIqFirFilter<T>::Create((HReader<T>*) rd, Config.Blocksize, Config.FilterCoeffs);
+        } else {
+            filter = HFirFilter<T>::Create((HReader<T>*) rd, Config.Blocksize, Config.FilterCoeffs);
+        }
     }
     else if( strcmp(Config.FilterName, "HIirFilter") == 0 )
     {
@@ -2074,7 +2078,7 @@ int RunDecimator()
         return -1;
     }
 
-    // Create  decimator and a processor
+    // Create decimator and a processor
     HDecimator<T> dcm(wr, Config.DecimateFactor, Config.Blocksize);
     HStreamProcessor<T> proc(dcm.Writer(), rd->Reader(), Config.Blocksize, &terminated);
     proc.Run(Config.BlockCount);
