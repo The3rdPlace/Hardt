@@ -354,25 +354,11 @@ void FFTMagnitudeShowGnuDBPlot(double reference, double ignore, bool skipInfinit
     fprintf(gnuplotPipe, "set xlabel \"Hz\" offset 0,0\n");
     fprintf(gnuplotPipe, "set ylabel \"DB\" offset 0,0\n");
     fprintf(gnuplotPipe, "plot '-' with linespoints linestyle 1 title \"%d point fft\"\n", Config.Blocksize);
-    for( int bin = 0; bin < (Config.FFTSize / 4); bin++ )
-    {
-        // Plot DB value
-        double ratio = displayedSpectrum[bin] / ref;
-        double db = (double) 20 * log10(ratio);
-        if( isinff(db) ) {
-            // skip infinitely small values ?(with respect to the discrete sample)
-            if( skipInfinite ) {
-                continue;
-            } else {
-                db = 0;
-            }
-        }
-        if( !isnan(db) ) {
-            fprintf(gnuplotPipe, "%lf %lf\n", ((double) bin * fdelta) + Config.FStart, db);
-        }
-    }
     if( Config.IsIq ) {
-        for (int bin = Config.FFTSize / 4; bin < Config.FFTSize/2; bin++) {
+        for (int bin = (Config.FFTSize / 4); bin < (Config.FFTSize / 2) - 1; bin++)
+        {
+            double binFrequency = Config.FStart - ((Config.FFTSize / 2) - (double) bin) * fdelta;
+
             // Plot DB value
             double ratio = displayedSpectrum[bin] / ref;
             double db = (double) 20 * log10(ratio);
@@ -385,8 +371,27 @@ void FFTMagnitudeShowGnuDBPlot(double reference, double ignore, bool skipInfinit
                 }
             }
             if (!isnan(db)) {
-                fprintf(gnuplotPipe, "%lf %lf\n", Config.FStart - ((double) (bin - (Config.FFTSize / 4)) * fdelta), db);
+                fprintf(gnuplotPipe, "%lf %lf\n", binFrequency, db);
             }
+        }
+    }
+    for( int bin = 0; bin < (Config.FFTSize / (Config.IsIq ? 4 : 2)); bin++ )
+    {
+        double binFrequency = ((double) bin * fdelta) + Config.FStart;
+
+        // Plot DB value
+        double ratio = displayedSpectrum[bin] / ref;
+        double db = (double) 20 * log10(ratio);
+        if( isinff(db) ) {
+            // skip infinitely small values ?(with respect to the discrete sample)
+            if( skipInfinite ) {
+                continue;
+            } else {
+                db = 0;
+            }
+        }
+        if( !isnan(db) ) {
+            fprintf(gnuplotPipe, "%lf %lf\n", binFrequency, db);
         }
     }
     fprintf(gnuplotPipe, "e");
