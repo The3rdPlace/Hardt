@@ -54,7 +54,7 @@ HFftOutput<T>::HFftOutput(int size, int average, HWriter<HFftResults>* writer, H
     _zoomCenter(0),
     _zoomEnabled(false)
 {
-    HLog("HFftOutput(%d, %d, ...)", size, average);
+    HLog("HFftOutput(%d, %d, ...)", _size, average);
     Init();
 }
 
@@ -71,7 +71,7 @@ HFftOutput<T>::HFftOutput(int size, int average, HWriterConsumer<T>* consumer, H
     _zoomCenter(0),
     _zoomEnabled(false)
 {
-    HLog("HFftOutput(%d, %d, ...)", size, average);
+    HLog("HFftOutput(%d, %d, ...)", _size, average);
     Init();
 }
 
@@ -79,20 +79,21 @@ template <class T>
 void HFftOutput<T>::Init()
 {
     // Allocate a buffer for the spectrum and phase values
-    _spectrum = new double[_size];
-    memset((void*) _spectrum, 0, _size * sizeof(double));
-    _fftResult = new std::complex<double>[_size];
+    _spectrum = new double[_size / 2];
+    memset((void*) _spectrum, 0, (_size / 2) * sizeof(double));
+    _fftResult = new std::complex<double>[_size / 2];
     _result = new std::complex<double>[_size / 2];
     memset((void*) _result, 0, (_size / 2) * sizeof(std::complex<double>));
 
-    // Allocate a buffer for intermediate results
+    // Allocate buffers for intermediate results
     _buffer = new T[_size];
+    _cxInput = new std::complex<T>[_size / 2];
 
     // Set window size
-    _window->SetSize(_size);
+    _window->SetSize(_isIq ? (_size / 2) : _size);
 
     // Create the fft
-    _fft = new HFft<T>(_size, _window);
+    _fft = new HFft<T>(_isIq ? (_size / 2) : _size, _window);
 
     // Setup zooming - even if the factor is 1 at the moment
     if( _zoomRate != 0 ) {
@@ -152,7 +153,6 @@ T* HFftOutput<T>::Zoom(T* src, size_t size) {
         return _zoomOutput;
     }
     return nullptr;
-
 }
 
 template <class T>
@@ -169,26 +169,32 @@ int HFftOutput<T>::Output(T* src, size_t size)
     // Get the spectrum of the (possibly zoomed) input data
     // and add to the averaging buffer
     if( _isIq ) {
-        std::complex<T> _cxInput[size];
+
         for( int i = 0; i < size; i += 2 ) {
-            _cxInput[i] = std::complex<T>(input[i], input[i + 1]);
+            _cxInput[i / 2] = std::complex<T>(input[i], input[i + 1]);
         }
+
         _fft->FFT(_cxInput, _fftResult);
-        for (int i = 0; i < size / 2; i++) {
+
+        for (int i = 0; i <  size / 2; i++) {
             _result[i] += _fftResult[i];
         }
+
     } else {
+
         _fft->FFT(input, _fftResult);
+
         for (int i = 0; i < size / 2; i++) {
             _result[i] += _fftResult[i];
         }
+
     }
 
     // Did we reach averaging target ?
     if( ++_count >= _average )
     {
         // Calculate spectrum
-        for( int i = 0; i < size / 2; i++ )
+        for( int i = 0; i < _size / 2; i++ )
         {
             // Get absolute value at point n
             double value = std::abs(_result[i]);
@@ -198,18 +204,16 @@ int HFftOutput<T>::Output(T* src, size_t size)
         }
 
         // Call the callback function with the calculated spectrum
-        // Note that this FFT algorithm reverses the spectrum (even and odd is reversed)
-        // so we need to return the first N/2 bins, not the second part of the spectrum
         HFftResults results;
         results.Spectrum = &_spectrum[0];
         results.Result = &_result[0];
-        results.Size = size / 2;
+        results.Size = _size / 2;
         HOutput<T, HFftResults>::Ready(&results, 1);
 
         // Reset results
         _count = 0;
-        memset((void*) _spectrum, 0, size * sizeof(double));
-        memset((void*) _result, 0, (size / 2) * sizeof(std::complex<double>));
+        memset((void*) _spectrum, 0, (_size / 2) * sizeof(double));
+        memset((void*) _result, 0, (_size / 2) * sizeof(std::complex<double>));
     }
 
     // We took the entire window
