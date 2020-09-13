@@ -342,7 +342,7 @@ void FFTMagnitudeShowGnuDBPlot(double reference, double ignore, bool skipInfinit
     }
 
     // Calculate frequency span per bin
-    double fdelta = ((double) rate / 2) / ((double)Config.FFTSize / 2);
+    double fdelta = ((double) rate / 2) / ((double)Config.FFTSize / (Config.IsIq ? 4 : 2));
     if( fdelta < 1 ) {
         std::cout << "Too low fft size. Unable to display plot! (reduce blocksize)" << std::endl;
         return;
@@ -354,7 +354,7 @@ void FFTMagnitudeShowGnuDBPlot(double reference, double ignore, bool skipInfinit
     fprintf(gnuplotPipe, "set xlabel \"Hz\" offset 0,0\n");
     fprintf(gnuplotPipe, "set ylabel \"DB\" offset 0,0\n");
     fprintf(gnuplotPipe, "plot '-' with linespoints linestyle 1 title \"%d point fft\"\n", Config.Blocksize);
-    for( int bin = 0; bin < (Config.FFTSize / 2); bin++ )
+    for( int bin = 0; bin < (Config.FFTSize / 4); bin++ )
     {
         // Plot DB value
         double ratio = displayedSpectrum[bin] / ref;
@@ -369,6 +369,24 @@ void FFTMagnitudeShowGnuDBPlot(double reference, double ignore, bool skipInfinit
         }
         if( !isnan(db) ) {
             fprintf(gnuplotPipe, "%lf %lf\n", ((double) bin * fdelta) + Config.FStart, db);
+        }
+    }
+    if( Config.IsIq ) {
+        for (int bin = Config.FFTSize / 4; bin < Config.FFTSize/2; bin++) {
+            // Plot DB value
+            double ratio = displayedSpectrum[bin] / ref;
+            double db = (double) 20 * log10(ratio);
+            if (isinff(db)) {
+                // skip infinitely small values ?(with respect to the discrete sample)
+                if (skipInfinite) {
+                    continue;
+                } else {
+                    db = 0;
+                }
+            }
+            if (!isnan(db)) {
+                fprintf(gnuplotPipe, "%lf %lf\n", Config.FStart - ((double) (bin - (Config.FFTSize / 4)) * fdelta), db);
+            }
         }
     }
     fprintf(gnuplotPipe, "e");
