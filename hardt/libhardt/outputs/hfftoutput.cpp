@@ -81,7 +81,7 @@ void HFftOutput<T>::Init()
     // Allocate a buffer for the spectrum and phase values
     _spectrum = new double[_size / 2];
     memset((void*) _spectrum, 0, (_size / 2) * sizeof(double));
-    _fftResult = new std::complex<double>[_size / 2];
+    _fftResult = new std::complex<double>[(_isIq ? (_size / 2) : _size)];
     _result = new std::complex<double>[_size / 2];
     memset((void*) _result, 0, (_size / 2) * sizeof(std::complex<double>));
 
