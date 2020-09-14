@@ -108,5 +108,6 @@
 #include "hiq2absconverter.h"
 #include "hiqtranslatebyfour.h"
 #include "hiqtranslatebytwo.h"
+#include "hiqmultiplier.h"
 
 #endif

@@ -119,6 +119,7 @@ Include api function declarations
 #include "hiq2absconverter.cpp"
 #include "hiqtranslatebyfour.cpp"
 #include "hiqtranslatebytwo.cpp"
+#include "hiqmultiplier.cpp"
 
 /********************************************************************
 Debug and diagnostics

@@ -75,6 +75,7 @@ target_sources(hardt_test
 	hiq2absconverter_test.cpp
 	hiqtranslatebyfour_test.cpp
 	hiqtranslatebytwo_test.cpp
+	hiqmultiplier_test.cpp
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
