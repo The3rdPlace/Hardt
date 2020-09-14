@@ -591,12 +591,12 @@
     \page tr4i
     Syntax: dpscmd -tr4i
 
-    Translate input samples by four and output I branch
+    Translate input samples by four (multiply with sine wave at fs/4)
 
     \page tr4q
     dpscmd -tr4q
 
-    Translate input samples by four and output Q branch
+    Translate input samples by four (multiply with cosine wave at fs/4)
 
     \page up
     Syntax: dspcmd -up factor

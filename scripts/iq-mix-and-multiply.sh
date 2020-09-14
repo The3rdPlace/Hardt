@@ -18,16 +18,18 @@ make -j 10
 #hardt/dspcmd/dspcmd -iqa -if -50-100khz_mixed.pcm -of  -50-100khz_mixed_abs.pcm && \
 #hardt/dspcmd/dspcmd -fmgp -if -50-100khz_mixed_abs.pcm -r 1152000
 
+
+
 # Test IQ to abs - convert to real without negative frequencies = nonsens output spectrum
-hardt/dspcmd/dspcmd -iqa -if 100khz.pcm -of  100khz_abs.pcm && \
-hardt/dspcmd/dspcmd -fmgp -if 100khz_abs.pcm -r 1152000
+#hardt/dspcmd/dspcmd -iqa -if 100khz.pcm -of  100khz_abs.pcm && \
+#hardt/dspcmd/dspcmd -fmgp -if 100khz_abs.pcm -r 1152000
 
 
-#
-#hardt/dspcmd/dspcmd -flt HFirFilter lp150khz.dat -if 200khz.pcm -of 200khz_filtered.pcm -iq -force && \
-#hardt/dspcmd/dspcmd -iqr -if 200khz_filtered.pcm -of 200khz_filtered_real.pcm -force -v
-#hardt/dspcmd/dspcmd -fmgp -if 200khz_filtered_real.pcm -r 1152000
-#
-#hardt/dspcmd/dspcmd -flt HFirFilter lp150khz.dat -if 300khz.pcm -of 300khz_filtered.pcm -iq -force && \
-#hardt/dspcmd/dspcmd -iqr -if 300khz_filtered.pcm -of 300khz_filtered_real.pcm -force -v
-#hardt/dspcmd/dspcmd -fmgp -if 300khz_filtered_real.pcm -r 1152000
+
+# Test IQ Mixing - Mix 100KHz signal with 50KHz LO = 150KHz
+hardt/dspcmd/dspcmd -mp 50000 -if 100khz.pcm -of 100khz_multiplied.pcm -force -r 1152000 -iq && \
+hardt/dspcmd/dspcmd -fmgp -if 100khz_multiplied.pcm -r 1152000 -iq
+
+# Test IQ Mixing - Mix 100KHz signal with -50KHz LO = 50KHz
+hardt/dspcmd/dspcmd -mp -50000 -if 100khz.pcm -of 100khz_multiplied.pcm -force -r 1152000 -iq && \
+hardt/dspcmd/dspcmd -fmgp -if 100khz_multiplied.pcm -r 1152000 -iq

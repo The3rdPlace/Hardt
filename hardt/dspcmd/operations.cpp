@@ -818,11 +818,15 @@ int RunMultiplier()
     }
 
     // Create  multiplier
-    HMultiplier<T> multiplier(rd, Config.Rate, Config.Frequency, 10, Config.Blocksize);
-
-    // Create processor
-    HStreamProcessor<T> proc(wr, (HReader<T>*) &multiplier, Config.Blocksize, &terminated);
-    proc.Run(Config.BlockCount);
+    if( Config.IsIq ) {
+        HIqMultiplier<T> multiplier(rd, Config.Rate, Config.Frequency, 10, Config.Blocksize);
+        HStreamProcessor<T> proc(wr, (HReader<T>*) &multiplier, Config.Blocksize, &terminated);
+        proc.Run(Config.BlockCount);
+    } else {
+        HMultiplier<T> multiplier(rd, Config.Rate, Config.Frequency, 10, Config.Blocksize);
+        HStreamProcessor<T> proc(wr, (HReader<T>*) &multiplier, Config.Blocksize, &terminated);
+        proc.Run(Config.BlockCount);
+    }
 
     // Delete the reader and writer
     if( strcmp(Config.FileFormat, "wav") == 0 )

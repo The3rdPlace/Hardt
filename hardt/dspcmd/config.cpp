@@ -510,11 +510,11 @@ bool parseArguments(int argc, char** argv)
             std::cout << std::endl;
 
             std::cout << "$ dpscmd -tr4i" << std::endl;
-            std::cout << "Translate input samples by four and output I branch" << std::endl;
+            std::cout << "Translate input samples by four (multiply with sin wave at fs/4)" << std::endl;
             std::cout << std::endl;
 
             std::cout << "$ dpscmd -tr4q" << std::endl;
-            std::cout << "Translate input samples by four and output Q branch" << std::endl;
+            std::cout << "Translate input samples by four (multiply with cosine wave at fs/4)" << std::endl;
             std::cout << std::endl;
 
             std::cout << "$ dpscmd -fdcm factor coeffs" << std::endl;
@@ -664,7 +664,8 @@ bool VerifyConfig()
             !Config.IsTranslateByTwo &&
             !Config.IsTranslateByFourI &&
             !Config.IsTranslateByFourQ &&
-            !Config.IsFFTMagnitudeGnuPlot ) {
+            !Config.IsFFTMagnitudeGnuPlot &&
+            !Config.IsMultiplier ) {
 
             if( Config.IsFilter && strcmp(Config.FilterName, "HFirFilter") != 0 ) {
                 std::cout << "Selected filter operation does not support IQ data." << std::endl;

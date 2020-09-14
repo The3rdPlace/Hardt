@@ -59,9 +59,17 @@ void HIqMultiplier<T>::Init(H_SAMPLE_RATE rate, int frequency, int oscillatorAmp
     _oscillatorCosBuffer = new T[blocksize / 2];
     HLog("Allocated local buffers");
 
-    _localSinOscillator = new HLocalOscillator<T>(rate, frequency, oscillatorAmplitude);
-    _localCosOscillator = new HLocalOscillator<T>(rate, frequency, oscillatorAmplitude, 0);
-    HLog("Created local oscilators");
+    if( frequency < 0 ) {
+        // Negative LO frequency
+        HLog("Created local oscillators running at negative frequencies %d", frequency);
+        _localSinOscillator = new HLocalOscillator<T>(rate, abs(frequency), oscillatorAmplitude, 0);
+        _localCosOscillator = new HLocalOscillator<T>(rate, abs(frequency), oscillatorAmplitude);
+    } else {
+        // Positive LO frequency
+        HLog("Created local oscillators running at positive frequencies %d", frequency);
+        _localSinOscillator = new HLocalOscillator<T>(rate, frequency, oscillatorAmplitude);
+        _localCosOscillator = new HLocalOscillator<T>(rate, frequency, oscillatorAmplitude, 0);
+    }
 }
 
 template <class T>
@@ -123,23 +131,24 @@ int HIqMultiplier<T>::Write(T* src, size_t blocksize)
 template <class T>
 void HIqMultiplier<T>::Mix(T* src, T* dest, size_t blocksize)
 {
-    // Read localoscillator signal and convert to complex signal
+    // Read localoscillator signals, 90 degrees offset
     _localSinOscillator->Read(_oscillatorSinBuffer, blocksize / 2);
     _localCosOscillator->Read(_oscillatorCosBuffer, blocksize / 2);
 
-    // Multiply inputs (= convolution in freq. domain = frequency shift)
+    // Complex multiplication.
+    // Need information on complex multiplication and ways to optimize it?
+    // Here's a good primer: https://mathworld.wolfram.com/ComplexMultiplication.html
+    T ac;
+    T bd;
+    T ab_cd;
     for( int i = 0; i < blocksize; i += 2 )
     {
-        T rSrc = src[i];
-        T jSrc = src[i + 1];
-        T rOsc = _oscillatorSinBuffer[i / 2];
-        T jOsc = _oscillatorCosBuffer[i / 2];
+        ac = src[i] * _oscillatorSinBuffer[i / 2];
+        bd = src[i + 1] * _oscillatorCosBuffer[i / 2];
+        ab_cd = (src[i] + src[i + 1]) * (_oscillatorSinBuffer[i / 2] + _oscillatorCosBuffer[i / 2]);
 
-        T R = (rSrc * rOsc) + (jSrc * jOsc);
-        T J = ((rSrc + jSrc) * (rOsc + jOsc)) - (rSrc * rOsc) - (jSrc * jOsc);
-
-        dest[i] = R;
-        dest[i + 1] = J;
+        dest[i] = ac - bd;
+        dest[i + 1] = ab_cd - ac - bd;
     }
 }
 
