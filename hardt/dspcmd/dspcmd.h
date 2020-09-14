@@ -547,6 +547,16 @@
 
     Convert realvalued samples to IQ samples
 
+    \page iqr
+    Syntax: dpscmd -iqr
+
+    Convert IQ samples to realvalued samples
+
+    \page iqa
+    Syntax: dpscmd -iqa
+
+    Convert IQ samples to absolute (realvalued) samples
+
     \page fft
     Syntax: dspcmd -fft
 

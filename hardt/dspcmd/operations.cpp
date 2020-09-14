@@ -1886,6 +1886,52 @@ int RunIq2Real()
 }
 
 template <typename T>
+int RunIq2Abs()
+{
+    // Create reader
+    HReader<T>* rd;
+    if( strcmp(Config.InFileFormat, "wav") == 0 )
+    {
+        rd = new HWavReader<T>(Config.InputFile);
+    }
+    else if( strcmp(Config.InFileFormat, "pcm") == 0 )
+    {
+        rd = new HFileReader<T>(Config.InputFile);
+    }
+    else
+    {
+        std::cout << "Unknown input file format " << Config.InFileFormat << std::endl;
+        return -1;
+    }
+
+    // Create writer
+    HWriter<T>* wr = new HFileWriter<T>(Config.OutputFile);
+
+    // Create  converter
+    HIq2AbsConverter<T>* converter = new HIq2AbsConverter<T>(rd, Config.Blocksize);
+
+    // Create processor
+    HStreamProcessor<T> proc(wr, converter->Reader(), Config.Blocksize, &terminated);
+    proc.Run(Config.BlockCount);
+
+    // Delete the reader and writer
+    if( strcmp(Config.InFileFormat, "wav") == 0 )
+    {
+        delete (HWavReader<T>*) rd;
+    }
+    else if( strcmp(Config.InFileFormat, "pcm") == 0 )
+    {
+        delete (HFileReader<T>*) rd;
+    }
+    delete (HFileWriter<T>*) wr;
+
+    // Delete the converter
+    delete converter;
+
+    return 0;
+}
+
+template <typename T>
 int RunFft()
 {
     // Create reader
@@ -3152,6 +3198,22 @@ int RunOperation()
         }
 
         return RunIq2Real<T>();
+    }
+
+    if( Config.IsIq2Abs )
+    {
+        if( Config.InputFile == NULL )
+        {
+            std::cout << "No input file (-if)" << std::endl;
+            return -1;
+        }
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file (-of)" << std::endl;
+            return -1;
+        }
+
+        return RunIq2Abs<T>();
     }
 
     if( Config.IsFft )

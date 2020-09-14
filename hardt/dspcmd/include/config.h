@@ -58,6 +58,7 @@ struct DspCmdConfig
     bool IsSampleTypeConverter = false;
     bool IsIq2Real = false;
     bool IsIq = false;
+    bool IsIq2Abs = false;
 
     char* InFileFormat = NULL;
     char* OutFileFormat = NULL;
