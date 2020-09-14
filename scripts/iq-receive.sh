@@ -18,10 +18,14 @@ make -j 10
 
 
 
-# Capture 127MHz Kastrup Volmet - at -50KHz, 100KHz, 150KHz, 200KHz and 300KHz
+# Capture 127MHz Kastrup Volmet - at -50KHz, 0KHz, 100KHz, 150KHz, 200KHz and 300KHz
 hardt/dspcmd/dspcmd -id 0 -it RTL 127050000 IQ -rf -of -50khz.pcm -force -bc 1000 -r 1152000 -v && \
 hardt/dspcmd/dspcmd -iqr -if -50khz.pcm -of -50khzreal.pcm -force -v
 hardt/dspcmd/dspcmd -fmgp -if -50khzreal.pcm -r 1152000
+#
+hardt/dspcmd/dspcmd -id 0 -it RTL 127000000 IQ -rf -of 0khz.pcm -force -bc 1000 -r 1152000 -v && \
+hardt/dspcmd/dspcmd -iqr -if 0khz.pcm -of 0khzreal.pcm -force -v
+hardt/dspcmd/dspcmd -fmgp -if 0khzreal.pcm -r 1152000
 #
 hardt/dspcmd/dspcmd -id 0 -it RTL 126900000 IQ -rf -of 100khz.pcm -force -bc 1000 -r 1152000 -v && \
 hardt/dspcmd/dspcmd -iqr -if 100khz.pcm -of 100khzreal.pcm -force -v
