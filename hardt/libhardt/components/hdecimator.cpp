@@ -4,13 +4,14 @@
 #include "hdecimator.h"
 
 template <class T>
-HDecimator<T>::HDecimator(HWriter<T>* writer, int factor, size_t blocksize, bool collect):
+HDecimator<T>::HDecimator(HWriter<T>* writer, int factor, size_t blocksize, bool collect, HProbe<T>* probe):
     _blocksize(blocksize),
     _factor(factor),
     _length(0),
     _writer(writer),
     _reader(nullptr),
-    _collect(collect)
+    _collect(collect),
+    _probe(probe)
 {
     HLog("HDecimator(HWriter*, blocksize=%d)", blocksize);
     Init();
@@ -18,13 +19,14 @@ HDecimator<T>::HDecimator(HWriter<T>* writer, int factor, size_t blocksize, bool
 }
 
 template <class T>
-HDecimator<T>::HDecimator(HWriterConsumer<T>* consumer, int factor, size_t blocksize, bool collect):
+HDecimator<T>::HDecimator(HWriterConsumer<T>* consumer, int factor, size_t blocksize, bool collect, HProbe<T>* probe):
     _blocksize(blocksize),
     _factor(factor),
     _length(0),
     _writer(nullptr),
     _reader(nullptr),
-    _collect(collect)
+    _collect(collect),
+    _probe(probe)
 {
     HLog("HDecimator(HWriterConsumer*, blocksize=%d)", blocksize);
     Init();
@@ -32,13 +34,14 @@ HDecimator<T>::HDecimator(HWriterConsumer<T>* consumer, int factor, size_t block
 }
 
 template <class T>
-HDecimator<T>::HDecimator(HReader<T>* reader, int factor, size_t blocksize, bool collect):
+HDecimator<T>::HDecimator(HReader<T>* reader, int factor, size_t blocksize, bool collect, HProbe<T>* probe):
     _blocksize(blocksize),
     _factor(factor),
     _length(0),
     _writer(nullptr),
     _reader(reader),
-    _collect(collect)
+    _collect(collect),
+    _probe(probe)
 {
     HLog("HDecimator(HReader*, blocksize=%d)", blocksize);
     Init();
@@ -84,6 +87,9 @@ int HDecimator<T>::Write(T* src, size_t blocksize)
     }
     if( _length == _blocksize || !_collect ) {
         _writer->Write(_buffer, _length);
+        if( _probe != nullptr ) {
+            _probe->Write(_buffer, _length);
+        }
         _length = 0;
     }
 
@@ -138,8 +144,16 @@ int HDecimator<T>::Read(T* dest, size_t blocksize)
 
         // If not doing a collected read, return what we have now
         if( !_collect ) {
+            if( _probe != nullptr ) {
+                _probe->Write(dest, _length);
+            }
             break;
         }
+    }
+
+    // If collecting, write to probe - if set
+    if( _collect && _probe != nullptr ) {
+        _probe->Write(dest, _length);
     }
 
     // Return complete decimated read
@@ -153,40 +167,40 @@ Explicit instantiation
 
 // HDecimator()
 template
-HDecimator<int8_t>::HDecimator(HWriter<int8_t>* writer, int factor, size_t blocksize, bool collect);
+HDecimator<int8_t>::HDecimator(HWriter<int8_t>* writer, int factor, size_t blocksize, bool collect, HProbe<int8_t>* probe);
 
 template
-HDecimator<uint8_t>::HDecimator(HWriter<uint8_t>* writer, int factor, size_t blocksize, bool collect);
+HDecimator<uint8_t>::HDecimator(HWriter<uint8_t>* writer, int factor, size_t blocksize, bool collect, HProbe<uint8_t>* probe);
 
 template
-HDecimator<int16_t>::HDecimator(HWriter<int16_t>* writer, int factor, size_t blocksize, bool collect);
+HDecimator<int16_t>::HDecimator(HWriter<int16_t>* writer, int factor, size_t blocksize, bool collect, HProbe<int16_t>* probe);
 
 template
-HDecimator<int32_t>::HDecimator(HWriter<int32_t>* writer, int factor, size_t blocksize, bool collect);
+HDecimator<int32_t>::HDecimator(HWriter<int32_t>* writer, int factor, size_t blocksize, bool collect, HProbe<int32_t>* psrobe);
 
 template
-HDecimator<int8_t>::HDecimator(HWriterConsumer<int8_t>* consumer, int factor, size_t blocksize, bool collect);
+HDecimator<int8_t>::HDecimator(HWriterConsumer<int8_t>* consumer, int factor, size_t blocksize, bool collect, HProbe<int8_t>* probe);
 
 template
-HDecimator<uint8_t>::HDecimator(HWriterConsumer<uint8_t>* consumer, int factor, size_t blocksize, bool collect);
+HDecimator<uint8_t>::HDecimator(HWriterConsumer<uint8_t>* consumer, int factor, size_t blocksize, bool collect, HProbe<uint8_t>* probe);
 
 template
-HDecimator<int16_t>::HDecimator(HWriterConsumer<int16_t>* consumer, int factor, size_t blocksize, bool collect);
+HDecimator<int16_t>::HDecimator(HWriterConsumer<int16_t>* consumer, int factor, size_t blocksize, bool collect, HProbe<int16_t>* probe);
 
 template
-HDecimator<int32_t>::HDecimator(HWriterConsumer<int32_t>* consumer, int factor, size_t blocksize, bool collect);
+HDecimator<int32_t>::HDecimator(HWriterConsumer<int32_t>* consumer, int factor, size_t blocksize, bool collect, HProbe<int32_t>* probe);
 
 template
-HDecimator<int8_t>::HDecimator(HReader<int8_t>* reader, int factor, size_t blocksize, bool collect);
+HDecimator<int8_t>::HDecimator(HReader<int8_t>* reader, int factor, size_t blocksize, bool collect, HProbe<int8_t>* probe);
 
 template
-HDecimator<uint8_t>::HDecimator(HReader<uint8_t>* reader, int factor, size_t blocksize, bool collect);
+HDecimator<uint8_t>::HDecimator(HReader<uint8_t>* reader, int factor, size_t blocksize, bool collect, HProbe<uint8_t>* probe);
 
 template
-HDecimator<int16_t>::HDecimator(HReader<int16_t>* reader, int factor, size_t blocksize, bool collect);
+HDecimator<int16_t>::HDecimator(HReader<int16_t>* reader, int factor, size_t blocksize, bool collect, HProbe<int16_t>* probe);
 
 template
-HDecimator<int32_t>::HDecimator(HReader<int32_t>* reader, int factor, size_t blocksize, bool collect);
+HDecimator<int32_t>::HDecimator(HReader<int32_t>* reader, int factor, size_t blocksize, bool collect, HProbe<int32_t>* probe);
 
 // ~HDecimator()
 template

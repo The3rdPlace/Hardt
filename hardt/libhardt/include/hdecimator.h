@@ -18,6 +18,8 @@ class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
         HReader<T>* _reader;
         size_t _blocksize;
 
+        HProbe<T>* _probe;
+
         int _factor;
         T* _buffer;        
         size_t _length;
@@ -27,65 +29,87 @@ class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
 
     public:
 
-        /** Construct a new HDecimator that handle writers.
-
-            Parameters:
-              writer = The downstream writer
-              factor = Decimation factor, 1 or larger
-              blocksize = The expected input and output blocksize
-              collect = Normally you want to use the same blocksize for alle writers
-                        in a chain, but if you are going to use a decimator in a parallel
-                        demultiplexed chain (processing IQ data), it is very important to
-                        write chunks from both branches alternating. In that case, set
-                        'collect=false'. A write of 1024 samples will then immediately
-                        result in a write of 1024/factor samples to the next writer.
+        /**
+         * Construct a new HDecimator that handle writers.
+         *
+         * @param writer The downstream writer
+         * @param factor Decimation factor, 1 or larger
+         * @param blocksize The expected input and output blocksize
+         * @param collect Normally you want to use the same blocksize for alle writers
+         *                in a chain, but if you are going to use a decimator in a parallel
+         *                demultiplexed chain (processing IQ data), it is very important to
+         *                write chunks from both branches alternating. In that case, set
+         *                'collect=false'. A write of 1024 samples will then immediately
+         *                result in a write of 1024/factor samples to the next writer.
+         * @param probe Probe
          */
-        HDecimator(HWriter<T>* writer, int factor, size_t blocksize, bool collect = true);
+        HDecimator(HWriter<T>* writer, int factor, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
 
-        /** Construct a new HDecimator that handle writer consumers.
-
-            Parameters:
-              consumer = The upstream consumer to receive this as a writer
-              factor = Decimation factor, 1 or larger
-              blocksize = The expected input and output blocksize
-              collect = Normally you want to use the same blocksize for alle writers
-                        in a chain, but if you are going to use a decimator in a parallel
-                        demultiplexed chain (processing IQ data), it is very important to
-                        write chunks from both branches alternating. In that case, set
-                        'collect=false'. A write of 1024 samples will then immediately
-                        result in a write of 1024/factor samples to the next writer.
+        /**
+         * Construct a new HDecimator that handle writer consumers.
+         *
+         * @param consumer The upstream consumer to receive this as a writer
+         * @param  factor Decimation factor, 1 or larger
+         * @param blocksize The expected input and output blocksize
+         * @param collect Normally you want to use the same blocksize for alle writers
+         *                in a chain, but if you are going to use a decimator in a parallel
+         *                demultiplexed chain (processing IQ data), it is very important to
+         *                write chunks from both branches alternating. In that case, set
+         *                'collect=false'. A write of 1024 samples will then immediately
+         *                result in a write of 1024/factor samples to the next writer.
+         * @param probe Probe
          */
-        HDecimator(HWriterConsumer<T>* consumer, int factor, size_t blocksize, bool collect = true);
+        HDecimator(HWriterConsumer<T>* consumer, int factor, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
 
-        /** Construct a new HDecimator that handle readers.
-
-              reader = The upstream reader
-              factor = Decimation factor, 1 or larger
-              blocksize = The expected input and output blocksize
-              collect = Normally you want to use the same blocksize for alle readers
-                        in a chain, but if you are going to use a decimator in a parallel
-                        demultiplexed chain (processing IQ data), it is very important to
-                        read chunks from both branches alternating. In that case, set
-                        'collect=false'. Constructing with 'blocksize=1024' then a Read()
-                        with 'blocksize=256' will then be expected.
+        /**
+         * Construct a new HDecimator that handle readers.
+         *
+         * @param reader The upstream reader
+         * @param factor Decimation factor, 1 or larger
+         * @param blocksize The expected input and output blocksize
+         * @param collect Normally you want to use the same blocksize for alle readers
+         *                in a chain, but if you are going to use a decimator in a parallel
+         *                demultiplexed chain (processing IQ data), it is very important to
+         *                read chunks from both branches alternating. In that case, set
+         *                'collect=false'. Constructing with 'blocksize=1024' then a Read()
+         *                with 'blocksize=256' will then be expected.
+         * @param probe Probe
          */
-        HDecimator(HReader<T>* reader, int factor, size_t blocksize, bool collect = true);
+        HDecimator(HReader<T>* reader, int factor, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
 
-        /** Implements HWriterConsumer::SetWriter() */
+        /**
+         * Implements HWriterConsumer::SetWriter()
+         *
+         * @param writer Downstream writer
+         */
         void SetWriter(HWriter<T>* writer) {
             _writer = writer;
         }
 
-        /** Default destructor */
+        /**
+         * Default destructor
+         */
         ~HDecimator();
 
-        /** Write a block of samples */
+        /**
+         * Write a block of samples
+         *
+         * @param src Source buffer
+         * @param blocksize Number of samples to write
+         */
         int Write(T* src, size_t blocksize);
 
-        /** Read a block of samples */
+        /**
+         * Read a block of samples
+         *
+         * @param dest Destination buffer
+         * @param blocksize Number of samples to read
+         */
         int Read(T* dest, size_t blocksize);
 
-        /** Call Start() on up- or downstream components */
+        /**
+         * @return Call Start() on up- or downstream components
+         */
         bool Start() {
             if( _writer != nullptr )
             {
@@ -98,7 +122,9 @@ class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
             return true;
         }
 
-        /** Call Stop() on up- or downstream components */
+        /**
+         * @return Call Stop() on up- or downstream components
+         */
         bool Stop() {
             if( _writer != nullptr )
             {
@@ -111,7 +137,9 @@ class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
             return true;
         }
 
-        /** Execute or carry through a command */
+        /**
+         * Execute or carry through a command
+         */
         bool Command(HCommand* command) {
             if( _writer != nullptr )
             {
@@ -124,8 +152,12 @@ class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
             return true;
         }
 
-        /** Set the decimation factor. Warning: This will reset the buffer position
-            and start collecting samples for a write from position 0 (zero) */
+        /**
+         * Set the decimation factor. Warning: This will reset the buffer position
+         * and start collecting samples for a write from position 0 (zero)
+         *
+         * @param factor Decimation factor
+         */
         void SetFactor(int factor) {
             _factor = factor;
             _length = 0;
