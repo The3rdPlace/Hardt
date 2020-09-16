@@ -4,9 +4,9 @@
 #include "hwavreader.h"
 
 template <class T>
-HWavReader<T>::HWavReader(const char* filename):
-    HWav(filename),
-    HFileReader<T>(filename)
+HWavReader<T>::HWavReader(const char* filename, HProbe<T>* probe):
+    HFileReader<T>(filename, probe),
+    HWav(filename)
 {}
 
 template <class T>
@@ -22,16 +22,16 @@ Explicit instantiation
 
 // HWavReader()
 template
-HWavReader<int8_t>::HWavReader(const char* filename);
+HWavReader<int8_t>::HWavReader(const char* filename, HProbe<int8_t>* probe);
 
 template
-HWavReader<uint8_t>::HWavReader(const char* filename);
+HWavReader<uint8_t>::HWavReader(const char* filename, HProbe<uint8_t>* probe);
 
 template
-HWavReader<int16_t>::HWavReader(const char* filename);
+HWavReader<int16_t>::HWavReader(const char* filename, HProbe<int16_t>* probe);
 
 template
-HWavReader<int32_t>::HWavReader(const char* filename);
+HWavReader<int32_t>::HWavReader(const char* filename, HProbe<int32_t>* probe);
 
 // Start()
 template

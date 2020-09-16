@@ -1,12 +1,6 @@
 #ifndef __HSOUNDCARDREADER_CPP
 #define __HSOUNDCARDREADER_CPP
 
-#include <stdio.h>
-#include <iostream>
-#include <mutex>
-#include <condition_variable>
-#include <cstring>
-
 #include "hsoundcardreader.h"
 
 /********************************************************************
@@ -14,21 +8,22 @@ Class implementation
 ********************************************************************/
 
 template <class T>
-HSoundcardReader<T>::HSoundcardReader(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer):
+HSoundcardReader<T>::HSoundcardReader(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int blocksize, HProbe<T>* probe):
     _isInitialized(false),
-    _isStarted(false)
+    _isStarted(false),
+    _probe(probe)
 {
-    HLog("HSoundCardReader(device=%d, rate=%d, channels=%d, format=%d, framesPerBuffer=%d)", device, rate, channels, format, framesPerBuffer);
+    HLog("HSoundCardReader(device=%d, rate=%d, channels=%d, format=%d, blocksize=%d)", device, rate, channels, format, blocksize);
 
     // Initialize resources used by the callback function
     _cbd.channels = channels;
-    _cbd.framesize = framesPerBuffer;
+    _cbd.framesize = blocksize;
     _cbd.wrloc = 0;
     _cbd.rdloc = 0;
-    _cbd.buffer = new T[NUMBER_OF_BUFFERS * framesPerBuffer];
+    _cbd.buffer = new T[NUMBER_OF_BUFFERS * blocksize];
     if( _cbd.buffer == NULL )
     {
-        HError("Unable to allocate %d buffers for %d frames á %d bytes", NUMBER_OF_BUFFERS, framesPerBuffer, sizeof(T));
+        HError("Unable to allocate %d buffers for %d frames á %d bytes", NUMBER_OF_BUFFERS, blocksize, sizeof(T));
         throw new HInitializationException("Out of memory when allocating buffers");
     }
     HLog("Buffers allocated");
@@ -53,7 +48,7 @@ HSoundcardReader<T>::HSoundcardReader(int device, H_SAMPLE_RATE rate, int channe
     PaStreamFlags flags = paNoFlag;
     err = Pa_OpenStream(&_stream, &inputParameters, NULL,
         rate,
-        framesPerBuffer,
+        blocksize,
         flags,
         callback,
         &_cbd);
@@ -136,6 +131,11 @@ int HSoundcardReader<T>::Read(T* dest, size_t blocksize)
             _cbd.rdloc = 0;
         }
 
+        // Probe output ?
+        if( _probe != nullptr ) {
+            _probe->Write(dest, _cbd.framesize);
+        }
+
         // We always reads the entire buffer as given
         return _cbd.framesize;
     }
@@ -148,7 +148,7 @@ int HSoundcardReader<T>::Read(T* dest, size_t blocksize)
 
 template <class T>
 int HSoundcardReader<T>::callback( const void *inputBuffer, void *outputBuffer,
-                           unsigned long framesPerBuffer,
+                           unsigned long blocksize,
                            const PaStreamCallbackTimeInfo* timeInfo,
                            PaStreamCallbackFlags statusFlags,
                            void *userData )
@@ -161,7 +161,7 @@ int HSoundcardReader<T>::callback( const void *inputBuffer, void *outputBuffer,
     T* dest = (T*) &data->buffer[data->wrloc];
 
     // Copy new data from the soundcard to the buffer
-    memcpy((void*) dest, (void*) src, framesPerBuffer * sizeof(T));
+    memcpy((void*) dest, (void*) src, blocksize * sizeof(T));
 
     // Advance write position to next buffer, if we have written the last buffer,
     // then wrap around to the first buffer.
@@ -237,16 +237,16 @@ Explicit instantiation
 
 // HSoundcardReader()
 template
-HSoundcardReader<int8_t>::HSoundcardReader(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer = DEFAULT_FRAMESIZE);
+HSoundcardReader<int8_t>::HSoundcardReader(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int blocksize = DEFAULT_BLOCKSIZE, HProbe<int8_t>* probe);
 
 template
-HSoundcardReader<uint8_t>::HSoundcardReader(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer = DEFAULT_FRAMESIZE);
+HSoundcardReader<uint8_t>::HSoundcardReader(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int blocksize = DEFAULT_BLOCKSIZE, HProbe<uint8_t>* probe);
 
 template
-HSoundcardReader<int16_t>::HSoundcardReader(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer = DEFAULT_FRAMESIZE);
+HSoundcardReader<int16_t>::HSoundcardReader(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int blocksize = DEFAULT_BLOCKSIZE, HProbe<int16_t>* probe);
 
 template
-HSoundcardReader<int32_t>::HSoundcardReader(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer = DEFAULT_FRAMESIZE);
+HSoundcardReader<int32_t>::HSoundcardReader(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int blocksize = DEFAULT_BLOCKSIZE, HProbe<int32_t>* probe);
 
 // ~HSoundcardReader()
 template
