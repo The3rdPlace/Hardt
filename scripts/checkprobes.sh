@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IGNORED=("HBreaker HWindow HStreamProcessor HNetworkProcessor HTimer HFft HFir HOutput HNotchBiQuad HPeakingEQBiQuad HLowpassBiQuad HAllpassBiQuad HHighShelvingBiQuad HHighpassBiQuad HLowShelvingBiQuad HBandpassBiQuad HBiQuad HNullWriter HNullReader HSineGenerator HCosineGenerator HMute HMux HDeMux HLocalOscillator HKaiserBessel HLowpassKaiserBessel HHighpassKaiserBessel HBandpassKaiserBessel HBandstopKaiserBessel HGoertzelOutput HMemoryWriter HMetrics HObject HBufferedWriter HChunkWriter HCustomWriter HFade HFftOutput HFileWriter HGenerator HInputWriter HMemoryReader HNetworkReader HNetworkWriter HProcessor HSignalLevelOutput HSoundcardWriter HSplitter HVfo HWav HWavWriter HComplex2MultiplexedConverter HComplexConverter HConverter HMultiplexed2ComplexConverter HProbe HSwitch HTypeConverter")
+IGNORED=("HBreaker HWindow HStreamProcessor HNetworkProcessor HTimer HFft HFir HOutput HNotchBiQuad HPeakingEQBiQuad HLowpassBiQuad HAllpassBiQuad HHighShelvingBiQuad HHighpassBiQuad HLowShelvingBiQuad HBandpassBiQuad HBiQuad HNullWriter HNullReader HSineGenerator HCosineGenerator HMute HMux HDeMux HLocalOscillator HKaiserBessel HLowpassKaiserBessel HHighpassKaiserBessel HBandpassKaiserBessel HBandstopKaiserBessel HGoertzelOutput HMemoryWriter HMetrics HObject HBufferedWriter HChunkWriter HCustomWriter HFade HFftOutput HFileWriter HGenerator HInputWriter HMemoryReader HNetworkReader HNetworkWriter HProcessor HSignalLevelOutput HSoundcardWriter HSplitter HVfo HWav HWavWriter HComplex2MultiplexedConverter HComplexConverter HConverter HMultiplexed2ComplexConverter HProbe HSwitch HTypeConverter HCascadedBiQuadFilter")
 
 for HEADER in $(ls ../hardt/libhardt/include); do
   CLASSNAME=$(cat ../hardt/libhardt/include/$HEADER | grep 'class ' | grep -v 'template' | cut -d ' ' -f 2 | tr -d '\n:')
@@ -27,7 +27,7 @@ for HEADER in $(ls ../hardt/libhardt/include); do
 
     MISSING=0
     cat ../hardt/libhardt/include/${HEADER}  | grep -E "^ +${CLASSNAME}\(" | grep -E ".+HProbe<.+>*.+" | while read -r CONSTRUCTOR; do
-      IMPLEMENTATION=$(find ../hardt/libhardt/ | grep $(echo $HEADER | sed 's/.h/.cpp/'))
+      IMPLEMENTATION=$(find ../hardt/libhardt/ | grep $(echo $HEADER | sed 's/\.h/.cpp/'))
 
       cat $IMPLEMENTATION | grep 'probe->Write' &> /dev/null
       if [ $? -ne 0 ]; then
@@ -71,14 +71,23 @@ for HEADER in $(ls ../hardt/libhardt/include); do
                             cat ../hardt/libhardt/include/$HEADER | grep 'HInterpolator' | grep -E "^ +HInterpolator<T>(.+, probe).+" &> /dev/null
                             if [ $? -ne 0 ]; then
 
+                              cat $IMPLEMENTATION | grep 'HCombFilter' | grep -E "^ +HCombFilter<T>(.+, probe).+" &> /dev/null
+                              if [ $? -ne 0 ]; then
 
-                              if [ $MISSING -eq 0 ]; then
-                                echo
-                                echo "Header: ../hardt/libhardt/include/$HEADER"
-                                echo "Classname: $CLASSNAME"
-                                echo "Implementation: $IMPLEMENTATION"
-                                echo "  Reason: No usage of probe"
-                                MISSING=1
+
+                                cat ../hardt/libhardt/include/$HEADER | grep 'HCombFilter' | grep -E "^ +HCombFilter<T>(.+, probe).+" &> /dev/null
+                                if [ $? -ne 0 ]; then
+
+
+                                  if [ $MISSING -eq 0 ]; then
+                                    echo
+                                    echo "Header: ../hardt/libhardt/include/$HEADER"
+                                    echo "Classname: $CLASSNAME"
+                                    echo "Implementation: $IMPLEMENTATION"
+                                    echo "  Reason: No usage of probe"
+                                    MISSING=1
+                                  fi
+                                fi
                               fi
                             fi
                           fi
