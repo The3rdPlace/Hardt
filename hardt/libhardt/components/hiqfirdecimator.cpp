@@ -176,7 +176,7 @@ int HIqFirDecimator<T>::Read(T* dest, size_t blocksize) {
     if( _collect && _probe != nullptr ) {
         _probe->Write(dest, _length);
     }
-    
+
     // Return complete decimated read
     return blocksize;
 }

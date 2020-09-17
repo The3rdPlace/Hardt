@@ -11,6 +11,7 @@
 #include "hreader.h"
 #include "hfft.h"
 #include "hprobe.h"
+#include "hcommand.h"
 #include "hrtl2832.h"
 
 #define NUMBER_OF_RTL_BUFFERS 15
@@ -116,7 +117,28 @@ class HRtl2832Reader : public HReader<T>
          */
         bool Command(HCommand* command) {
 
-            // No further propagation of commands
+            // Handle known commands
+            switch( command->Class ) {
+                case HCOMMAND_CLASS::TUNER: {
+                    switch( command->Opcode ) {
+                        case HCOMMAND_OPCODE::SET_FREQUENCY: {
+                            return SetCenterFrequency(command->Data.Value);
+                        }
+                        case HCOMMAND_OPCODE::SET_GAIN: {
+                            return SetGain(command->Data.Value);
+                        }
+                    }
+                }
+                case HCOMMAND_CLASS::ANY: {
+                    switch( command->Opcode ) {
+                        case HCOMMAND_OPCODE::SET_GAIN: {
+                            return SetGain(command->Data.Value);
+                        }
+                    }
+                }
+            }
+
+            // Any other command returns true
             return true;
         }
 
