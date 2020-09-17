@@ -115,7 +115,7 @@ void HWriteErrorMessage(std::string file, std::string line, const char* fmt, ...
 void HInit(std::string logname, bool verbose = true);
 
 /**
-    Supported sample format
+    Supported sample formats.
 */
 #define H_SAMPLE_FORMAT int
 #define H_SAMPLE_FORMAT_INT_8 1
@@ -126,18 +126,37 @@ void HInit(std::string logname, bool verbose = true);
 #define H_SAMPLE_FORMAT_FLOAT 6
 
 /**
-    Supported samplerates. Not all rates are supported by any given card or device.
-	Others may be needed for decimation or upsampling in applications
+ * Common samplerates.
+ *
+ * You are always free to set exactly the samplerate that you need, but
+ * most hardware devices does not support others than a few select common
+ * rates. You should check with the device documentation if in doubt.
+ * (but choosing a sane common value like 44K1 or 48K for audio devices
+ * and 1M152K for RTL2832 devices will almost always work *tm*)
+ *
+ * Do note that may reports that RTL2832 devices does not work (well)
+ * above 2.000.000 (1920000) samples per sec.
 */
 #define H_SAMPLE_RATE int
-#define H_SAMPLE_RATE_8K 8000
-#define H_SAMPLE_RATE_11K 11025
-#define H_SAMPLE_RATE_22K 22050
-#define H_SAMPLE_RATE_32K 32000
-#define H_SAMPLE_RATE_44K1 44100
-#define H_SAMPLE_RATE_48K 48000
-#define H_SAMPLE_RATE_96K 96000
-#define H_SAMPLE_RATE_192K 192000
+#define H_SAMPLE_RATE_8K        8000
+#define H_SAMPLE_RATE_11K      11025
+#define H_SAMPLE_RATE_22K      22050
+#define H_SAMPLE_RATE_32K      32000
+#define H_SAMPLE_RATE_44K1     44100
+#define H_SAMPLE_RATE_48K      48000
+#define H_SAMPLE_RATE_96K      96000
+#define H_SAMPLE_RATE_192K    192000
+#define H_SAMPLE_RATE_240K    240000
+#define H_SAMPLE_RATE_300K    300000
+#define H_SAMPLE_RATE_960K    960000
+#define H_SAMPLE_RATE_1M152K 1152000
+#define H_SAMPLE_RATE_1M440K 1440000
+#define H_SAMPLE_RATE_1M600K 1600000
+#define H_SAMPLE_RATE_1M800K 1800000
+#define H_SAMPLE_RATE_1M920K 1920000
+#define H_SAMPLE_RATE_2M400K 2400000
+#define H_SAMPLE_RATE_2M880K 2880000
+#define H_SAMPLE_RATE_3M200K 3200000
 
 #endif
 
