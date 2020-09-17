@@ -6,6 +6,7 @@
 #include "hwriter.h"
 #include "hwriterconsumer.h"
 #include "hconverter.h"
+#include "hprobe.h"
 #include "hfft.h"
 
 /** Convert from IQ to realvalued samples.
@@ -53,38 +54,58 @@ class HIq2RealConverter: public HConverter<T, T> {
 
     public:
 
-        /** Create a new iq-2-real converter with a reader
+        /**
+         * Create a new iq-2-real converter with a reader
+         *
+         * BEWARE that reading 'blocksize samples will read
+         * 'blocksize' samples from the previous reader and
+         * return 'blocksize/2' samples
+         *
+         * @param reader Upstream reader
+         * @param blocksize Number of samples to read
+         * @param probe Probe
+         */
+        HIq2RealConverter(HReader<T>* reader, size_t blocksize, HProbe<T>* probe = nullptr):
+                HConverter<T, T>(reader, blocksize * 2, blocksize, probe) {
 
-            BEWARE that reading 'blocksize samples will read
-            'blocksize' samples from the previous reader and
-            return 'blocksize/2' samples
-        */
-        HIq2RealConverter(HReader<T>* reader, size_t blocksize):
-                HConverter<T, T>(reader, blocksize * 2, blocksize) {
             Init(blocksize * 2);
         }
 
-        /** Create a new iq-2-real converter with a writer
+        /**
+         * Create a new iq-2-real converter with a writer
+         *
+         * BEWARE that writing 'blocksize' samples will write
+         * 'blocksize/2' samples to the next writer
+         *
+         * @param writer Downstream writer
+         * @param blocksize Number of samples to write
+         * @param probe Probe
+         */
+        HIq2RealConverter(HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = nullptr):
+                HConverter<T, T>(writer, blocksize, blocksize / 2, probe) {
 
-            BEWARE that writing 'blocksize' samples will write
-            'blocksize/2' samples to the next writer
-        */
-        HIq2RealConverter(HWriter<T>* writer, size_t blocksize):
-                HConverter<T, T>(writer, blocksize, blocksize / 2) {
             Init(blocksize);
         }
 
-        /** Create a new iq-2-realconverter with a writerconsumer
+        /**
+         * Create a new iq-2-realconverter with a writerconsumer
+         *
+         * BEWARE that writing 'blocksize' samples will write
+         * 'blocksize/2' samples to the next writer
+         *
+         * @param consumer Upstream consumer
+         * @param blocksize Number of samples to write
+         * @param probe Probe
+         */
+        HIq2RealConverter(HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = nullptr):
+                HConverter<T, T>(consumer, blocksize, blocksize / 2, probe) {
 
-            BEWARE that writing 'blocksize' samples will write
-            'blocksize/2' samples to the next writer
-        */
-        HIq2RealConverter(HWriterConsumer<T>* consumer, size_t blocksize):
-                HConverter<T, T>(consumer, blocksize, blocksize / 2) {
             Init(blocksize);
         }
 
-        /** Destruct this iq-2-real converter instance */
+        /**
+         * Destruct this iq-2-real converter instance
+         */
         ~HIq2RealConverter() {
             delete _fft;
         }
