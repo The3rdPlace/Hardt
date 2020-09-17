@@ -119,19 +119,19 @@ class HRtl2832Reader : public HReader<T>
 
             // Handle known commands
             switch( command->Class ) {
-                case HCOMMAND_CLASS::TUNER: {
+                case H_COMMAND_CLASS::TUNER: {
                     switch( command->Opcode ) {
-                        case HCOMMAND_OPCODE::SET_FREQUENCY: {
+                        case H_COMMAND_OPCODE::SET_FREQUENCY: {
                             return SetCenterFrequency(command->Data.Value);
                         }
-                        case HCOMMAND_OPCODE::SET_GAIN: {
+                        case H_COMMAND_OPCODE::SET_GAIN: {
                             return SetGain(command->Data.Value);
                         }
                     }
                 }
-                case HCOMMAND_CLASS::ANY: {
+                case H_COMMAND_CLASS::ANY: {
                     switch( command->Opcode ) {
-                        case HCOMMAND_OPCODE::SET_GAIN: {
+                        case H_COMMAND_OPCODE::SET_GAIN: {
                             return SetGain(command->Data.Value);
                         }
                     }

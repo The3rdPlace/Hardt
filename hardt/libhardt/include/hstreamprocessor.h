@@ -23,7 +23,7 @@ class HStreamProcessor : public HProcessor<T>
         void Run(long unsigned int blocks = 0);
 
         /** Send a command */
-        bool Command(HCOMMAND_CLASS commandClass, HCOMMAND_OPCODE commandOpcode, int16_t length, HCommandData data)
+        bool Command(H_COMMAND_CLASS commandClass, H_COMMAND_OPCODE commandOpcode, int16_t length, HCommandData data)
         {
             HLog("Creating command with class %d and opcode %d with length %d", commandClass, commandOpcode, length);
             HCommand cmd = {static_cast<int16_t>(commandClass), static_cast<int16_t>(commandOpcode), length, data};

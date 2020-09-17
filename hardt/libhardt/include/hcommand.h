@@ -4,7 +4,7 @@
 #include "hexceptions.h"
 
 /** Command classes */
-enum HCOMMAND_CLASS
+enum H_COMMAND_CLASS
 {
 	/**
 	 * No class.
@@ -31,7 +31,7 @@ enum HCOMMAND_CLASS
 };
 
 /** Command opcodes */
-enum HCOMMAND_OPCODE
+enum H_COMMAND_OPCODE
 {
     /**
      * No Operation
