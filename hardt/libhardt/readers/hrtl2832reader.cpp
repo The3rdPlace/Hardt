@@ -18,7 +18,7 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, HRtl2832::MODE
         _blocksize(blocksize),
         _probe(probe)
 {
-    HLog("HRtl2832Reader(device=%d, rate=%d, framesPerBuffer=%d)", device, rate, blocksize);
+    HLog("HRtl2832Reader(device=%d, rate=%d, blocksize=%d)", device, rate, blocksize);
 
     // Buffer length must be a multiple of 512 and maximum 16384/8192
     if( blocksize % 512 > 0 ) {
@@ -58,7 +58,7 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, HRtl2832::MODE
         HError("Unable to allocate %d buffers for %d frames á %d bytes", NUMBER_OF_RTL_BUFFERS, _buflen, sizeof(unsigned char));
         throw new HInitializationException("Out of memory when allocating buffers");
     }
-    HLog("%d buffers allocated for the device output", NUMBER_OF_RTL_BUFFERS * _buflen);
+    HLog("%d buffers of length %d allocated for the device output", NUMBER_OF_RTL_BUFFERS, _buflen);
 
     // Error code from rtlsdr library api function calls
     int result;
