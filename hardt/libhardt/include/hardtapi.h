@@ -109,5 +109,6 @@
 #include "hiqtranslatebyfour.h"
 #include "hiqtranslatebytwo.h"
 #include "hiqmultiplier.h"
+#include "hcollector.h"
 
 #endif

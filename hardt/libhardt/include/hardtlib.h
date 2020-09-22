@@ -120,6 +120,7 @@ Include api function declarations
 #include "hiqtranslatebyfour.cpp"
 #include "hiqtranslatebytwo.cpp"
 #include "hiqmultiplier.cpp"
+#include "hcollector.cpp"
 
 /********************************************************************
 Debug and diagnostics
