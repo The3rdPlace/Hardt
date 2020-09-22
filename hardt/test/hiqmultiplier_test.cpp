@@ -8,8 +8,8 @@ class HIqMultiplier_Test: public Test
 
         void run()
         {
-            TEST(test_multiplier_with_reader);
-            TEST(test_multiplier_with_writer);
+            UNITTEST(test_multiplier_with_reader);
+            UNITTEST(test_multiplier_with_writer);
         }
 
         const char* name()
@@ -45,7 +45,6 @@ class HIqMultiplier_Test: public Test
 
                 ASSERT_IS_EQUAL(R, received[i]);
                 ASSERT_IS_EQUAL(J, received[i + 1]);
-                std::cout << std::endl;
             }
 
             ASSERT_IS_TRUE(multiplier.Command(&TestNopCommand));
