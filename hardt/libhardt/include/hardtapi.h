@@ -110,5 +110,6 @@
 #include "hiqtranslatebytwo.h"
 #include "hiqmultiplier.h"
 #include "hcollector.h"
+#include "hiqdecimator.h"
 
 #endif
