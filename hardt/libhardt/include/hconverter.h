@@ -91,6 +91,8 @@ class HConverter : public HReader<Tout>, public HWriter<Tin>, public HWriterCons
          * @param probe Probe
          */
         HConverter(HWriterConsumer<Tin>* consumer, size_t blocksizeIn, size_t blocksizeOut, HProbe<Tout>* probe = nullptr):
+            _reader(nullptr),
+            _writer(nullptr),
             _blocksizeIn(blocksizeIn),
             _blocksizeOut(blocksizeOut),
             _input(NULL),
