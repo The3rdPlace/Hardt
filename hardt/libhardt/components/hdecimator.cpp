@@ -1,6 +1,9 @@
 #ifndef __HDECIMATOR_CPP
 #define __HDECIMATOR_CPP
 
+#include <cstring>
+
+#include "hardt.h"
 #include "hdecimator.h"
 
 template <class T>
@@ -11,11 +14,11 @@ HDecimator<T>::HDecimator(HWriter<T>* writer, int factor, size_t blocksize, bool
     _writer(writer),
     _reader(nullptr),
     _collect(collect),
-    _probe(probe)
-{
+    _probe(probe),
+    _pos(0) {
+
     HLog("HDecimator(HWriter*, blocksize=%d)", blocksize);
     Init();
-    
 }
 
 template <class T>
@@ -26,8 +29,9 @@ HDecimator<T>::HDecimator(HWriterConsumer<T>* consumer, int factor, size_t block
     _writer(nullptr),
     _reader(nullptr),
     _collect(collect),
-    _probe(probe)
-{
+    _probe(probe),
+    _pos(0) {
+
     HLog("HDecimator(HWriterConsumer*, blocksize=%d)", blocksize);
     Init();
     consumer->SetWriter(this);
@@ -41,8 +45,9 @@ HDecimator<T>::HDecimator(HReader<T>* reader, int factor, size_t blocksize, bool
     _writer(nullptr),
     _reader(reader),
     _collect(collect),
-    _probe(probe)
-{
+    _probe(probe),
+    _pos(0) {
+
     HLog("HDecimator(HReader*, blocksize=%d)", blocksize);
     Init();
 }
@@ -60,31 +65,19 @@ void HDecimator<T>::Init() {
         throw new HInitializationException("Decimation factor can not be zero or negative");
     }
 
-    if( _blocksize % _factor != 0 ) {
-        throw new HInitializationException("Decimation factor is not a valid divisor for the given blocksize");
-    }
-
     _buffer = new T[_blocksize];
 }
 
 template <class T>
 int HDecimator<T>::Write(T* src, size_t blocksize)
 {
-    if( _writer == nullptr )
-    {
-        throw new HInitializationException("This HDecimator is not a writer");
-    }
-
-    if( blocksize != _blocksize )
-    {
-        HError("Requested blocksize for write is invalid: %d requested, expected is %d", blocksize, _blocksize);
-        throw new HWriterIOException("Requested blocksize for write is invalid");
-    }
-
     // Decimate
-    for(int i = 0; i < blocksize; i += _factor) {
-        _buffer[_length++] = src[i];
+    for(; _pos < blocksize; _pos += _factor) {
+        _buffer[_length++] = src[_pos];
     }
+    _pos -= blocksize;
+
+    // Write ?
     if( _length == _blocksize || !_collect ) {
         _writer->Write(_buffer, _length);
         if( _probe != nullptr ) {
@@ -100,23 +93,6 @@ int HDecimator<T>::Write(T* src, size_t blocksize)
 template <class T>
 int HDecimator<T>::Read(T* dest, size_t blocksize)
 {
-    if( _reader == nullptr )
-    {
-        throw new HInitializationException("This HDecimator is not a reader");
-    }
-
-    if( _collect ) {
-        if (blocksize != _blocksize) {
-            HError("Requested blocksize for collected read is invalid: %d requested, expected is %d", blocksize, _blocksize);
-            throw new HReaderIOException("Requested blocksize for read is invalid");
-        }
-    } else {
-        if (blocksize != _blocksize / _factor) {
-            HError("Requested blocksize for read is invalid: %d requested, expected is %d", blocksize, _blocksize / _factor);
-            throw new HReaderIOException("Requested blocksize for read is invalid");
-        }
-    }
-
     // Read
     _length = 0;
     while( _length < _blocksize ) {
@@ -138,9 +114,10 @@ int HDecimator<T>::Read(T* dest, size_t blocksize)
         }
 
         // Decimate the block
-        for(int i = 0; i < _blocksize; i += _factor) {
-            dest[_length++] = _buffer[i];
+        for(; _pos < _blocksize; _pos += _factor) {
+            dest[_length++] = _buffer[_pos];
         }
+        _pos -= blocksize;
 
         // If not doing a collected read, return what we have now
         if( !_collect ) {

@@ -24,6 +24,7 @@ class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
         T* _buffer;        
         size_t _length;
         bool _collect;
+        int _pos;
 
         void Init();
 
