@@ -467,9 +467,9 @@ int RunFFTMagnitudePlot()
     // Create FFT
     HFftOutput<T>* fft;
     if( Config.FCenter > 0 ) {
-        fft = new HFftOutput<T>(Config.FFTSize, Config.Average, &fftWriter, new HHahnWindow<T>(), Config.Rate, Config.ZoomFactor, Config.FCenter);
+        fft = new HFftOutput<T>(Config.FFTSize, Config.Average, 1, &fftWriter, new HHahnWindow<T>(), Config.Rate, Config.ZoomFactor, Config.FCenter);
     } else {
-        fft = new HFftOutput<T>(Config.FFTSize, Config.Average, &fftWriter, new HHahnWindow<T>(), Config.IsIq);
+        fft = new HFftOutput<T>(Config.FFTSize, Config.Average, 1, &fftWriter, new HHahnWindow<T>(), Config.IsIq);
     }
 
     // Buffer for the accumulated spectrum values
@@ -1028,7 +1028,7 @@ int RunFilterSpectrum()
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFftOutput<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
+    HFftOutput<T> fft(Config.Blocksize, 1, 1, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
@@ -1106,7 +1106,7 @@ int RunBiQuadSpectrum()
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFftOutput<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
+    HFftOutput<T> fft(Config.Blocksize, 1, 1, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
@@ -1266,7 +1266,7 @@ int RunKaiserBesselSpectrum()
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFftOutput<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
+    HFftOutput<T> fft(Config.Blocksize, 1, 1, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
@@ -1442,7 +1442,7 @@ int RunCombSpectrum()
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFftOutput<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
+    HFftOutput<T> fft(Config.Blocksize, 1, 1, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
@@ -1686,7 +1686,7 @@ int RunBiQuadCascadeSpectrum()
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFftOutput<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
+    HFftOutput<T> fft(Config.Blocksize, 1, 1, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
@@ -1718,7 +1718,7 @@ int RunMovingAverageSpectrum()
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFftOutput<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
+    HFftOutput<T> fft(Config.Blocksize, 1, 1, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];

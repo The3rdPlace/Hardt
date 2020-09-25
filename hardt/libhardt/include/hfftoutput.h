@@ -45,6 +45,8 @@ class HFftOutput : public HOutput<T, HFftResults>
         int _size;
         int _average;
         bool _isIq;
+        int _skip;
+        int _skipped;
 
         double* _spectrum;
         std::complex<double>* _fftResult;
@@ -82,6 +84,7 @@ class HFftOutput : public HOutput<T, HFftResults>
          *                but 1, you can not run your signal through the output
          *                multiple times since that would mix results in the averaging
          *                phase (say if you where zooming in)
+         * @param skip Take each 'skip' sample and skip the rest
          * @param writer The result writer (most likely a HCustomerWriter<HFftResults>*)
          * @param window The window to use before calculating the FFT
          * @param zoomRate The samplerate of the input samples
@@ -97,7 +100,7 @@ class HFftOutput : public HOutput<T, HFftResults>
          * samplerate. You can set the factor to 1 initially to disable zooming. But if you
          * have not provided zoomRate != 0, zooming will not be setup and be available.!
          */
-        HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* window, H_SAMPLE_RATE zoomRate = 0, int zoomFactor = 1, int zoomCenter = 0);
+        HFftOutput(int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<T>* window, H_SAMPLE_RATE zoomRate = 0, int zoomFactor = 1, int zoomCenter = 0);
 
         /**
          * Create a new HFft output that registers with an upstream writer
@@ -109,6 +112,7 @@ class HFftOutput : public HOutput<T, HFftResults>
          *                but 1, you can not run your signal through the output
          *                multiple times since that would mix results in the averaging
          *                phase (say if you where zooming in)
+         * @param skip Take each 'skip' sample and skip the rest
          * @param consumer The upstream writer that should write to this component
          * @param window The window to use before calculating the FFT
          * @param zoomRate The samplerate of the input samples
@@ -124,7 +128,7 @@ class HFftOutput : public HOutput<T, HFftResults>
          * samplerate. You can set the factor to 1 initially to disable zooming. But if you
          * have not provided zoomRate != 0, zooming will not be setup and be available.!
          */
-        HFftOutput(int size, int average, HWriterConsumer<T>* consumer, HWindow<T>* window, H_SAMPLE_RATE zoomRate = 0, int zoomFactor = 1, int zoomCenter = 0);
+        HFftOutput(int size, int average, int skip, HWriterConsumer<T>* consumer, HWindow<T>* window, H_SAMPLE_RATE zoomRate = 0, int zoomFactor = 1, int zoomCenter = 0);
 
         /** Create a new HFft output that writes to a writer
         *
@@ -132,6 +136,7 @@ class HFftOutput : public HOutput<T, HFftResults>
         *        256 is recommended for realtime applications)
         * @param average The number of FFT's to accumulate and average before
         *                calling the result writer.
+        * @param skip Take each 'skip' sample and skip the rest
         * @param writer The result writer (most likely a HCustomerWriter<HFftResults>*)
         * @param window The window to use before calculating the FFT
         * @param isIq If set to true then the input must be IQ data and the returned
@@ -140,7 +145,7 @@ class HFftOutput : public HOutput<T, HFftResults>
         * samplerate. You can set the factor to 1 initially to disable zooming. But if you
         * have not provided zoomRate != 0, zooming will not be setup and be available.!
         */
-        HFftOutput(int size, int average, HWriter<HFftResults>* writer, HWindow<T>* window, bool isIq);
+        HFftOutput(int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<T>* window, bool isIq);
 
         /** Create a new HFft output that writes to a writer
         *
@@ -148,6 +153,7 @@ class HFftOutput : public HOutput<T, HFftResults>
         *        256 is recommended for realtime applications)
         * @param average The number of FFT's to accumulate and average before
         *                calling the result writer.
+        * @param skip Take each 'skip' sample and skip the rest
         * @param consumer The upstream writer that should write to this component
         * @param window The window to use before calculating the FFT
         * @param isIq If set to true then the input must be IQ data and the returned
@@ -156,7 +162,7 @@ class HFftOutput : public HOutput<T, HFftResults>
         * samplerate. You can set the factor to 1 initially to disable zooming. But if you
         * have not provided zoomRate != 0, zooming will not be setup and be available.!
         */
-        HFftOutput(int size, int average, HWriterConsumer<T>* consumer, HWindow<T>* window, bool isIq);
+        HFftOutput(int size, int average, int skip, HWriterConsumer<T>* consumer, HWindow<T>* window, bool isIq);
 
         /**
          * Default destructor
