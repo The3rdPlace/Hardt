@@ -167,7 +167,7 @@ template <class T>
 int HFftOutput<T>::Output(T* src, size_t size)
 {
     // Skip this block ?
-    if( _skipped++ < _skip ) {
+    if( ++_skipped < _skip ) {
         return size;
     }
     _skipped = 0;
