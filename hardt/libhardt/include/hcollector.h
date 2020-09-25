@@ -26,6 +26,8 @@ class HCollector: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
         size_t _blocksizeIn;
         size_t _blocksizeOut;
 
+        HProbe<T>* _probe;
+
         T* _buffer;
         int _collected;
 
@@ -37,8 +39,9 @@ class HCollector: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
          * @param writer The downstream writer
          * @param blocksizeIn Input blocksize
          * @param blocksizeOut Output blocksize
+         * @param probe Probe
          */
-        HCollector(HWriter<T>* writer, size_t blocksizeIn, size_t blocksizeOut);
+        HCollector(HWriter<T>* writer, size_t blocksizeIn, size_t blocksizeOut, HProbe<T>* probe = nullptr);
 
         /**
          * Construct a new HCollector that handle writer consumers
@@ -46,8 +49,9 @@ class HCollector: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
          * @param consumer The upstream consumer
          * @param blocksizeIn Input blocksize
          * @param blocksizeOut Output blocksize
+         * @param probe Probe
          */
-        HCollector(HWriterConsumer<T>* consumer, size_t blocksizeIn, size_t blocksizeOut);
+        HCollector(HWriterConsumer<T>* consumer, size_t blocksizeIn, size_t blocksizeOut, HProbe<T>* probe = nullptr);
 
         /**
          * Construct a new HCollector that handle readers
@@ -55,8 +59,9 @@ class HCollector: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
          * @param reader The upstream reader
          * @param blocksizeIn Input blocksize
          * @param blocksizeOut Output blocksize
+         * @param probe Probe
          */
-        HCollector(HReader<T>* reader, size_t blocksizeIn, size_t blocksizeOut);
+        HCollector(HReader<T>* reader, size_t blocksizeIn, size_t blocksizeOut, HProbe<T>* probe = nullptr);
 
         /** Implements HWriterConsumer::SetWriter() */
         void SetWriter(HWriter<T>* writer);
