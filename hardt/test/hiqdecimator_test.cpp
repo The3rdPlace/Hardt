@@ -9,19 +9,21 @@ public:
 
     void run()
     {
-        TEST(test_read);
-        TEST(test_write);
-        TEST(test_writerConsumer);
+        UNITTEST(test_read);
+        UNITTEST(test_write);
+        UNITTEST(test_writerConsumer);
 
-        TEST(test_read_dont_collect);
-        TEST(test_write_dont_collect);
-        TEST(test_writerConsumer_dont_collect);
+        UNITTEST(test_read_dont_collect);
+        UNITTEST(test_write_dont_collect);
+        UNITTEST(test_writerConsumer_dont_collect);
 
-        TEST(test_read_3);
-        TEST(test_write_3);
+        UNITTEST(test_read_3);
+        UNITTEST(test_write_3);
 
-        TEST(test_read_5);
-        TEST(test_write_5);
+        UNITTEST(test_read_5);
+        UNITTEST(test_write_5);
+
+        UNITTEST(test_write_continuos);
     }
 
     const char* name()
@@ -137,7 +139,10 @@ private:
 
     void test_write_3()
     {
-        int8_t input[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+        int8_t input[48] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                          13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+                          25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
+                          37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48};
         int8_t expected[] = {1, 2, 7, 8, 1, 2, 7, 8, 1, 2, 7, 8};
         TestWriter<int8_t> wr(12);
 
@@ -186,6 +191,47 @@ private:
         ASSERT_IS_EQUAL(dm.Write(input, 12), 12);
         ASSERT_IS_EQUAL(wr.Writes, 1);
         ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, 12), 0);
+    }
+
+    void test_write_continuos()
+    {
+        int8_t input[120];
+        int8_t expected_1[12];
+        int8_t expected_2[12];
+
+        for( int i = 0; i < 60; i += 2 ) {
+            input[i] = i;
+            input[i + 1] = i + 1;
+            if( i % 5 == 0 ) {
+                expected_1[i / 5] = i;
+                expected_1[(i / 5) + 1] = i + 1;
+            }
+        }
+
+        for( int i = 60; i < 120; i += 2 ) {
+            input[i] = i;
+            input[i + 1] = i + 1;
+            if( i % 5 == 0 ) {
+                expected_2[(i / 5) - 12] = i;
+                expected_2[(i / 5) - 12 + 1] = i + 1;
+            }
+        }
+
+        TestWriter<int8_t> wr(12);
+        HIqDecimator<int8_t> dm(wr.Writer(), 5, 12);
+
+        int i = 0;
+        while( wr.Writes == 0 ) {
+            ASSERT_IS_EQUAL(dm.Write(&input[i], 12), 12);
+            i += 12;
+        }
+        ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected_1, 12), 0);
+
+        while( wr.Writes == 1 ) {
+            ASSERT_IS_EQUAL(dm.Write(&input[i], 12), 12);
+            i += 12;
+        }
+        ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected_2, 12), 0);
     }
 
 } hiqdecimator_test;
