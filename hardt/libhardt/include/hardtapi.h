@@ -111,5 +111,7 @@
 #include "hiqmultiplier.h"
 #include "hcollector.h"
 #include "hiqdecimator.h"
+#include "hiq2iconverter.h"
+#include "hiq2qconverter.h"
 
 #endif

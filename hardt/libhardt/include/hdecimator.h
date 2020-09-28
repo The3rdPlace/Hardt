@@ -42,9 +42,10 @@ class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
          *                write chunks from both branches alternating. In that case, set
          *                'collect=false'. A write of 1024 samples will then immediately
          *                result in a write of 1024/factor samples to the next writer.
+         * @param start Begin decimating from this position in the buffer
          * @param probe Probe
          */
-        HDecimator(HWriter<T>* writer, int factor, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
+        HDecimator(HWriter<T>* writer, int factor, size_t blocksize, bool collect = true, int start = 0, HProbe<T>* probe = nullptr);
 
         /**
          * Construct a new HDecimator that handle writer consumers.
@@ -58,9 +59,10 @@ class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
          *                write chunks from both branches alternating. In that case, set
          *                'collect=false'. A write of 1024 samples will then immediately
          *                result in a write of 1024/factor samples to the next writer.
+         * @param start Begin decimating from this position in the buffer
          * @param probe Probe
          */
-        HDecimator(HWriterConsumer<T>* consumer, int factor, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
+        HDecimator(HWriterConsumer<T>* consumer, int factor, size_t blocksize, bool collect = true, int start = 0, HProbe<T>* probe = nullptr);
 
         /**
          * Construct a new HDecimator that handle readers.
@@ -74,9 +76,10 @@ class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
          *                read chunks from both branches alternating. In that case, set
          *                'collect=false'. Constructing with 'blocksize=1024' then a Read()
          *                with 'blocksize=256' will then be expected.
+         * @param start Begin decimating from this position in the buffer
          * @param probe Probe
          */
-        HDecimator(HReader<T>* reader, int factor, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
+        HDecimator(HReader<T>* reader, int factor, size_t blocksize, bool collect = true, int start = 0, HProbe<T>* probe = nullptr);
 
         /**
          * Implements HWriterConsumer::SetWriter()
