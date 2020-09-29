@@ -124,6 +124,7 @@ Include api function declarations
 #include "hiqdecimator.cpp"
 #include "hiq2iconverter.h"
 #include "hiq2qconverter.h"
+#include "hiqaddorsubtractconverter.cpp"
 
 /********************************************************************
 Debug and diagnostics
