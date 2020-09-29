@@ -51,7 +51,7 @@ class HIq2AbsConverter: public HConverter<T, T> {
     public:
 
         /**
-         * Create a new iq-2-ans converter with a reader
+         * Create a new converter with a reader
          *
          * BEWARE that reading 'blocksize samples will read
          * 'blocksize' samples from the previous reader and
@@ -66,7 +66,7 @@ class HIq2AbsConverter: public HConverter<T, T> {
         }
 
         /**
-         * Create a new iq-2-abs converter with a writer
+         * Create a new converter with a writer
          *
          * BEWARE that writing 'blocksize' samples will write
          * 'blocksize/2' samples to the next writer
@@ -81,7 +81,7 @@ class HIq2AbsConverter: public HConverter<T, T> {
         }
 
         /**
-         * Create a new iq-2-abs converter with a writerconsumer
+         * Create a new converter with a writerconsumer
          *
          * BEWARE that writing 'blocksize' samples will write
          * 'blocksize/2' samples to the next writer
@@ -95,7 +95,7 @@ class HIq2AbsConverter: public HConverter<T, T> {
             Init(blocksize);
         }
 
-        /** Destruct this iq-2-abs converter instance */
+        /** Destruct this converter instance */
         ~HIq2AbsConverter() {}
 };
 
