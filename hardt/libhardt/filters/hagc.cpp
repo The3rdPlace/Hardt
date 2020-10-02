@@ -67,6 +67,7 @@ void HAgc<T>::Filter(T* src, T* dest, size_t blocksize)
     if( max >= _lower && _lock > 0 )
     {
         _locked = _lock;
+        return;
     }
     else if( _locked > 0 )
     {
