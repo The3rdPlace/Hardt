@@ -68,26 +68,18 @@ class HRtl2832Reader : public HReader<T>
          *
          * @param device The device id of the selected RTL-2832 device (usually 0-indexed)
          * @param rate The samplerate to set on the RTL-2832 device
-         * @param mode The reader mode (IQ, I, Q, REAL)
+         * @param mode The reader mode (IQ, I, Q, REAL). I or Q enables direct sampling.
          * @param gain The device gain (0 to use automatic)
          * @param frequency Initial center- or if frequency
          * @param blocksize Number of samples to read from the device in a single read operation
          *                  If mode is set to 'IQ', then the returned amount of samples will be
          *                  'blocksize/2' since you will get multiplexed IQ samples. The buffer
          *                  must however still be of length 'blocksize' due to the multiplexing
-         * @param directSampling Set to true to use direct sampling. Most RTL-2832 dongles will then read the
-         *                       Q-channel, so use mode=Q.
-         *                       Warning: I have found that often the driver somehow locks up when
-         *                       you have used direct-sampling mode. When reinitialized (restarted) without
-         *                       direct sampling, no samples signal was recorded, only silence. Powercycling
-         *                       the device do not help, only a full reboot of the host os. It may only
-         *                       occur for some cheap rtl-sdr dongle knock-offs, but if you experience this,
-         *                       a full reboot should fix it :)
          * @param offset Set to true to use tuner offset mode (only E4000 tuners)
          * @param correction Frequency correction in ppm
          * @param probe Probe
          */
-        HRtl2832Reader(int device, H_SAMPLE_RATE rate, HRtl2832::MODE mode, int gain, int32_t frequency, int blocksize, bool directSampling = false, bool offset = 0, int correction = 0, HProbe<T>* probe = nullptr);
+        HRtl2832Reader(int device, H_SAMPLE_RATE rate, HRtl2832::MODE mode, int gain, int32_t frequency, int blocksize, bool offset = 0, int correction = 0, HProbe<T>* probe = nullptr);
 
         /**
          * Default destructor
