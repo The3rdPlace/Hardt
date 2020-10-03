@@ -1,6 +1,8 @@
 #ifndef __HAGC_H
 #define __HAGC_H
 
+#include "hgain.h"
+#include "hardt.h"
 #include "hreader.h"
 #include "hwriter.h"
 #include "hwriterconsumer.h"
