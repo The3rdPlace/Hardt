@@ -45,7 +45,6 @@ HMultiplier<T>::~HMultiplier()
 {
     HLog("~HMultiplier()");
     delete _buffer;
-    delete _oscillatorBuffer;
     delete _localOscillator;
 }
 
@@ -53,8 +52,7 @@ template <class T>
 void HMultiplier<T>::Init(H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize)
 {
     _buffer = new T[blocksize];
-    _oscillatorBuffer = new T[blocksize];
-    HLog("Allocated 2 X %d as local buffers", blocksize * sizeof(T));
+    HLog("Allocated %d as local buffer", blocksize * sizeof(T));
 
     _localOscillator = new HLocalOscillator<T>(rate, frequency, oscillatorAmplitude);
     HLog("Create local oscilator");
@@ -119,13 +117,10 @@ int HMultiplier<T>::Write(T* src, size_t blocksize)
 template <class T>
 void HMultiplier<T>::Mix(T* src, T* dest, size_t blocksize)
 {
-    // Read localoscillator signal
-    _localOscillator->Read(_oscillatorBuffer, blocksize);
-
     // Multiply inputs (= convolution in freq. domain = frequency shift)
     for( int i = 0; i < blocksize; i++ )
     {
-        dest[i] = src[i] * _oscillatorBuffer[i];
+        dest[i] = src[i] * _localOscillator->Next();
     }
 }
 

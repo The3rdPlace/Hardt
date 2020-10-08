@@ -45,8 +45,6 @@ HIqMultiplier<T>::~HIqMultiplier()
 {
     HLog("~HIqMultiplier()");
     delete _buffer;
-    delete _oscillatorSinBuffer;
-    delete _oscillatorCosBuffer;
     delete _localSinOscillator;
     delete _localCosOscillator;
 }
@@ -55,9 +53,7 @@ template <class T>
 void HIqMultiplier<T>::Init(H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize)
 {
     _buffer = new T[blocksize];
-    _oscillatorSinBuffer = new T[blocksize / 2];
-    _oscillatorCosBuffer = new T[blocksize / 2];
-    HLog("Allocated local buffers");
+    HLog("Allocated local buffer");
 
     if( frequency < 0 ) {
         // Negative LO frequency
@@ -131,10 +127,6 @@ int HIqMultiplier<T>::Write(T* src, size_t blocksize)
 template <class T>
 void HIqMultiplier<T>::Mix(T* src, T* dest, size_t blocksize)
 {
-    // Read localoscillator signals, 90 degrees offset
-    _localSinOscillator->Read(_oscillatorSinBuffer, blocksize / 2);
-    _localCosOscillator->Read(_oscillatorCosBuffer, blocksize / 2);
-
     // Complex multiplication.
     // Need information on complex multiplication and ways to optimize it?
     // Here's a good primer: https://mathworld.wolfram.com/ComplexMultiplication.html
@@ -143,9 +135,9 @@ void HIqMultiplier<T>::Mix(T* src, T* dest, size_t blocksize)
     T ab_cd;
     for( int i = 0; i < blocksize; i += 2 )
     {
-        ac = src[i] * _oscillatorSinBuffer[i / 2];
-        bd = src[i + 1] * _oscillatorCosBuffer[i / 2];
-        ab_cd = (src[i] + src[i + 1]) * (_oscillatorSinBuffer[i / 2] + _oscillatorCosBuffer[i / 2]);
+        ac = src[i] * _localSinOscillator->Current();
+        bd = src[i + 1] * _localCosOscillator->Current();
+        ab_cd = (src[i] + src[i + 1]) * (_localSinOscillator->Next() + _localCosOscillator->Next());
 
         dest[i] = ac - bd;
         dest[i + 1] = ab_cd - ac - bd;
