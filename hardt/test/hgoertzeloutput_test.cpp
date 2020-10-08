@@ -52,7 +52,7 @@ class HGoertzelOutput_Test: public Test
 
                 if( floor(bin * 10) == 213 ) // = bin 21.3 adjusted for tiny decimal fractions
                 {
-                    if( ! ASSERT_IS_EQUAL(magnitude, 51402) )
+                    if( ! ASSERT_IS_EQUAL(magnitude, 50948) )
                     {
                         std::cout << "At bin = " << bin << std::endl;
                         break;
@@ -86,7 +86,7 @@ class HGoertzelOutput_Test: public Test
 
             // Check for result at 1KHz
             ASSERT_IS_EQUAL(grtzl.Write(input, 4 * N), 4 * N);
-            ASSERT_IS_EQUAL(magnitude, 51489);
+            ASSERT_IS_EQUAL(magnitude, 51034);
         }
 
         void test_goertzel_phase()

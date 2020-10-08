@@ -39,13 +39,13 @@ private:
         // away from the mathematically correct bin numbers
         for(int i = 0; i < 512; i++ ) {
             if( i == 127 ) {
-                ASSERT_IS_BETWEEN(std::abs(output[i]), (double) 12810, (double) 12811);
+                ASSERT_IS_BETWEEN(std::abs(output[i]), (double) 12725, (double) 12726);
             } else if( i == 128 ) {
-                ASSERT_IS_BETWEEN(std::abs(output[i]), (double) 25343, (double) 25344);
+                ASSERT_IS_BETWEEN(std::abs(output[i]), (double) 25162, (double) 25163);
             } else if( i == 129 ) {
-                ASSERT_IS_BETWEEN(std::abs(output[i]), (double) 12812, (double) 12813);
+                ASSERT_IS_BETWEEN(std::abs(output[i]), (double) 12711, (double) 12713);
             } else {
-                ASSERT_IS_LESS_THAN(std::abs(output[i]), (double) 35);
+                ASSERT_IS_LESS_THAN(std::abs(output[i]), (double) 200);
             }
         }
     }
@@ -65,10 +65,10 @@ private:
         // away from the mathematically correct bin numbers
         for(int i = 0; i < 512; i++ ) {
             if( i == 128 ) {
-                ASSERT_IS_BETWEEN(std::abs(output[i]), (double) 51304, (double) 51305);
+                ASSERT_IS_BETWEEN(std::abs(output[i]), (double) 50941, (double) 50943);
             } else if( i == 384 ) {
                 // This is a small spike due to the generator not being totally correct
-                ASSERT_IS_BETWEEN(std::abs(output[i]), (double) 104, (double) 105);
+                ASSERT_IS_BETWEEN(std::abs(output[i]), (double) 256, (double) 258);
             }else {
                 ASSERT_IS_EQUAL(std::abs(output[i]), (double) 0);
             }
@@ -91,13 +91,13 @@ private:
         // away from the mathematically correct bin numbers
         for(int i = 0; i < 512; i++ ) {
             if( i == 127 ) {
-                ASSERT_IS_BETWEEN(spectrum[i], (double) 12810, (double) 12811);
+                ASSERT_IS_BETWEEN(spectrum[i], (double) 12725, (double) 12726);
             } else if( i == 128 ) {
-                ASSERT_IS_BETWEEN(spectrum[i], (double) 25343, (double) 25344);
+                ASSERT_IS_BETWEEN(spectrum[i], (double) 25162, (double) 25163);
             } else if( i == 129 ) {
-                ASSERT_IS_BETWEEN(spectrum[i], (double) 12812, (double) 12813);
+                ASSERT_IS_BETWEEN(spectrum[i], (double) 12711, (double) 12713);
             } else {
-                ASSERT_IS_LESS_THAN(spectrum[i], (double) 35);
+                ASSERT_IS_LESS_THAN(spectrum[i], (double) 200);
             }
         }
     }
@@ -124,13 +124,13 @@ private:
         // away from the mathematically correct bin numbers
         for(int i = 0; i < 512; i++ ) {
             if( i == 127 ) {
-                ASSERT_IS_BETWEEN(std::abs(transformed[i]), (double) 12810, (double) 12811);
+                ASSERT_IS_BETWEEN(std::abs(transformed[i]), (double) 12725, (double) 12726);
             } else if( i == 128 ) {
-                ASSERT_IS_BETWEEN(std::abs(transformed[i]), (double) 25343, (double) 25344);
+                ASSERT_IS_BETWEEN(std::abs(transformed[i]), (double) 25162, (double) 25163);
             } else if( i == 129 ) {
-                ASSERT_IS_BETWEEN(std::abs(transformed[i]), (double) 12812, (double) 12813);
+                ASSERT_IS_BETWEEN(std::abs(transformed[i]), (double) 12711, (double) 12713);
             } else {
-                ASSERT_IS_LESS_THAN(std::abs(transformed[i]), (double) 35);
+                ASSERT_IS_LESS_THAN(std::abs(transformed[i]), (double) 200);
             }
         }
     }
