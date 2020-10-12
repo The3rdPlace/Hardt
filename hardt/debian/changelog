@@ -1,3 +1,12 @@
+hardt (1.1-0) RELEASED; urgency=medium
+
+  [ Henrik Witt-Hansen ]
+  * Added input reader for the RTL-SDR dongle
+  * Added iq versions of several often used components
+  * Various minor fixes and improvements
+
+ -- Mackie <henrik@hardttoolkit.org>  Mon, 12 Oct 2020 20:30:00 +0200
+
 hardt (1.0-27) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
