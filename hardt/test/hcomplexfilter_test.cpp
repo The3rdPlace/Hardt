@@ -213,7 +213,7 @@ private:
         // Verify that the input has peaks at bin 21, 85, 213, 299 (1KHz, 4KHZ, 10KHz, 14KHz)
         for( int i = 0; i < 512; i++ ) {
             if( i == 21 || i == 85 || i == 213 || i == 299 ) {
-                if( std::abs(inputSpectrum[i]) < 42000 || std::abs(inputSpectrum[i]) > 43000 ) {
+                if( std::abs(inputSpectrum[i]) < 41000 || std::abs(inputSpectrum[i]) > 43000 ) {
                     HError("Invalid value %ld in bin %d", std::abs(inputSpectrum[i]), i);
                     ASSERT_FAIL("Invalid value in input bin");
                     std::cout << "i = " << i << ", value = " << std::abs(inputSpectrum[i]) << std::endl;

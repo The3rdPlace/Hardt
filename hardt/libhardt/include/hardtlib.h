@@ -15,6 +15,7 @@ Initialization, logging and other basic functions.
 #include "hobject.h"
 #include "hfft.h"
 #include "hfir.h"
+#include "hrtl2832.h"
 
 /********************************************************************
 Abstract base classes with no, or little implementation
@@ -111,6 +112,19 @@ Include api function declarations
 #include "htranslatebyfour.cpp"
 #include "hcomplexfilter.cpp"
 #include "hfirdecimator.cpp"
+#include "hrtl2832reader.cpp"
+#include "hiq2realconverter.cpp"
+#include "hiqfirfilter.cpp"
+#include "hiqfirdecimator.cpp"
+#include "hiq2absconverter.cpp"
+#include "hiqtranslatebyfour.cpp"
+#include "hiqtranslatebytwo.cpp"
+#include "hiqmultiplier.cpp"
+#include "hcollector.cpp"
+#include "hiqdecimator.cpp"
+#include "hiq2iconverter.h"
+#include "hiq2qconverter.h"
+#include "hiqaddorsubtractconverter.cpp"
 
 /********************************************************************
 Debug and diagnostics

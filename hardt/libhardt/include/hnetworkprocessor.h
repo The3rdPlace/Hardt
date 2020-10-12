@@ -91,7 +91,7 @@ class HNetworkProcessor : public HProcessor<T>
         void Halt();
 
         /** Send a command */
-        bool Command(HCOMMAND_CLASS commandClass, HCOMMAND_OPCODE commandOpcode, int16_t length, HCommandData data)
+        bool Command(H_COMMAND_CLASS commandClass, H_COMMAND_OPCODE commandOpcode, int16_t length, HCommandData data)
         {
             // A processor acting as a server can not send any commands. Commands is always initiated at the client
             if( _isServer ) {

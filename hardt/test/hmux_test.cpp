@@ -9,18 +9,20 @@ class HMux_Test: public Test
 
         void run()
         {
-            UNITTEST(test_mux);
+            UNITTEST(test_mux_as_readers);
+            UNITTEST(test_mux_as_writers);
+            UNITTEST(test_mux_as_consumers);
         }
 
         const char* name()
         {
-            return "HDeMux";
+            return "HMux";
         }
 
     private:
 
 
-        void test_mux()
+        void test_mux_as_readers()
         {
             int8_t stream_1[4] = {1, 3, 5, 7};
             int8_t stream_2[4] = {2, 4, 6, 8};
@@ -38,4 +40,66 @@ class HMux_Test: public Test
             ASSERT_IS_EQUAL(rd_1.Commands, 1);
             ASSERT_IS_EQUAL(rd_2.Commands, 1);
         }
+
+        void test_mux_as_writers()
+        {
+            int8_t stream_1[4] = {1, 3, 5, 7};
+            int8_t stream_2[4] = {2, 4, 6, 8};
+            TestWriter<int8_t> wr(8);
+            HMux<int8_t> mux(&wr, 2, 4);
+
+            int8_t expected[8] = {1, 2, 3, 4, 5, 6, 7, 8};
+            ASSERT_IS_EQUAL(mux.Write(stream_1, 4), 4);
+            ASSERT_IS_EQUAL(wr.Writes, 0);
+            ASSERT_IS_EQUAL(mux.Write(stream_2, 4), 4);
+            ASSERT_IS_EQUAL(wr.Writes, 1);
+            ASSERT_IS_EQUAL(wr.Samples, 8);
+            ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, 8 * sizeof(int8_t)), 0);
+
+            ASSERT_IS_EQUAL(mux.Write(stream_1, 4), 4);
+            ASSERT_IS_EQUAL(wr.Writes, 1);
+            ASSERT_IS_EQUAL(wr.Samples, 8);
+            ASSERT_IS_EQUAL(mux.Write(stream_2, 4), 4);
+            ASSERT_IS_EQUAL(wr.Writes, 2);
+            ASSERT_IS_EQUAL(wr.Samples, 16);
+            ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, 8 * sizeof(int8_t)), 0);
+
+            ASSERT_IS_TRUE(mux.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
+        }
+
+        void test_mux_as_consumers()
+        {
+            int8_t stream_1[4] = {1, 3, 5, 7};
+            int8_t stream_2[4] = {2, 4, 6, 8};
+
+            TestWriter<int8_t> srcWr1(4);
+            TestWriter<int8_t> srcWr2(4);
+            std::vector< HWriterConsumer<int8_t>* > consumers;
+            consumers.push_back(srcWr1.Consumer());
+            consumers.push_back(srcWr2.Consumer());
+            HMux<int8_t> mux(consumers, 4);
+            TestWriter<int8_t> wr(mux.Consumer(), 8);
+
+            int8_t expected[8] = {1, 2, 3, 4, 5, 6, 7, 8};
+            ASSERT_IS_EQUAL(srcWr1.Write(stream_1, 4), 4);
+            ASSERT_IS_EQUAL(wr.Writes, 0);
+            ASSERT_IS_EQUAL(wr.Samples, 0);
+            ASSERT_IS_EQUAL(srcWr2.Write(stream_2, 4), 4);
+            ASSERT_IS_EQUAL(wr.Writes, 1);
+            ASSERT_IS_EQUAL(wr.Samples, 8);
+            ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, 8 * sizeof(int8_t)), 0);
+
+            ASSERT_IS_EQUAL(srcWr1.Write(stream_1, 4), 4);
+            ASSERT_IS_EQUAL(wr.Writes, 1);
+            ASSERT_IS_EQUAL(wr.Samples, 8);
+            ASSERT_IS_EQUAL(srcWr2.Write(stream_2, 4), 4);
+            ASSERT_IS_EQUAL(wr.Writes, 2);
+            ASSERT_IS_EQUAL(wr.Samples, 16);
+            ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, 8 * sizeof(int8_t)), 0);
+
+            ASSERT_IS_TRUE(mux.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
+        }
+
 } hmux_test;

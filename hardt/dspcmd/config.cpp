@@ -13,6 +13,11 @@ DspCmdConfig Config;
 static char PCM_FORMAT_STRING[] = "pcm";
 static char  WAV_FORMAT_STRING[] = "wav";
 
+bool argIs(const char* arg, const char* option)
+{
+    return strcmp(arg, option) == 0 ? true : false;
+}
+
 bool argBoolCmp(const char* arg, const char* option, bool currentValue)
 {
     return strcmp(arg, option) == 0 ? true : currentValue;
@@ -33,6 +38,22 @@ float argFloatCmp(const char* arg, const char* option, char* value, float curren
     return strcmp(arg, option) == 0 ? atof(value) : currentValue;
 }
 
+float argDoubleCmp(const char* arg, const char* option, char* value, double currentValue)
+{
+    return strcmp(arg, option) == 0 ? atof(value) : currentValue;
+}
+
+int argDeviceTypeCmp(const char* arg, const char* option, char* value, int currentValue)
+{
+    if( strcmp(arg, option) == 0 ) {
+        if( strcmp(value, "AUDIO") == 0 ) return DspCmdConfig::DeviceType::AUDIO;
+        if( strcmp(value, "RTL") == 0 ) return DspCmdConfig::DeviceType::RTL;
+        return DspCmdConfig::DeviceType::NONE;
+    }
+    return currentValue;
+
+}
+
 bool parseArguments(int argc, char** argv)
 {
     int PhaseIntValue = 0;
@@ -41,6 +62,7 @@ bool parseArguments(int argc, char** argv)
     {
         Config.Verbose = argBoolCmp(argv[argNo], "-v", Config.Verbose);
         Config.ShowAudioDevices = argBoolCmp(argv[argNo], "-a", Config.ShowAudioDevices);
+        Config.ShowRtl2832Devices = argBoolCmp(argv[argNo], "-t", Config.ShowRtl2832Devices);
 
         Config.IsFileRecorder = argBoolCmp(argv[argNo], "-rf", Config.IsFileRecorder);
         Config.IsFilePlayer = argBoolCmp(argv[argNo], "-pf", Config.IsFilePlayer);
@@ -50,6 +72,8 @@ bool parseArguments(int argc, char** argv)
         Config.IsGoertzl = argBoolCmp(argv[argNo], "-gz", Config.IsGoertzl);
 
         Config.IsReal2Iq = argBoolCmp(argv[argNo], "-riq", Config.IsReal2Iq);
+        Config.IsIq2Real = argBoolCmp(argv[argNo], "-iqr", Config.IsIq2Real);
+        Config.IsIq2Abs = argBoolCmp(argv[argNo], "-iqa", Config.IsIq2Abs);
 
         Config.IsFft = argBoolCmp(argv[argNo], "-fft", Config.IsFft);
         Config.IsIfft = argBoolCmp(argv[argNo], "-ifft", Config.IsIfft);
@@ -70,6 +94,8 @@ bool parseArguments(int argc, char** argv)
             }
         }
 
+        Config.IsIq = argBoolCmp(argv[argNo], "-iq", Config.IsIq);
+
         if( argNo < argc - 1)
         {
             Config.InputFile = argCharCmp(argv[argNo], "-if", argv[argNo + 1], Config.InputFile);
@@ -77,8 +103,26 @@ bool parseArguments(int argc, char** argv)
 
             Config.Blocksize = argIntCmp(argv[argNo], "-bs", argv[argNo + 1], Config.Blocksize);
             Config.FFTSize = argIntCmp(argv[argNo], "-bs", argv[argNo + 1], Config.FFTSize); // also set default fft size
-
+            Config.BlockCount = argIntCmp(argv[argNo], "-bc", argv[argNo + 1], Config.BlockCount);
             Config.InputDevice = argIntCmp(argv[argNo], "-id", argv[argNo + 1], Config.InputDevice);
+            Config.InputDeviceType = argDeviceTypeCmp(argv[argNo], "-it", argv[argNo + 1], Config.InputDeviceType);
+            if( argIs(argv[argNo], "-it") && argNo < argc - 4 && Config.InputDeviceType == DspCmdConfig::DeviceType::RTL ) {
+                Config.Frequency = argIntCmp(argv[argNo], "-it", argv[argNo + 2], Config.Frequency);
+                if( strcmp(argv[argNo + 3], "IQ") == 0 ) {
+                    Config.Mode = HRtl2832::MODE::IQ_SAMPLES;
+                } else if( strcmp(argv[argNo + 3], "I") == 0 ) {
+                    Config.Mode = HRtl2832::MODE::I_SAMPLES;
+                } else if( strcmp(argv[argNo + 3], "Q") == 0 ) {
+                    Config.Mode = HRtl2832::MODE::Q_SAMPLES;
+                } else if( strcmp(argv[argNo + 3], "REAL") == 0 ) {
+                    Config.Mode = HRtl2832::MODE::REAL_SAMPLES;
+                } else {
+                    std::cout << "Unknown RTL-2832 mode '" << argv[argNo + 3] << "'" << std::endl;
+                }
+                Config.Gain = argIntCmp(argv[argNo], "-it", argv[argNo + 4], Config.Gain);
+                argNo += 3;
+            }
+
             Config.OutputDevice = argIntCmp(argv[argNo], "-od", argv[argNo + 1], Config.OutputDevice);
             Config.Rate = argIntCmp(argv[argNo], "-r", argv[argNo + 1], Config.Rate);
             Config.Format = argIntCmp(argv[argNo], "-f", argv[argNo + 1], Config.Format);
@@ -183,6 +227,12 @@ bool parseArguments(int argc, char** argv)
             Config.DecimateFactor = argIntCmp(argv[argNo], "-fdcm", argv[argNo + 1], Config.DecimateFactor);
             Config.FilterCoeffs = argCharCmp(argv[argNo], "-fdcm", argv[argNo + 2], Config.FilterCoeffs);
 
+            Config.IsSampleTypeConverter = argBoolCmp(argv[argNo], "-stc", Config.IsSampleTypeConverter);
+            Config.SampleInType = argIntCmp(argv[argNo], "-stc", argv[argNo + 1], Config.SampleInType);
+            Config.SampleOutType = argIntCmp(argv[argNo], "-stc", argv[argNo + 2], Config.SampleOutType);
+            if( argNo < argc - 3 && argv[argNo + 3][0] != '-' ) {
+                Config.TypeConverterScale = argDoubleCmp(argv[argNo], "-stc", argv[argNo + 3], Config.TypeConverterScale);
+            }
         }
 
         if( argNo < argc - 3 )
@@ -231,8 +281,17 @@ bool parseArguments(int argc, char** argv)
         if( argBoolCmp(argv[argNo], "-h", false) )
         {
             std::cout << "Usage: dspcmd [option [value]]" << std::endl << std::endl;
+
             std::cout << "$ dspcmd -a" << std::endl;
             std::cout << "Show a list of available audio devices" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "$ dspcmd -t" << std::endl;
+            std::cout << "Show a list of available RTL2832 devices" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "$ dspcmd -iq" << std::endl;
+            std::cout << "Input signal is IQ data (not all operations supports IQ data!)" << std::endl;
             std::cout << std::endl;
 
             std::cout << "$ dspcmd -h" << std::endl;
@@ -256,8 +315,12 @@ bool parseArguments(int argc, char** argv)
             std::cout << "Blocksize used by readers and writers (default = 1024)" << std::endl;
             std::cout << std::endl;
 
+            std::cout << "$ dpscmd -bc count" << std::endl;
+            std::cout << "Number of blocks read before stopping. Default 0 (unlimited)" << std::endl;
+            std::cout << std::endl;
+
             std::cout << "$ dpscmd -f format" << std::endl;
-            std::cout << "Sample format (" << H_SAMPLE_FORMAT_INT_8 << "=Int8, " << H_SAMPLE_FORMAT_UINT_8 << "=UInt8, " << H_SAMPLE_FORMAT_INT_16 << "=Int16, " /*<< H_SAMPLE_FORMAT_INT_24 << "=Int24, "*/ << H_SAMPLE_FORMAT_INT_32 << "=Int32) (default " << H_SAMPLE_FORMAT_INT_16 << " = Int16)" << std::endl;
+            std::cout << "Sample format (" << H_SAMPLE_FORMAT_INT_8 << "=Int8, " << H_SAMPLE_FORMAT_UINT_8 << "=UInt8, " << H_SAMPLE_FORMAT_INT_16 << "=Int16, " /*<< H_SAMPLE_FORMAT_INT_24 << "=Int24, "*/ << H_SAMPLE_FORMAT_INT_32 << "=Int32, " << H_SAMPLE_FORMAT_FLOAT << "=Float) (default " << H_SAMPLE_FORMAT_INT_16 << " = Int16)" << std::endl;
             std::cout << std::endl;
 
             std::cout << "$ dpscmd -ff pcm|wav" << std::endl;
@@ -265,7 +328,14 @@ bool parseArguments(int argc, char** argv)
             std::cout << std::endl;
 
             std::cout << "$ dpscmd -id device" << std::endl;
-            std::cout << "Input audio device" << std::endl;
+            std::cout << "Input device id" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "$ dpscmd -it AUDIO|RTL frequency IQ|I|Q|REAL gain" << std::endl;
+            std::cout << "Input device type. AUDIO is for soundcards, RTL is for RTL-2832 devices." << std::endl;
+            std::cout << "For RTL you must give the center frequency, the mode and a gain value." << std::endl;
+            std::cout << "Set gain=0 to use automatic gain (recommended)." << std::endl;
+            std::cout << "(Most rtl-sdr dongles should be set in Q mode to enable direct sampling)" << std::endl;
             std::cout << std::endl;
 
             std::cout << "$ dpscmd -if name" << std::endl;
@@ -273,7 +343,7 @@ bool parseArguments(int argc, char** argv)
             std::cout << std::endl;
 
             std::cout << "$ dpscmd -od device" << std::endl;
-            std::cout << "Output audio device" << std::endl;
+            std::cout << "Output device id" << std::endl;
             std::cout << std::endl;
 
             std::cout << "$ dpscmd -of name" << std::endl;
@@ -296,8 +366,8 @@ bool parseArguments(int argc, char** argv)
             std::cout << "hh:mm      Stop time" << std::endl;
             std::cout << std::endl;
 
-            std::cout << "$ dpscmd -sg f p a d" << std::endl;
-            std::cout << "Run as signalgenerator. f=frequency,p=phase,a=amplitude,d=duration(sec.)" << std::endl;
+            std::cout << "$ dpscmd -sg frequency phase amplitude duration" << std::endl;
+            std::cout << "Generate a signal with the given frequency, phase and amplitude" << std::endl;
             std::cout << std::endl;
 
             std::cout << "$ dpscmd -nc server port" << std::endl;
@@ -409,6 +479,14 @@ bool parseArguments(int argc, char** argv)
             std::cout << "Convert realvalued samples to IQ samples" << std::endl;
             std::cout << std::endl;
 
+            std::cout << "$ dpscmd -iqr" << std::endl;
+            std::cout << "Convert IQ samples to realvalued samples" << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "$ dpscmd -iqa" << std::endl;
+            std::cout << "Convert IQ samples to absolute (realvalued) samples" << std::endl;
+            std::cout << std::endl;
+
             std::cout << "$ dpscmd -fft" << std::endl;
             std::cout << "Convert input signal to FFT" << std::endl;
             std::cout << std::endl;
@@ -430,11 +508,11 @@ bool parseArguments(int argc, char** argv)
             std::cout << std::endl;
 
             std::cout << "$ dpscmd -tr4i" << std::endl;
-            std::cout << "Translate input samples by four and output I branch" << std::endl;
+            std::cout << "Translate input samples by four (multiply with sin wave at fs/4)" << std::endl;
             std::cout << std::endl;
 
             std::cout << "$ dpscmd -tr4q" << std::endl;
-            std::cout << "Translate input samples by four and output Q branch" << std::endl;
+            std::cout << "Translate input samples by four (multiply with cosine wave at fs/4)" << std::endl;
             std::cout << std::endl;
 
             std::cout << "$ dpscmd -fdcm factor coeffs" << std::endl;
@@ -451,6 +529,10 @@ bool parseArguments(int argc, char** argv)
 
             std::cout << "$ dpscmd -bb center width" << std::endl;
             std::cout << "Move segment around 'center' with 'width' to baseband." << std::endl;
+            std::cout << std::endl;
+
+            std::cout << "$ dpscmd -stc in out" << std::endl;
+            std::cout << "Convert sample type. 'in' and 'out' must be one of the sample formats. See '-f'" << std::endl;
             std::cout << std::endl;
 
             std::cout << "When creating filters, 'name' is the corresponding API name for the filter or calculator.:" << std::endl;
@@ -569,6 +651,26 @@ bool VerifyConfig()
         if( !( !!std::ifstream(Config.InputFile) ) )
         {
             std::cout << "Input file does not exist!." << std::endl;
+            return true;
+        }
+    }
+
+    // Only a few select operations supports IQ data
+    if( Config.IsIq ) {
+        if( !Config.IsFirDecimator &&
+            !Config.IsFilter &&
+            !Config.IsTranslateByTwo &&
+            !Config.IsTranslateByFourI &&
+            !Config.IsTranslateByFourQ &&
+            !Config.IsFFTMagnitudeGnuPlot &&
+            !Config.IsMultiplier ) {
+
+            if( Config.IsFilter && strcmp(Config.FilterName, "HFirFilter") != 0 ) {
+                std::cout << "Selected filter operation does not support IQ data." << std::endl;
+                return true;
+            }
+
+            std::cout << "Selected operation does not support IQ data." << std::endl;
             return true;
         }
     }

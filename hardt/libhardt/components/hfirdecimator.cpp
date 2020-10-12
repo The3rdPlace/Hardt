@@ -4,24 +4,28 @@
 #include "hfirdecimator.h"
 
 template <class T>
-HFirDecimator<T>::HFirDecimator(HWriter<T>* writer, int factor, float* coefficients, int points, size_t blocksize):
+HFirDecimator<T>::HFirDecimator(HWriter<T>* writer, int factor, float* coefficients, int points, size_t blocksize, bool collect, HProbe<T>* probe):
     _blocksize(blocksize),
     _factor(factor),
     _length(0),
     _writer(writer),
-    _reader(nullptr)
+    _reader(nullptr),
+    _collect(collect),
+    _probe(probe)
 {
     HLog("HFirDecimator(HWriter*, float*, points=%d, blocksize=%d)", points, blocksize);
     Init(coefficients, points);
 }
 
 template <class T>
-HFirDecimator<T>::HFirDecimator(HWriterConsumer<T>* consumer, int factor, float* coefficients, int points, size_t blocksize):
+HFirDecimator<T>::HFirDecimator(HWriterConsumer<T>* consumer, int factor, float* coefficients, int points, size_t blocksize, bool collect, HProbe<T>* probe):
     _blocksize(blocksize),
     _factor(factor),
     _length(0),
     _writer(nullptr),
-    _reader(nullptr)
+    _reader(nullptr),
+    _collect(collect),
+    _probe(probe)
 {
     HLog("HFirDecimator(HWriterConsumer*, float*, points=%d, blocksize=%d)", points, blocksize);
     Init(coefficients, points);
@@ -29,12 +33,14 @@ HFirDecimator<T>::HFirDecimator(HWriterConsumer<T>* consumer, int factor, float*
 }
 
 template <class T>
-HFirDecimator<T>::HFirDecimator(HReader<T>* reader, int factor, float* coefficients, int points, size_t blocksize):
+HFirDecimator<T>::HFirDecimator(HReader<T>* reader, int factor, float* coefficients, int points, size_t blocksize, bool collect, HProbe<T>* probe):
     _blocksize(blocksize),
     _factor(factor),
     _length(0),
     _writer(nullptr),
-    _reader(reader)
+    _reader(reader),
+    _collect(collect),
+    _probe(probe)
 {
     HLog("HFirDecimator(HReader*, float*, points=%d, blocksize=%d)", points, blocksize);
     Init(coefficients, points);
@@ -62,7 +68,7 @@ void HFirDecimator<T>::Init(float* coefficients, int points) {
 
     _buffer = new T[_blocksize];
 
-    _fir = new HFir<T>(coefficients, points, 1, _factor);
+    _fir = new HFir<T>(coefficients, points, 1, _factor, 1);
     _filtered = new T[_blocksize];
 }
 
@@ -74,7 +80,7 @@ int HFirDecimator<T>::Write(T* src, size_t blocksize)
         throw new HInitializationException("This HFirDecimator is not a writer");
     }
 
-    if( blocksize > _blocksize )
+    if( blocksize != _blocksize )
     {
         HError("Requested blocksize for write is invalid: %d requested, expected is %d", blocksize, _blocksize);
         throw new HWriterIOException("Requested blocksize for write is invalid");
@@ -87,8 +93,11 @@ int HFirDecimator<T>::Write(T* src, size_t blocksize)
     for(int i = 0; i < blocksize; i += _factor) {
         _buffer[_length++] = _filtered[i];
     }
-    if( _length == _blocksize ) {
-        _writer->Write(_buffer, blocksize);
+    if( _length == _blocksize || !_collect) {
+        _writer->Write(_buffer, _length);
+        if( _probe != nullptr ) {
+            _probe->Write(_buffer, _length);
+        }
         _length = 0;
     }
 
@@ -104,10 +113,16 @@ int HFirDecimator<T>::Read(T* dest, size_t blocksize)
         throw new HInitializationException("This HFirDecimator is not a reader");
     }
 
-    if( blocksize > _blocksize )
-    {
-        HError("Requested blocksize for read is invalid: %d requested, expected is %d", blocksize, _blocksize);
-        throw new HReaderIOException("Requested blocksize for read is invalid");
+    if( _collect ) {
+        if (blocksize != _blocksize) {
+            HError("Requested blocksize for collected read is invalid: %d requested, expected is %d", blocksize, _blocksize);
+            throw new HReaderIOException("Requested blocksize for read is invalid");
+        }
+    } else {
+        if (blocksize != _blocksize / _factor) {
+            HError("Requested blocksize for read is invalid: %d requested, expected is %d", blocksize, _blocksize / _factor);
+            throw new HReaderIOException("Requested blocksize for read is invalid");
+        }
     }
    
     // Read enough blocks to return a full decimated buffer
@@ -115,7 +130,7 @@ int HFirDecimator<T>::Read(T* dest, size_t blocksize)
     while( _length < _blocksize ) {
 
         // Read a block
-        int read = _reader->Read(_buffer, blocksize);
+        int read = _reader->Read(_buffer, _blocksize);
         if( read == 0 ) {
             HLog("Received zero-read, returning zero");
             return 0;
@@ -131,12 +146,24 @@ int HFirDecimator<T>::Read(T* dest, size_t blocksize)
         }
 
         // Filter
-        _fir->Filter(_buffer, _filtered, blocksize);
+        _fir->Filter(_buffer, _filtered, _blocksize);
 
         // Decimate the block
-        for(int i = 0; i < blocksize; i += _factor) {
+        for(int i = 0; i < _blocksize; i += _factor) {
             dest[_length++] = _filtered[i];
         }
+
+        // If not doing a collected read, return what we have now
+        if( !_collect ) {
+            if( _probe != nullptr ) {
+                _probe->Write(dest, _length);
+            }
+            break;
+        }
+    }
+
+    if( _collect && _probe != nullptr ) {
+        _probe->Write(dest, _length);
     }
 
     // Return complete decimated read
@@ -150,40 +177,40 @@ Explicit instantiation
 
 // HFirDecimator()
 template
-HFirDecimator<int8_t>::HFirDecimator(HWriter<int8_t>* writer, int factor, float* coefficients, int points, size_t blocksize);
+HFirDecimator<int8_t>::HFirDecimator(HWriter<int8_t>* writer, int factor, float* coefficients, int points, size_t blocksize, bool collect, HProbe<int8_t>* probe);
 
 template
-HFirDecimator<uint8_t>::HFirDecimator(HWriter<uint8_t>* writer, int factor, float* coefficients, int points, size_t blocksize);
+HFirDecimator<uint8_t>::HFirDecimator(HWriter<uint8_t>* writer, int factor, float* coefficients, int points, size_t blocksize, bool collect, HProbe<uint8_t>* probe);
 
 template
-HFirDecimator<int16_t>::HFirDecimator(HWriter<int16_t>* writer, int factor, float* coefficients, int points, size_t blocksize);
+HFirDecimator<int16_t>::HFirDecimator(HWriter<int16_t>* writer, int factor, float* coefficients, int points, size_t blocksize, bool collect, HProbe<int16_t>* probe);
 
 template
-HFirDecimator<int32_t>::HFirDecimator(HWriter<int32_t>* writer, int factor, float* coefficients, int points, size_t blocksize);
+HFirDecimator<int32_t>::HFirDecimator(HWriter<int32_t>* writer, int factor, float* coefficients, int points, size_t blocksize, bool collect, HProbe<int32_t>* probe);
 
 template
-HFirDecimator<int8_t>::HFirDecimator(HWriterConsumer<int8_t>* consumer, int factor, float* coefficients, int points, size_t blocksize);
+HFirDecimator<int8_t>::HFirDecimator(HWriterConsumer<int8_t>* consumer, int factor, float* coefficients, int points, size_t blocksize, bool collect, HProbe<int8_t>* probe);
 
 template
-HFirDecimator<uint8_t>::HFirDecimator(HWriterConsumer<uint8_t>* consumer, int factor, float* coefficients, int points, size_t blocksize);
+HFirDecimator<uint8_t>::HFirDecimator(HWriterConsumer<uint8_t>* consumer, int factor, float* coefficients, int points, size_t blocksize, bool collect, HProbe<uint8_t>* probe);
 
 template
-HFirDecimator<int16_t>::HFirDecimator(HWriterConsumer<int16_t>* consumer, int factor, float* coefficients, int points, size_t blocksize);
+HFirDecimator<int16_t>::HFirDecimator(HWriterConsumer<int16_t>* consumer, int factor, float* coefficients, int points, size_t blocksize, bool collect, HProbe<int16_t>* probe);
 
 template
-HFirDecimator<int32_t>::HFirDecimator(HWriterConsumer<int32_t>* consumer, int factor, float* coefficients, int points, size_t blocksize);
+HFirDecimator<int32_t>::HFirDecimator(HWriterConsumer<int32_t>* consumer, int factor, float* coefficients, int points, size_t blocksize, bool collect, HProbe<int32_t>* probe);
 
 template
-HFirDecimator<int8_t>::HFirDecimator(HReader<int8_t>* reader, int factor, float* coefficients, int points, size_t blocksize);
+HFirDecimator<int8_t>::HFirDecimator(HReader<int8_t>* reader, int factor, float* coefficients, int points, size_t blocksize, bool collect, HProbe<int8_t>* probe);
 
 template
-HFirDecimator<uint8_t>::HFirDecimator(HReader<uint8_t>* reader, int factor, float* coefficients, int points, size_t blocksize);
+HFirDecimator<uint8_t>::HFirDecimator(HReader<uint8_t>* reader, int factor, float* coefficients, int points, size_t blocksize, bool collect, HProbe<uint8_t>* probe);
 
 template
-HFirDecimator<int16_t>::HFirDecimator(HReader<int16_t>* reader, int factor, float* coefficients, int points, size_t blocksize);
+HFirDecimator<int16_t>::HFirDecimator(HReader<int16_t>* reader, int factor, float* coefficients, int points, size_t blocksize, bool collect, HProbe<int16_t>* probe);
 
 template
-HFirDecimator<int32_t>::HFirDecimator(HReader<int32_t>* reader, int factor, float* coefficients, int points, size_t blocksize);
+HFirDecimator<int32_t>::HFirDecimator(HReader<int32_t>* reader, int factor, float* coefficients, int points, size_t blocksize, bool collect, HProbe<int32_t>* probe);
 
 // ~HFirDecimator()
 template

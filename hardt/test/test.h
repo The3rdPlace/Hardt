@@ -450,3 +450,5 @@ class Test
 
 #define INFO(a) std::cout << "  " << a << std::endl;
 #define WARNING(a) std::cout << "  WARNING: " << a << "!!" << std::endl;
+#define DUMP(a, b) for( int i = 0; i < b; i++ ) { std::cout << "  [" << i << "] = " << std::to_string(a[i]) << std::endl; }
+#define ARRAY(a, b) std::cout << "  {"; for( int i = 0; i < b; i++ ) { if( i > 0 ) { std::cout << ", "; } std::cout << std::to_string(a[i]); }; std::cout << "};" << std::endl;

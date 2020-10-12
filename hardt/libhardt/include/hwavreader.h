@@ -1,6 +1,8 @@
 #ifndef __HWAVREADER_H
 #define __HWAVREADER_H
 
+#include "hprobe.h"
+
 /**
     Read samples from a wav file
 */
@@ -10,7 +12,7 @@ class HWavReader : public HWav, public HFileReader<T>
     public:
 
         /** Construct a new wav reader stream that reads the specified wav file */
-        HWavReader(const char* filename);
+        HWavReader(const char* filename, HProbe<T>* probe = nullptr);
 
         /** Initialize before first read */
         bool Start();

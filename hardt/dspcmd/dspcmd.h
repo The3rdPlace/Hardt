@@ -19,6 +19,8 @@
     
     -a = Show a list of available audio devices
 
+    -t = Show a list of available RTL2832 devices
+
     -h = Show this help
 
     -v = Be verbose, dont write to logfiles but to stdout
@@ -545,6 +547,16 @@
 
     Convert realvalued samples to IQ samples
 
+    \page iqr
+    Syntax: dpscmd -iqr
+
+    Convert IQ samples to realvalued samples
+
+    \page iqa
+    Syntax: dpscmd -iqa
+
+    Convert IQ samples to absolute (realvalued) samples
+
     \page fft
     Syntax: dspcmd -fft
 
@@ -579,12 +591,12 @@
     \page tr4i
     Syntax: dpscmd -tr4i
 
-    Translate input samples by four and output I branch
+    Translate input samples by four (multiply with sine wave at fs/4)
 
     \page tr4q
     dpscmd -tr4q
 
-    Translate input samples by four and output Q branch
+    Translate input samples by four (multiply with cosine wave at fs/4)
 
     \page up
     Syntax: dspcmd -up factor
@@ -601,6 +613,11 @@
 
     Move segment around 'center' with 'width' to baseband
 
+    \page stc
+    Syntax: dpscmd -stc in out [scale]
+
+    Convert sample type. 'in' and 'out' must be one of the sample formats. (See '-f').
+    If a scale factor is given (floating point), the samples is scaled (up or down)
 */
 
 #ifndef __DSPCMD_H

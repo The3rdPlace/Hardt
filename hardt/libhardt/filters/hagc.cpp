@@ -2,6 +2,7 @@
 #define __HAGC_CPP
 
 #include <numeric>
+#include <algorithm>
 
 #include "hagc.h"
 

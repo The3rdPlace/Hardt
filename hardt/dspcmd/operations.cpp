@@ -27,6 +27,7 @@ double GetCalibratedReference(double fdelta, int start, int stop, int amplitude,
     double refSummer[Blocks / 2];
     memset((void *) refSummer, 0, sizeof(double) * (Blocks / 2));
     for (; freq < stop; freq += fdelta) {
+
         vfo.SetFrequency(freq);
 
         vfo.Read(refBlock, Blocks);
@@ -179,7 +180,20 @@ template <typename T>
 int RunFileRecorder()
 {
     // Create reader
-    HSoundcardReader<T> rd(Config.InputDevice, Config.Rate, 1, Config.Format, Config.Blocksize);
+    HReader<T>* rd;
+    if( Config.InputDeviceType == DspCmdConfig::DeviceType::AUDIO )
+    {
+        rd = new HSoundcardReader<T>(Config.InputDevice, Config.Rate, 1, Config.Format, Config.Blocksize);
+    }
+    else if ( Config.InputDeviceType == DspCmdConfig::DeviceType::RTL )
+    {
+        rd = new HRtl2832Reader<T>(Config.InputDevice, Config.Rate, Config.Mode, Config.Gain, Config.Frequency, Config.Blocksize);
+    }
+    else
+    {
+        std::cout << "Unknown input device type " << Config.InputDeviceType << std::endl;
+        return -1;
+    }
 
     // Create writer
     HWriter<T>* wr;
@@ -197,9 +211,8 @@ int RunFileRecorder()
         return -1;
     }
 
-
     // Create processor
-    HStreamProcessor<T> proc(wr, &rd, Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc(wr, rd, Config.Blocksize, &terminated);
     if( Config.Timer.Duration() > 0 )
     {
         unsigned long int blocks = (Config.Timer.Duration() * Config.Rate) / Config.Blocksize;
@@ -207,7 +220,7 @@ int RunFileRecorder()
     }
     else
     {
-        proc.Run();
+        proc.Run(Config.BlockCount);
     }
 
     // Delete writer
@@ -218,6 +231,16 @@ int RunFileRecorder()
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
         delete (HFileWriter<T>*) wr;
+    }
+
+    // Delete input device
+    if( Config.InputDeviceType == DspCmdConfig::DeviceType::AUDIO )
+    {
+        delete (HSoundcardReader<T>*) rd;
+    }
+    else if ( Config.InputDeviceType == DspCmdConfig::DeviceType::RTL )
+    {
+        delete (HRtl2832Reader<T>*) rd;
     }
 
     return 0;
@@ -247,7 +270,7 @@ int RunFilePlayer()
 
     // Create processor
     HStreamProcessor<T> proc(&wr, rd, Config.Blocksize, &terminated);
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Delete reader
     if( strcmp(Config.FileFormat, "wav") == 0 )
@@ -313,13 +336,13 @@ void FFTMagnitudeShowGnuDBPlot(double reference, double ignore, bool skipInfinit
 
     // Use zooming ?
     int rate = Config.Rate;
-    if( Config.ZoomFactor > 0 ) {
+    if( Config.ZoomFactor > 0 && Config.FCenter > 0 ) {
         rate /= Config.ZoomFactor;
         Config.FStart = Config.FCenter - ((rate / 2) / 2);
     }
 
     // Calculate frequency span per bin
-    double fdelta = ((double) rate / 2) / ((double)Config.FFTSize / 2);
+    double fdelta = ((double) rate / 2) / ((double)Config.FFTSize / (Config.IsIq ? 4 : 2));
     if( fdelta < 1 ) {
         std::cout << "Too low fft size. Unable to display plot! (reduce blocksize)" << std::endl;
         return;
@@ -331,8 +354,31 @@ void FFTMagnitudeShowGnuDBPlot(double reference, double ignore, bool skipInfinit
     fprintf(gnuplotPipe, "set xlabel \"Hz\" offset 0,0\n");
     fprintf(gnuplotPipe, "set ylabel \"DB\" offset 0,0\n");
     fprintf(gnuplotPipe, "plot '-' with linespoints linestyle 1 title \"%d point fft\"\n", Config.Blocksize);
-    for( int bin = 0; bin < (Config.FFTSize / 2); bin++ )
+    if( Config.IsIq ) {
+        for (int bin = (Config.FFTSize / 4); bin < (Config.FFTSize / 2) - 1; bin++)
+        {
+            double binFrequency = Config.FStart - ((Config.FFTSize / 2) - (double) bin) * fdelta;
+
+            // Plot DB value
+            double ratio = displayedSpectrum[bin] / ref;
+            double db = (double) 20 * log10(ratio);
+            if (isinff(db)) {
+                // skip infinitely small values ?(with respect to the discrete sample)
+                if (skipInfinite) {
+                    continue;
+                } else {
+                    db = 0;
+                }
+            }
+            if (!isnan(db)) {
+                fprintf(gnuplotPipe, "%lf %lf\n", binFrequency, db);
+            }
+        }
+    }
+    for( int bin = 0; bin < (Config.FFTSize / (Config.IsIq ? 4 : 2)); bin++ )
     {
+        double binFrequency = ((double) bin * fdelta) + Config.FStart;
+
         // Plot DB value
         double ratio = displayedSpectrum[bin] / ref;
         double db = (double) 20 * log10(ratio);
@@ -345,7 +391,7 @@ void FFTMagnitudeShowGnuDBPlot(double reference, double ignore, bool skipInfinit
             }
         }
         if( !isnan(db) ) {
-            fprintf(gnuplotPipe, "%lf %lf\n", ((double) bin * fdelta) + Config.FStart, db);
+            fprintf(gnuplotPipe, "%lf %lf\n", binFrequency, db);
         }
     }
     fprintf(gnuplotPipe, "e");
@@ -369,7 +415,7 @@ template <class T>
 void FFTMagnitudeShowGnuPlot()
 {
     // Same f-delta as used by the FilterSpectrumReader during sweeps
-    double fdelta = (((double) Config.Rate / 2) / ((double) Config.FFTSize / 2)) / 10;
+    double fdelta = (((double) Config.Rate / 2) / ((double) Config.FFTSize / 2)) / (Config.Rate > 48000 ? 1 : 10);
     if( fdelta < 1 ) {
         std::cout << "Too low fft size. Unable to show plot. (reduce blocksize)" << std::endl;
         return;
@@ -382,7 +428,7 @@ void FFTMagnitudeShowGnuPlot()
     int stop = (Config.Rate / 2);
     double ref = GetCalibratedReference<T>(fdelta, start, stop, 1, false);
 
-    // The scaling factor based on blocksize 1024 is applied when calculating 
+    // The scaling factor based on blocksize 1024 is applied when calculating
     // the db values so we need to take this into account when analyzing a real signal.
     // Also adjust for the increased number of samples by increasing fdelta by 10 (see above)
     double factor = (double) (Config.Blocksize) / 1024;
@@ -421,9 +467,9 @@ int RunFFTMagnitudePlot()
     // Create FFT
     HFftOutput<T>* fft;
     if( Config.FCenter > 0 ) {
-        fft = new HFftOutput<T>(Config.FFTSize, Config.Average, &fftWriter, new HHahnWindow<T>(), Config.Rate, Config.ZoomFactor, Config.FCenter);
+        fft = new HFftOutput<T>(Config.FFTSize, Config.Average, 1, &fftWriter, new HHahnWindow<T>(), Config.Rate, Config.ZoomFactor, Config.FCenter);
     } else {
-        fft = new HFftOutput<T>(Config.FFTSize, Config.Average, &fftWriter, new HHahnWindow<T>());
+        fft = new HFftOutput<T>(Config.FFTSize, Config.Average, 1, &fftWriter, new HHahnWindow<T>(), Config.IsIq);
     }
 
     // Buffer for the accumulated spectrum values
@@ -432,7 +478,7 @@ int RunFFTMagnitudePlot()
 
     // Create processor
     HStreamProcessor<T> proc(fft->Writer(), rd, Config.Blocksize, &terminated);
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Delete reader
     if( strcmp(Config.FileFormat, "wav") == 0 )
@@ -490,7 +536,7 @@ int RunFileConverter()
 
     // Create processor
     HStreamProcessor<T> proc(wr, rd, Config.Blocksize, &terminated);
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Delete reader
     if( strcmp(Config.InFileFormat, "wav") == 0 )
@@ -557,7 +603,7 @@ int RunClickRemoval()
     }
 
     // Run clickremoval
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Delete reader
     if( strcmp(Config.InFileFormat, "wav") == 0 )
@@ -642,7 +688,7 @@ int RunMixer()
 
     // Create processor
     HStreamProcessor<T> proc(wr, (HReader<T>*) &mixer, Config.Blocksize, &terminated);
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Delete readers and the writer
     if( strcmp(Config.FileFormat, "wav") == 0 )
@@ -717,7 +763,7 @@ int RunSubtracter()
 
     // Create processor
     HStreamProcessor<T> proc(wr, (HReader<T>*) &subtracter, Config.Blocksize, &terminated);
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Delete readers and the writer
     if( strcmp(Config.FileFormat, "wav") == 0 )
@@ -772,11 +818,15 @@ int RunMultiplier()
     }
 
     // Create  multiplier
-    HMultiplier<T> multiplier(rd, Config.Rate, Config.Frequency, 10, Config.Blocksize);
-
-    // Create processor
-    HStreamProcessor<T> proc(wr, (HReader<T>*) &multiplier, Config.Blocksize, &terminated);
-    proc.Run();
+    if( Config.IsIq ) {
+        HIqMultiplier<T> multiplier(rd, Config.Rate, Config.Frequency, 10, Config.Blocksize);
+        HStreamProcessor<T> proc(wr, (HReader<T>*) &multiplier, Config.Blocksize, &terminated);
+        proc.Run(Config.BlockCount);
+    } else {
+        HMultiplier<T> multiplier(rd, Config.Rate, Config.Frequency, 10, Config.Blocksize);
+        HStreamProcessor<T> proc(wr, (HReader<T>*) &multiplier, Config.Blocksize, &terminated);
+        proc.Run(Config.BlockCount);
+    }
 
     // Delete the reader and writer
     if( strcmp(Config.FileFormat, "wav") == 0 )
@@ -832,7 +882,11 @@ int RunFilter()
     HFilter<T>* filter;
     if( strcmp(Config.FilterName, "HFirFilter") == 0 )
     {
-        filter = HFirFilter<T>::Create((HReader<T>*) rd, Config.Blocksize, Config.FilterCoeffs);
+        if( Config.IsIq ) {
+            filter = HIqFirFilter<T>::Create((HReader<T>*) rd, Config.Blocksize, Config.FilterCoeffs);
+        } else {
+            filter = HFirFilter<T>::Create((HReader<T>*) rd, Config.Blocksize, Config.FilterCoeffs);
+        }
     }
     else if( strcmp(Config.FilterName, "HIirFilter") == 0 )
     {
@@ -846,7 +900,7 @@ int RunFilter()
 
     // Create processor
     HStreamProcessor<T> proc(wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
     if( strcmp(Config.FileFormat, "wav") == 0 )
@@ -974,7 +1028,7 @@ int RunFilterSpectrum()
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFftOutput<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
+    HFftOutput<T> fft(Config.Blocksize, 1, 1, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
@@ -982,7 +1036,7 @@ int RunFilterSpectrum()
     // Create processor
     HStreamProcessor<T> proc(&fft, (HReader<T>*) filter, Config.Blocksize, &terminated);
     std::cout << "Sweep from 0Hz - " << (Config.Rate / 2) << "Hz" << std::endl;
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Display the final plot
     FFTMagnitudeShowGnuDBPlot<T>(rd.GetRef());
@@ -1052,7 +1106,7 @@ int RunBiQuadSpectrum()
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFftOutput<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
+    HFftOutput<T> fft(Config.Blocksize, 1, 1, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
@@ -1060,7 +1114,7 @@ int RunBiQuadSpectrum()
     // Create processor
     HStreamProcessor<T> proc(&fft, filter->Reader(), Config.Blocksize, &terminated);
     std::cout << "Sweep from 0Hz - " << (Config.Rate / 2) << "Hz" << std::endl;
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Display the final plot
     FFTMagnitudeShowGnuDBPlot<T>(rd.GetRef());
@@ -1145,7 +1199,7 @@ int RunBiQuadFilter()
 
     // Create processor
     HStreamProcessor<T> proc(wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
     if( strcmp(Config.FileFormat, "wav") == 0 )
@@ -1212,7 +1266,7 @@ int RunKaiserBesselSpectrum()
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFftOutput<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
+    HFftOutput<T> fft(Config.Blocksize, 1, 1, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
@@ -1220,7 +1274,7 @@ int RunKaiserBesselSpectrum()
     // Create processor
     HStreamProcessor<T> proc(&fft, filter->Reader(), Config.Blocksize, &terminated);
     std::cout << "Sweep from 0Hz - " << (Config.Rate / 2) << "Hz" << std::endl;
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Display the final plot
     FFTMagnitudeShowGnuDBPlot<T>(rd.GetRef());
@@ -1293,7 +1347,7 @@ int RunKaiserBesselFilter()
 
     // Create processor
     HStreamProcessor<T> proc(wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
     if( strcmp(Config.FileFormat, "wav") == 0 )
@@ -1350,7 +1404,7 @@ int RunGain()
 
     // Create processor
     HStreamProcessor<T> proc(wr, (HReader<T>*) &gain, Config.Blocksize, &terminated);
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
     if( strcmp(Config.FileFormat, "wav") == 0 )
@@ -1388,7 +1442,7 @@ int RunCombSpectrum()
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFftOutput<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
+    HFftOutput<T> fft(Config.Blocksize, 1, 1, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
@@ -1396,7 +1450,7 @@ int RunCombSpectrum()
     // Create processor
     HStreamProcessor<T> proc(&fft, (HReader<T>*) filter, Config.Blocksize, &terminated);
     std::cout << "Sweep from 0Hz - " << (Config.Rate / 2) << "Hz" << std::endl;
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Display the final plot
     FFTMagnitudeShowGnuDBPlot<T>(rd.GetRef());
@@ -1455,7 +1509,7 @@ int RunCombFilter()
 
     // Create processor
     HStreamProcessor<T> proc(wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
     if( strcmp(Config.FileFormat, "wav") == 0 )
@@ -1525,7 +1579,7 @@ int RunGoertzlSweep()
 
         // Create processor
         HStreamProcessor<T> proc(filter, rd, Config.Blocksize, &terminated);
-        proc.Run();
+        proc.Run(Config.BlockCount);
         delete filter;
 
         // Delete the reader
@@ -1599,7 +1653,7 @@ int RunBiQuadCascadeFilter()
 
     // Create processor
     HStreamProcessor<T> proc(wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
     if( strcmp(Config.FileFormat, "wav") == 0 )
@@ -1632,7 +1686,7 @@ int RunBiQuadCascadeSpectrum()
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFftOutput<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
+    HFftOutput<T> fft(Config.Blocksize, 1, 1, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
@@ -1640,7 +1694,7 @@ int RunBiQuadCascadeSpectrum()
     // Create processor
     HStreamProcessor<T> proc(&fft, (HReader<T>*) filter, Config.Blocksize, &terminated);
     std::cout << "Sweep from 0Hz - " << (Config.Rate / 2) << "Hz" << std::endl;
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Display the final plot
     FFTMagnitudeShowGnuDBPlot<T>(rd.GetRef());
@@ -1659,12 +1713,12 @@ int RunMovingAverageSpectrum()
 
     // Create  filter
     HMovingAverageFilter<T>* filter = new HMovingAverageFilter<T>(&rd, Config.M, Config.Blocksize);
-    
+
     // Create writer
     HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFftOutput<T> fft(Config.Blocksize, 1, &fftWriter, new HHahnWindow<T>());
+    HFftOutput<T> fft(Config.Blocksize, 1, 1, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
@@ -1672,7 +1726,7 @@ int RunMovingAverageSpectrum()
     // Create processor
     HStreamProcessor<T> proc(&fft, (HReader<T>*) filter, Config.Blocksize, &terminated);
     std::cout << "Sweep from 0Hz - " << (Config.Rate / 2) << "Hz" << std::endl;
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Display the final plot
     FFTMagnitudeShowGnuDBPlot<T>(rd.GetRef());
@@ -1723,7 +1777,7 @@ int RunMovingAverageFilter()
 
     // Create processor
     HStreamProcessor<T> proc(wr, filter->Reader(), Config.Blocksize, &terminated);
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
     if( strcmp(Config.FileFormat, "wav") == 0 )
@@ -1766,11 +1820,11 @@ int RunReal2Iq()
     HWriter<T>* wr = new HFileWriter<T>(Config.OutputFile);
 
     // Create  converter
-    HReal2IqConverter<T>* converter = new HReal2IqConverter<T>(rd, Config.Rate, Config.Blocksize / 2);
+    HReal2IqConverter<T>* converter = new HReal2IqConverter<T>(rd, Config.Blocksize / 2);
 
     // Create processor
     HStreamProcessor<T> proc(wr, converter->Reader(), Config.Blocksize, &terminated);
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
     if( strcmp(Config.InFileFormat, "wav") == 0 )
@@ -1783,7 +1837,99 @@ int RunReal2Iq()
     }
     delete (HFileWriter<T>*) wr;
 
-    // Delete the filter
+    // Delete the converter
+    delete converter;
+
+    return 0;
+}
+
+template <typename T>
+int RunIq2Real()
+{
+    // Create reader
+    HReader<T>* rd;
+    if( strcmp(Config.InFileFormat, "wav") == 0 )
+    {
+        rd = new HWavReader<T>(Config.InputFile);
+    }
+    else if( strcmp(Config.InFileFormat, "pcm") == 0 )
+    {
+        rd = new HFileReader<T>(Config.InputFile);
+    }
+    else
+    {
+        std::cout << "Unknown input file format " << Config.InFileFormat << std::endl;
+        return -1;
+    }
+
+    // Create writer
+    HWriter<T>* wr = new HFileWriter<T>(Config.OutputFile);
+
+    // Create  converter
+    HIq2RealConverter<T>* converter = new HIq2RealConverter<T>(rd, Config.Blocksize);
+
+    // Create processor
+    HStreamProcessor<T> proc(wr, converter->Reader(), Config.Blocksize, &terminated);
+    proc.Run(Config.BlockCount);
+
+    // Delete the reader and writer
+    if( strcmp(Config.InFileFormat, "wav") == 0 )
+    {
+        delete (HWavReader<T>*) rd;
+    }
+    else if( strcmp(Config.InFileFormat, "pcm") == 0 )
+    {
+        delete (HFileReader<T>*) rd;
+    }
+    delete (HFileWriter<T>*) wr;
+
+    // Delete the converter
+    delete converter;
+
+    return 0;
+}
+
+template <typename T>
+int RunIq2Abs()
+{
+    // Create reader
+    HReader<T>* rd;
+    if( strcmp(Config.InFileFormat, "wav") == 0 )
+    {
+        rd = new HWavReader<T>(Config.InputFile);
+    }
+    else if( strcmp(Config.InFileFormat, "pcm") == 0 )
+    {
+        rd = new HFileReader<T>(Config.InputFile);
+    }
+    else
+    {
+        std::cout << "Unknown input file format " << Config.InFileFormat << std::endl;
+        return -1;
+    }
+
+    // Create writer
+    HWriter<T>* wr = new HFileWriter<T>(Config.OutputFile);
+
+    // Create  converter
+    HIq2AbsConverter<T>* converter = new HIq2AbsConverter<T>(rd, Config.Blocksize);
+
+    // Create processor
+    HStreamProcessor<T> proc(wr, converter->Reader(), Config.Blocksize, &terminated);
+    proc.Run(Config.BlockCount);
+
+    // Delete the reader and writer
+    if( strcmp(Config.InFileFormat, "wav") == 0 )
+    {
+        delete (HWavReader<T>*) rd;
+    }
+    else if( strcmp(Config.InFileFormat, "pcm") == 0 )
+    {
+        delete (HFileReader<T>*) rd;
+    }
+    delete (HFileWriter<T>*) wr;
+
+    // Delete the converter
     delete converter;
 
     return 0;
@@ -1951,7 +2097,7 @@ int RunDemux()
 
     // Create processor
     HStreamProcessor<T> proc(dmx.Writer(), rd->Reader(), Config.Blocksize, &terminated);
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
     if( strcmp(Config.FileFormat, "wav") == 0 )
@@ -2005,10 +2151,10 @@ int RunDecimator()
         return -1;
     }
 
-    // Create  decimator and a processor
+    // Create decimator and a processor
     HDecimator<T> dcm(wr, Config.DecimateFactor, Config.Blocksize);
     HStreamProcessor<T> proc(dcm.Writer(), rd->Reader(), Config.Blocksize, &terminated);
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
     if( strcmp(Config.FileFormat, "wav") == 0 )
@@ -2063,15 +2209,29 @@ int RunTranslator()
     // Create  decimator and a processor
     HStreamProcessor<T>* proc;
     if( Config.IsTranslateByTwo ) {
-        HTranslateByTwo<T> tr2(wr, Config.Blocksize);
-        proc = new HStreamProcessor<T>(tr2.Writer(), rd->Reader(), Config.Blocksize, &terminated);
-        proc->Run();
-        delete proc;
+        if( Config.IsIq ) {
+            HIqTranslateByTwo<T> tr2(wr, Config.Blocksize);
+            proc = new HStreamProcessor<T>(tr2.Writer(), rd->Reader(), Config.Blocksize, &terminated);
+            proc->Run();
+            delete proc;
+        } else {
+            HTranslateByTwo<T> tr2(wr, Config.Blocksize);
+            proc = new HStreamProcessor<T>(tr2.Writer(), rd->Reader(), Config.Blocksize, &terminated);
+            proc->Run();
+            delete proc;
+        }
     } else if( Config.IsTranslateByFourI || Config.IsTranslateByFourQ ) {
-        HTranslateByFour<T> tr4(wr, Config.Blocksize, Config.IsTranslateByFourQ);
-        proc = new HStreamProcessor<T>(tr4.Writer(), rd->Reader(), Config.Blocksize, &terminated);
-        proc->Run();
-        delete proc;
+        if( Config.IsIq ) {
+            HIqTranslateByFour<T> tr4(wr, Config.Blocksize, Config.IsTranslateByFourQ);
+            proc = new HStreamProcessor<T>(tr4.Writer(), rd->Reader(), Config.Blocksize, &terminated);
+            proc->Run();
+            delete proc;
+        } else {
+            HTranslateByFour<T> tr4(wr, Config.Blocksize, Config.IsTranslateByFourQ);
+            proc = new HStreamProcessor<T>(tr4.Writer(), rd->Reader(), Config.Blocksize, &terminated);
+            proc->Run();
+            delete proc;
+        }
     } else {
         std::cout << "Called RunTranslator() for an operation that is not translation!" << std::endl;
         return -1;
@@ -2132,7 +2292,7 @@ int RunUpsampler()
 
     // Create processor
     HStreamProcessor<T> proc(up.Writer(), rd->Reader(), Config.Blocksize, &terminated);
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
     if( strcmp(Config.FileFormat, "wav") == 0 )
@@ -2196,7 +2356,7 @@ int RunInterpolator()
 
     // Create processor
     HStreamProcessor<T> proc(ip.Writer(), rd->Reader(), Config.Blocksize, &terminated);
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
     if( strcmp(Config.FileFormat, "wav") == 0 )
@@ -2253,7 +2413,7 @@ int RunBaseband()
 
     // Create processor
     HStreamProcessor<T> proc(bb.Writer(), rd->Reader(), Config.Blocksize, &terminated);
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
     if( strcmp(Config.FileFormat, "wav") == 0 )
@@ -2306,12 +2466,21 @@ int RunFirDecimator()
     }
 
     // Create  filter
+    HReader<T>* filter;
+    HFirDecimator<T>* firDecimator = nullptr;
+    HIqFirDecimator<T>* iqFirDecimator = nullptr;
     std::vector<float> coefs = HFilter<T>::ReadCoeffsFromFile(Config.FilterCoeffs);
-    HFirDecimator<T>* filter = new HFirDecimator<T>(rd->Reader(), Config.DecimateFactor, &coefs[0], coefs.size(), Config.Blocksize);
+    if( Config.IsIq ) {
+        iqFirDecimator = new HIqFirDecimator<T>(rd->Reader(), Config.DecimateFactor, &coefs[0], coefs.size(), Config.Blocksize);
+        filter = iqFirDecimator->Reader();
+    } else {
+        firDecimator = new HFirDecimator<T>(rd->Reader(), Config.DecimateFactor, &coefs[0], coefs.size(), Config.Blocksize);
+        filter = firDecimator->Reader();
+    }
 
     // Create processor
     HStreamProcessor<T> proc(wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
-    proc.Run();
+    proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
     if( strcmp(Config.FileFormat, "wav") == 0 )
@@ -2326,7 +2495,30 @@ int RunFirDecimator()
     }
 
     // Delete the filter
-    delete filter;
+    if( firDecimator != nullptr ) {
+        delete firDecimator;
+    } else {
+        delete iqFirDecimator;
+    }
+
+    return 0;
+}
+
+template <typename T>
+int RunSampleTypeConverter()
+{
+    // Create reader
+    HFileReader<float> rd(Config.InputFile);
+
+    // Create converter
+    HTypeConverter<float, T> cnv(rd.Reader(), Config.Blocksize, Config.TypeConverterScale);
+
+    // Create writer
+    HFileWriter<T> wr(Config.OutputFile);
+
+    // Create processor
+    HStreamProcessor<T> proc(wr.Writer(), cnv.Reader(), Config.Blocksize, &terminated);
+    proc.Run(Config.BlockCount);
 
     return 0;
 }
@@ -2365,6 +2557,32 @@ int RunOperation()
             std::cout << "Device: " << (*it).Name << std::endl;
             std::cout << "Inputs: " << (*it).Inputs << std::endl;
             std::cout << "Outputs: " << (*it).Outputs << std::endl;
+            std::cout << "Is default device: " << ((*it).IsDefaultDevice ? "yes" : "no") << std::endl;
+            std::cout << std::endl;
+        }
+        return 0;
+    }
+
+
+    // Show RTL2832 device information
+    if( Config.ShowRtl2832Devices ) {
+
+        if( HRtl2832::AvailableDevices() == 0 )
+        {
+            std::cout << "There is no RTL2832 devices available on this system" << std::endl;
+            return 0;
+        }
+
+        std::cout << "Default device is: " << HRtl2832::GetDefaultDevice() << std::endl;
+        std::cout << std::endl;
+
+        std::vector<HRtl2832::DeviceInformation> info = HRtl2832::GetDeviceInformation();
+        for( std::vector<HRtl2832::DeviceInformation>::iterator it = info.begin(); it != info.end(); it++)
+        {
+            std::cout << "Device: " << (*it).Device << std::endl;
+            std::cout << "Vendor: " << (*it).Vendor << std::endl;
+            std::cout << "Product: " << (*it).Product << std::endl;
+            std::cout << "Serial: " << (*it).Serial << std::endl;
             std::cout << "Is default device: " << ((*it).IsDefaultDevice ? "yes" : "no") << std::endl;
             std::cout << std::endl;
         }
@@ -2447,6 +2665,11 @@ int RunOperation()
         if( Config.InputDevice == -1 )
         {
             std::cout << "No input device (-id)" << std::endl;
+            return -1;
+        }
+        if( Config.InputDeviceType == DspCmdConfig::DeviceType::NONE )
+        {
+            std::cout << "No input device type (-it)" << std::endl;
             return -1;
         }
         if( Config.OutputFile == NULL )
@@ -2965,6 +3188,38 @@ int RunOperation()
         return RunReal2Iq<T>();
     }
 
+    if( Config.IsIq2Real )
+    {
+        if( Config.InputFile == NULL )
+        {
+            std::cout << "No input file (-if)" << std::endl;
+            return -1;
+        }
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file (-of)" << std::endl;
+            return -1;
+        }
+
+        return RunIq2Real<T>();
+    }
+
+    if( Config.IsIq2Abs )
+    {
+        if( Config.InputFile == NULL )
+        {
+            std::cout << "No input file (-if)" << std::endl;
+            return -1;
+        }
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file (-of)" << std::endl;
+            return -1;
+        }
+
+        return RunIq2Abs<T>();
+    }
+
     if( Config.IsFft )
     {
         if( Config.InputFile == NULL )
@@ -3154,6 +3409,35 @@ int RunOperation()
         }
 
         return RunFirDecimator<T>();
+    }
+
+    if( Config.IsSampleTypeConverter )
+    {
+        if( Config.InputFile == NULL )
+        {
+            std::cout << "No input file (-if)" << std::endl;
+            return -1;
+        }
+
+        if( Config.OutputFile == NULL )
+        {
+            std::cout << "No output file (-of)" << std::endl;
+            return -1;
+        }
+
+        if( Config.SampleInType == 0 )
+        {
+            std::cout << "No input sample type" << std::endl;
+            return -1;
+        }
+
+        if( Config.SampleOutType == 0 )
+        {
+            std::cout << "No output sample type" << std::endl;
+            return -1;
+        }
+
+        return RunSampleTypeConverter<T>();
     }
 
     // No known operation could be determined from the input arguments

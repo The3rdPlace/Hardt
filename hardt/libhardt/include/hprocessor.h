@@ -99,7 +99,7 @@ class HProcessor : public HWriterConsumer<T>
         virtual void Halt();
 
         /** Send a command to the reader and writer chain of this processor */
-        virtual bool Command(HCOMMAND_CLASS commandClass, HCOMMAND_OPCODE commandOpcode, int16_t length, HCommandData data) = 0;
+        virtual bool Command(H_COMMAND_CLASS commandClass, H_COMMAND_OPCODE commandOpcode, int16_t length, HCommandData data) = 0;
 
         /** Get the metrics object */
         HMetrics* GetMetrics() {

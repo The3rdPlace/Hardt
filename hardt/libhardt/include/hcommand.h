@@ -4,34 +4,64 @@
 #include "hexceptions.h"
 
 /** Command classes */
-enum HCOMMAND_CLASS
+enum H_COMMAND_CLASS
 {
-	/** No class.
+	/**
+	 * No class.
+	 *
+	 * Can be send anywhere.
+	 *
+	 * All receivers must either pass the command on or return true
+	 */
+	NONE = 0,
 
-	    Description:
-		Can be send anywhere without activating no receivers. No receivers should attempt to handle commands of this class
-	*/
-	NONE
+	/**
+	 * Any class.
+	 *
+	 * Command opcode operates on any class that supports that opcode
+	 */
+	ANY = 1,
+
+	/**
+	 * Tuner class.
+	 *
+	 * Command opcode operates on any device containing a tuner, virtual as well as real
+	 */
+    TUNER = 2,
 };
 
 /** Command opcodes */
-enum HCOMMAND_OPCODE
+enum H_COMMAND_OPCODE
 {
-    /** No Operation
+    /**
+     * No Operation
+     *
+     * Can be send anywhere, with any class.
+     *
+     * All receivers must either pass the command on or return true
+     */
+    NOP = 0,
 
-        Description:
-        Can be send anywhere to do exatcly nothing
+    /**
+     * Class = TUNER
+     *
+     * Opcode sets the center or LO frequency of the tuner (hardware or virtual).
+     * Device type defines which oscillator is set.
+     *
+     * Command data value must be set to the frequency.
+     * Since value is an int32, the highest center or LO frequency that can be set
+     * is 2.147.483.647 ~= 2.147 GHz
+     */
+    SET_FREQUENCY = 1,
 
-        Options:
-        None
-
-        Data.Value (INT32):
-        Value is indeterminate and must be ignored
-
-        Length:
-        struct + sizeof(HCommandData)
-    */
-    NOP
+    /**
+     * Class = TUNER, ANY
+     *
+     * Set gain. Range and valid values depends on the receiver type
+     *
+     * Command data value must be set to the gain value
+     */
+    SET_GAIN = 2
 };
 
 /** Data union of a command */
@@ -85,9 +115,12 @@ inline size_t HCommandSize(HCommand* command) {
 /** Get the size of a command, including data content */
 inline size_t HCommandSize(HCommand& command) {
     switch(command.Opcode) {
-        case NONE: return HCommandMinimumsSize + 0;
+        case NOP:
+        case SET_FREQUENCY:
+        case SET_GAIN:
+            return HCommandMinimumsSize + 0;
 
-            // Unknownn opcode.
+        // Unknownn opcode.
         default: throw new HUnknownCommandOpcodeException("Unknown opcode in call to HCommandSize (or macro HCOMMAND_LENGTH)");
     }
 }

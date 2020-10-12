@@ -18,26 +18,38 @@
 template <class Tin, class Tout>
 class HTypeConverter: public HConverter<Tin, Tout> {
 
+public:
+
+    #define INT8_TO_INT16    258          // 32.767 / 127
+    #define INT8_TO_INT32    16909320     // 214.748.3647 / 127
+    #define INT8_TO_FLOAT    258          // 32.767 / 127
+    #define INT8_TO_DOUBLE   16909320     // 214.748.3647 / 127
+    #define INT16_TO_INT32   65537        // 214.748.3647 / 32767
+    #define INT16_TO_DOUBLE  65537        // 214.748.3647 / 32767
+    #define INT32_TO_INT16   0.000015259  // 1/(214.748.3647 / 32767)
+    #define INT32_TO_INT8    0.000000059  // 1(214.748.3647 / 127)
+    #define INT16_TO_INT8    0.003875969  // 1/(32.767 / 127)
+
     private:
 
-        bool _scale;
+        double _scale;
 
         int Convert(Tin* src, Tout* dest, size_t blocksize);
 
     public:
 
         /** Create a new type-converter with a reader */
-        HTypeConverter(HReader<Tin>* reader, size_t blocksize, bool scale = false):
+        HTypeConverter(HReader<Tin>* reader, size_t blocksize, double scale = 1):
             HConverter<Tin, Tout>(reader, blocksize, blocksize),
             _scale(scale) {}
 
         /** Create a new type-converter with a writer */
-        HTypeConverter(HWriter<Tout>* writer, size_t blocksize, bool scale = false):
+        HTypeConverter(HWriter<Tout>* writer, size_t blocksize, double scale = 1):
             HConverter<Tin, Tout>(writer, blocksize, blocksize),
             _scale(scale) {}
 
         /** Create a new type-converter with a writerconsumer */
-        HTypeConverter(HWriterConsumer<Tin>* consumer, size_t blocksize, bool scale = false):
+        HTypeConverter(HWriterConsumer<Tin>* consumer, size_t blocksize, double scale = 1):
             HConverter<Tin, Tout>(consumer, blocksize, blocksize),
             _scale(scale) {}
 

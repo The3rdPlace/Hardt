@@ -18,6 +18,8 @@ class HInterpolator: public HReader<T>, public HWriter<T>, public HWriterConsume
         HReader<T>* _reader;
         size_t _blocksize;
 
+        HProbe<T>* _probe;
+
         int _factor;
         T* _inBuffer; 
         T* _outBuffer; 
@@ -31,81 +33,107 @@ class HInterpolator: public HReader<T>, public HWriter<T>, public HWriterConsume
 
     protected:
 
-        /** Construct a new HInterpolator that handle writers.
-
-            Parameters:
-              writer = The downstream writer
-              factor = Interpolation factor, 1 or larger
-              blocksize = The expected input and output blocksize
+        /**
+         * Construct a new HInterpolator that handle writers.
+         *
+         * @param writer The downstream writer
+         * @param factor Interpolation factor, 1 or larger
+         * @param blocksize The expected input and output blocksize
+         * @param probe Probe
          */
-        HInterpolator(HWriter<T>* writer, int factor, size_t blocksize);
+        HInterpolator(HWriter<T>* writer, int factor, size_t blocksize, HProbe<T>* probe = nullptr);
 
-        /** Construct a new HInterpolator that handle writer consumers.
-
-            Parameters:
-              consumer = The upstream consumer to receive this as a writer
-              factor = Interpolation factor, 1 or larger
-              blocksize = The expected input and output blocksize
+        /**
+         * Construct a new HInterpolator that handle writer consumers.
+         *
+         * @param consumer The upstream consumer to receive this as a writer
+         * @param factor Interpolation factor, 1 or larger
+         * @param blocksize The expected input and output blocksize
+         * @param probe Probe
          */
-        HInterpolator(HWriterConsumer<T>* consumer, int factor, size_t blocksize);
+        HInterpolator(HWriterConsumer<T>* consumer, int factor, size_t blocksize, HProbe<T>* probe = nullptr);
 
-        /** Construct a new HInterpolator that handle readers.
-
-              reader = The upstream reader
-              factor = Interpolation factor, 1 or larger
-              blocksize = The expected input and output blocksize
+        /**
+         * Construct a new HInterpolator that handle readers.
+         *
+         * @param reader The upstream reader
+         * @param factor Interpolation factor, 1 or larger
+         * @param blocksize The expected input and output blocksize
+         * @param probe Probe
          */
-        HInterpolator(HReader<T>* reader, int factor, size_t blocksize);
+        HInterpolator(HReader<T>* reader, int factor, size_t blocksize, HProbe<T>* probe = nullptr);
 
     public:
 
-        /** Construct a new HInterpolator that handle writers.
-
-            Parameters:
-              writer = The downstream writer
-              factor = Interpolation factor, 1 or larger
-              coefficients = FIR coefficients for the lowpass FIR filter that removes spectral copies of the baseband signal
-              length = Number of FIR coefficients
-              blocksize = The expected input and output blocksize
+        /**
+         * Construct a new HInterpolator that handle writers.
+         *
+         * @param writer The downstream writer
+         * @param factor Interpolation factor, 1 or larger
+         * @param coefficients FIR coefficients for the lowpass FIR filter that removes spectral copies of the baseband signal
+         * @param length Number of FIR coefficients
+         * @param blocksize The expected input and output blocksize
+         * @param probe Probe
          */
-        HInterpolator(HWriter<T>* writer, int factor, float* coefficients, int length, size_t blocksize);
+        HInterpolator(HWriter<T>* writer, int factor, float* coefficients, int length, size_t blocksize, HProbe<T>* probe = nullptr);
 
-        /** Construct a new HInterpolator that handle writer consumers.
-
-            Parameters:
-              consumer = The upstream consumer to receive this as a writer
-              factor = Interpolation factor, 1 or larger
-              coefficients = FIR coefficients for the lowpass FIR filter that removes spectral copies of the baseband signal
-              length = Number of FIR coefficients
-              blocksize = The expected input and output blocksize
+        /**
+         * Construct a new HInterpolator that handle writer consumers.
+         *
+         * @param consumer The upstream consumer to receive this as a writer
+         * @param factor Interpolation factor, 1 or larger
+         * @param coefficients FIR coefficients for the lowpass FIR filter that removes spectral copies of the baseband signal
+         * @param length Number of FIR coefficients
+         * @param blocksize The expected input and output blocksize
+         * @param probe Probe
          */
-        HInterpolator(HWriterConsumer<T>* consumer, int factor, float* coefficients, int length, size_t blocksize);
+        HInterpolator(HWriterConsumer<T>* consumer, int factor, float* coefficients, int length, size_t blocksize, HProbe<T>* probe = nullptr);
 
-        /** Construct a new HInterpolator that handle readers.
-
-              reader = The upstream reader
-              factor = Interpolation factor, 1 or larger
-              coefficients = FIR coefficients for the lowpass FIR filter that removes spectral copies of the baseband signal
-              length = Number of FIR coefficients
-              blocksize = The expected input and output blocksize
+        /**
+         * Construct a new HInterpolator that handle readers.
+         *
+         * @param reader The upstream reader
+         * @param factor Interpolation factor, 1 or larger
+         * @param coefficients FIR coefficients for the lowpass FIR filter that removes spectral copies of the baseband signal
+         * @param length Number of FIR coefficients
+         * @param blocksize The expected input and output blocksize
+         * @param probe Probe
          */
-        HInterpolator(HReader<T>* reader, int factor, float* coefficients, int length, size_t blocksize);
+        HInterpolator(HReader<T>* reader, int factor, float* coefficients, int length, size_t blocksize, HProbe<T>* probe = nullptr);
 
-        /** Implements HWriterConsumer::SetWriter() */
+        /**
+         * Implements HWriterConsumer::SetWriter()
+         *
+         * @param writer Downstream writer
+         * */
         void SetWriter(HWriter<T>* writer) {
             _writer = writer;
         }
 
-        /** Default destructor */
+        /**
+         * Default destructor
+         * */
         ~HInterpolator();
 
-        /** Write a block of samples */
+        /**
+         * Write a block of samples
+         *
+         * @param src Source buffer
+         * @param blocksize Number of samples in the buffer
+         * */
         int Write(T* src, size_t blocksize);
 
-        /** Read a block of samples */
+        /**
+         * Read a block of samples
+         *
+         * @param dest Destination buffer
+         * @param blocksize Number of samples to read into the buffer
+         */
         int Read(T* dest, size_t blocksize);
 
-        /** Call Start() on up- or downstream components */
+        /**
+         * Call Start() on up- or downstream components
+         */
         bool Start() {
             if( _writer != nullptr )
             {
@@ -118,7 +146,9 @@ class HInterpolator: public HReader<T>, public HWriter<T>, public HWriterConsume
             return true;
         }
 
-        /** Call Stop() on up- or downstream components */
+        /**
+         * @return Call Stop() on up- or downstream components
+         */
         bool Stop() {
             if( _writer != nullptr )
             {
@@ -131,7 +161,11 @@ class HInterpolator: public HReader<T>, public HWriter<T>, public HWriterConsume
             return true;
         }
 
-        /** Execute or carry through a command */
+        /**
+         * Execute or carry through a command
+         *
+         * @param command The command
+         */
         bool Command(HCommand* command) {
             if( _writer != nullptr )
             {

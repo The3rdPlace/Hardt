@@ -26,20 +26,6 @@ int HGenerator<T>::Read(T* dest, size_t blocksize)
     {
         dest[i] = _lot[_it];
 
-        // Attempt phase correction
-        float diff = abs(_flot[_it] - (float) dest[i]);
-        if( diff > 0.3 )
-        {
-            if( _flot[_it] > _lot[_it] )
-            {
-                dest[i]++;
-            }
-            else
-            {
-                dest[i]--;
-            }
-        }
-
         // Increase to next lot value
         _it += _delta;
 

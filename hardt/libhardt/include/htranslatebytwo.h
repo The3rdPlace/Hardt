@@ -1,5 +1,5 @@
-#ifndef __HDECIMATEBYTWO_H
-#define __HDECIMATEBYTWO_H
+#ifndef __HTRANSLATEBYTWO_H
+#define __HTRANSLATEBYTWO_H
 
 #include "hfilter.h"
 #include "hwriter.h"

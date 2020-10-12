@@ -1,6 +1,11 @@
 #ifndef __HMULTIPLIER_H
 #define __HMULTIPLIER_H
 
+#include "hreader.h"
+#include "hwriter.h"
+#include "hwriterconsumer.h"
+#include "hprobe.h"
+
 /**
     Multiplier (unlinear mixer).
 
@@ -25,7 +30,6 @@ class HMultiplier : public HReader<T>, public HWriter<T>, public HWriterConsumer
         int _blocksize;
 
         HLocalOscillator<T>* _localOscillator;
-        T* _oscillatorBuffer;
 
         HProbe<T>* _probe;
 

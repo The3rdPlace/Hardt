@@ -21,7 +21,7 @@ target_sources(hardt_test
 	hnullwriter_test.cpp
 	hchunkwriter_test.cpp
 	hwindow_test.cpp
-	#hfftoutput_test.cpp
+	hfftoutput_test.cpp
 	hrectangularwindow_test.cpp
 	hhammingwindow_test.cpp
 	hhahnwindow_test.cpp
@@ -69,6 +69,18 @@ target_sources(hardt_test
 	htranslatebyfour_test.cpp
 	hcomplexfilter_test.cpp
 	hfirdecimator_test.cpp
+	hiq2realconverter_test.cpp
+	hiqfirfilter_test.cpp
+	hiqfirdecimator_test.cpp
+	hiq2absconverter_test.cpp
+	hiqtranslatebyfour_test.cpp
+	hiqtranslatebytwo_test.cpp
+	hiqmultiplier_test.cpp
+	hcollector_test.cpp
+	hiqdecimator_test.cpp
+	hiq2iconverter_test.cpp
+	hiq2qconverter_test.cpp
+	hiqaddorsubtractconverter_test.cpp
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")

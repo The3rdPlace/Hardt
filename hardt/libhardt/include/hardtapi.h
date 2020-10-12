@@ -10,6 +10,7 @@
 #include "htimer.h"
 #include "hfft.h"
 #include "hfir.h"
+#include "hrtl2832.h"
 
 #include "hwriter.h"
 #include "hwriterconsumer.h"
@@ -100,5 +101,18 @@
 #include "htranslatebyfour.h"
 #include "hcomplexfilter.h"
 #include "hfirdecimator.h"
+#include "hrtl2832reader.h"
+#include "hiq2realconverter.h"
+#include "hiqfirfilter.h"
+#include "hiqfirdecimator.h"
+#include "hiq2absconverter.h"
+#include "hiqtranslatebyfour.h"
+#include "hiqtranslatebytwo.h"
+#include "hiqmultiplier.h"
+#include "hcollector.h"
+#include "hiqdecimator.h"
+#include "hiq2iconverter.h"
+#include "hiq2qconverter.h"
+#include "hiqaddorsubtractconverter.h"
 
 #endif

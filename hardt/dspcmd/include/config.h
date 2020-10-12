@@ -5,12 +5,16 @@
 #include <time.h>
 #include "hsoundcard.h"
 #include "htimer.h"
+#include "hrtl2832reader.h"
 
 // Settings
 struct DspCmdConfig
 {
+    enum DeviceType { NONE = 0, AUDIO = 1, RTL = 2 };
+
     bool Verbose = false;
     bool ShowAudioDevices = false;
+    bool ShowRtl2832Devices = false;
 
     bool IsNetworkReaderClient = false;
     bool IsNetworkWriterServer = false;
@@ -51,9 +55,17 @@ struct DspCmdConfig
     bool IsTranslateByFourI = false;
     bool IsTranslateByFourQ = false;
     bool IsFirDecimator = false;
+    bool IsSampleTypeConverter = false;
+    bool IsIq2Real = false;
+    bool IsIq = false;
+    bool IsIq2Abs = false;
 
     char* InFileFormat = NULL;
     char* OutFileFormat = NULL;
+
+    H_SAMPLE_FORMAT SampleInType;
+    H_SAMPLE_FORMAT SampleOutType;
+    double TypeConverterScale = 1;
 
     int Port = 8080;
     char *Address = NULL;
@@ -66,12 +78,14 @@ struct DspCmdConfig
     char* FileFormat = NULL;
     bool ForceOverwrite = false;
 
-    int InputDevice = -1; // not implemented
+    int InputDevice = -1;
+    int InputDeviceType = DeviceType::AUDIO;
     int OutputDevice = -1;
     int Rate = H_SAMPLE_RATE_48K;
     int Format = H_SAMPLE_FORMAT_INT_16;
-
+    HRtl2832::MODE Mode = HRtl2832::MODE::IQ_SAMPLES;
     int Blocksize = 1024;
+    int BlockCount = 0;
 
     int Frequency = 1000;
     float Phase = 0;

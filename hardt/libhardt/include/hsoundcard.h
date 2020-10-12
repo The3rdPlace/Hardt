@@ -8,33 +8,13 @@
 
 #include <portaudio.h>
 
-/**
-    Supported PortAudio sample rates, typed to hide portaudio specific names
-*/
-#define H_SAMPLE_FORMAT PaSampleFormat
-#define H_SAMPLE_FORMAT_INT_8 paInt8
-#define H_SAMPLE_FORMAT_UINT_8 paUInt8
-#define H_SAMPLE_FORMAT_INT_16 paInt16
-//#define H_SAMPLE_FORMAT_INT_24 paInt24  // Need some extra work in the reader before we can enable this
-#define H_SAMPLE_FORMAT_INT_32 paInt32
-
-/**
-    Samplerates. Not all rates are supported by any given card
-*/
-#define H_SAMPLE_RATE int
-#define H_SAMPLE_RATE_8K 8000
-#define H_SAMPLE_RATE_11K 11025
-#define H_SAMPLE_RATE_22K 22050
-#define H_SAMPLE_RATE_32K 32000
-#define H_SAMPLE_RATE_44K1 44100
-#define H_SAMPLE_RATE_48K 48000
-#define H_SAMPLE_RATE_96K 96000
-#define H_SAMPLE_RATE_192K 192000
+#include "hardt.h"
+#include "hexceptions.h"
 
 /**
     Base class for soundcard readers and writers.
-    This class be instantiated directly to obtain information
-    on a given soundcard in the system.
+    This class has static functions for obtaining information
+    on soundcards in the system.
 */
 class HSoundcard
 {
@@ -86,6 +66,25 @@ class HSoundcard
             Get the device number for the default device
         */
         static int GetDefaultDevice();
+
+        /**
+            Get the PortAudio specific sample format identifier
+        */
+        static PaSampleFormat GetPortAudioFormat(H_SAMPLE_FORMAT format) {
+            switch( format ) {
+                case H_SAMPLE_FORMAT_INT_8:
+                    return paInt8;
+                case H_SAMPLE_FORMAT_UINT_8:
+                    return paUInt8;
+                case H_SAMPLE_FORMAT_INT_16:
+                    return paInt16;
+                //case H_SAMPLE_FORMAT_INT_24:
+                    //return paInt24;
+                case H_SAMPLE_FORMAT_INT_32:
+                    return paInt32;
+            }
+            throw new HInitializationException("Unknown sample format given as parameter to HSoundcard::GetPortAudioFormat");
+        }
 };
 
 #endif

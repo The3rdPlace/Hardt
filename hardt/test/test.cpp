@@ -62,4 +62,4 @@ int main(int argc, char **argv)
     }
 }
 
-HCommand Test::TestNopCommand {HCOMMAND_CLASS::NONE, HCOMMAND_OPCODE::NOP, 0};
+HCommand Test::TestNopCommand {H_COMMAND_CLASS::NONE, H_COMMAND_OPCODE::NOP, 0};

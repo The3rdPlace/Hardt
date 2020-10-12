@@ -11,17 +11,20 @@ class HFileReader : public HReader<T>
 
         std::ifstream _stream;
         const std::string _filename;
+        HProbe<T>* _probe;
 
     public:
 
         /** Construct a new HFileReader */
-        HFileReader(const char* filename):
-            _filename(std::string(filename))
+        HFileReader(const char* filename, HProbe<T>* probe = nullptr):
+            _filename(std::string(filename)),
+            _probe(probe)
         {}
 
         /** Construct a new HFileReader */
-        HFileReader(const std::string filename):
-                _filename(filename)
+        HFileReader(const std::string filename, HProbe<T>* probe = nullptr):
+                _filename(filename),
+                _probe(probe)
         {}
 
         /** Read a block of samples */
@@ -29,6 +32,11 @@ class HFileReader : public HReader<T>
         {
             // Read next chunk
             _stream.read((char*) dest, blocksize * sizeof(T));
+
+            // Probe output ?
+            if( _probe != nullptr ) {
+                _probe->Write(dest, blocksize * sizeof(T));
+            }
 
             // Check for eof
             if( _stream.eof() )

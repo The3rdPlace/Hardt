@@ -11,6 +11,7 @@ class HGenerator_Test: public Test
         {
             UNITTEST(test_sine_10_100);
             UNITTEST(test_cosine_10_100);
+            UNITTEST(test_cosine_10_100_from_next);
         }
 
         const char* name()
@@ -40,15 +41,15 @@ class HGenerator_Test: public Test
             tg.Read(buffer, 11);
 
             ASSERT_IS_EQUAL((int) buffer[0], 0);
-            ASSERT_IS_EQUAL((int) buffer[1], 75);
-            ASSERT_IS_EQUAL((int) buffer[2], 121);
-            ASSERT_IS_EQUAL((int) buffer[3], 121);
-            ASSERT_IS_EQUAL((int) buffer[4], 75);
+            ASSERT_IS_EQUAL((int) buffer[1], 74);
+            ASSERT_IS_EQUAL((int) buffer[2], 120);
+            ASSERT_IS_EQUAL((int) buffer[3], 120);
+            ASSERT_IS_EQUAL((int) buffer[4], 74);
             ASSERT_IS_EQUAL((int) buffer[5], 0);
-            ASSERT_IS_EQUAL((int) buffer[6], -75);
-            ASSERT_IS_EQUAL((int) buffer[7], -121);
-            ASSERT_IS_EQUAL((int) buffer[8], -121);
-            ASSERT_IS_EQUAL((int) buffer[9], -75);
+            ASSERT_IS_EQUAL((int) buffer[6], -74);
+            ASSERT_IS_EQUAL((int) buffer[7], -120);
+            ASSERT_IS_EQUAL((int) buffer[8], -120);
+            ASSERT_IS_EQUAL((int) buffer[9], -74);
             ASSERT_IS_EQUAL((int) buffer[10], 0);
         }
 
@@ -63,15 +64,41 @@ class HGenerator_Test: public Test
             tg.Read(buffer, 11);
 
             ASSERT_IS_EQUAL((int) buffer[0], 127);
-            ASSERT_IS_EQUAL((int) buffer[1], 103);
+            ASSERT_IS_EQUAL((int) buffer[1], 102);
             ASSERT_IS_EQUAL((int) buffer[2], 39);
             ASSERT_IS_EQUAL((int) buffer[3], -39);
-            ASSERT_IS_EQUAL((int) buffer[4], -103);
+            ASSERT_IS_EQUAL((int) buffer[4], -102);
             ASSERT_IS_EQUAL((int) buffer[5], -127);
-            ASSERT_IS_EQUAL((int) buffer[6], -103);
+            ASSERT_IS_EQUAL((int) buffer[6], -102);
             ASSERT_IS_EQUAL((int) buffer[7], -39);
             ASSERT_IS_EQUAL((int) buffer[8], 39);
-            ASSERT_IS_EQUAL((int) buffer[9], 103);
+            ASSERT_IS_EQUAL((int) buffer[9], 102);
             ASSERT_IS_EQUAL((int) buffer[10], 127);
         }
+
+    void test_cosine_10_100_from_next()
+    {
+        int rate = 100;
+        int frequency = 10;
+        float phase = M_PI / 2;
+        test_generator tg(rate, frequency, phase);
+
+        int8_t buffer[11];
+        for( int i = 0; i < 11; i++ ) {
+            buffer[i] = tg.Next();
+        }
+
+        ASSERT_IS_EQUAL((int) buffer[0], 127);
+        ASSERT_IS_EQUAL((int) buffer[1], 102);
+        ASSERT_IS_EQUAL((int) buffer[2], 39);
+        ASSERT_IS_EQUAL((int) buffer[3], -39);
+        ASSERT_IS_EQUAL((int) buffer[4], -102);
+        ASSERT_IS_EQUAL((int) buffer[5], -127);
+        ASSERT_IS_EQUAL((int) buffer[6], -102);
+        ASSERT_IS_EQUAL((int) buffer[7], -39);
+        ASSERT_IS_EQUAL((int) buffer[8], 39);
+        ASSERT_IS_EQUAL((int) buffer[9], 102);
+        ASSERT_IS_EQUAL((int) buffer[10], 127);
+    }
+
 } hgenerator_test;

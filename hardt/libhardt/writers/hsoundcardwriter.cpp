@@ -65,7 +65,7 @@ void HSoundcardWriter<T>::Init(int device, H_SAMPLE_RATE rate, int channels, H_S
     PaStreamParameters outputParameters;
     outputParameters.device = device;
     outputParameters.channelCount = channels;
-    outputParameters.sampleFormat = format;
+    outputParameters.sampleFormat = HSoundcard::GetPortAudioFormat(format);
     outputParameters.suggestedLatency = Pa_GetDeviceInfo(device)->defaultLowInputLatency ;
     outputParameters.hostApiSpecificStreamInfo = NULL;
 

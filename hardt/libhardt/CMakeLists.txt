@@ -1,7 +1,7 @@
 set(CMAKE_MACOSX_RPATH 1)
 
 add_library(hardt SHARED "")
-target_link_libraries(hardt m portaudio)
+target_link_libraries(hardt m portaudio -lrtlsdr)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
 set_target_properties( hardt PROPERTIES
@@ -16,6 +16,7 @@ target_sources(hardt
         hexceptions.cpp
         hobject.cpp
         htimer.cpp
+        hrtl2832.cpp
 )
 
 include_directories("${PROJECT_BINARY_DIR}/hardt/libhardt/include")

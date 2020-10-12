@@ -1,5 +1,5 @@
-#ifndef __HDECIMATEBYFOUR_CPP
-#define __HDECIMATEBYFOUR_CPP
+#ifndef __HTRANSLATEBYFOUR_CPP
+#define __HTRANSLATEBYFOUR_CPP
 
 #include "htranslatebyfour.h"
 

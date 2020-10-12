@@ -26,7 +26,7 @@ private:
         int8_t input[8] = {1, 2, 3, 4, 5, 6, 7, 8};
 
         TestWriter<int8_t > wr(16);
-        HReal2IqConverter<int8_t> converter(wr.Writer(), 100, 8);
+        HReal2IqConverter<int8_t> converter(wr.Writer(), 8);
 
         ASSERT_IS_EQUAL(converter.Write(input, 8), 8);
         ASSERT_IS_EQUAL(wr.Writes, 1);
@@ -57,7 +57,7 @@ private:
         int8_t input[8] = {1, 2, 3, 4, 5, 6, 7, 8};
 
         TestWriter<int8_t> srcWr(8);
-        HReal2IqConverter<int8_t> converter(srcWr.Consumer(), 100, 8);
+        HReal2IqConverter<int8_t> converter(srcWr.Consumer(), 8);
         TestWriter<int8_t > wr(converter.Consumer(), 16);
 
         ASSERT_IS_EQUAL(srcWr.Write(input, 8), 8);
@@ -90,7 +90,7 @@ private:
         int8_t output[8] = {1, 2, 3, 4, 5, 6, 7, 8};
 
         TestReader<int8_t> rd(output, 8);
-        HReal2IqConverter<int8_t> converter(&rd, 100,8);
+        HReal2IqConverter<int8_t> converter(&rd, 16);
 
         int8_t received[16];
         ASSERT_IS_EQUAL(converter.Read(received, 16), 16);

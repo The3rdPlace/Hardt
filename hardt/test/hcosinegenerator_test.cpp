@@ -31,15 +31,15 @@ class HCosineGenerator_Test: public Test
             g.Read(buffer, 11);
 
             ASSERT_IS_EQUAL((int) buffer[0], -127);
-            ASSERT_IS_EQUAL((int) buffer[1], -103);
+            ASSERT_IS_EQUAL((int) buffer[1], -102);
             ASSERT_IS_EQUAL((int) buffer[2], -39);
             ASSERT_IS_EQUAL((int) buffer[3], 39);
-            ASSERT_IS_EQUAL((int) buffer[4], 103);
+            ASSERT_IS_EQUAL((int) buffer[4], 102);
             ASSERT_IS_EQUAL((int) buffer[5], 127);
-            ASSERT_IS_EQUAL((int) buffer[6], 103);
+            ASSERT_IS_EQUAL((int) buffer[6], 102);
             ASSERT_IS_EQUAL((int) buffer[7], 39);
             ASSERT_IS_EQUAL((int) buffer[8], -39);
-            ASSERT_IS_EQUAL((int) buffer[9], -103);
+            ASSERT_IS_EQUAL((int) buffer[9], -102);
             ASSERT_IS_EQUAL((int) buffer[10], -127);
         }
 } hcosinegenerator_test;

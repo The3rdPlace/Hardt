@@ -4,6 +4,9 @@
 #include <stdio.h>
 #include <fstream>
 
+#include "hwriter.h"
+#include "hwriterconsumer.h"
+
 /**
     Write to a file
 */

@@ -32,7 +32,14 @@ class HGenerator : public HReader<T>
 
     protected:
 
-        /** Construct a new HGenerator */
+        /**
+         * Construct a new HGenerator
+         *
+         * @param rate Sample rate of the generator
+         * @param frequency Generator frequency
+         * @param amplitude Generator amplitude (max abs. value)
+         * @param phase Generator phase (in radians)
+         * */
         HGenerator(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase = 0);
 
         /** Default destructor */
@@ -40,16 +47,55 @@ class HGenerator : public HReader<T>
 
     public:
 
-        /** Read samples from the generator */
+        /**
+         * Read samples from the generator
+         *
+         * @param dest Destination buffer
+         * @param blocksize Number of samples to read
+         * */
         int Read(T* dest, size_t blocksize);
 
         /** Calculate and fill generator sample lookup table */
         void Calculate(int frequency, T amplitude, float phase);
 
-        /** Execute and/or pass on a command */
+        /**
+         * Execute and/or pass on a command
+         *
+         * @param command Command to send or execute
+         * */
         bool Command(HCommand* command) {
             // No further propagation of commands
             return true;
+        }
+
+        /**
+         * Return current value from the generator
+         *
+         * @return Current sequential generator value
+         */
+        inline T Current() {
+            return _lot[_it];
+        }
+
+        /**
+         * Return current value from the generator and step to the next value
+         *
+         * @return Next sequential generator value
+         */
+        inline T Next() {
+
+            T value = _lot[_it];
+
+            // Increase to next lot value
+            _it += _delta;
+
+            // Past the end of the lot ?
+            if( _it >= _lotSize )
+            {
+                _it -= _lotSize;
+            }
+
+            return value;
         }
 };
 
