@@ -109,13 +109,13 @@ bool parseArguments(int argc, char** argv)
             if( argIs(argv[argNo], "-it") && argNo < argc - 4 && Config.InputDeviceType == DspCmdConfig::DeviceType::RTL ) {
                 Config.Frequency = argIntCmp(argv[argNo], "-it", argv[argNo + 2], Config.Frequency);
                 if( strcmp(argv[argNo + 3], "IQ") == 0 ) {
-                    Config.Mode = HRtl2832::MODE::IQ;
+                    Config.Mode = HRtl2832::MODE::IQ_SAMPLES;
                 } else if( strcmp(argv[argNo + 3], "I") == 0 ) {
-                    Config.Mode = HRtl2832::MODE::I;
+                    Config.Mode = HRtl2832::MODE::I_SAMPLES;
                 } else if( strcmp(argv[argNo + 3], "Q") == 0 ) {
-                    Config.Mode = HRtl2832::MODE::Q;
+                    Config.Mode = HRtl2832::MODE::Q_SAMPLES;
                 } else if( strcmp(argv[argNo + 3], "REAL") == 0 ) {
-                    Config.Mode = HRtl2832::MODE::REAL;
+                    Config.Mode = HRtl2832::MODE::REAL_SAMPLES;
                 } else {
                     std::cout << "Unknown RTL-2832 mode '" << argv[argNo + 3] << "'" << std::endl;
                 }

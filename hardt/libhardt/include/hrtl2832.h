@@ -72,7 +72,7 @@ class HRtl2832
             Q: Return only Q samples
             REAL: Return realvalued signal (warning: this might cost cycles, use with care and low samplerate)
         */
-        enum MODE {IQ, I, Q, REAL};
+        enum MODE {IQ_SAMPLES, I_SAMPLES, Q_SAMPLES, REAL_SAMPLES};
 };
 
 #endif

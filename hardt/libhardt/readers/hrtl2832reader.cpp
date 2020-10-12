@@ -25,11 +25,11 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, HRtl2832::MODE
         HError("Blocksize must be a multiple of 512");
         throw new HInitializationException("Blocksize must be a multiple of 512");
     }
-    if( blocksize > 16384 && mode == HRtl2832::MODE::IQ ) {
+    if( blocksize > 16384 && mode == HRtl2832::MODE::IQ_SAMPLES ) {
         HError("Blocksize must be less than or equal to 16384");
         throw new HInitializationException("Blocksize must be less than or equal to 16384");
     }
-    if( blocksize > 8192 && (mode == HRtl2832::MODE::I || mode == HRtl2832::MODE::Q) ) {
+    if( blocksize > 8192 && (mode == HRtl2832::MODE::I_SAMPLES || mode == HRtl2832::MODE::Q_SAMPLES) ) {
         HError("Blocksize must be less than or equal to 8192");
         throw new HInitializationException("Blocksize must be less than or equal to 8192");
     }
@@ -38,14 +38,14 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, HRtl2832::MODE
     // Unless running in IQ mode (multiplexed I and Q values), we
     // need 2 times the number of samples from the device in order to
     // return 'blocksize' samples
-    _buflen = _blocksize * (_mode == HRtl2832::MODE::IQ ? 1 : 2);
+    _buflen = _blocksize * (_mode == HRtl2832::MODE::IQ_SAMPLES ? 1 : 2);
 
     // Allocate a temporary buffer for internal use
     _buffer = new T[_buflen];
 
     // If we are asked to return real samples, then allocate a FFT object
     // to handle the IQ-2-Real conversion
-    if( mode == HRtl2832::MODE::REAL ) {
+    if( mode == HRtl2832::MODE::REAL_SAMPLES ) {
         _fft = new HFft<T>(_blocksize);
     }
 
@@ -72,8 +72,8 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, HRtl2832::MODE
     HLog("RTL-2832 device with index %d opened", device);
 
     // Set direct sampling mode if requested
-    if( mode == HRtl2832::I || mode == HRtl2832::Q ) {
-        int value = mode == HRtl2832::I ? 1 : 2;
+    if( mode == HRtl2832::I_SAMPLES || mode == HRtl2832::Q_SAMPLES ) {
+        int value = mode == HRtl2832::I_SAMPLES ? 1 : 2;
         result = rtlsdr_set_direct_sampling(_dev, value);
         if (result < 0) {
             HError("Failed to set RTL-2832 direct sampling mode");
@@ -157,7 +157,7 @@ HRtl2832Reader<T>::~HRtl2832Reader()
     }
 
     // If we have an FFT object, delete it
-    if( _mode == HRtl2832::MODE::REAL ) {
+    if( _mode == HRtl2832::MODE::REAL_SAMPLES ) {
         delete _fft;
     }
 
@@ -195,9 +195,9 @@ int HRtl2832Reader<T>::Read(T* dest, size_t blocksize)
         switch( _mode ) {
 
             // Multiplexed I and Q values
-            case HRtl2832::MODE::IQ:
-            case HRtl2832::MODE::I:
-            case HRtl2832::MODE::Q: {
+            case HRtl2832::MODE::IQ_SAMPLES:
+            case HRtl2832::MODE::I_SAMPLES:
+            case HRtl2832::MODE::Q_SAMPLES: {
                 for( int i = 0; i < blocksize; i++ ) {
                     dest[i] = ((T) src[i]) - 127;
                 }
@@ -221,7 +221,7 @@ int HRtl2832Reader<T>::Read(T* dest, size_t blocksize)
             }
 */
             // Return realvalued time-domain signal
-            case HRtl2832::MODE::REAL: {
+            case HRtl2832::MODE::REAL_SAMPLES: {
                 for( int i = 0; i < _buflen; i++ ) {
                     _buffer[i] = ((T) src[i]) - 127;
                 }

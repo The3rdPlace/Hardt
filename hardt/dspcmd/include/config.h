@@ -83,7 +83,7 @@ struct DspCmdConfig
     int OutputDevice = -1;
     int Rate = H_SAMPLE_RATE_48K;
     int Format = H_SAMPLE_FORMAT_INT_16;
-    HRtl2832::MODE Mode = HRtl2832::MODE::IQ;
+    HRtl2832::MODE Mode = HRtl2832::MODE::IQ_SAMPLES;
     int Blocksize = 1024;
     int BlockCount = 0;
 
