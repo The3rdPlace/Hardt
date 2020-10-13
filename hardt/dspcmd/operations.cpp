@@ -382,6 +382,7 @@ void FFTMagnitudeShowGnuDBPlot(double reference, double ignore, bool skipInfinit
         // Plot DB value
         double ratio = displayedSpectrum[bin] / ref;
         double db = (double) 20 * log10(ratio);
+
         if( isinff(db) ) {
             // skip infinitely small values ?(with respect to the discrete sample)
             if( skipInfinite ) {
@@ -426,7 +427,7 @@ void FFTMagnitudeShowGnuPlot()
     // Todo: Cleanup
     int start = fdelta;
     int stop = (Config.Rate / 2);
-    double ref = GetCalibratedReference<T>(fdelta, start, stop, 1, false);
+    double ref = GetCalibratedReference<T>(fdelta, start, stop, 100, false) / 100;
 
     // The scaling factor based on blocksize 1024 is applied when calculating
     // the db values so we need to take this into account when analyzing a real signal.
