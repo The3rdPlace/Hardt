@@ -59,11 +59,11 @@ void HIqMultiplier<T>::Init(H_SAMPLE_RATE rate, int frequency, int oscillatorAmp
         // Negative LO frequency
         HLog("Created local oscillators running at negative frequencies %d", frequency);
         _localSinOscillator = new HLocalOscillator<T>(rate, abs(frequency), oscillatorAmplitude, 0);
-        _localCosOscillator = new HLocalOscillator<T>(rate, abs(frequency), oscillatorAmplitude);
+        _localCosOscillator = new HLocalOscillator<T>(rate, abs(frequency), oscillatorAmplitude, M_PI / 2);
     } else {
         // Positive LO frequency
         HLog("Created local oscillators running at positive frequencies %d", frequency);
-        _localSinOscillator = new HLocalOscillator<T>(rate, frequency, oscillatorAmplitude);
+        _localSinOscillator = new HLocalOscillator<T>(rate, frequency, oscillatorAmplitude, M_PI / 2);
         _localCosOscillator = new HLocalOscillator<T>(rate, frequency, oscillatorAmplitude, 0);
     }
 }
@@ -176,8 +176,17 @@ template <class T>
 void HIqMultiplier<T>::SetFrequency(int frequency)
 {
     HLog("Setting frequency = %d", frequency);
-    _localSinOscillator->SetFrequency(frequency);
-    _localCosOscillator->SetFrequency(frequency);
+    if( frequency < 0 ) {
+        // Negative LO frequency
+        HLog("Local oscillators now running at negative frequencies %d", frequency);
+        _localSinOscillator->SetFrequency(abs(frequency), 0);
+        _localCosOscillator->SetFrequency(abs(frequency), M_PI / 2);
+    } else {
+        // Positive LO frequency
+        HLog("Loocal oscillators running at positive frequencies %d", frequency);
+        _localSinOscillator->SetFrequency(frequency, M_PI / 2);
+        _localCosOscillator->SetFrequency(frequency, 0);
+    }
 }
 
 /********************************************************************
