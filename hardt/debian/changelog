@@ -1,3 +1,11 @@
+hardt (1.1-2) RELEASED; urgency=medium
+
+  [ Henrik Witt-Hansen ]
+  * Make sure parallel generators do not get out of sync
+  * Maintain phase difference between generators when changing the frequency of the iq multiplier
+
+ -- Mackie <henrik@hardttoolkit.org>  Mon, 03 Nov 2020 23:30:00 +0200
+
 hardt (1.1-1) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
