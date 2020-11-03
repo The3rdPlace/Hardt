@@ -6,7 +6,8 @@
 template <class T>
 HGenerator<T>::HGenerator(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase):
     _lot(NULL),
-    _zero(0)
+    _zero(0),
+    _it(0)
 {
     HLog("HGenerator(rate = %d, frequency = %d, amplitude = %d, phase = %f)", rate, frequency, amplitude, phase);
     Init(rate, frequency, amplitude, phase);
@@ -356,6 +357,10 @@ void HGenerator<T>::Calculate(int frequency, T amplitude, float phase)
 
     */
 
+    // Report new settings
+    HLog("Using frequency=%d", frequency);
+    HLog("Using amplitude=%d", (int) amplitude);
+    HLog("Using phase=%f", phase);
 
     // Cast to floats to have a controlled calculation of the lot data
     float l = _lotSize;
@@ -384,9 +389,6 @@ void HGenerator<T>::Calculate(int frequency, T amplitude, float phase)
         // Add the real (float) value
         _flot[i] = out;
     }
-
-    // Initial sample position
-    _it = 0;
 }
 
 /********************************************************************

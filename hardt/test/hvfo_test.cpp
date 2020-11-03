@@ -45,17 +45,17 @@ class HVfo_Test: public Test
             g.SetFrequency(frequency, M_PI / 2);
             g.Read(buffer, 11);
 
-            ASSERT_IS_EQUAL((int) buffer[0], 127);
-            ASSERT_IS_EQUAL((int) buffer[1], 102);
-            ASSERT_IS_EQUAL((int) buffer[2], 39);
-            ASSERT_IS_EQUAL((int) buffer[3], -39);
-            ASSERT_IS_EQUAL((int) buffer[4], -102);
-            ASSERT_IS_EQUAL((int) buffer[5], -127);
-            ASSERT_IS_EQUAL((int) buffer[6], -102);
-            ASSERT_IS_EQUAL((int) buffer[7], -39);
-            ASSERT_IS_EQUAL((int) buffer[8], 39);
-            ASSERT_IS_EQUAL((int) buffer[9], 102);
-            ASSERT_IS_EQUAL((int) buffer[10], 127);
+            ASSERT_IS_EQUAL((int) buffer[0], 102);
+            ASSERT_IS_EQUAL((int) buffer[1], 39);
+            ASSERT_IS_EQUAL((int) buffer[2], -39);
+            ASSERT_IS_EQUAL((int) buffer[3], -102);
+            ASSERT_IS_EQUAL((int) buffer[4], -127);
+            ASSERT_IS_EQUAL((int) buffer[5], -102);
+            ASSERT_IS_EQUAL((int) buffer[6], -39);
+            ASSERT_IS_EQUAL((int) buffer[7], 39);
+            ASSERT_IS_EQUAL((int) buffer[8], 102);
+            ASSERT_IS_EQUAL((int) buffer[9], 127);
+            ASSERT_IS_EQUAL((int) buffer[10], 102);
         }
 
         void test_frequency_10_20()
@@ -82,16 +82,16 @@ class HVfo_Test: public Test
             g.SetFrequency(20);
             g.Read(buffer, 11);
 
-            ASSERT_IS_EQUAL((int) buffer[0], 0);
+            ASSERT_IS_EQUAL((int) buffer[0], 74);
             ASSERT_IS_EQUAL((int) buffer[1], 120);
-            ASSERT_IS_EQUAL((int) buffer[2], 74);
-            ASSERT_IS_EQUAL((int) buffer[3], -74);
-            ASSERT_IS_EQUAL((int) buffer[4], -120);
-            ASSERT_IS_EQUAL((int) buffer[5], 0);
+            ASSERT_IS_EQUAL((int) buffer[2], 0);
+            ASSERT_IS_EQUAL((int) buffer[3], -120);
+            ASSERT_IS_EQUAL((int) buffer[4], -74);
+            ASSERT_IS_EQUAL((int) buffer[5], 74);
             ASSERT_IS_EQUAL((int) buffer[6], 120);
-            ASSERT_IS_EQUAL((int) buffer[7], 74);
-            ASSERT_IS_EQUAL((int) buffer[8], -74);
-            ASSERT_IS_EQUAL((int) buffer[9], -120);
-            ASSERT_IS_EQUAL((int) buffer[10], 0);
+            ASSERT_IS_EQUAL((int) buffer[7], 0);
+            ASSERT_IS_EQUAL((int) buffer[8], -120);
+            ASSERT_IS_EQUAL((int) buffer[9], -74);
+            ASSERT_IS_EQUAL((int) buffer[10], 74);
         }
 } hvfo_test;

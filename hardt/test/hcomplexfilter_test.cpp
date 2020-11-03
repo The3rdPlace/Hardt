@@ -245,7 +245,7 @@ private:
         // Verify that only the peaks at bin 21 and 85 (1KHz and 4KHz) remains
         for( int i = 0; i < 512; i++ ) {
             if( i == 21 || i == 85 ) {
-                if( std::abs(filteredSpectrum[i]) < 42000 || std::abs(filteredSpectrum[i]) > 44000 ) {
+                if( std::abs(filteredSpectrum[i]) < 41000 || std::abs(filteredSpectrum[i]) > 44000 ) {
                     HError("Invalid value %ld in bin %d", std::abs(inputSpectrum[i]), i);
                     std::cout << "i = " << i << ", value = " << std::abs(filteredSpectrum[i]) << std::endl;
                     ASSERT_FAIL("Invalid value in input bin");
