@@ -64,6 +64,15 @@ class HTranslateByFour : public HFilter<T>
             HTranslateByFour<T>::DoFilter(src, dest, blocksize, _isQ);
         }
 
+        /**
+         * Change direction of the shift
+         *
+         * @param isQ shift direction, false=down, true=up
+         */
+        void SetIsQ(bool isQ) {
+            _isQ = isQ;
+        }
+
         /** Convert the realvalued input signal 'src' to a complex IQ signal */
         static void Translate(T* src, std::complex<T>* dest, size_t blocksize) {
             T* IChannel;

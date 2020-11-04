@@ -63,6 +63,15 @@ class HIqTranslateByFour : public HFilter<T>
         void Filter(T* src, T* dest, size_t blocksize) {
             HIqTranslateByFour<T>::DoFilter(src, dest, blocksize, _isQ);
         }
+
+        /**
+         * Change direction of the shift
+         *
+         * @param isQ shift direction, false=down, true=up
+         */
+        void SetIsQ(bool isQ) {
+            _isQ = isQ;
+        }
 };
 
 #endif
