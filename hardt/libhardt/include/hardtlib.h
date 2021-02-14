@@ -125,6 +125,7 @@ Include api function declarations
 #include "hiq2iconverter.h"
 #include "hiq2qconverter.h"
 #include "hiqaddorsubtractconverter.cpp"
+#include "hpassthroughfilewriter.cpp"
 
 /********************************************************************
 Debug and diagnostics

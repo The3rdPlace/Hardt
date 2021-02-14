@@ -38,6 +38,8 @@ HPassThrough<T>::~HPassThrough()
 template <class T>
 void HPassThrough<T>::Filter(T* src, T* dest, size_t blocksize)
 {
+    Intercept(src, blocksize);
+
     memcpy((void*) dest, (void*) src, blocksize * sizeof(T));
 }
 

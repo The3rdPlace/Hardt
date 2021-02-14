@@ -114,5 +114,6 @@
 #include "hiq2iconverter.h"
 #include "hiq2qconverter.h"
 #include "hiqaddorsubtractconverter.h"
+#include "hpassthroughfilewriter.h"
 
 #endif
