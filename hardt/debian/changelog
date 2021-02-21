@@ -4,8 +4,9 @@ hardt (1.2-0) RELEASED; urgency=medium
   * Multipliers now have unity gain (1, no matter which lo amplitude is used)
   * HMux now have a duplex mode where a single channel is duplicated, turning
     a monostream into a pseudo-stereo stream
+  * Fixed error when having multiple channels on an audio writer
 
- -- Mackie <henrik@hardttoolkit.org>  Sun, 21 Feb 2021 17:20:00 +0100
+ -- Mackie <henrik@hardttoolkit.org>  Sun, 21 Feb 2021 20:20:00 +0100
 
 hardt (1.1-4) RELEASED; urgency=medium
 

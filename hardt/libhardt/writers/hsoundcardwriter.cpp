@@ -41,16 +41,16 @@ void HSoundcardWriter<T>::Init(int device, H_SAMPLE_RATE rate, int channels, H_S
     _cbd.framesize = framesPerBuffer;
     _cbd.wrloc = 0;
     _cbd.rdloc = 0;
-    _cbd.buffer = new T[NUMBER_OF_BUFFERS * framesPerBuffer];
+    _cbd.buffer = new T[NUMBER_OF_BUFFERS * framesPerBuffer * channels];
     if( _cbd.buffer == NULL )
     {
-        HError("Unable to allocate %d buffers for %d frames á %d bytes", NUMBER_OF_BUFFERS, framesPerBuffer, sizeof(T));
+        HError("Unable to allocate %d buffers for %d frames á %d bytes for %d channel(s)", NUMBER_OF_BUFFERS, framesPerBuffer, sizeof(T), channels);
         throw new HInitializationException("Out of memory when allocating buffers");
     }
     HLog("Buffers allocated");
 
     // Initialize buffers so that we have total silence untill something is written to the buffers
-    memset((void*) _cbd.buffer, std::numeric_limits<T>::is_signed ? 0 : std::numeric_limits<T>::max() / 2, NUMBER_OF_BUFFERS * framesPerBuffer * sizeof(T));
+    memset((void*) _cbd.buffer, std::numeric_limits<T>::is_signed ? 0 : std::numeric_limits<T>::max() / 2, NUMBER_OF_BUFFERS * framesPerBuffer * channels * sizeof(T));
     HLog("Initialized soundcard buffers with value %d", std::numeric_limits<T>::is_signed ? 0 : std::numeric_limits<T>::max() / 2);
 
     PaError err = Pa_Initialize();
@@ -123,15 +123,17 @@ int HSoundcardWriter<T>::Write(T* src, size_t blocksize)
     // Requested blocksize can not be larger than the device blocksize
     // (actively preventing large writes that would inhibit performance and
     // responsiveness when working with a synchroneous device such as a soundcard)
-    if( blocksize > _cbd.framesize )
+    if( blocksize != _cbd.framesize * _cbd.channels )
     {
         Stop();
-        throw new HAudioIOException("It is not allowed to read  more data than what the card ships per synchroneous callback");
+        HError("It is not allowed to write more data than what the card ships per synchroneous callback");
+        throw new HAudioIOException("It is not allowed to write more data than what the card ships per synchroneous callback");
     }
 
     // Make sure we are running
     if( !_isStarted )
     {
+        HError("Stream is not started, no data to write");
         throw new HAudioIOException("Stream is not started, no data to read");
     }
 
@@ -144,18 +146,18 @@ int HSoundcardWriter<T>::Write(T* src, size_t blocksize)
 
     // Copy bytes to the next output buffer
     T* ptr = &_cbd.buffer[_cbd.wrloc];
-    memcpy((void*) ptr, (void*) src, _cbd.framesize * sizeof(T));
+    memcpy((void*) ptr, (void*) src, _cbd.framesize * _cbd.channels * sizeof(T));
 
     // Advance write position to next buffer, if we have written the last buffer,
     // then wrap around to the first buffer.
-    _cbd.wrloc += _cbd.framesize;
-    if( _cbd.wrloc >= (NUMBER_OF_BUFFERS * _cbd.framesize) )
+    _cbd.wrloc += _cbd.framesize * _cbd.channels;
+    if( _cbd.wrloc >= (NUMBER_OF_BUFFERS * _cbd.framesize * _cbd.channels) )
     {
         _cbd.wrloc = 0;
     }
 
     // We always writes the entire buffer as given
-    return _cbd.framesize;
+    return _cbd.framesize * _cbd.channels;
 }
 
 template <class T>
@@ -173,12 +175,12 @@ int HSoundcardWriter<T>::callback( const void *inputBuffer, void *outputBuffer,
     T* dest = (T*) outputBuffer;
 
     // Copy new data from the buffer to the soundcard
-    memcpy((void*) dest, (void*) src, framesPerBuffer * sizeof(T));
+    memcpy((void*) dest, (void*) src, framesPerBuffer * data->channels * sizeof(T));
 
     // Advance write position to next buffer, if we have read the last buffer,
     // then wrap around to the first buffer.
-    data->rdloc += data->framesize;
-    if( data->rdloc >= (NUMBER_OF_BUFFERS * data->framesize) )
+    data->rdloc += data->framesize * data->channels;
+    if( data->rdloc >= (NUMBER_OF_BUFFERS * data->framesize * data->channels) )
     {
         data->rdloc = 0;
     }
