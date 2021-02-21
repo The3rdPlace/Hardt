@@ -17,6 +17,12 @@
     is undefined, if you make large adjustments you may want to
     reduce the input level while setting the new frequency to avoid
     clicks or noise (check if it is a problem in your actual case)
+
+    The multiplier can be created with any amplitude of the local
+    oscillator, but the output level is scaled down, so that the
+    gain factor of the multiplier is always 1. So select a local
+    oscillator amplitude that matches the input signal, and prevents
+    internal overruns (AMPL_in * AMPL_lo <= max(T)/2)
 */
 template <class T>
 class HMultiplier : public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
@@ -30,6 +36,7 @@ class HMultiplier : public HReader<T>, public HWriter<T>, public HWriterConsumer
         int _blocksize;
 
         HLocalOscillator<T>* _localOscillator;
+        int _scaling;
 
         HProbe<T>* _probe;
 

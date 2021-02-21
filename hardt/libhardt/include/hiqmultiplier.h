@@ -26,6 +26,7 @@ class HIqMultiplier : public HReader<T>, public HWriter<T>, public HWriterConsum
 
         HLocalOscillator<T>* _localSinOscillator;
         HLocalOscillator<T>* _localCosOscillator;
+        int _scaling;
 
         HProbe<T>* _probe;
 

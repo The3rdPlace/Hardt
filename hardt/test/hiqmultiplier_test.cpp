@@ -40,8 +40,8 @@ class HIqMultiplier_Test: public Test
                 int8_t bd = output[i + 1] * cos[i / 2];
                 int8_t ab_cd = (output[i] + output[i + 1]) * (sin[i / 2] + cos[i / 2]);
 
-                int8_t R = ac - bd;
-                int8_t J = ab_cd - ac - bd;
+                int8_t R = (ac - bd) / 10;
+                int8_t J = (ab_cd - ac - bd) / 10;
 
                 ASSERT_IS_EQUAL(R, received[i]);
                 ASSERT_IS_EQUAL(J, received[i + 1]);
@@ -71,8 +71,8 @@ class HIqMultiplier_Test: public Test
                 int8_t bd = input[i + 1] * cos[i / 2];
                 int8_t ab_cd = (input[i] + input[i + 1]) * (sin[i / 2] + cos[i / 2]);
 
-                int8_t R = ac - bd;
-                int8_t J = ab_cd - ac - bd;
+                int8_t R = (ac - bd) / 10;
+                int8_t J = (ab_cd - ac - bd) / 10;
 
                 ASSERT_IS_EQUAL(R, writer.Received[i]);
                 ASSERT_IS_EQUAL(J, writer.Received[i + 1]);

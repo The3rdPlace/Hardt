@@ -1,3 +1,10 @@
+hardt (1.2-0) RELEASED; urgency=medium
+
+  [ Henrik Witt-Hansen ]
+  * Multipliers now have unity gain (1, no matter which lo amplitude is used)
+
+ -- Mackie <henrik@hardttoolkit.org>  xxx, xx xxx 202x xx:xx:00 +0100
+
 hardt (1.1-4) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
