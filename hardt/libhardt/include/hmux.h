@@ -23,6 +23,10 @@
     Do note that the output from the multiplexer will be the total number of samples
     read or written by the upstream readers or writers. Having two readers that each returns
     1024 samples will yield a read of 2048 samples.
+
+    A special use of the multiplexer is to have a single stream (reader og writer) and then
+    multiplexing the input data into two identical channels. This is usefull when you want
+    to output a mono stream as a dual-channel ("stereo") headset.
 */
 template <class T>
 class HMux : public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
@@ -41,16 +45,43 @@ class HMux : public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
         T** _buffers;
         int _bufferCount;
 
+        bool _duplex;
+
     public:
 
-        /** Construct a new HMux */
-        HMux( std::vector< HReader<T>* > readers, size_t blocksize);
+        /**
+         * Construct a new HMux
+         *
+         * @param readers A list o reader to read from
+         * @param blocksize Number of blocks to read
+         * @param duplex If set to true, the number of readers _must_ be 1. Read
+         *               a single block, then duplicate the block and output same
+         *               block as two channels multiplexed (mono->stereo for mono input)
+         */
+        HMux( std::vector< HReader<T>* > readers, size_t blocksize, bool duplex = false);
 
-        /** Construct a new HMux */
-        HMux( HWriter<T>* writer, int writers, size_t blocksize);
+        /**
+         * Construct a new HMux
+         *
+         * @param writer The writer to write the final multiplexed signal to
+         * @param writers Number of writers, writing to this multiplexer
+         * @param blocksize Number of blocks to write
+         * @param duplex If set to true, the number of writers _must_ be 1. When
+         *               a single block is written, then duplicate the block and output same
+         *               block as two channels multiplexed (mono->stereo for mono input)
+         */
+        HMux( HWriter<T>* writer, int writers, size_t blocksize, bool duplex = false);
 
-        /** Construct a new HMux */
-        HMux( std::vector< HWriterConsumer<T>* > consumers, size_t blocksize);
+        /**
+         * Construct a new HMux
+         *
+         * @param consumers The upstream consumers
+         * @param blocksize Number of blocks to write
+         * @param duplex If set to true, the number of upstream writers _must_ be 1. When
+         *               a single block is written, then duplicate the block and output same
+         *               block as two channels multiplexed (mono->stereo for mono input)
+         */
+        HMux( std::vector< HWriterConsumer<T>* > consumers, size_t blocksize, bool duplex = false);
 
         /** Default destructor */
         ~HMux();
@@ -81,6 +112,38 @@ class HMux : public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
         void SetWriter(HWriter<T>* writer)
         {
             _writer = writer;
+        }
+
+        /** Start the multiplexer */
+        bool Start()
+        {
+            if( _writer != nullptr ) {
+                return _writer->Start();
+            }
+            if( _readers.size() > 0 ) {
+                for (int i = 0; i < _readers.size(); i++) {
+                    if (!_readers[i]->Start()) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        /** Stop the multiplexer */
+        bool Stop()
+        {
+            if( _writer != nullptr ) {
+                return _writer->Stop();
+            }
+            if( _readers.size() > 0 ) {
+                for (int i = 0; i < _readers.size(); i++) {
+                    if (!_readers[i]->Stop()) {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 };
 

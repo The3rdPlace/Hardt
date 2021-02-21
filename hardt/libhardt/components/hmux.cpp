@@ -4,14 +4,18 @@
 #include "hmux.h"
 
 template <class T>
-HMux<T>::HMux( std::vector< HReader<T>* > readers, size_t blocksize):
+HMux<T>::HMux( std::vector< HReader<T>* > readers, size_t blocksize, bool duplex):
     _blocksize(blocksize),
     _readers(readers),
     _writer(nullptr),
     _bufferCount(readers.size()),
-    _output(nullptr)
-{
-    HLog("HMux(%d readers)", readers.size());
+    _output(nullptr),
+    _duplex(duplex) {
+    HLog("HMux(%d readers, duplex=%d)", readers.size(), duplex);
+
+    if( duplex && readers.size() != 1 ) {
+        throw new HInitializationException("Incorrect number of readers when multiplexing in duplex mode");
+    }
 
     _buffers = new T*[readers.size()];
     for( int i = 0; i < readers.size(); i++ )
@@ -21,17 +25,22 @@ HMux<T>::HMux( std::vector< HReader<T>* > readers, size_t blocksize):
 }
 
 template <class T>
-HMux<T>::HMux( HWriter<T>* writer, int writers, size_t blocksize):
+HMux<T>::HMux( HWriter<T>* writer, int writers, size_t blocksize, bool duplex):
     _blocksize(blocksize),
     _writers(writers),
     _writer(writer),
     _buffers(nullptr),
     _bufferCount(writers),
-    _received(0) {
+    _received(0),
+    _duplex(duplex) {
 
-    HLog("HMux(writer)");
+    HLog("HMux(%d writers, duplex=%d)",writers, duplex);
 
-    _output = new T[blocksize * _writers];
+    if( duplex && writers != 1 ) {
+        throw new HInitializationException("Incorrect number of writers when multiplexing in duplex mode");
+    }
+
+    _output = new T[blocksize * (_duplex ? 2 : _writers)];
     _buffers = new T*[writers];
     for( int i = 0; i < writers; i++ )
     {
@@ -41,17 +50,22 @@ HMux<T>::HMux( HWriter<T>* writer, int writers, size_t blocksize):
 
 
 template <class T>
-HMux<T>::HMux( std::vector< HWriterConsumer<T>* > consumers, size_t blocksize):
+HMux<T>::HMux( std::vector< HWriterConsumer<T>* > consumers, size_t blocksize, bool duplex):
         _blocksize(blocksize),
         _writers(consumers.size()),
         _writer(nullptr),
         _buffers(nullptr),
         _bufferCount(consumers.size()),
-        _received(0) {
+        _received(0),
+        _duplex(duplex) {
 
-    HLog("HMux(%d consumers)", consumers.size());
+    HLog("HMux(%d consumers, duplex=%d)", consumers.size(), duplex);
 
-    _output = new T[blocksize * _writers];
+    if( duplex && consumers.size() != 1 ) {
+        throw new HInitializationException("Incorrect number of consumers when multiplexing in duplex mode");
+    }
+
+    _output = new T[blocksize * (_duplex ? 2 : _writers)];
     _buffers = new T*[consumers.size()];
     for( int i = 0; i < consumers.size(); i++ )
     {
@@ -83,25 +97,35 @@ int HMux<T>::Read(T* dest, size_t blocksize)
         throw new HReaderIOException("Incorrect blocksize in Read()");
     }
 
-    for( int i = 0; i < _readers.size(); i++ )
-    {
-        int read = _readers[i]->Read(_buffers[i], blocksize / _readers.size() );
-        if( read != (blocksize / _readers.size() ) )
-        {
-            HError("Incorrect read with size %d for reader %d, returning zero", read, i);
+    if( _duplex ) {
+        int read = _readers[0]->Read(_buffers[0], blocksize / 2);
+        if (read != (blocksize / 2)) {
+            HError("Incorrect read with size %d for reader 0 in duplex mode, returning zero", read);
             return 0;
         }
-    }
 
-    int pos = 0;
-    int reader = 0;
-    for( int i = 0; i < blocksize; i++ )
-    {
-        dest[i] = _buffers[reader++][pos];
-        if( reader >= _readers.size() )
-        {
-            reader = 0;
-            pos++;
+        int pos = 0;
+        for (int i = 0; i < blocksize; i++) {
+            dest[i++] = _buffers[0][pos];
+            dest[i] = _buffers[0][pos++];
+        }
+    } else {
+        for (int i = 0; i < _readers.size(); i++) {
+            int read = _readers[i]->Read(_buffers[i], blocksize / _readers.size());
+            if (read != (blocksize / _readers.size())) {
+                HError("Incorrect read with size %d for reader %d, returning zero", read, i);
+                return 0;
+            }
+        }
+
+        int pos = 0;
+        int reader = 0;
+        for (int i = 0; i < blocksize; i++) {
+            dest[i] = _buffers[reader++][pos];
+            if (reader >= _readers.size()) {
+                reader = 0;
+                pos++;
+            }
         }
     }
 
@@ -116,22 +140,30 @@ int HMux<T>::Write(T* src, size_t blocksize) {
         throw new HReaderIOException("Incorrect blocksize in Write()");
     }
 
-    memcpy((void*) _buffers[_received++], (void*) src, blocksize * sizeof(T));
+    if( _duplex ) {
 
-    if( _received == _writers ) {
         int pos = 0;
-        int writer = 0;
-        for( int i = 0; i < _blocksize * _writers; i++ )
-        {
-            _output[i] = _buffers[writer++][pos];
-            if( writer >= _writers )
-            {
-                writer = 0;
-                pos++;
-            }
+        for (int i = 0; i < _blocksize * 2; i++) {
+            _output[i++] = src[pos];
+            _output[i] = src[pos++];
         }
-        _writer->Write(_output, _blocksize * _writers);
-        _received = 0;
+        _writer->Write(_output, _blocksize * 2);
+    } else {
+        memcpy((void *) _buffers[_received++], (void *) src, blocksize * sizeof(T));
+
+        if (_received == _writers) {
+            int pos = 0;
+            int writer = 0;
+            for (int i = 0; i < _blocksize * _writers; i++) {
+                _output[i] = _buffers[writer++][pos];
+                if (writer >= _writers) {
+                    writer = 0;
+                    pos++;
+                }
+            }
+            _writer->Write(_output, _blocksize * _writers);
+            _received = 0;
+        }
     }
 
     return blocksize;
@@ -144,40 +176,40 @@ Explicit instantiation
 
 // HMux
 template
-HMux<int8_t>::HMux( std::vector< HReader<int8_t>* > readers, size_t blocksize);
+HMux<int8_t>::HMux( std::vector< HReader<int8_t>* > readers, size_t blocksize, bool duplex);
 
 template
-HMux<uint8_t>::HMux( std::vector< HReader<uint8_t>* > readers, size_t blocksize);
+HMux<uint8_t>::HMux( std::vector< HReader<uint8_t>* > readers, size_t blocksize, bool duplex);
 
 template
-HMux<int16_t>::HMux( std::vector< HReader<int16_t>* > readers, size_t blocksize);
+HMux<int16_t>::HMux( std::vector< HReader<int16_t>* > readers, size_t blocksize, bool duplex);
 
 template
-HMux<int32_t>::HMux( std::vector< HReader<int32_t>* > readers, size_t blocksize);
+HMux<int32_t>::HMux( std::vector< HReader<int32_t>* > readers, size_t blocksize, bool duplex);
 
 template
-HMux<int8_t>::HMux( HWriter<int8_t>* writer, int writers, size_t blocksize);
+HMux<int8_t>::HMux( HWriter<int8_t>* writer, int writers, size_t blocksize, bool duplex);
 
 template
-HMux<uint8_t>::HMux( HWriter<uint8_t>* writer, int writers, size_t blocksize);
+HMux<uint8_t>::HMux( HWriter<uint8_t>* writer, int writers, size_t blocksize, bool duplex);
 
 template
-HMux<int16_t>::HMux( HWriter<int16_t>* writer, int writers, size_t blocksize);
+HMux<int16_t>::HMux( HWriter<int16_t>* writer, int writers, size_t blocksize, bool duplex);
 
 template
-HMux<int32_t>::HMux( HWriter<int32_t>* writer, int writers, size_t blocksize);
+HMux<int32_t>::HMux( HWriter<int32_t>* writer, int writers, size_t blocksize, bool duplex);
 
 template
-HMux<int8_t>::HMux( std::vector< HWriterConsumer<int8_t>* > consumers, size_t blocksize);
+HMux<int8_t>::HMux( std::vector< HWriterConsumer<int8_t>* > consumers, size_t blocksize, bool duplex);
 
 template
-HMux<uint8_t>::HMux( std::vector< HWriterConsumer<uint8_t>* > consumers, size_t blocksize);
+HMux<uint8_t>::HMux( std::vector< HWriterConsumer<uint8_t>* > consumers, size_t blocksize, bool duplex);
 
 template
-HMux<int16_t>::HMux( std::vector< HWriterConsumer<int16_t>* > consumers, size_t blocksize);
+HMux<int16_t>::HMux( std::vector< HWriterConsumer<int16_t>* > consumers, size_t blocksize, bool duplex);
 
 template
-HMux<int32_t>::HMux( std::vector< HWriterConsumer<int32_t>* > consumers, size_t blocksize);
+HMux<int32_t>::HMux( std::vector< HWriterConsumer<int32_t>* > consumers, size_t blocksize, bool duplex);
 
 // ~HMux()
 template

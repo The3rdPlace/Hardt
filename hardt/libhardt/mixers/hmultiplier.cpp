@@ -9,7 +9,8 @@ HMultiplier<T>::HMultiplier(HReader<T>* reader, H_SAMPLE_RATE rate, int frequenc
     _reader(reader),
     _writer(NULL),
     _blocksize(blocksize),
-    _probe(probe)
+    _probe(probe),
+    _scaling(oscillatorAmplitude)
 {
     HLog("HMultiplier(HReader*, %d, %d, %d)", rate, frequency, blocksize);
     Init(rate, frequency, oscillatorAmplitude, blocksize);
@@ -20,7 +21,8 @@ HMultiplier<T>::HMultiplier(HWriter<T>* writer, H_SAMPLE_RATE rate, int frequenc
     _reader(NULL),
     _writer(writer),
     _blocksize(blocksize),
-    _probe(probe)
+    _probe(probe),
+    _scaling(oscillatorAmplitude)
 {
     HLog("HMultiplier(HWriter*, %d, %d, %d)", rate, frequency, blocksize);
     Init(rate, frequency, oscillatorAmplitude, blocksize);
@@ -31,7 +33,8 @@ HMultiplier<T>::HMultiplier(HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, in
     _reader(NULL),
     _writer(NULL),
     _blocksize(blocksize),
-    _probe(probe)
+    _probe(probe),
+    _scaling(oscillatorAmplitude)
 {
     HLog("HMultiplier(HWriterConsumer*, %d, %d, %d)", rate, frequency, blocksize);
     Init(rate, frequency, oscillatorAmplitude, blocksize);
@@ -120,7 +123,7 @@ void HMultiplier<T>::Mix(T* src, T* dest, size_t blocksize)
     // Multiply inputs (= convolution in freq. domain = frequency shift)
     for( int i = 0; i < blocksize; i++ )
     {
-        dest[i] = src[i] * _localOscillator->Next();
+        dest[i] = (src[i] * _localOscillator->Next()) / _scaling;
     }
 }
 

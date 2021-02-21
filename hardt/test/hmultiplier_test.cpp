@@ -34,7 +34,7 @@ class HMultiplier_Test: public Test
 
             for(int i = 0; i < 5; i++)
             {
-                ASSERT_IS_EQUAL(received[i], (int8_t) (i * oscillator[i]));
+                ASSERT_IS_EQUAL(received[i], (int8_t) (i * oscillator[i] / 10));
             }
 
             ASSERT_IS_TRUE(multiplier.Command(&TestNopCommand));
@@ -54,7 +54,7 @@ class HMultiplier_Test: public Test
 
             for(int i = 0; i < 5; i++)
             {
-                ASSERT_IS_EQUAL(writer.Received[i], (int8_t) (input[i] * oscillator[i]));
+                ASSERT_IS_EQUAL(writer.Received[i], (int8_t) (input[i] * oscillator[i] / 10));
             }
 
             ASSERT_IS_TRUE(multiplier.Command(&TestNopCommand));

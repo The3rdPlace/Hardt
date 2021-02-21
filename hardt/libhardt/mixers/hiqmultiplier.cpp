@@ -9,7 +9,8 @@ HIqMultiplier<T>::HIqMultiplier(HReader<T>* reader, H_SAMPLE_RATE rate, int freq
     _reader(reader),
     _writer(NULL),
     _blocksize(blocksize),
-    _probe(probe)
+    _probe(probe),
+    _scaling(oscillatorAmplitude)
 {
     HLog("HIqMultiplier(HReader*, %d, %d, %d)", rate, frequency, blocksize);
     Init(rate, frequency, oscillatorAmplitude, blocksize);
@@ -20,7 +21,8 @@ HIqMultiplier<T>::HIqMultiplier(HWriter<T>* writer, H_SAMPLE_RATE rate, int freq
     _reader(NULL),
     _writer(writer),
     _blocksize(blocksize),
-    _probe(probe)
+    _probe(probe),
+    _scaling(oscillatorAmplitude)
 {
     HLog("HIqMultiplier(HWriter*, %d, %d, %d)", rate, frequency, blocksize);
     Init(rate, frequency, oscillatorAmplitude, blocksize);
@@ -31,7 +33,8 @@ HIqMultiplier<T>::HIqMultiplier(HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate
     _reader(NULL),
     _writer(NULL),
     _blocksize(blocksize),
-    _probe(probe)
+    _probe(probe),
+    _scaling(oscillatorAmplitude)
 {
     HLog("HIqMultiplier(HWriterConsumer*, %d, %d, %d)", rate, frequency, blocksize);
     Init(rate, frequency, oscillatorAmplitude, blocksize);
@@ -139,8 +142,8 @@ void HIqMultiplier<T>::Mix(T* src, T* dest, size_t blocksize)
         bd = src[i + 1] * _localCosOscillator->Current();
         ab_cd = (src[i] + src[i + 1]) * (_localSinOscillator->Next() + _localCosOscillator->Next());
 
-        dest[i] = ac - bd;
-        dest[i + 1] = ab_cd - ac - bd;
+        dest[i] = (ac - bd) / _scaling;
+        dest[i + 1] = (ab_cd - ac - bd) / _scaling;
     }
 }
 
