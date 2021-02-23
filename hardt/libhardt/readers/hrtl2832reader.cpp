@@ -165,6 +165,34 @@ HRtl2832Reader<T>::~HRtl2832Reader()
     delete _buffer;
 }
 
+template <>
+void HRtl2832Reader<int8_t>::CopyBlock(int8_t * dest, unsigned char* src , size_t blocksize) {
+    for( int i = 0; i < blocksize; i++ ) {
+        dest[i] = ((int8_t) src[i]) - 127;
+    }
+}
+
+template <>
+void HRtl2832Reader<uint8_t>::CopyBlock(uint8_t * dest, unsigned char* src , size_t blocksize) {
+    for( int i = 0; i < blocksize; i++ ) {
+        dest[i] = ((uint8_t) src[i]);
+    }
+}
+
+template <>
+void HRtl2832Reader<int16_t>::CopyBlock(int16_t * dest, unsigned char* src , size_t blocksize) {
+    for( int i = 0; i < blocksize; i++ ) {
+        dest[i] = ((int16_t) src[i]) - 127;
+    }
+}
+
+template <>
+void HRtl2832Reader<int32_t>::CopyBlock(int32_t * dest, unsigned char* src , size_t blocksize) {
+    for( int i = 0; i < blocksize; i++ ) {
+        dest[i] = ((int32_t) src[i]) - 127;
+    }
+}
+
 template <class T>
 int HRtl2832Reader<T>::Read(T* dest, size_t blocksize)
 {
@@ -194,37 +222,17 @@ int HRtl2832Reader<T>::Read(T* dest, size_t blocksize)
         unsigned char* src = &_cbd.buffer[_cbd.rdloc];
         switch( _mode ) {
 
-            // Multiplexed I and Q values
+            // Multiplexed I and Q values or single channel
             case HRtl2832::MODE::IQ_SAMPLES:
             case HRtl2832::MODE::I_SAMPLES:
             case HRtl2832::MODE::Q_SAMPLES: {
-                for( int i = 0; i < blocksize; i++ ) {
-                    dest[i] = ((T) src[i]) - 127;
-                }
+                CopyBlock(dest, src, blocksize);
                 break;
             }
 
-            // Return I channel
-/*            case HRtl2832::MODE::I: {
-                for( int i = 0; i < _buflen; i += 2 ) {
-                    dest[i / 2] = ((T) src[i]) - 127;
-                }
-                break;
-            }
-
-            // Return Q channel
-            case HRtl2832::MODE::Q: {
-                for( int i = 1; i < _buflen; i += 2 ) {
-                    dest[i / 2] = ((T) src[i]) - 127;
-                }
-                break;
-            }
-*/
             // Return realvalued time-domain signal
             case HRtl2832::MODE::REAL_SAMPLES: {
-                for( int i = 0; i < _buflen; i++ ) {
-                    _buffer[i] = ((T) src[i]) - 127;
-                }
+                CopyBlock(_buffer, src, _buflen);
                 _fft->IQ2REAL(_buffer, dest);
                 break;
             }

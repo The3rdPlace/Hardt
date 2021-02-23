@@ -2,6 +2,7 @@ hardt (1.2-1) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
   * Added missing uint8->int16 and uint8->int32 typeconverters
+  * Cleanup in the HRtl2832 reader and fix problem when reading uint8 samples
 
  -- Mackie <henrik@hardttoolkit.org>  Tue, 23 Feb 2021 23:35:00 +0100
 

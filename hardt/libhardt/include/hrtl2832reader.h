@@ -61,6 +61,8 @@ class HRtl2832Reader : public HReader<T>
          */
         bool Stop();
 
+        void CopyBlock(T* dest, unsigned char* src, size_t blocksize);
+
     public:
 
         /**
