@@ -21,7 +21,9 @@ class HTypeConverter: public HConverter<Tin, Tout> {
 public:
 
     #define INT8_TO_INT16    258          // 32.767 / 127
+    #define UINT8_TO_INT16   129          // 16.383 / 127
     #define INT8_TO_INT32    16909320     // 214.748.3647 / 127
+    #define UINT8_TO_INT32   8454660      // 107.374.1824 / 127
     #define INT8_TO_FLOAT    258          // 32.767 / 127
     #define INT8_TO_DOUBLE   16909320     // 214.748.3647 / 127
     #define INT16_TO_INT32   65537        // 214.748.3647 / 32767

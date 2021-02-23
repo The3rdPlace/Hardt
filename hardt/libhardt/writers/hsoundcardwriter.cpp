@@ -61,7 +61,7 @@ void HSoundcardWriter<T>::Init(int device, H_SAMPLE_RATE rate, int channels, H_S
 	}
     HLog("PortAudio initialized");
 
-    // Setup input parameters
+    // Setup output parameters
     PaStreamParameters outputParameters;
     outputParameters.device = device;
     outputParameters.channelCount = channels;

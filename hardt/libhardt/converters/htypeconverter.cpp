@@ -12,9 +12,25 @@ int HTypeConverter<int8_t, int16_t>::Convert(int8_t * src, int16_t * dest, size_
 }
 
 template<>
+int HTypeConverter<uint8_t, int16_t>::Convert(uint8_t * src, int16_t * dest, size_t blocksize) {
+    for(int i = 0; i < blocksize; i++ ) {
+        dest[i] = ((int16_t) (src[i] - 127)) * _scale;
+    }
+    return blocksize;
+}
+
+template<>
 int HTypeConverter<int8_t, int32_t>::Convert(int8_t * src, int32_t * dest, size_t blocksize) {
     for(int i = 0; i < blocksize; i++ ) {
         dest[i] = ((int32_t) src[i]) * _scale;
+    }
+    return blocksize;
+}
+
+template<>
+int HTypeConverter<uint8_t, int32_t>::Convert(uint8_t * src, int32_t * dest, size_t blocksize) {
+    for(int i = 0; i < blocksize; i++ ) {
+        dest[i] = ((int32_t) (src[i] - 127)) * _scale;
     }
     return blocksize;
 }
@@ -28,9 +44,25 @@ int HTypeConverter<int8_t , float>::Convert(int8_t * src, float* dest, size_t bl
 }
 
 template<>
+int HTypeConverter<uint8_t , float>::Convert(uint8_t * src, float* dest, size_t blocksize) {
+    for(int i = 0; i < blocksize; i++ ) {
+        dest[i] = ((float) (src[i] - 127)) * _scale;
+    }
+    return blocksize;
+}
+
+template<>
 int HTypeConverter<int8_t , double>::Convert(int8_t * src, double* dest, size_t blocksize) {
     for(int i = 0; i < blocksize; i++ ) {
         dest[i] = ((double) src[i]) * _scale;
+    }
+    return blocksize;
+}
+
+template<>
+int HTypeConverter<uint8_t , double>::Convert(uint8_t * src, double* dest, size_t blocksize) {
+    for(int i = 0; i < blocksize; i++ ) {
+        dest[i] = ((double) (src[i] - 127)) * _scale;
     }
     return blocksize;
 }

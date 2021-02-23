@@ -16,8 +16,12 @@ class HTypeConverter_Test: public Test
 
             // For other types, it suffices to test one method
             UNITTEST(test_converter_int8_int16_scaled);
+            UNITTEST(test_converter_uint8_int16);
+            UNITTEST(test_converter_uint8_int16_scaled);
             UNITTEST(test_converter_int8_int32);
             UNITTEST(test_converter_int8_int32_scaled);
+            UNITTEST(test_converter_uint8_int32);
+            UNITTEST(test_converter_uint8_int32_scaled);
             UNITTEST(test_converter_int16_int32);
             UNITTEST(test_converter_int16_int32_scaled);
             UNITTEST(test_converter_int8_float);
@@ -166,6 +170,64 @@ class HTypeConverter_Test: public Test
             ASSERT_IS_EQUAL(wr.Commands, 1);
         }
 
+        void test_converter_uint8_int16()
+        {
+            uint8_t input[8] =    {0,    2,    126, 127, 128, 200, 227, 254};
+            int16_t expected[8] = {-127, -125, -1,  0,   1,   73,  100, 127};
+
+            TestWriter<int16_t > wr(8);
+            HTypeConverter<uint8_t, int16_t> converter(wr.Writer(), 8);
+
+            ASSERT_IS_EQUAL(converter.Write(input, 8), 8);
+            ASSERT_IS_EQUAL(wr.Writes, 1);
+            ASSERT_IS_EQUAL(wr.Samples, 8);
+            ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, sizeof(int16_t) * 8), 0);
+
+            try
+            {
+                converter.Write(input, 6);
+                ASSERT_FAIL("Expected HConverterIOException");
+            }
+            catch(HConverterIOException*)
+            {}
+            catch( ... )
+            {
+                ASSERT_FAIL("Expected HConverterIOException, but got other type");
+            }
+
+            ASSERT_IS_TRUE(converter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
+        }
+
+        void test_converter_uint8_int16_scaled()
+        {
+            uint8_t input[8] =    {0,      2,      126,   127, 128, 200,  227,   254};
+            int16_t expected[8] = {-16383, -16125, -129,  0,   129, 9417, 12900, 16383};
+
+            TestWriter<int16_t > wr(8);
+            HTypeConverter<uint8_t, int16_t> converter(wr.Writer(), 8, UINT8_TO_INT16);
+
+            ASSERT_IS_EQUAL(converter.Write(input, 8), 8);
+            ASSERT_IS_EQUAL(wr.Writes, 1);
+            ASSERT_IS_EQUAL(wr.Samples, 8);
+            ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, sizeof(int16_t) * 8), 0);
+
+            try
+            {
+                converter.Write(input, 6);
+                ASSERT_FAIL("Expected HConverterIOException");
+            }
+            catch(HConverterIOException*)
+            {}
+            catch( ... )
+            {
+                ASSERT_FAIL("Expected HConverterIOException, but got other type");
+            }
+
+            ASSERT_IS_TRUE(converter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
+        }
+
         void test_converter_int8_int32()
         {
             int8_t input[8] =     {0, 2, 3, 4, 5, 6, 7,    127};
@@ -206,6 +268,65 @@ class HTypeConverter_Test: public Test
             ASSERT_IS_EQUAL(converter.Write(input, 8), 8);
             ASSERT_IS_EQUAL(wr.Writes, 1);
             ASSERT_IS_EQUAL(wr.Samples, 8);
+            ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, sizeof(int32_t) * 8), 0);
+
+            try
+            {
+                converter.Write(input, 6);
+                ASSERT_FAIL("Expected HConverterIOException");
+            }
+            catch(HConverterIOException*)
+            {}
+            catch( ... )
+            {
+                ASSERT_FAIL("Expected HConverterIOException, but got other type");
+            }
+
+            ASSERT_IS_TRUE(converter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
+        }
+
+        void test_converter_uint8_int32()
+        {
+            uint8_t input[8] =    {0,    2,    126, 127, 128, 200, 227, 254};
+            int32_t expected[8] = {-127, -125, -1,  0,   1,   73,  100, 127};
+
+            TestWriter<int32_t > wr(8);
+            HTypeConverter<uint8_t, int32_t> converter(wr.Writer(), 8);
+
+            ASSERT_IS_EQUAL(converter.Write(input, 8), 8);
+            ASSERT_IS_EQUAL(wr.Writes, 1);
+            ASSERT_IS_EQUAL(wr.Samples, 8);
+            ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, sizeof(int32_t) * 8), 0);
+
+            try
+            {
+                converter.Write(input, 6);
+                ASSERT_FAIL("Expected HConverterIOException");
+            }
+            catch(HConverterIOException*)
+            {}
+            catch( ... )
+            {
+                ASSERT_FAIL("Expected HConverterIOException, but got other type");
+            }
+
+            ASSERT_IS_TRUE(converter.Command(&TestNopCommand));
+            ASSERT_IS_EQUAL(wr.Commands, 1);
+        }
+
+        void test_converter_uint8_int32_scaled()
+        {
+            uint8_t input[8] =    {0,      2,      126,   127, 128, 200,  227,   254};
+            int32_t expected[8] = {-1073741820, -1056832500, -8454660,  0,   8454660,   617190180,  845466000, 1073741820};
+
+            TestWriter<int32_t > wr(8);
+            HTypeConverter<uint8_t, int32_t> converter(wr.Writer(), 8, UINT8_TO_INT32);
+
+            ASSERT_IS_EQUAL(converter.Write(input, 8), 8);
+            ASSERT_IS_EQUAL(wr.Writes, 1);
+            ASSERT_IS_EQUAL(wr.Samples, 8);
+            DUMP(wr.Received, 8);
             ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, sizeof(int32_t) * 8), 0);
 
             try
