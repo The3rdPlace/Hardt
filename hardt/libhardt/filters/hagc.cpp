@@ -59,7 +59,7 @@ void HAgc<T>::Filter(T* src, T* dest, size_t blocksize)
         _hold = 0;
 
         // Calculate new average
-        T max = *std::max_element(dest, dest + blocksize);
+        T max = *std::max_element(src, src + blocksize);
         _averageBuffer[_averagePtr++] = max;
         _averagePtr = _averagePtr >= _average ? 0 : _averagePtr;
         int average = std::accumulate(_averageBuffer, _averageBuffer + _average, 0) / (int) _average;
