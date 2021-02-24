@@ -16,14 +16,12 @@ class HAgc : public HGain<T>
 {
     private:
 
-        T _lower;
-        T _upper;
-        float _overshoot;
+        T _level;
         int _average;
         T *_averageBuffer;
         int _averagePtr;
-        int _lock;
-        int _locked;
+        float _gain;
+        int _hold;
 
         void Init()
         {
@@ -34,21 +32,42 @@ class HAgc : public HGain<T>
             _averageBuffer = new T[_average];
             memset((void*) _averageBuffer, 0, _average * sizeof(T));
             HLog("Allocated averaging buffer with %d bins", _average);
-
-            _overshoot = 1 - ((_upper - _lower) / _lower);
-            HLog("Calculated overshoot = %f", _overshoot);
         }
 
     public:
 
-        /** Construct a new HAgc object that writes to a writer */
-        HAgc(HWriter<T>* writer, T lower, T upper, int average, int lock, size_t blocksize, HProbe<T>* probe = NULL);
+        /**
+         * Construct a new HAgc object that writes to a writer
+         *
+         * @param writer Downstream writer
+         * @param level Desired output level
+         * @param average Number of blocks to average over when comparing to desired output level
+         * @param blocksize Blocksize
+         * @param probe Probe
+         */
+        HAgc(HWriter<T>* writer, T level, int average, size_t blocksize, HProbe<T>* probe = NULL);
 
-        /** Construct a new HAgc object that registers with an upstream writer */
-        HAgc(HWriterConsumer<T>* consumer, T lower, T upper, int average, int lock, size_t blocksize, HProbe<T>* probe = NULL);
+        /**
+         * Construct a new HAgc object that registers with an upstream writer
+         *
+         * @param consumer Upstream consumer
+         * @param level Desired output level
+         * @param average Number of blocks to average over when comparing to desired output level
+         * @param blocksize Blocksize
+         * @param probe Probe
+         */
+        HAgc(HWriterConsumer<T>* consumer, T level, int average, size_t blocksize, HProbe<T>* probe = NULL);
 
-        /** Construct a new HAgc object that reads from a reader */
-        HAgc(HReader<T>* reader, T lower, T upper, int average, int lock, size_t blocksize, HProbe<T>* probe = NULL);
+        /**
+         * Construct a new HAgc object that reads from a reader
+         *
+         * @param reader Upstream reader
+         * @param level Desired output level
+         * @param average Number of blocks to average over when comparing to desired output level
+         * @param blocksize Blocksize
+         * @param probe Probe
+         */
+        HAgc(HReader<T>* reader, T level, int average, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Default destructor */
         ~HAgc();
@@ -57,25 +76,15 @@ class HAgc : public HGain<T>
         virtual void Filter(T* src, T* dest, size_t blocksize);
 
         /** Set bounds (lowest and highest value in the hysteresis interval) */
-        void SetBounds(T lower, T upper)
+        void SetLevel(T level)
         {
-            _lower = lower;
-            _upper = upper;
-
-            _overshoot = ((_upper - _lower) / _lower) + 1;
-            HLog("Recalculated overshoot = %f", _overshoot);
+            _level = level;
         }
 
         /** Set average (how many blocks is averaged before evaluating the gain again) */
         void SetAverage(int average)
         {
             _average = average;
-        }
-
-        /** Set lock (the number of blocks to wait before evaluating the gain again) */
-        void SetLock(int lock)
-        {
-            _lock = lock;
         }
 };
 
