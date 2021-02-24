@@ -84,24 +84,26 @@ HRtl2832Reader<T>::HRtl2832Reader(int device, H_SAMPLE_RATE rate, HRtl2832::MODE
 
     // Set tuner offset, if needed
     if( offset ) {
+        HLog("Setting tuner offset %d", offset);
         result = rtlsdr_set_offset_tuning(_dev, 1);
         if( result < 0 ) {
             HError("Failed to enable RTL-2832 tuner offset", offset);
             throw new HInitializationException("Failed to enable tuner offset");
         }
-        HLog("RTL-2832 tuner offset enabled");
+        HLog("RTL-2832 tuner offset enabled with offset %d (%d)",rtlsdr_get_offset_tuning(_dev), offset);
     } else {
         HLog("RTL-2832 tuner offset not required");
     }
 
     // Set frequency correction, if needed
     if( correction != 0 ) {
+        HLog("Setting frequency correction %d", correction);
         result = rtlsdr_set_freq_correction(_dev, correction);
         if( result < 0 ) {
             HError("Failed to set RTL-2832 frequency correction to %d", correction);
             throw new HInitializationException("Failed to set frequency correction");
         }
-        HLog("RTL-2832 frequency correction set to %d", rtlsdr_get_offset_tuning(_dev));
+        HLog("RTL-2832 frequency correction set to %d (%d)", rtlsdr_get_freq_correction(_dev), correction);
     } else {
         HLog("RTL-2832 frequency correction not required");
     }
