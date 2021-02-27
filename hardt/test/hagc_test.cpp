@@ -27,12 +27,12 @@ class HAgc_Test: public Test
             int8_t expected_2[6] = {1, 1, 1, 1, 1, 1};
             int8_t expected_7[6] = {8, 8, 8, 8, 8 ,8};
             int8_t expected_8[6] = {8, 8, 8, 8, 8, 8};
-            int8_t expected_10[6] = {2, 2, 2, 2, 2, 2};
-            int8_t expected_12[6] = {5, 5, 5, 5, 5, 5};
-            int8_t expected_17[6] = {6, 6, 6, 6, 6, 6};
-            int8_t expected_18[6] = {12, 12, 12, 12, 12, 12};
-            int8_t expected_20[6] = {12, 12, 12, 12, 12, 12};
-            int8_t expected_26[6] = {7, 7, 7, 7, 7, 7};
+            int8_t expected_10[6] = {8, 8, 8, 8, 8, 8};
+            int8_t expected_12[6] = {16, 16, 16, 16, 16, 16};
+            int8_t expected_17[6] = {8, 8, 8, 8, 8, 8};
+            int8_t expected_18[6] = {8, 8, 8, 8, 8, 8};
+            int8_t expected_20[6] = {8, 8, 8, 8, 8, 8};
+            int8_t expected_26[6] = {8, 8, 8, 8, 8, 8};
             HAgc<int8_t> agc(wr.Writer(), 8, 2, 6);
 
             ASSERT_IS_EQUAL(agc.Write(input_low, 6), 6);

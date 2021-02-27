@@ -115,8 +115,6 @@ class HMux_Test: public Test
 
             int8_t input[8];
             int8_t expected[8] = {1, 1, 2, 2, 3, 3, 4, 4};
-            DUMP(input, 8)
-            ARRAY(input, 8)
             ASSERT_IS_EQUAL(mux.Read(input, 8), 8);
             ASSERT_IS_EQUAL(memcmp((void*) input, (void*) expected, 8 * sizeof(int8_t)), 0);
 

@@ -133,17 +133,17 @@ void HIqMultiplier<T>::Mix(T* src, T* dest, size_t blocksize)
     // Complex multiplication.
     // Need information on complex multiplication and ways to optimize it?
     // Here's a good primer: https://mathworld.wolfram.com/ComplexMultiplication.html
-    T ac;
-    T bd;
-    T ab_cd;
+    long ac;
+    long bd;
+    long ab_cd;
     for( int i = 0; i < blocksize; i += 2 )
     {
-        ac = src[i] * _localSinOscillator->Current();
-        bd = src[i + 1] * _localCosOscillator->Current();
-        ab_cd = (src[i] + src[i + 1]) * (_localSinOscillator->Next() + _localCosOscillator->Next());
+        ac = (long) src[i] * (long) _localSinOscillator->Current();
+        bd = (long) src[i + 1] * (long) _localCosOscillator->Current();
+        ab_cd = ((long) src[i] + (long) src[i + 1]) * ((long) _localSinOscillator->Next() + (long) _localCosOscillator->Next());
 
-        dest[i] = (ac - bd) / _scaling;
-        dest[i + 1] = (ab_cd - ac - bd) / _scaling;
+        dest[i] = (T) ((ac - bd) / (long) _scaling);
+        dest[i + 1] = (T) ((ab_cd - ac - bd) / (long) _scaling);
     }
 }
 

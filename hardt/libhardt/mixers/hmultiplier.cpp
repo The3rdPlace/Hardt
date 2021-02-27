@@ -123,7 +123,7 @@ void HMultiplier<T>::Mix(T* src, T* dest, size_t blocksize)
     // Multiply inputs (= convolution in freq. domain = frequency shift)
     for( int i = 0; i < blocksize; i++ )
     {
-        dest[i] = (src[i] * _localOscillator->Next()) / _scaling;
+        dest[i] = (T) (((long) src[i] * (long) _localOscillator->Next()) / (long) _scaling);
     }
 }
 

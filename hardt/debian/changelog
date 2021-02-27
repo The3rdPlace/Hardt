@@ -1,3 +1,10 @@
+hardt (1.2-3) RELEASED; urgency=medium
+
+  [ Henrik Witt-Hansen ]
+  * Prevent buffer overrun in multipliers
+
+ -- Mackie <henrik@hardttoolkit.org>  Sat, 27 Feb 2021 22:20:00 +0100
+
 hardt (1.2-2) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]

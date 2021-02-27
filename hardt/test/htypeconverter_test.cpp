@@ -326,7 +326,6 @@ class HTypeConverter_Test: public Test
             ASSERT_IS_EQUAL(converter.Write(input, 8), 8);
             ASSERT_IS_EQUAL(wr.Writes, 1);
             ASSERT_IS_EQUAL(wr.Samples, 8);
-            DUMP(wr.Received, 8);
             ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, sizeof(int32_t) * 8), 0);
 
             try
