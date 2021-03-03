@@ -7,40 +7,40 @@
 #include "hagc.h"
 
 template <class T>
-HAgc<T>::HAgc(HWriter<T>* writer, T level, int average, size_t blocksize, HProbe<T>* probe):
+HAgc<T>::HAgc(HWriter<T>* writer, T level, int average, size_t blocksize, bool allowUnity, HProbe<T>* probe):
     HGain<T>(writer, 1, blocksize, probe),
     _level(level),
     _average(average),
     _averagePtr(0),
     _gain(1),
-    _hold(0)
-{
+    _hold(0),
+    _allowUnity(allowUnity) {
     HLog("HAgc(HWriter*, %d, %d)", level, blocksize);
     Init();
 }
 
 template <class T>
-HAgc<T>::HAgc(HWriterConsumer<T>* consumer, T level, int average, size_t blocksize, HProbe<T>* probe):
+HAgc<T>::HAgc(HWriterConsumer<T>* consumer, T level, int average, size_t blocksize, bool allowUnity, HProbe<T>* probe):
     HGain<T>(consumer, 1, blocksize, probe),
     _level(level),
     _average(average),
     _averagePtr(0),
     _gain(1),
-    _hold(0)
-{
+    _hold(0),
+    _allowUnity(allowUnity) {
     HLog("HAgc(HWriterConsumer*, %d, %d)", level, blocksize);
     Init();
 }
 
 template <class T>
-HAgc<T>::HAgc(HReader<T>* reader, T level, int average, size_t blocksize, HProbe<T>* probe):
+HAgc<T>::HAgc(HReader<T>* reader, T level, int average, size_t blocksize, bool allowUnity, HProbe<T>* probe):
     HGain<T>(reader, 1, blocksize, probe),
     _level(level),
     _average(average),
     _averagePtr(0),
     _gain(1),
-    _hold(0)
-{
+    _hold(0),
+    _allowUnity(allowUnity) {
     HLog("HAgc(HReader*, %d, %d)", level, blocksize);
     Init();
 }
@@ -68,7 +68,9 @@ void HAgc<T>::Filter(T* src, T* dest, size_t blocksize)
 
             // Calculate diff between average and desired level
             _gain = 1 / ((float) average / (float) _level);
-            HGain<T>::SetGain(_gain);
+            if( _gain >= 1 || (_gain < 1 && !_allowUnity) ) {
+                HGain<T>::SetGain(_gain);
+            }
         }
     }
 
@@ -83,40 +85,40 @@ Explicit instantiation
 
 // HAgc
 template
-HAgc<int8_t>::HAgc(HWriter<int8_t>* writer, int8_t level, int average, size_t blocksize, HProbe<int8_t>* probe);
+HAgc<int8_t>::HAgc(HWriter<int8_t>* writer, int8_t level, int average, size_t blocksize, bool allowUnity, HProbe<int8_t>* probe);
 
 template
-HAgc<uint8_t>::HAgc(HWriter<uint8_t>* writer, uint8_t level, int average, size_t blocksize, HProbe<uint8_t>* probe);
+HAgc<uint8_t>::HAgc(HWriter<uint8_t>* writer, uint8_t level, int average, size_t blocksize, bool allowUnity, HProbe<uint8_t>* probe);
 
 template
-HAgc<int16_t>::HAgc(HWriter<int16_t>* writer, int16_t level, int average, size_t blocksize, HProbe<int16_t>* probe);
+HAgc<int16_t>::HAgc(HWriter<int16_t>* writer, int16_t level, int average, size_t blocksize, bool allowUnity, HProbe<int16_t>* probe);
 
 template
-HAgc<int32_t>::HAgc(HWriter<int32_t>* writer, int32_t level, int average, size_t blocksize, HProbe<int32_t>* probe);
+HAgc<int32_t>::HAgc(HWriter<int32_t>* writer, int32_t level, int average, size_t blocksize, bool allowUnity, HProbe<int32_t>* probe);
 
 template
-HAgc<int8_t>::HAgc(HWriterConsumer<int8_t>* consumer, int8_t level, int average, size_t blocksize, HProbe<int8_t>* probe);
+HAgc<int8_t>::HAgc(HWriterConsumer<int8_t>* consumer, int8_t level, int average, size_t blocksize, bool allowUnity, HProbe<int8_t>* probe);
 
 template
-HAgc<uint8_t>::HAgc(HWriterConsumer<uint8_t>* consumer, uint8_t level, int average, size_t blocksize, HProbe<uint8_t>* probe);
+HAgc<uint8_t>::HAgc(HWriterConsumer<uint8_t>* consumer, uint8_t level, int average, size_t blocksize, bool allowUnity, HProbe<uint8_t>* probe);
 
 template
-HAgc<int16_t>::HAgc(HWriterConsumer<int16_t>* consumer, int16_t level, int average, size_t blocksize, HProbe<int16_t>* probe);
+HAgc<int16_t>::HAgc(HWriterConsumer<int16_t>* consumer, int16_t level, int average, size_t blocksize, bool allowUnity, HProbe<int16_t>* probe);
 
 template
-HAgc<int32_t>::HAgc(HWriterConsumer<int32_t>* consumer, int32_t level, int average, size_t blocksize, HProbe<int32_t>* probe);
+HAgc<int32_t>::HAgc(HWriterConsumer<int32_t>* consumer, int32_t level, int average, size_t blocksize, bool allowUnity, HProbe<int32_t>* probe);
 
 template
-HAgc<int8_t>::HAgc(HReader<int8_t>* reader, int8_t level, int average, size_t blocksize, HProbe<int8_t>* probe);
+HAgc<int8_t>::HAgc(HReader<int8_t>* reader, int8_t level, int average, size_t blocksize, bool allowUnity, HProbe<int8_t>* probe);
 
 template
-HAgc<uint8_t>::HAgc(HReader<uint8_t>* reader, uint8_t level, int average, size_t blocksize, HProbe<uint8_t>* probe);
+HAgc<uint8_t>::HAgc(HReader<uint8_t>* reader, uint8_t level, int average, size_t blocksize, bool allowUnity, HProbe<uint8_t>* probe);
 
 template
-HAgc<int16_t>::HAgc(HReader<int16_t>* reader, int16_t level, int average, size_t blocksize, HProbe<int16_t>* probe);
+HAgc<int16_t>::HAgc(HReader<int16_t>* reader, int16_t level, int average, size_t blocksize, bool allowUnity, HProbe<int16_t>* probe);
 
 template
-HAgc<int32_t>::HAgc(HReader<int32_t>* reader, int32_t level, int average, size_t blocksize, HProbe<int32_t>* probe);
+HAgc<int32_t>::HAgc(HReader<int32_t>* reader, int32_t level, int average, size_t blocksize, bool allowUnity, HProbe<int32_t>* probe);
 
 // ~HAgc()
 template

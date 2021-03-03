@@ -22,6 +22,7 @@ class HAgc : public HGain<T>
         int _averagePtr;
         float _gain;
         int _hold;
+        bool _allowUnity;
 
         void Init()
         {
@@ -42,10 +43,11 @@ class HAgc : public HGain<T>
          * @param writer Downstream writer
          * @param level Desired output level
          * @param average Number of blocks to average over when comparing to desired output level
+         * @param allowUnity Allow use of unity gain (1), do not reduce gain further
          * @param blocksize Blocksize
          * @param probe Probe
          */
-        HAgc(HWriter<T>* writer, T level, int average, size_t blocksize, HProbe<T>* probe = NULL);
+        HAgc(HWriter<T>* writer, T level, int average, size_t blocksize, bool allowUnity = false, HProbe<T>* probe = NULL);
 
         /**
          * Construct a new HAgc object that registers with an upstream writer
@@ -54,9 +56,10 @@ class HAgc : public HGain<T>
          * @param level Desired output level
          * @param average Number of blocks to average over when comparing to desired output level
          * @param blocksize Blocksize
+         * @param allowUnity Allow use of unity gain (1), do not reduce gain further
          * @param probe Probe
          */
-        HAgc(HWriterConsumer<T>* consumer, T level, int average, size_t blocksize, HProbe<T>* probe = NULL);
+        HAgc(HWriterConsumer<T>* consumer, T level, int average, size_t blocksize, bool allowUnity = false, HProbe<T>* probe = NULL);
 
         /**
          * Construct a new HAgc object that reads from a reader
@@ -65,9 +68,10 @@ class HAgc : public HGain<T>
          * @param level Desired output level
          * @param average Number of blocks to average over when comparing to desired output level
          * @param blocksize Blocksize
+         * @param allowUnity Allow use of unity gain (1), do not reduce gain further
          * @param probe Probe
          */
-        HAgc(HReader<T>* reader, T level, int average, size_t blocksize, HProbe<T>* probe = NULL);
+        HAgc(HReader<T>* reader, T level, int average, size_t blocksize, bool allowUnity = false, HProbe<T>* probe = NULL);
 
         /** Default destructor */
         ~HAgc();

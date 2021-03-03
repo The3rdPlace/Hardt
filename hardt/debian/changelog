@@ -1,3 +1,10 @@
+hardt (1.2-4) RELEASED; urgency=medium
+
+  [ Henrik Witt-Hansen ]
+  * Allow agc to hold at gain=1, dont dampen strong signals
+
+ -- Mackie <henrik@hardttoolkit.org>  Wed, 03 Mar 2021 09:20:00 +0100
+
 hardt (1.2-3) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
