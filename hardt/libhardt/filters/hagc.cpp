@@ -58,15 +58,15 @@ HAgc<T>::~HAgc()
 template <class T>
 void HAgc<T>::Filter(T* src, T* dest, size_t blocksize)
 {
+    // Calculate new average
+    T max = *std::max_element(src, src + blocksize);
+    _averageBuffer[_averagePtr++] = max;
+    _averagePtr = _averagePtr >= _average ? 0 : _averagePtr;
+
     if( ++_hold > _average) {
         _hold = 0;
 
-        // Calculate new average
-        T max = *std::max_element(src, src + blocksize);
-        _averageBuffer[_averagePtr++] = max;
-        _averagePtr = _averagePtr >= _average ? 0 : _averagePtr;
         int average = std::accumulate(_averageBuffer, _averageBuffer + _average, 0) / (int) _average;
-
         if (average != 0) {
 
             // Calculate diff between average and desired level
