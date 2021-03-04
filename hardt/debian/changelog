@@ -1,3 +1,10 @@
+hardt (1.2-5) RELEASED; urgency=medium
+
+  [ Henrik Witt-Hansen ]
+  * Added parameter to agc to control increments
+
+ -- Mackie <henrik@hardttoolkit.org>  Thu, 04 Mar 2021 11:10:00 +0100
+
 hardt (1.2-4) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
