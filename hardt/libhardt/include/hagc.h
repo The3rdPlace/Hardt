@@ -24,6 +24,7 @@ class HAgc : public HGain<T>
         int _hold;
         int _increment;
         bool _allowUnity;
+        bool _enabled;
 
         void Init()
         {
@@ -93,6 +94,17 @@ class HAgc : public HGain<T>
         void SetAverage(int average)
         {
             _average = average;
+        }
+
+        /** Enable or disable the automatic gain control */
+        void SetEnabled(bool enabled) {
+            _enabled = enabled;
+        }
+
+        /** Set the gain level. This will disable the automatic gain control */
+        void SetGain(float gain) {
+            _enabled = false;
+            HGain<T>::SetGain(gain);
         }
 };
 

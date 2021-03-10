@@ -15,7 +15,8 @@ HAgc<T>::HAgc(HWriter<T>* writer, T level, int average, size_t blocksize, int in
     _gain(1),
     _hold(0),
     _increment(increment),
-    _allowUnity(allowUnity) {
+    _allowUnity(allowUnity),
+    _enabled(true) {
     HLog("HAgc(HWriter*, level=%d, average=%d, blocksize=%d, increment=%d, allowUnity=%d)", _level, _average, blocksize, _increment, _allowUnity);
     Init();
 }
@@ -29,7 +30,8 @@ HAgc<T>::HAgc(HWriterConsumer<T>* consumer, T level, int average, size_t blocksi
     _gain(1),
     _hold(0),
     _increment(increment),
-    _allowUnity(allowUnity) {
+    _allowUnity(allowUnity),
+    _enabled(true) {
     HLog("HAgc(HWriterConsumer*, level=%d, average=%d, blocksize=%d, increment=%d, allowUnity=%d)", _level, _average, blocksize, _increment, _allowUnity);
     Init();
 }
@@ -43,7 +45,8 @@ HAgc<T>::HAgc(HReader<T>* reader, T level, int average, size_t blocksize, int in
     _gain(1),
     _hold(0),
     _increment(increment),
-    _allowUnity(allowUnity) {
+    _allowUnity(allowUnity),
+    _enabled(true){
     HLog("HAgc(HReader*, level=%d, average=%d, blocksize=%d, increment=%d, allowUnity=%d)", _level, _average, blocksize, _increment, _allowUnity);
     Init();
 }
@@ -58,22 +61,24 @@ HAgc<T>::~HAgc()
 template <class T>
 void HAgc<T>::Filter(T* src, T* dest, size_t blocksize)
 {
-    // Calculate new average
-    T max = *std::max_element(src, src + blocksize);
-    _averageBuffer[_averagePtr++] = max;
-    _averagePtr = _averagePtr >= _average ? 0 : _averagePtr;
+    if( _enabled ) {
+        // Calculate new average
+        T max = *std::max_element(src, src + blocksize);
+        _averageBuffer[_averagePtr++] = max;
+        _averagePtr = _averagePtr >= _average ? 0 : _averagePtr;
 
-    if( ++_hold > _average) {
-        _hold = 0;
+        if (++_hold > _average) {
+            _hold = 0;
 
-        int average = std::accumulate(_averageBuffer, _averageBuffer + _average, 0) / (int) _average;
-        if (average != 0) {
+            int average = std::accumulate(_averageBuffer, _averageBuffer + _average, 0) / (int) _average;
+            if (average != 0) {
 
-            // Calculate diff between average and desired level
-            float needed = ((float) _level / (float) average);
-            if( needed >= 1 || (needed < 1 && !_allowUnity) ) {
-                _gain += (needed - _gain) / _increment;
-                HGain<T>::SetGain(_gain);
+                // Calculate diff between average and desired level
+                float needed = ((float) _level / (float) average);
+                if (needed >= 1 || (needed < 1 && !_allowUnity)) {
+                    _gain += (needed - _gain) / _increment;
+                    HGain<T>::SetGain(_gain);
+                }
             }
         }
     }
