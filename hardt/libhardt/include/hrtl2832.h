@@ -48,6 +48,11 @@ class HRtl2832
                 Set to true if this device is the systems default device
             */
             bool IsDefaultDevice;
+
+            /**
+                Contains the available gain settings, if not using automatic gain
+             */
+            std::vector<int> Gain;
         };
 
         /**

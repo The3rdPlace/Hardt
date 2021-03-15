@@ -17,12 +17,36 @@ std::vector<HRtl2832::DeviceInformation> HRtl2832::GetDeviceInformation()
 	}
 	for( int i = 0; i < deviceCount; i++ ) {
 		rtlsdr_get_device_usb_strings(i, vendor, product, serial);
-        results.push_back(HRtl2832::DeviceInformation());
-        results[i].Device = i;
-        results[i].Vendor = vendor;
-        results[i].Product = product;
-        results[i].Serial = serial;
-        results[i].IsDefaultDevice = (i == 0);
+
+        // Get the available gain values
+        rtlsdr_dev_t *dev;
+        rtlsdr_open(&dev, i);
+        if( dev == NULL ) {
+            HError("Failed to open RTL-2832 device with index %d while enumerating devices", i);
+        } else {
+            HLog("RTL-2832 device with index %d opened while enumerating devices", i);
+
+            // Device information
+            results.push_back(HRtl2832::DeviceInformation());
+            results[i].Device = i;
+            results[i].Vendor = vendor;
+            results[i].Product = product;
+            results[i].Serial = serial;
+            results[i].IsDefaultDevice = (i == 0);
+
+            // Available gain values
+            int gains = rtlsdr_get_tuner_gains(dev, nullptr);
+            HLog("RTL-2832 device with index %d has %d available gain values", i, gains);
+            int availableGains[gains];
+            rtlsdr_get_tuner_gains(dev, availableGains);
+            for( int g = 0; g < gains; g++ ) {
+                results[i].Gain.push_back(availableGains[g]);
+            }
+
+            // Close device
+            rtlsdr_close(dev);
+            HLog("RTL-2832 device with index %d closed", i);
+        }
 	}
 
     // Return the list of information

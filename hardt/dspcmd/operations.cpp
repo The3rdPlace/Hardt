@@ -2585,6 +2585,10 @@ int RunOperation()
             std::cout << "Product: " << (*it).Product << std::endl;
             std::cout << "Serial: " << (*it).Serial << std::endl;
             std::cout << "Is default device: " << ((*it).IsDefaultDevice ? "yes" : "no") << std::endl;
+            std::cout << "Available gain values:" << std::endl;
+            for( std::vector<int>::iterator git = (*it).Gain.begin(); git != (*it).Gain.end(); git++ ) {
+                std::cout << "                       " << std::to_string(*git) << std::endl;
+            }
             std::cout << std::endl;
         }
         return 0;
