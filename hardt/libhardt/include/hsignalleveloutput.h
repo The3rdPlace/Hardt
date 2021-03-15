@@ -12,7 +12,7 @@
     average that slowly moves toward the latest max value.
 
     The level is calculated so that a maximum sample value contained in a block of samples
-    the equals the maximum possible value for the selected sample format, will report as
+    that equals the maximum possible value for the selected sample format, will report as
     54 DB or S 9. Avg contains the average over 10 blocks and AvgDb, AvgS contains the
     corresponding average signal level.
 
