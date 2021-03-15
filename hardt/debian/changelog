@@ -1,3 +1,10 @@
+hardt (1.2-7) RELEASED; urgency=medium
+
+  [ Henrik Witt-Hansen ]
+  * Include available gain settings in the rtl2832 device information output
+
+ -- Mackie <henrik@hardttoolkit.org>  Mon, 15 Mar 2021 21:20:00 +0100
+
 hardt (1.2-6) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
