@@ -7,6 +7,12 @@ class HFileReader_Test: public Test
 {
     public:
 
+        HFileReader_Test() {
+            remove("/tmp/hfilereader_int8_data.txt");
+            remove("/tmp/hfilereader_uint8_data.txt");
+            remove("/tmp/hfilereader_int16_data.txt");
+        }
+        
         void run()
         {
             UNITTEST(test_int8);
