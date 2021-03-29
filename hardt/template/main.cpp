@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
     HInit(std::string("readers_and_writers"), false);
 
     // Show application name and and Hardt version.
-    std::cout << APPNAME  << ": using Hardt " + getversion() << std::endl;
+    std::cout << APPNAME << ": using Hardt " + getVersion() << std::endl;
 
     // (try to) Catch all exceptions
     try {

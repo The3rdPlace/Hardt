@@ -14,7 +14,7 @@ int main(int argc, char** argv)
 
     // Show application name and and Hardt version.
     // This is not needed, just to have something on the screen
-    std::cout << "readers_and_writers: using Hardt " + getversion() << std::endl;
+    std::cout << "readers_and_writers: using Hardt " + getVersion() << std::endl;
 
     // Check that we got the required input parameters
     if( argc < 2 )

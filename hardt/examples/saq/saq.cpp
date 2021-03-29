@@ -41,7 +41,7 @@ int main(int argc, char** argv)
 
     // Show application name and and Hardt version.
     // This is not needed, just to have something on the screen
-	std::cout << "saq: using Hardt " + getversion() << std::endl;
+	std::cout << "saq: using Hardt " + getVersion() << std::endl;
     std::cout << "S 0";
 
     // Check that we got the required input parameters

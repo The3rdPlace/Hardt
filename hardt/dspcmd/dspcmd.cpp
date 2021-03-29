@@ -20,7 +20,7 @@ int main(int argc, char** argv)
     HInit(std::string("dspcmd"), Config.Verbose);
 
     // Show application name and parse input arguments
-	std::cout << "dspcmd: using Hardt " + getversion() << std::endl ;
+	std::cout << "dspcmd: using Hardt " + getVersion() << std::endl ;
     if( parseArguments(argc, argv) )
     {
         return 0;

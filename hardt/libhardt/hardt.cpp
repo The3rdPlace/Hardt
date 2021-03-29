@@ -6,11 +6,41 @@
 #include <fstream>
 #include <stdarg.h>
 
-std::string getversion()
+std::string getVersion()
 {
     std::stringstream ss;
-    ss << "version " << MAJORVERSION << "." << MINORVERSION << "." << BUILDNO;
+    ss << MAJORVERSION << "." << MINORVERSION << "." << BUILDNO;
     return ss.str();
+}
+
+bool isVersion(int major, int minor, int buildno)
+{
+    if( MAJORVERSION == major && MINORVERSION == minor && BUILDNO == buildno ) {
+        return true;
+    }
+    return false;
+}
+
+bool isVersionOrNewer(int major, int minor, int buildno)
+{
+    if( MAJORVERSION > major ) {
+        return true;
+    }
+    else if( MAJORVERSION == major ) {
+        if( MINORVERSION > minor ) {
+            return true;
+        } else if( MINORVERSION == minor ) {
+            if( BUILDNO >= buildno ) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
 }
 
 /********************************************************************

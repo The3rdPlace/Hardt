@@ -1,3 +1,12 @@
+hardt (1.2-8) RELEASED; urgency=medium
+
+  [ Henrik Witt-Hansen ]
+  * Remove trailing 'version ' string in getVersion()
+  * Added common methods for checking the hardt version
+  * Fixed error in HAgc when using allowUnity
+
+ -- Mackie <henrik@hardttoolkit.org>  Mon, 29 Mar 2021 12:00:00 +0100
+
 hardt (1.2-7) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]

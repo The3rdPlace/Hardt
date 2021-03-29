@@ -83,7 +83,27 @@
 /**
     Get the current version of Hardt
 */
-std::string getversion();
+std::string getVersion();
+
+/**
+ * Check if Hardt is the exact requested version
+ *
+ * @param major Required major number
+ * @param minor Required minor number
+ * @param buildno Required build-number
+ * @return True if the version matches, false otherwise
+*/
+bool isVersion(int major, int minor, int buildno);
+
+/**
+ * Check if Hardt is the exact or newer version
+ *
+ * @param major Required minimum major number
+ * @param minor Required minor number
+ * @param buildno Required build-number
+ * @return True if the version matches or is newer, false otherwise
+*/
+bool isVersionOrNewer(int major, int minor, int buildno);
 
 /**
     Write a message to the logfile (or stdout)

@@ -16,7 +16,7 @@ int main(int argc, char** argv)
 
     // Show application name and and Hardt version.
     // This is not needed, just to have something on the screen
-    std::cout << "network: using Hardt " + getversion() << std::endl;
+    std::cout << "network: using Hardt " + getVersion() << std::endl;
 
     // Check that we got the required input parameters
     if( argc < 2 )

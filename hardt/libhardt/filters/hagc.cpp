@@ -78,6 +78,9 @@ void HAgc<T>::Filter(T* src, T* dest, size_t blocksize)
                 if (needed >= 1 || (needed < 1 && !_allowUnity)) {
                     _gain += (needed - _gain) / _increment;
                     HGain<T>::SetGain(_gain);
+                } else if (needed < 1 && _allowUnity) {
+                    _gain = 1;
+                    HGain<T>::SetGain(_gain);
                 }
             }
         }
