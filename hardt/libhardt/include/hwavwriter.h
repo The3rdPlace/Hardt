@@ -14,16 +14,16 @@ class HWavWriter : public HWav, public HFileWriter<T>
     public:
 
         /** Construct a new wav writer */
-        HWavWriter(const char* filename, H_SAMPLE_FORMAT format, int channels, H_SAMPLE_RATE rate):
+        HWavWriter(const char* filename, H_SAMPLE_FORMAT format, int channels, H_SAMPLE_RATE rate, bool sequence = false):
             HWav(filename, format, channels, rate),
-            HFileWriter<T>(filename),
+            HFileWriter<T>(filename, sequence),
             _size(0)
         {}
 
         /** Construct a new wav writer */
-        HWavWriter(const char* filename, H_SAMPLE_FORMAT format, int channels, H_SAMPLE_RATE rate, HWriterConsumer<T>* consumer):
+        HWavWriter(const char* filename, H_SAMPLE_FORMAT format, int channels, H_SAMPLE_RATE rate, HWriterConsumer<T>* consumer, bool sequence = false):
             HWav(filename, format, channels, rate),
-            HFileWriter<T>(filename, consumer),
+            HFileWriter<T>(filename, consumer, sequence),
             _size(0)
         {}
 

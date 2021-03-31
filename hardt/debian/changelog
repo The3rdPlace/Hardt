@@ -1,3 +1,10 @@
+hardt (1.2-10) RELEASED; urgency=medium
+
+  [ Henrik Witt-Hansen ]
+  * Add parameter to enable sequencenumbers in filenames for the filewriter(s)
+
+ -- Mackie <henrik@hardttoolkit.org>  Wed, 31 Mar 2021 22:15:00 +0100
+
 hardt (1.2-9) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]

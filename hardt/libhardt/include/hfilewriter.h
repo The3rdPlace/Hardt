@@ -17,31 +17,37 @@ class HFileWriter : public HWriter<T>
 
         std::ofstream _stream;
         const std::string _filename;
+        bool _seq;
+        int _seqCount;
 
     public:
 
         /** Construct a new HFileWriter with the given filename */
-        HFileWriter(const char* filename):
-                _filename(std::string(filename))
+        HFileWriter(const char* filename, bool sequence = false):
+                _filename(std::string(filename)),
+                _seq(sequence)
         {}
 
         /** Construct a new HFileWriter with the given filename */
-        HFileWriter(const std::string filename):
-                _filename(filename)
+        HFileWriter(const std::string filename, bool sequence = false):
+                _filename(filename),
+                _seq(sequence)
         {}
 
         /** Construct a new HFileWriter with the given filename and register
             with the given consumer */
-        HFileWriter(const char* filename, HWriterConsumer<T>* consumer):
-                _filename(std::string(filename))
+        HFileWriter(const char* filename, HWriterConsumer<T>* consumer, bool sequence = false):
+                _filename(std::string(filename)),
+                _seq(sequence)
         {
             consumer->SetWriter(this);
         }
 
         /** Construct a new HFileWriter with the given filename and register
             with the given consumer */
-        HFileWriter(const std::string filename, HWriterConsumer<T>* consumer):
-                _filename(filename)
+        HFileWriter(const std::string filename, HWriterConsumer<T>* consumer, bool sequence = false):
+                _filename(filename),
+                _seq(sequence)
         {
             consumer->SetWriter(this);
         }
@@ -57,7 +63,13 @@ class HFileWriter : public HWriter<T>
         bool Start()
         {
             HLog("Trying to open stream for %s", _filename.c_str());
-            _stream.open(_filename.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
+            std::string fname;
+            if( _seq ) {
+                fname = std::to_string(_seqCount++) + "-" + _filename;
+            } else {
+                fname = _filename;
+            }
+            _stream.open(fname.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
             if( !_stream.is_open())
             {
                 HError("Failed to open file %s", _filename.c_str());
