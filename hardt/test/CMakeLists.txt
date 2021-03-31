@@ -81,6 +81,7 @@ target_sources(hardt_test
 		hiq2qconverter_test.cpp
 		hiqaddorsubtractconverter_test.cpp
 		hardt_test.cpp
+		hdelay_test.cpp
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
