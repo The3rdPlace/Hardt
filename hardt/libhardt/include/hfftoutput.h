@@ -281,6 +281,38 @@ class HFftOutput : public HOutput<T, HFftResults>
          * Change zoom factor and center
          */
         void SetZoom(int zoomFactor, int zoomCenter);
+
+        /** Initialize before first read/write */
+        bool Start() {
+
+            // Report first (empty) result
+            HLog("Initialize spectrum");
+            memset((void*) _spectrum, 0, (_size / 2) * sizeof(double));
+            memset((void*) _result, 0, (_size / 2) * sizeof(std::complex<double>));
+            HFftResults results;
+            results.Spectrum = &_spectrum[0];
+            results.Result = &_result[0];
+            results.Size = _size / 2;
+            HOutput<T, HFftResults>::Ready(&results, 1);
+
+            return true;
+        }
+
+        /** Cleanup after last read/write */
+        bool Stop() {
+
+            // Report one last (empty) result
+            HLog("Clear spectrum");
+            memset((void*) _spectrum, 0, (_size / 2) * sizeof(double));
+            memset((void*) _result, 0, (_size / 2) * sizeof(std::complex<double>));
+            HFftResults results;
+            results.Spectrum = &_spectrum[0];
+            results.Result = &_result[0];
+            results.Size = _size / 2;
+            HOutput<T, HFftResults>::Ready(&results, 1);
+
+            return true;
+        }
 };
 
 #endif
