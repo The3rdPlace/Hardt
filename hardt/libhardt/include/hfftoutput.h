@@ -95,12 +95,14 @@ class HFftOutput : public HOutput<T, HFftResults>
          * @param zoomCenter The center bin (frequency), must be in the [0-size/2] range.
          *                   Use the static HFftOutput::BinAtFrequency() method if you do
          *                   not already know the bin number.
+         * @param isIq If set to true then the input must be IQ data and the returned
+         *             spectrum then contains negative as well as positive frequencies.
          *
          * If you intend to use scaling, you _must_ initialize the HFftOutput with a
          * samplerate. You can set the factor to 1 initially to disable zooming. But if you
          * have not provided zoomRate != 0, zooming will not be setup and be available.!
          */
-        HFftOutput(int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<T>* window, H_SAMPLE_RATE zoomRate = 0, int zoomFactor = 1, int zoomCenter = 0);
+        HFftOutput(int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<T>* window, H_SAMPLE_RATE zoomRate = 0, int zoomFactor = 1, int zoomCenter = 0, bool isIq = false);
 
         /**
          * Create a new HFft output that registers with an upstream writer
@@ -123,12 +125,14 @@ class HFftOutput : public HOutput<T, HFftResults>
          * @param zoomCenter The center bin (frequency), must be in the [0-size/2] range.
          *                   Use the static HFftOutput::BinAtFrequency() method if you do
          *                   not already know the bin number.
+         * @param isIq If set to true then the input must be IQ data and the returned
+         *             spectrum then contains negative as well as positive frequencies.
          *
          * If you intend to use scaling, you _must_ initialize the HFftOutput with a
          * samplerate. You can set the factor to 1 initially to disable zooming. But if you
          * have not provided zoomRate != 0, zooming will not be setup and be available.!
          */
-        HFftOutput(int size, int average, int skip, HWriterConsumer<T>* consumer, HWindow<T>* window, H_SAMPLE_RATE zoomRate = 0, int zoomFactor = 1, int zoomCenter = 0);
+        HFftOutput(int size, int average, int skip, HWriterConsumer<T>* consumer, HWindow<T>* window, H_SAMPLE_RATE zoomRate = 0, int zoomFactor = 1, int zoomCenter = 0, bool isIq = false);
 
         /** Create a new HFft output that writes to a writer
         *
