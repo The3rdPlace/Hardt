@@ -1,11 +1,3 @@
-hardt (1.2-12) RELEASED; urgency=medium
-
-  [ Henrik Witt-Hansen ]
-  * Expose parameter for selecting iq spectrum input data for the HFftOutput
-  * Fix missing implicit declaration of SetZoom(...) in HFftOutput
-
- -- Mackie <henrik@hardttoolkit.org>  Wed, 18 Apr 2021 18:10:00 +0100
-
 hardt (1.2-11) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]
