@@ -83,6 +83,7 @@ target_sources(hardt_test
 		hardt_test.cpp
 		hdelay_test.cpp
 		hhumfilter_test.cpp
+		hgaussianfilter_test.cpp
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")

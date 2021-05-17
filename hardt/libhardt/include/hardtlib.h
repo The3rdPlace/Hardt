@@ -126,6 +126,7 @@ Include api function declarations
 #include "hiq2qconverter.h"
 #include "hiqaddorsubtractconverter.cpp"
 #include "hdelay.cpp"
+#include "hgaussianfilter.cpp"
 
 /********************************************************************
 Debug and diagnostics

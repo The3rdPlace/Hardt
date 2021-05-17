@@ -115,5 +115,6 @@
 #include "hiq2qconverter.h"
 #include "hiqaddorsubtractconverter.h"
 #include "hdelay.h"
+#include "hgaussianfilter.h"
 
 #endif
