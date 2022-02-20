@@ -1,3 +1,10 @@
+hardt (1.2-13) RELEASED; urgency=medium
+
+  [ Henrik Witt-Hansen ]
+  * Add more version-checking functions
+
+ -- Mackie <henrik@hardttoolkit.org>  Mon, 20 Feb 2022 12:40:00 +0100
+
 hardt (1.2-12) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]

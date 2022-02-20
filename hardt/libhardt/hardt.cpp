@@ -43,6 +43,27 @@ bool isVersionOrNewer(int major, int minor, int buildno)
     }
 }
 
+bool isVersionMajor(int major) {
+    if( MAJORVERSION == major ) {
+        return true;
+    }
+    return false;
+}
+
+bool isVersionMajorOrNewer(int major) {
+    if( MAJORVERSION >= major ) {
+        return true;
+    }
+    return false;
+}
+
+bool isVersionMajorOrOlder(int major) {
+    if( MAJORVERSION <= major ) {
+        return true;
+    }
+    return false;
+}
+
 /********************************************************************
 Logging
 ********************************************************************/

@@ -106,6 +106,30 @@ bool isVersion(int major, int minor, int buildno);
 bool isVersionOrNewer(int major, int minor, int buildno);
 
 /**
+ * Check if Hardt is the exact major version
+ *
+ * @param major Required minimum major number
+ * @return True if the version matches or is newer, false otherwise
+*/
+bool isVersionMajor(int major);
+
+/**
+ * Check if Hardt is the same or newer major version
+ *
+ * @param major Required minimum major number
+ * @return True if the version matches or is newer, false otherwise
+*/
+bool isVersionMajorOrNewer(int major);
+
+/**
+ * Check if Hardt is the same or older major version
+ *
+ * @param major Required maximum major number
+ * @return True if the version matches or is newer, false otherwise
+*/
+bool isVersionMajorOrOlder(int major);
+
+/**
     Write a message to the logfile (or stdout)
 */
 void HWriteLogMessage(std::string file, const char* fmt, ...);
