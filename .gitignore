@@ -56,3 +56,5 @@ doxygen.conf.in
 
 # Distribution artifacts
 publish
+
+cmake-build-*
