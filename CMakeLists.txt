@@ -4,12 +4,12 @@ cmake_minimum_required (VERSION 3.7)
 project (Hardt)
 
 # Set the framework major and minor version here
-set (Hardt_VERSION_MAJOR 1)
-set (Hardt_VERSION_MINOR 2)
+set (Hardt_VERSION_MAJOR 2)
+set (Hardt_VERSION_MINOR 0)
 
 # When setting the debian package version, do not forget to add a changelog
 # entry in hardt/debian/changelog
-set (Hardt_VERSION_DEB_PACKAGE 13)
+set (Hardt_VERSION_DEB_PACKAGE 1)
 
 # Define the version string
 set (Hardt_VERSION Hardt_VERSION_MAJOR + "." + HARDT_VERSION_MINOR + "." + HARDT_VERSION_DEP_PACKAGE)
