@@ -33,11 +33,11 @@ HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HWriter<T>* writ
     {
         if( i == _filterCount - 1 )
         {
-            _filters[i] = new HIirFilter<T>(HWriter<T>::GetId(), writer, &coefficients[i * 5], 5, blocksize, probe);
+            _filters[i] = new HIirFilter<T>(id, writer, &coefficients[i * 5], 5, blocksize, probe);
         }
         else
         {
-            _filters[i] = new HIirFilter<T>(HWriter<T>::GetId(), _filters[i + 1]->Writer(), &coefficients[i * 5], 5, blocksize);
+            _filters[i] = new HIirFilter<T>(id, _filters[i + 1]->Writer(), &coefficients[i * 5], 5, blocksize);
         }
     }
 }
@@ -65,11 +65,11 @@ HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<
     {
         if( i == 0 )
         {
-            _filters[i] = new HIirFilter<T>(HWriterConsumer<T>::GetId(), consumer, &coefficients[i * 5], 5, blocksize, probe);
+            _filters[i] = new HIirFilter<T>(id, consumer, &coefficients[i * 5], 5, blocksize, probe);
         }
         else
         {
-            _filters[i] = new HIirFilter<T>(HWriterConsumer<T>::GetId(), _filters[i - 1]->Consumer(), &coefficients[i * 5], 5, blocksize);
+            _filters[i] = new HIirFilter<T>(id, _filters[i - 1]->Consumer(), &coefficients[i * 5], 5, blocksize);
         }
     }
 }
@@ -97,11 +97,11 @@ HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HReader<T>* read
     {
         if( i == 0 )
         {
-            _filters[i] = new HIirFilter<T>(HReader<T>::GetId(), reader, &coefficients[i * 5], 5, blocksize, probe);
+            _filters[i] = new HIirFilter<T>(id, reader, &coefficients[i * 5], 5, blocksize, probe);
         }
         else
         {
-            _filters[i] = new HIirFilter<T>(HReader<T>::GetId(), _filters[i - 1]->Reader(), &coefficients[i * 5], 5, blocksize);
+            _filters[i] = new HIirFilter<T>(id, _filters[i - 1]->Reader(), &coefficients[i * 5], 5, blocksize);
         }
     }
 }
@@ -124,11 +124,11 @@ HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HWriter<T>* writ
     {
         if( i == _filterCount - 1 )
         {
-            _filters[i] = new HIirFilter<T>(HWriter<T>::GetId(), writer, biquadCoefficients.at(i), 5, blocksize, probe);
+            _filters[i] = new HIirFilter<T>(id, writer, biquadCoefficients.at(i), 5, blocksize, probe);
         }
         else
         {
-            _filters[i] = new HIirFilter<T>(HWriter<T>::GetId(), _filters[i + 1]->Writer(), biquadCoefficients.at(i), 5, blocksize);
+            _filters[i] = new HIirFilter<T>(id, _filters[i + 1]->Writer(), biquadCoefficients.at(i), 5, blocksize);
         }
     }
 }
@@ -151,11 +151,11 @@ HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<
     {
         if( i == 0 )
         {
-            _filters[i] = new HIirFilter<T>(HWriterConsumer<T>::GetId(), consumer, biquadCoefficients.at(i), 5, blocksize, probe);
+            _filters[i] = new HIirFilter<T>(id, consumer, biquadCoefficients.at(i), 5, blocksize, probe);
         }
         else
         {
-            _filters[i] = new HIirFilter<T>(HWriterConsumer<T>::GetId(), _filters[i - 1]->Consumer(), biquadCoefficients.at(i), 5, blocksize);
+            _filters[i] = new HIirFilter<T>(id, _filters[i - 1]->Consumer(), biquadCoefficients.at(i), 5, blocksize);
         }
     }
 }
@@ -178,11 +178,11 @@ HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HReader<T>* read
     {
         if( i == 0 )
         {
-            _filters[i] = new HIirFilter<T>(HReader<T>::GetId(), reader, biquadCoefficients.at(i), 5, blocksize, probe);
+            _filters[i] = new HIirFilter<T>(id, reader, biquadCoefficients.at(i), 5, blocksize, probe);
         }
         else
         {
-            _filters[i] = new HIirFilter<T>(HReader<T>::GetId(), _filters[i - 1]->Reader(), biquadCoefficients.at(i), 5, blocksize);
+            _filters[i] = new HIirFilter<T>(id, _filters[i - 1]->Reader(), biquadCoefficients.at(i), 5, blocksize);
         }
     }
 }

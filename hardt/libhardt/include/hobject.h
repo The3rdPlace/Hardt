@@ -12,17 +12,7 @@
 */
 class HObject
 {
-    private:
-
-        //std::string _id;
-
     public:
-
-        /** Construct a new HObject */
-        //explicit HObject(std::string id);
-
-        /** Destruct a HObject */
-        //~HObject();
 
         /** Get the object id */
         virtual std::string GetId() = 0;

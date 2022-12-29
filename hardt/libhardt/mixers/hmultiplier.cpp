@@ -16,7 +16,7 @@ HMultiplier<T>::HMultiplier(std::string id, HReader<T>* reader, H_SAMPLE_RATE ra
     _scaling(oscillatorAmplitude)
 {
     HLog("HMultiplier(HReader*, %d, %d, %d)", rate, frequency, blocksize);
-    Init(rate, frequency, oscillatorAmplitude, blocksize);
+    Init(id, rate, frequency, oscillatorAmplitude, blocksize);
 }
 
 template <class T>
@@ -31,7 +31,7 @@ HMultiplier<T>::HMultiplier(std::string id, HWriter<T>* writer, H_SAMPLE_RATE ra
     _scaling(oscillatorAmplitude)
 {
     HLog("HMultiplier(HWriter*, %d, %d, %d)", rate, frequency, blocksize);
-    Init(rate, frequency, oscillatorAmplitude, blocksize);
+    Init(id, rate, frequency, oscillatorAmplitude, blocksize);
 }
 
 template <class T>
@@ -46,7 +46,7 @@ HMultiplier<T>::HMultiplier(std::string id, HWriterConsumer<T>* consumer, H_SAMP
     _scaling(oscillatorAmplitude)
 {
     HLog("HMultiplier(HWriterConsumer*, %d, %d, %d)", rate, frequency, blocksize);
-    Init(rate, frequency, oscillatorAmplitude, blocksize);
+    Init(id, rate, frequency, oscillatorAmplitude, blocksize);
 
     consumer->SetWriter(this);
     HLog("Registered as writer with previous writer");
@@ -61,12 +61,12 @@ HMultiplier<T>::~HMultiplier()
 }
 
 template <class T>
-void HMultiplier<T>::Init(H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize)
+void HMultiplier<T>::Init(std::string id, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize)
 {
     _buffer = new T[blocksize];
     HLog("Allocated %d as local buffer", blocksize * sizeof(T));
 
-    _localOscillator = new HLocalOscillator<T>(HWriter<T>::GetId(), rate, frequency, oscillatorAmplitude);
+    _localOscillator = new HLocalOscillator<T>(id, rate, frequency, oscillatorAmplitude);
     HLog("Create local oscilator");
 }
 
@@ -228,16 +228,16 @@ HMultiplier<int32_t>::~HMultiplier();
 
 // Init()
 template
-void HMultiplier<int8_t>::Init(H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
+void HMultiplier<int8_t>::Init(std::string id, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-void HMultiplier<uint8_t>::Init(H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
+void HMultiplier<uint8_t>::Init(std::string id, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-void HMultiplier<int16_t>::Init(H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
+void HMultiplier<int16_t>::Init(std::string id, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-void HMultiplier<int32_t>::Init(H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
+void HMultiplier<int32_t>::Init(std::string id, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 // Read()
 template
