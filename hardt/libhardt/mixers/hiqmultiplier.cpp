@@ -16,7 +16,7 @@ HIqMultiplier<T>::HIqMultiplier(std::string id, HReader<T>* reader, H_SAMPLE_RAT
     _scaling(oscillatorAmplitude)
 {
     HLog("HIqMultiplier(HReader*, %d, %d, %d)", rate, frequency, blocksize);
-    Init(rate, frequency, oscillatorAmplitude, blocksize);
+    Init(id, rate, frequency, oscillatorAmplitude, blocksize);
 }
 
 template <class T>
@@ -31,7 +31,7 @@ HIqMultiplier<T>::HIqMultiplier(std::string id, HWriter<T>* writer, H_SAMPLE_RAT
     _scaling(oscillatorAmplitude)
 {
     HLog("HIqMultiplier(HWriter*, %d, %d, %d)", rate, frequency, blocksize);
-    Init(rate, frequency, oscillatorAmplitude, blocksize);
+    Init(id, rate, frequency, oscillatorAmplitude, blocksize);
 }
 
 template <class T>
@@ -46,7 +46,7 @@ HIqMultiplier<T>::HIqMultiplier(std::string id, HWriterConsumer<T>* consumer, H_
     _scaling(oscillatorAmplitude)
 {
     HLog("HIqMultiplier(HWriterConsumer*, %d, %d, %d)", rate, frequency, blocksize);
-    Init(rate, frequency, oscillatorAmplitude, blocksize);
+    Init(id, rate, frequency, oscillatorAmplitude, blocksize);
 
     consumer->SetWriter(this);
     HLog("Registered as writer with previous writer");
@@ -62,7 +62,7 @@ HIqMultiplier<T>::~HIqMultiplier()
 }
 
 template <class T>
-void HIqMultiplier<T>::Init(H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize)
+void HIqMultiplier<T>::Init(std::string id, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize)
 {
     _buffer = new T[blocksize];
     HLog("Allocated local buffer");
@@ -70,13 +70,13 @@ void HIqMultiplier<T>::Init(H_SAMPLE_RATE rate, int frequency, int oscillatorAmp
     if( frequency < 0 ) {
         // Negative LO frequency
         HLog("Created local oscillators running at negative frequencies %d", frequency);
-        _localSinOscillator = new HLocalOscillator<T>(HReader<T>::GetId(), rate, abs(frequency), oscillatorAmplitude, 0);
-        _localCosOscillator = new HLocalOscillator<T>(HReader<T>::GetId(), rate, abs(frequency), oscillatorAmplitude, M_PI / 2);
+        _localSinOscillator = new HLocalOscillator<T>(id, rate, abs(frequency), oscillatorAmplitude, 0);
+        _localCosOscillator = new HLocalOscillator<T>(id, rate, abs(frequency), oscillatorAmplitude, M_PI / 2);
     } else {
         // Positive LO frequency
         HLog("Created local oscillators running at positive frequencies %d", frequency);
-        _localSinOscillator = new HLocalOscillator<T>(HReader<T>::GetId(), rate, frequency, oscillatorAmplitude, M_PI / 2);
-        _localCosOscillator = new HLocalOscillator<T>(HReader<T>::GetId(), rate, frequency, oscillatorAmplitude, 0);
+        _localSinOscillator = new HLocalOscillator<T>(id, rate, frequency, oscillatorAmplitude, M_PI / 2);
+        _localCosOscillator = new HLocalOscillator<T>(id, rate, frequency, oscillatorAmplitude, 0);
     }
 }
 
@@ -258,16 +258,16 @@ HIqMultiplier<int32_t>::~HIqMultiplier();
 
 // Init()
 template
-void HIqMultiplier<int8_t>::Init(H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
+void HIqMultiplier<int8_t>::Init(std::string id, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-void HIqMultiplier<uint8_t>::Init(H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
+void HIqMultiplier<uint8_t>::Init(std::string id, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-void HIqMultiplier<int16_t>::Init(H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
+void HIqMultiplier<int16_t>::Init(std::string id, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-void HIqMultiplier<int32_t>::Init(H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
+void HIqMultiplier<int32_t>::Init(std::string id, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 // Read()
 template

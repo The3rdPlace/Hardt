@@ -118,11 +118,11 @@ void HFftOutput<T>::Init(std::string id)
         }
 
         // Setup zoom chain
-        _zoomInputWriter = new HInputWriter<T>(HWriter<T>::GetId());
+        _zoomInputWriter = new HInputWriter<T>(id);
         _zoomBaseband = new HBaseband<T>(id, _zoomInputWriter->Consumer(), _zoomRate, _zoomCenter, (_zoomRate / 2) / _zoomFactor, _size);
-        _zoomDecimator = new HDecimator<T>(HWriter<T>::GetId(), _zoomBaseband->Consumer(), _zoomFactor, _size);
+        _zoomDecimator = new HDecimator<T>(id, _zoomBaseband->Consumer(), _zoomFactor, _size);
         _zoomOutput = new T[_size];
-        _zoomMemoryWriter = new HMemoryWriter<T>(HWriter<T>::GetId(), _zoomDecimator->Consumer(), _zoomOutput, _size);
+        _zoomMemoryWriter = new HMemoryWriter<T>(id, _zoomDecimator->Consumer(), _zoomOutput, _size);
     }
 }
 
