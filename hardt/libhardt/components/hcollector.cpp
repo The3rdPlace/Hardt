@@ -4,26 +4,32 @@
 #include "hcollector.h"
 
 template <class T>
-HCollector<T>::HCollector(HWriter<T>* writer, size_t blocksizeIn, size_t blocksizeOut, HProbe<T>* probe):
-        _blocksizeIn(blocksizeIn),
-        _blocksizeOut(blocksizeOut),
-        _writer(writer),
-        _reader(nullptr),
-        _collected(0),
-        _probe(probe) {
+HCollector<T>::HCollector(std::string id, HWriter<T>* writer, size_t blocksizeIn, size_t blocksizeOut, HProbe<T>* probe):
+    HReader<T>(id),
+    HWriter<T>(id),
+    HWriterConsumer<T>(id),
+    _blocksizeIn(blocksizeIn),
+    _blocksizeOut(blocksizeOut),
+    _writer(writer),
+    _reader(nullptr),
+    _collected(0),
+    _probe(probe) {
 
     HLog("HCollector(HWriter*, blocksizeIn=%d, blocksizeOut=%d)", blocksizeIn, blocksizeOut);
     _buffer = new T[_blocksizeOut];
 }
 
 template <class T>
-HCollector<T>::HCollector(HWriterConsumer<T>* consumer, size_t blocksizeIn, size_t blocksizeOut, HProbe<T>* probe):
-        _blocksizeIn(blocksizeIn),
-        _blocksizeOut(blocksizeOut),
-        _writer(nullptr),
-        _reader(nullptr),
-        _collected(0),
-        _probe(probe) {
+HCollector<T>::HCollector(std::string id, HWriterConsumer<T>* consumer, size_t blocksizeIn, size_t blocksizeOut, HProbe<T>* probe):
+    HReader<T>(id),
+    HWriter<T>(id),
+    HWriterConsumer<T>(id),
+    _blocksizeIn(blocksizeIn),
+    _blocksizeOut(blocksizeOut),
+    _writer(nullptr),
+    _reader(nullptr),
+    _collected(0),
+    _probe(probe) {
 
     HLog("HCollector(HWriterConsumer*, blocksizeIn=%d, blocksizeOut=%d)", blocksizeIn, blocksizeOut);
     _buffer = new T[_blocksizeOut];
@@ -32,13 +38,16 @@ HCollector<T>::HCollector(HWriterConsumer<T>* consumer, size_t blocksizeIn, size
 }
 
 template <class T>
-HCollector<T>::HCollector(HReader<T>* reader, size_t blocksizeIn, size_t blocksizeOut, HProbe<T>* probe):
-        _blocksizeIn(blocksizeIn),
-        _blocksizeOut(blocksizeOut),
-        _writer(nullptr),
-        _reader(reader),
-        _collected(0),
-        _probe(probe) {
+HCollector<T>::HCollector(std::string id, HReader<T>* reader, size_t blocksizeIn, size_t blocksizeOut, HProbe<T>* probe):
+    HReader<T>(id),
+    HWriter<T>(id),
+    HWriterConsumer<T>(id),
+    _blocksizeIn(blocksizeIn),
+    _blocksizeOut(blocksizeOut),
+    _writer(nullptr),
+    _reader(reader),
+    _collected(0),
+    _probe(probe) {
 
     HLog("HCollector(HReader*, blocksizeIn=%d, blocksizeOut=%d)", blocksizeIn, blocksizeOut);
     _buffer = nullptr;
@@ -143,40 +152,40 @@ Explicit instantiation
 
 // HCollector()
 template
-HCollector<int8_t>::HCollector(HWriter<int8_t>* writer, size_t blocksizeIn, size_t blocksizeOut, HProbe<int8_t>* probe);
+HCollector<int8_t>::HCollector(std::string id, HWriter<int8_t>* writer, size_t blocksizeIn, size_t blocksizeOut, HProbe<int8_t>* probe);
 
 template
-HCollector<uint8_t>::HCollector(HWriter<uint8_t>* writer, size_t blocksizeIn, size_t blocksizeOut, HProbe<uint8_t>* probe);
+HCollector<uint8_t>::HCollector(std::string id, HWriter<uint8_t>* writer, size_t blocksizeIn, size_t blocksizeOut, HProbe<uint8_t>* probe);
 
 template
-HCollector<int16_t>::HCollector(HWriter<int16_t>* writer, size_t blocksizeIn, size_t blocksizeOut, HProbe<int16_t>* probe);
+HCollector<int16_t>::HCollector(std::string id, HWriter<int16_t>* writer, size_t blocksizeIn, size_t blocksizeOut, HProbe<int16_t>* probe);
 
 template
-HCollector<int32_t>::HCollector(HWriter<int32_t>* writer, size_t blocksizeIn, size_t blocksizeOut, HProbe<int32_t>* probe);
+HCollector<int32_t>::HCollector(std::string id, HWriter<int32_t>* writer, size_t blocksizeIn, size_t blocksizeOut, HProbe<int32_t>* probe);
 
 template
-HCollector<int8_t>::HCollector(HWriterConsumer<int8_t>* consumer, size_t blocksizeIn, size_t blocksizeOut, HProbe<int8_t>* probe);
+HCollector<int8_t>::HCollector(std::string id, HWriterConsumer<int8_t>* consumer, size_t blocksizeIn, size_t blocksizeOut, HProbe<int8_t>* probe);
 
 template
-HCollector<uint8_t>::HCollector(HWriterConsumer<uint8_t>* consumer, size_t blocksizeIn, size_t blocksizeOut, HProbe<uint8_t>* probe);
+HCollector<uint8_t>::HCollector(std::string id, HWriterConsumer<uint8_t>* consumer, size_t blocksizeIn, size_t blocksizeOut, HProbe<uint8_t>* probe);
 
 template
-HCollector<int16_t>::HCollector(HWriterConsumer<int16_t>* consumer, size_t blocksizeIn, size_t blocksizeOut, HProbe<int16_t>* probe);
+HCollector<int16_t>::HCollector(std::string id, HWriterConsumer<int16_t>* consumer, size_t blocksizeIn, size_t blocksizeOut, HProbe<int16_t>* probe);
 
 template
-HCollector<int32_t>::HCollector(HWriterConsumer<int32_t>* consumer, size_t blocksizeIn, size_t blocksizeOut, HProbe<int32_t>* probe);
+HCollector<int32_t>::HCollector(std::string id, HWriterConsumer<int32_t>* consumer, size_t blocksizeIn, size_t blocksizeOut, HProbe<int32_t>* probe);
 
 template
-HCollector<int8_t>::HCollector(HReader<int8_t>* reader, size_t blocksizeIn, size_t blocksizeOut, HProbe<int8_t>* probe);
+HCollector<int8_t>::HCollector(std::string id, HReader<int8_t>* reader, size_t blocksizeIn, size_t blocksizeOut, HProbe<int8_t>* probe);
 
 template
-HCollector<uint8_t>::HCollector(HReader<uint8_t>* reader, size_t blocksizeIn, size_t blocksizeOut, HProbe<uint8_t>* probe);
+HCollector<uint8_t>::HCollector(std::string id, HReader<uint8_t>* reader, size_t blocksizeIn, size_t blocksizeOut, HProbe<uint8_t>* probe);
 
 template
-HCollector<int16_t>::HCollector(HReader<int16_t>* reader, size_t blocksizeIn, size_t blocksizeOut, HProbe<int16_t>* probe);
+HCollector<int16_t>::HCollector(std::string id, HReader<int16_t>* reader, size_t blocksizeIn, size_t blocksizeOut, HProbe<int16_t>* probe);
 
 template
-HCollector<int32_t>::HCollector(HReader<int32_t>* reader, size_t blocksizeIn, size_t blocksizeOut, HProbe<int32_t>* probe);
+HCollector<int32_t>::HCollector(std::string id, HReader<int32_t>* reader, size_t blocksizeIn, size_t blocksizeOut, HProbe<int32_t>* probe);
 
 // ~HCollector()
 template

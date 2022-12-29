@@ -19,13 +19,13 @@ class HBreaker : public HFilter<T>
     public:
 
         /** Construct a new HBreaker object that writes to a writer */
-        HBreaker(HWriter<T>* writer, bool off, size_t blocksize);
+        HBreaker(std::string id, HWriter<T>* writer, bool off, size_t blocksize);
 
         /** Construct a new HBreaker object that registers with an upstream writer */
-        HBreaker(HWriterConsumer<T>* consumer, bool off, size_t blocksize);
+        HBreaker(std::string id, HWriterConsumer<T>* consumer, bool off, size_t blocksize);
 
         /** Construct a new HBreaker object that reads from a reader */
-        HBreaker(HReader<T>* reader, bool off, size_t blocksize);
+        HBreaker(std::string id, HReader<T>* reader, bool off, size_t blocksize);
 
         /** Default destructor */
         ~HBreaker();

@@ -6,7 +6,10 @@
 #include <vector>
 
 template <class T>
-HInterpolator<T>::HInterpolator(HWriter<T>* writer, int factor, size_t blocksize, HProbe<T>* probe):
+HInterpolator<T>::HInterpolator(std::string id, HWriter<T>* writer, int factor, size_t blocksize, HProbe<T>* probe):
+    HReader<T>(id),
+    HWriter<T>(id),
+    HWriterConsumer<T>(id),
     _blocksize(blocksize),
     _factor(factor),
     _writer(writer),
@@ -21,7 +24,10 @@ HInterpolator<T>::HInterpolator(HWriter<T>* writer, int factor, size_t blocksize
 }
 
 template <class T>
-HInterpolator<T>::HInterpolator(HWriter<T>* writer, int factor, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
+HInterpolator<T>::HInterpolator(std::string id, HWriter<T>* writer, int factor, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
+    HReader<T>(id),
+    HWriter<T>(id),
+    HWriterConsumer<T>(id),
     _blocksize(blocksize),
     _factor(factor),
     _writer(writer),
@@ -36,7 +42,10 @@ HInterpolator<T>::HInterpolator(HWriter<T>* writer, int factor, float* coefficie
 }
 
 template <class T>
-HInterpolator<T>::HInterpolator(HWriterConsumer<T>* consumer, int factor, size_t blocksize, HProbe<T>* probe):
+HInterpolator<T>::HInterpolator(std::string id, HWriterConsumer<T>* consumer, int factor, size_t blocksize, HProbe<T>* probe):
+    HReader<T>(id),
+    HWriter<T>(id),
+    HWriterConsumer<T>(id),
     _blocksize(blocksize),
     _factor(factor),
     _writer(nullptr),
@@ -52,7 +61,10 @@ HInterpolator<T>::HInterpolator(HWriterConsumer<T>* consumer, int factor, size_t
 }
 
 template <class T>
-HInterpolator<T>::HInterpolator(HWriterConsumer<T>* consumer, int factor, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
+HInterpolator<T>::HInterpolator(std::string id, HWriterConsumer<T>* consumer, int factor, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
+    HReader<T>(id),
+    HWriter<T>(id),
+    HWriterConsumer<T>(id),
     _blocksize(blocksize),
     _factor(factor),
     _writer(nullptr),
@@ -68,7 +80,10 @@ HInterpolator<T>::HInterpolator(HWriterConsumer<T>* consumer, int factor, float*
 }
 
 template <class T>
-HInterpolator<T>::HInterpolator(HReader<T>* reader, int factor, size_t blocksize, HProbe<T>* probe):
+HInterpolator<T>::HInterpolator(std::string id, HReader<T>* reader, int factor, size_t blocksize, HProbe<T>* probe):
+    HReader<T>(id),
+    HWriter<T>(id),
+    HWriterConsumer<T>(id),
     _blocksize(blocksize),
     _factor(factor),
     _writer(nullptr),
@@ -83,7 +98,10 @@ HInterpolator<T>::HInterpolator(HReader<T>* reader, int factor, size_t blocksize
 }
 
 template <class T>
-HInterpolator<T>::HInterpolator(HReader<T>* reader, int factor, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
+HInterpolator<T>::HInterpolator(std::string id, HReader<T>* reader, int factor, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
+    HReader<T>(id),
+    HWriter<T>(id),
+    HWriterConsumer<T>(id),
     _blocksize(blocksize),
     _factor(factor),
     _writer(nullptr),
@@ -266,76 +284,76 @@ Explicit instantiation
 
 // HInterpolator()
 template
-HInterpolator<int8_t>::HInterpolator(HWriter<int8_t>* writer, int factor, size_t blocksize, HProbe<int8_t>* probe);
+HInterpolator<int8_t>::HInterpolator(std::string id, HWriter<int8_t>* writer, int factor, size_t blocksize, HProbe<int8_t>* probe);
 
 template
-HInterpolator<uint8_t>::HInterpolator(HWriter<uint8_t>* writer, int factor, size_t blocksize, HProbe<uint8_t >* probe);
+HInterpolator<uint8_t>::HInterpolator(std::string id, HWriter<uint8_t>* writer, int factor, size_t blocksize, HProbe<uint8_t >* probe);
 
 template
-HInterpolator<int16_t>::HInterpolator(HWriter<int16_t>* writer, int factor, size_t blocksize, HProbe<int16_t>* probe);
+HInterpolator<int16_t>::HInterpolator(std::string id, HWriter<int16_t>* writer, int factor, size_t blocksize, HProbe<int16_t>* probe);
 
 template
-HInterpolator<int32_t>::HInterpolator(HWriter<int32_t>* writer, int factor, size_t blocksize, HProbe<int32_t>* probe);
+HInterpolator<int32_t>::HInterpolator(std::string id, HWriter<int32_t>* writer, int factor, size_t blocksize, HProbe<int32_t>* probe);
 
 template
-HInterpolator<int8_t>::HInterpolator(HWriter<int8_t>* writer, int factor, float* coefficients, int length, size_t blocksize, HProbe<int8_t>* probe);
+HInterpolator<int8_t>::HInterpolator(std::string id, HWriter<int8_t>* writer, int factor, float* coefficients, int length, size_t blocksize, HProbe<int8_t>* probe);
 
 template
-HInterpolator<uint8_t>::HInterpolator(HWriter<uint8_t>* writer, int factor, float* coefficients, int length, size_t blocksize, HProbe<uint8_t>* probe);
+HInterpolator<uint8_t>::HInterpolator(std::string id, HWriter<uint8_t>* writer, int factor, float* coefficients, int length, size_t blocksize, HProbe<uint8_t>* probe);
 
 template
-HInterpolator<int16_t>::HInterpolator(HWriter<int16_t>* writer, int factor, float* coefficients, int length, size_t blocksize, HProbe<int16_t>* probe);
+HInterpolator<int16_t>::HInterpolator(std::string id, HWriter<int16_t>* writer, int factor, float* coefficients, int length, size_t blocksize, HProbe<int16_t>* probe);
 
 template
-HInterpolator<int32_t>::HInterpolator(HWriter<int32_t>* writer, int factor, float* coefficients, int length, size_t blocksize, HProbe<int32_t>* probe);
+HInterpolator<int32_t>::HInterpolator(std::string id, HWriter<int32_t>* writer, int factor, float* coefficients, int length, size_t blocksize, HProbe<int32_t>* probe);
 
 template
-HInterpolator<int8_t>::HInterpolator(HWriterConsumer<int8_t>* consumer, int factor, size_t blocksize, HProbe<int8_t>* probe);
+HInterpolator<int8_t>::HInterpolator(std::string id, HWriterConsumer<int8_t>* consumer, int factor, size_t blocksize, HProbe<int8_t>* probe);
 
 template
-HInterpolator<uint8_t>::HInterpolator(HWriterConsumer<uint8_t>* consumer, int factor, size_t blocksize, HProbe<uint8_t>* probe);
+HInterpolator<uint8_t>::HInterpolator(std::string id, HWriterConsumer<uint8_t>* consumer, int factor, size_t blocksize, HProbe<uint8_t>* probe);
 
 template
-HInterpolator<int16_t>::HInterpolator(HWriterConsumer<int16_t>* consumer, int factor, size_t blocksize, HProbe<int16_t>* probe);
+HInterpolator<int16_t>::HInterpolator(std::string id, HWriterConsumer<int16_t>* consumer, int factor, size_t blocksize, HProbe<int16_t>* probe);
 
 template
-HInterpolator<int32_t>::HInterpolator(HWriterConsumer<int32_t>* consumer, int factor, size_t blocksize, HProbe<int32_t>* probe);
+HInterpolator<int32_t>::HInterpolator(std::string id, HWriterConsumer<int32_t>* consumer, int factor, size_t blocksize, HProbe<int32_t>* probe);
 
 template
-HInterpolator<int8_t>::HInterpolator(HWriterConsumer<int8_t>* consumer, int factor, float* coefficients, int length, size_t blocksize, HProbe<int8_t>* probe);
+HInterpolator<int8_t>::HInterpolator(std::string id, HWriterConsumer<int8_t>* consumer, int factor, float* coefficients, int length, size_t blocksize, HProbe<int8_t>* probe);
 
 template
-HInterpolator<uint8_t>::HInterpolator(HWriterConsumer<uint8_t>* consumer, int factor, float* coefficients, int length, size_t blocksize, HProbe<uint8_t>* probe);
+HInterpolator<uint8_t>::HInterpolator(std::string id, HWriterConsumer<uint8_t>* consumer, int factor, float* coefficients, int length, size_t blocksize, HProbe<uint8_t>* probe);
 
 template
-HInterpolator<int16_t>::HInterpolator(HWriterConsumer<int16_t>* consumer, int factor, float* coefficients, int length, size_t blocksize, HProbe<int16_t>* probe);
+HInterpolator<int16_t>::HInterpolator(std::string id, HWriterConsumer<int16_t>* consumer, int factor, float* coefficients, int length, size_t blocksize, HProbe<int16_t>* probe);
 
 template
-HInterpolator<int32_t>::HInterpolator(HWriterConsumer<int32_t>* consumer, int factor, float* coefficients, int length, size_t blocksize, HProbe<int32_t>* probe);
+HInterpolator<int32_t>::HInterpolator(std::string id, HWriterConsumer<int32_t>* consumer, int factor, float* coefficients, int length, size_t blocksize, HProbe<int32_t>* probe);
 
 template
-HInterpolator<int8_t>::HInterpolator(HReader<int8_t>* reader, int factor, size_t blocksize, HProbe<int8_t>* probe);
+HInterpolator<int8_t>::HInterpolator(std::string id, HReader<int8_t>* reader, int factor, size_t blocksize, HProbe<int8_t>* probe);
 
 template
-HInterpolator<uint8_t>::HInterpolator(HReader<uint8_t>* reader, int factor, size_t blocksize, HProbe<uint8_t>* probe);
+HInterpolator<uint8_t>::HInterpolator(std::string id, HReader<uint8_t>* reader, int factor, size_t blocksize, HProbe<uint8_t>* probe);
 
 template
-HInterpolator<int16_t>::HInterpolator(HReader<int16_t>* reader, int factor, size_t blocksize, HProbe<int16_t>* probe);
+HInterpolator<int16_t>::HInterpolator(std::string id, HReader<int16_t>* reader, int factor, size_t blocksize, HProbe<int16_t>* probe);
 
 template
-HInterpolator<int32_t>::HInterpolator(HReader<int32_t>* reader, int factor, size_t blocksize, HProbe<int32_t>* probe);
+HInterpolator<int32_t>::HInterpolator(std::string id, HReader<int32_t>* reader, int factor, size_t blocksize, HProbe<int32_t>* probe);
 
 template
-HInterpolator<int8_t>::HInterpolator(HReader<int8_t>* reader, int factor, float* coefficients, int length, size_t blocksize, HProbe<int8_t>* probe);
+HInterpolator<int8_t>::HInterpolator(std::string id, HReader<int8_t>* reader, int factor, float* coefficients, int length, size_t blocksize, HProbe<int8_t>* probe);
 
 template
-HInterpolator<uint8_t>::HInterpolator(HReader<uint8_t>* reader, int factor, float* coefficients, int length, size_t blocksize, HProbe<uint8_t>* probe);
+HInterpolator<uint8_t>::HInterpolator(std::string id, HReader<uint8_t>* reader, int factor, float* coefficients, int length, size_t blocksize, HProbe<uint8_t>* probe);
 
 template
-HInterpolator<int16_t>::HInterpolator(HReader<int16_t>* reader, int factor, float* coefficients, int length, size_t blocksize, HProbe<int16_t>* probe);
+HInterpolator<int16_t>::HInterpolator(std::string id, HReader<int16_t>* reader, int factor, float* coefficients, int length, size_t blocksize, HProbe<int16_t>* probe);
 
 template
-HInterpolator<int32_t>::HInterpolator(HReader<int32_t>* reader, int factor, float* coefficients, int length, size_t blocksize, HProbe<int32_t>* probe);
+HInterpolator<int32_t>::HInterpolator(std::string id, HReader<int32_t>* reader, int factor, float* coefficients, int length, size_t blocksize, HProbe<int32_t>* probe);
 
 // ~HInterpolator()
 template

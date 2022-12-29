@@ -1,7 +1,10 @@
 #ifndef __HWRITER_H
 #define __HWRITER_H
 
+#include <utility>
+
 #include "hcommand.h"
+#include "hobject.h"
 
 /**
     Base class for all writer types
@@ -9,10 +12,20 @@
 template <class T>
 class HWriter : public HObject
 {
+    private:
+
+        std::string _id;
+
     public:
+
+        /** Constructor */
+        explicit HWriter(std::string id):
+            _id(std::move(id)) {}
 
         /** Virtual destructor enabling delete on derived objects */
         virtual ~HWriter() = default;
+
+        std::string GetId() { return _id; }
 
         /** Write a block of samples */
         virtual int Write(T* src, size_t blocksize) = 0;

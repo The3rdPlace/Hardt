@@ -36,7 +36,10 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
         int _blocksize;
 
         /** Construct a new HFilter that writes to a writer */
-        HFilter(HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL):
+        HFilter(std::string id, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL):
+            HReader<T>(id),
+            HWriter<T>(id),
+            HWriterConsumer<T>(id),
             _writer(writer),
             _reader(NULL),
             _blocksize(blocksize),
@@ -48,7 +51,10 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
         }
 
         /** Construct a new HFilter that registers with an upstream writer */
-        HFilter(HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL):
+        HFilter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL):
+            HReader<T>(id),
+            HWriter<T>(id),
+            HWriterConsumer<T>(id),
             _reader(NULL),
             _blocksize(blocksize),
             _probe(probe),
@@ -61,7 +67,10 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
         }
 
         /** Construct a new HFilter that reads from a reader */
-        HFilter(HReader<T>* reader, size_t blocksize, HProbe<T>* probe = NULL):
+        HFilter(std::string id, HReader<T>* reader, size_t blocksize, HProbe<T>* probe = NULL):
+            HReader<T>(id),
+            HWriter<T>(id),
+            HWriterConsumer<T>(id),
             _writer(NULL),
             _reader(reader),
             _blocksize(blocksize),

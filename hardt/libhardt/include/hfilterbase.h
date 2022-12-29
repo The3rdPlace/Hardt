@@ -15,7 +15,7 @@
     should inherit HFilter instead of this class.
 */
 template <class T>
-class HFilterBase: public HObject
+class HFilterBase
 {
     public:
 

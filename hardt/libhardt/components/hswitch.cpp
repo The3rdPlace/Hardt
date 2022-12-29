@@ -4,7 +4,10 @@
 #include "hswitch.h"
 
 template <class T>
-HSwitch<T>::HSwitch(HWriter<T>* writer, size_t blocksize):
+HSwitch<T>::HSwitch(std::string id, HWriter<T>* writer, size_t blocksize):
+    HReader<T>(id),
+    HWriter<T>(id),
+    HWriterConsumer<T>(id),
     _isReader(false),
     _isWriter(true),
     _isWriterConsumer(false),
@@ -18,7 +21,10 @@ HSwitch<T>::HSwitch(HWriter<T>* writer, size_t blocksize):
 }
 
 template <class T>
-HSwitch<T>::HSwitch(HWriterConsumer<T>* consumer, size_t blocksize):
+HSwitch<T>::HSwitch(std::string id, HWriterConsumer<T>* consumer, size_t blocksize):
+    HReader<T>(id),
+    HWriter<T>(id),
+    HWriterConsumer<T>(id),
     _isReader(false),
     _isWriter(true),
     _isWriterConsumer(true),
@@ -34,7 +40,10 @@ HSwitch<T>::HSwitch(HWriterConsumer<T>* consumer, size_t blocksize):
 }
 
 template <class T>
-HSwitch<T>::HSwitch(HReader<T>* reader, size_t blocksize):
+HSwitch<T>::HSwitch(std::string id, HReader<T>* reader, size_t blocksize):
+    HReader<T>(id),
+    HWriter<T>(id),
+    HWriterConsumer<T>(id),
     _isReader(true),
     _isWriter(false),
     _isWriterConsumer(false),
@@ -210,40 +219,40 @@ Explicit instantiation
 
 // HSwitch()
 template
-HSwitch<int8_t>::HSwitch(HWriter<int8_t>* writer, size_t blocksize);
+HSwitch<int8_t>::HSwitch(std::string id, HWriter<int8_t>* writer, size_t blocksize);
 
 template
-HSwitch<uint8_t>::HSwitch(HWriter<uint8_t>* writer, size_t blocksize);
+HSwitch<uint8_t>::HSwitch(std::string id, HWriter<uint8_t>* writer, size_t blocksize);
 
 template
-HSwitch<int16_t>::HSwitch(HWriter<int16_t>* writer, size_t blocksize);
+HSwitch<int16_t>::HSwitch(std::string id, HWriter<int16_t>* writer, size_t blocksize);
 
 template
-HSwitch<int32_t>::HSwitch(HWriter<int32_t>* writer, size_t blocksize);
+HSwitch<int32_t>::HSwitch(std::string id, HWriter<int32_t>* writer, size_t blocksize);
 
 template
-HSwitch<int8_t>::HSwitch(HWriterConsumer<int8_t>* consumer, size_t blocksize);
+HSwitch<int8_t>::HSwitch(std::string id, HWriterConsumer<int8_t>* consumer, size_t blocksize);
 
 template
-HSwitch<uint8_t>::HSwitch(HWriterConsumer<uint8_t>* consumer, size_t blocksize);
+HSwitch<uint8_t>::HSwitch(std::string id, HWriterConsumer<uint8_t>* consumer, size_t blocksize);
 
 template
-HSwitch<int16_t>::HSwitch(HWriterConsumer<int16_t>* consumer, size_t blocksize);
+HSwitch<int16_t>::HSwitch(std::string id, HWriterConsumer<int16_t>* consumer, size_t blocksize);
 
 template
-HSwitch<int32_t>::HSwitch(HWriterConsumer<int32_t>* consumer, size_t blocksize);
+HSwitch<int32_t>::HSwitch(std::string id, HWriterConsumer<int32_t>* consumer, size_t blocksize);
 
 template
-HSwitch<int8_t>::HSwitch(HReader<int8_t>* reader, size_t blocksize);
+HSwitch<int8_t>::HSwitch(std::string id, HReader<int8_t>* reader, size_t blocksize);
 
 template
-HSwitch<uint8_t>::HSwitch(HReader<uint8_t>* reader, size_t blocksize);
+HSwitch<uint8_t>::HSwitch(std::string id, HReader<uint8_t>* reader, size_t blocksize);
 
 template
-HSwitch<int16_t>::HSwitch(HReader<int16_t>* reader, size_t blocksize);
+HSwitch<int16_t>::HSwitch(std::string id, HReader<int16_t>* reader, size_t blocksize);
 
 template
-HSwitch<int32_t>::HSwitch(HReader<int32_t>* reader, size_t blocksize);
+HSwitch<int32_t>::HSwitch(std::string id, HReader<int32_t>* reader, size_t blocksize);
 
 // ~HSwitch()
 template

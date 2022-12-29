@@ -13,11 +13,11 @@ class HStreamProcessor : public HProcessor<T>
     public:
 
         /** Construct a new HStreamProcessor */
-        HStreamProcessor(HWriter<T>* writer, HReader<T>* reader, int blocksize, bool* terminationToken);
+        HStreamProcessor(std::string id, HWriter<T>* writer, HReader<T>* reader, int blocksize, bool* terminationToken);
 
         /** Construct a new HStreamProcessor which will have the writer registered by a later
             writer, following the HWriterConsumer scheme */
-        HStreamProcessor(HReader<T>* reader, int blocksize, bool* terminationToken);
+        HStreamProcessor(std::string id, HReader<T>* reader, int blocksize, bool* terminationToken);
 
         /** Run the processor */
         void Run(long unsigned int blocks = 0);

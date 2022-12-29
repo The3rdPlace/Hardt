@@ -39,13 +39,13 @@ class HBaseband : public HFilter<T>
     public:
 
         /** Construct a new HBaseband filter that writes to a writer */
-        HBaseband(HWriter<T>* writer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<T>* probe = NULL);
+        HBaseband(std::string id, HWriter<T>* writer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HBaseband filter that registers with an upstream writer */
-        HBaseband(HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<T>* probe = NULL);
+        HBaseband(std::string id, HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HBaseband filter that reads from a reader */
-        HBaseband(HReader<T>* reader, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<T>* probe = NULL);
+        HBaseband(std::string id, HReader<T>* reader, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Default destructor */
         ~HBaseband();

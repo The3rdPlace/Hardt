@@ -14,7 +14,6 @@ target_sources(hardt
         hsoundcard.cpp
         hwav.cpp
         hexceptions.cpp
-        hobject.cpp
         htimer.cpp
         hrtl2832.cpp
 )

@@ -12,7 +12,7 @@ class HWavReader : public HWav, public HFileReader<T>
     public:
 
         /** Construct a new wav reader stream that reads the specified wav file */
-        HWavReader(const char* filename, HProbe<T>* probe = nullptr);
+        HWavReader(std::string id, const char* filename, HProbe<T>* probe = nullptr);
 
         /** Initialize before first read */
         bool Start();

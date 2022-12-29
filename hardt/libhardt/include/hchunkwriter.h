@@ -26,12 +26,14 @@ class HChunkWriter : public HWriter<T>
 
         /** Construct a chunkwriter with chunk size 0 (zero). This will write
             all blocks straight through without chunking */
-        HChunkWriter():
+        HChunkWriter(std::string id):
+            HWriter<T>(id),
             _chunksize(0)
         {}
 
         /** Construct a chunkwriter with the given chunk size */
-        HChunkWriter(int chunksize):
+        HChunkWriter(std::string id, int chunksize):
+            HWriter<T>(id),
             _chunksize(chunksize)
         {}
 

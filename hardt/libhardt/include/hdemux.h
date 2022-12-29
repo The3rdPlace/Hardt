@@ -33,13 +33,13 @@ class HDeMux : public HWriter<T>, public HWriterConsumer<T>, public HReader<T>
     public:
 
         /** Construct a new HDemux object that writes to a writer */
-        HDeMux( std::vector< HWriter<T>* > writers, size_t blocksize);
+        HDeMux(std::string id, std::vector< HWriter<T>* > writers, size_t blocksize);
 
         /** Construct a new HDemux object that registers with an upstream writer */
-        HDeMux( HWriterConsumer<T>* consumer, size_t blocksize);
+        HDeMux(std::string id, HWriterConsumer<T>* consumer, size_t blocksize);
 
         /** Construct a new HDemux object that reads from a reader */
-        HDeMux( HReader<T>* reader, int readers, size_t blocksize);
+        HDeMux(std::string id, HReader<T>* reader, int readers, size_t blocksize);
 
         /** Default destructor */
         ~HDeMux();

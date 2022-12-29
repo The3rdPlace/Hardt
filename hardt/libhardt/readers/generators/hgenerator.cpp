@@ -4,7 +4,8 @@
 #include "hgenerator.h"
 
 template <class T>
-HGenerator<T>::HGenerator(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase):
+HGenerator<T>::HGenerator(std::string id, H_SAMPLE_RATE rate, int frequency, T amplitude, float phase):
+    HReader<T>(id),
     _lot(NULL),
     _zero(0),
     _it(0)
@@ -398,22 +399,22 @@ Explicit instantiation
 
 // HGenerator
 template
-HGenerator<int8_t>::HGenerator(H_SAMPLE_RATE rate, int frequency, int8_t amplitude, float phase);
+HGenerator<int8_t>::HGenerator(std::string id, H_SAMPLE_RATE rate, int frequency, int8_t amplitude, float phase);
 
 template
-HGenerator<uint8_t>::HGenerator(H_SAMPLE_RATE rate, int frequency, uint8_t amplitude, float phase);
+HGenerator<uint8_t>::HGenerator(std::string id, H_SAMPLE_RATE rate, int frequency, uint8_t amplitude, float phase);
 
 template
-HGenerator<int16_t>::HGenerator(H_SAMPLE_RATE rate, int frequency, int16_t amplitude, float phase);
+HGenerator<int16_t>::HGenerator(std::string id, H_SAMPLE_RATE rate, int frequency, int16_t amplitude, float phase);
 
 template
-HGenerator<int32_t>::HGenerator(H_SAMPLE_RATE rate, int frequency, int32_t amplitude, float phase);
+HGenerator<int32_t>::HGenerator(std::string id, H_SAMPLE_RATE rate, int frequency, int32_t amplitude, float phase);
 
 template
-HGenerator<float>::HGenerator(H_SAMPLE_RATE rate, int frequency, float amplitude, float phase);
+HGenerator<float>::HGenerator(std::string id, H_SAMPLE_RATE rate, int frequency, float amplitude, float phase);
 
 template
-HGenerator<double>::HGenerator(H_SAMPLE_RATE rate, int frequency, double amplitude, float phase);
+HGenerator<double>::HGenerator(std::string id, H_SAMPLE_RATE rate, int frequency, double amplitude, float phase);
 
 // ~HGenerator
 template

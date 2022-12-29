@@ -23,22 +23,22 @@ class HLinearMixer : public HReader<T>, public HWriter<T>, public HWriterConsume
     public:
 
         /** Construct a new HLinearMixer */
-        HLinearMixer(HReader<T>* reader_1, HReader<T>* reader_2, size_t blocksize, HProbe<T>* probe = NULL);
+        HLinearMixer(std::string id, HReader<T>* reader_1, HReader<T>* reader_2, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HLinearMixer */
-        HLinearMixer(HReader<T>* reader, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL);
+        HLinearMixer(std::string id, HReader<T>* reader, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HLinearMixer which mixes two inputs by multiplexing between alternating writes.
             Every 1st. write is kept in a buffer and with the 2nd. write, the sample values from the first and
             second write is subtracted. The result is then written to the next writer.
          */
-        HLinearMixer(HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL);
+        HLinearMixer(std::string id, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HLinearMixer */
-        HLinearMixer(HReader<T>* reader, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL);
+        HLinearMixer(std::string id, HReader<T>* reader, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HLinearMixer */
-        HLinearMixer(HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL);
+        HLinearMixer(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Default destructor */
         ~HLinearMixer();

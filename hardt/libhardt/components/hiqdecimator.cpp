@@ -7,30 +7,36 @@
 #include "hiqdecimator.h"
 
 template <class T>
-HIqDecimator<T>::HIqDecimator(HWriter<T>* writer, int factor, size_t blocksize, bool collect, HProbe<T>* probe):
-        _blocksize(blocksize),
-        _factor(factor),
-        _length(0),
-        _writer(writer),
-        _reader(nullptr),
-        _collect(collect),
-        _probe(probe),
-        _pos(0) {
+HIqDecimator<T>::HIqDecimator(std::string id, HWriter<T>* writer, int factor, size_t blocksize, bool collect, HProbe<T>* probe):
+    HReader<T>(id),
+    HWriter<T>(id),
+    HWriterConsumer<T>(id),
+    _blocksize(blocksize),
+    _factor(factor),
+    _length(0),
+    _writer(writer),
+    _reader(nullptr),
+    _collect(collect),
+    _probe(probe),
+    _pos(0) {
 
     HLog("HIqDecimator(HWriter*, blocksize=%d)", blocksize);
     Init();
 }
 
 template <class T>
-HIqDecimator<T>::HIqDecimator(HWriterConsumer<T>* consumer, int factor, size_t blocksize, bool collect, HProbe<T>* probe):
-        _blocksize(blocksize),
-        _factor(factor),
-        _length(0),
-        _writer(nullptr),
-        _reader(nullptr),
-        _collect(collect),
-        _probe(probe),
-        _pos(0) {
+HIqDecimator<T>::HIqDecimator(std::string id, HWriterConsumer<T>* consumer, int factor, size_t blocksize, bool collect, HProbe<T>* probe):
+    HReader<T>(id),
+    HWriter<T>(id),
+    HWriterConsumer<T>(id),
+    _blocksize(blocksize),
+    _factor(factor),
+    _length(0),
+    _writer(nullptr),
+    _reader(nullptr),
+    _collect(collect),
+    _probe(probe),
+    _pos(0) {
 
     HLog("HIqDecimator(HWriterConsumer*, blocksize=%d)", blocksize);
     Init();
@@ -38,15 +44,18 @@ HIqDecimator<T>::HIqDecimator(HWriterConsumer<T>* consumer, int factor, size_t b
 }
 
 template <class T>
-HIqDecimator<T>::HIqDecimator(HReader<T>* reader, int factor, size_t blocksize, bool collect, HProbe<T>* probe):
-        _blocksize(blocksize),
-        _factor(factor),
-        _length(0),
-        _writer(nullptr),
-        _reader(reader),
-        _collect(collect),
-        _probe(probe),
-        _pos(0) {
+HIqDecimator<T>::HIqDecimator(std::string id, HReader<T>* reader, int factor, size_t blocksize, bool collect, HProbe<T>* probe):
+    HReader<T>(id),
+    HWriter<T>(id),
+    HWriterConsumer<T>(id),
+    _blocksize(blocksize),
+    _factor(factor),
+    _length(0),
+    _writer(nullptr),
+    _reader(reader),
+    _collect(collect),
+    _probe(probe),
+    _pos(0) {
 
     HLog("HIqDecimator(HReader*, blocksize=%d)", blocksize);
     Init();
@@ -146,40 +155,40 @@ Explicit instantiation
 
 // HIqDecimator()
 template
-HIqDecimator<int8_t>::HIqDecimator(HWriter<int8_t>* writer, int factor, size_t blocksize, bool collect, HProbe<int8_t>* probe);
+HIqDecimator<int8_t>::HIqDecimator(std::string id, HWriter<int8_t>* writer, int factor, size_t blocksize, bool collect, HProbe<int8_t>* probe);
 
 template
-HIqDecimator<uint8_t>::HIqDecimator(HWriter<uint8_t>* writer, int factor, size_t blocksize, bool collect, HProbe<uint8_t>* probe);
+HIqDecimator<uint8_t>::HIqDecimator(std::string id, HWriter<uint8_t>* writer, int factor, size_t blocksize, bool collect, HProbe<uint8_t>* probe);
 
 template
-HIqDecimator<int16_t>::HIqDecimator(HWriter<int16_t>* writer, int factor, size_t blocksize, bool collect, HProbe<int16_t>* probe);
+HIqDecimator<int16_t>::HIqDecimator(std::string id, HWriter<int16_t>* writer, int factor, size_t blocksize, bool collect, HProbe<int16_t>* probe);
 
 template
-HIqDecimator<int32_t>::HIqDecimator(HWriter<int32_t>* writer, int factor, size_t blocksize, bool collect, HProbe<int32_t>* psrobe);
+HIqDecimator<int32_t>::HIqDecimator(std::string id, HWriter<int32_t>* writer, int factor, size_t blocksize, bool collect, HProbe<int32_t>* psrobe);
 
 template
-HIqDecimator<int8_t>::HIqDecimator(HWriterConsumer<int8_t>* consumer, int factor, size_t blocksize, bool collect, HProbe<int8_t>* probe);
+HIqDecimator<int8_t>::HIqDecimator(std::string id, HWriterConsumer<int8_t>* consumer, int factor, size_t blocksize, bool collect, HProbe<int8_t>* probe);
 
 template
-HIqDecimator<uint8_t>::HIqDecimator(HWriterConsumer<uint8_t>* consumer, int factor, size_t blocksize, bool collect, HProbe<uint8_t>* probe);
+HIqDecimator<uint8_t>::HIqDecimator(std::string id, HWriterConsumer<uint8_t>* consumer, int factor, size_t blocksize, bool collect, HProbe<uint8_t>* probe);
 
 template
-HIqDecimator<int16_t>::HIqDecimator(HWriterConsumer<int16_t>* consumer, int factor, size_t blocksize, bool collect, HProbe<int16_t>* probe);
+HIqDecimator<int16_t>::HIqDecimator(std::string id, HWriterConsumer<int16_t>* consumer, int factor, size_t blocksize, bool collect, HProbe<int16_t>* probe);
 
 template
-HIqDecimator<int32_t>::HIqDecimator(HWriterConsumer<int32_t>* consumer, int factor, size_t blocksize, bool collect, HProbe<int32_t>* probe);
+HIqDecimator<int32_t>::HIqDecimator(std::string id, HWriterConsumer<int32_t>* consumer, int factor, size_t blocksize, bool collect, HProbe<int32_t>* probe);
 
 template
-HIqDecimator<int8_t>::HIqDecimator(HReader<int8_t>* reader, int factor, size_t blocksize, bool collect, HProbe<int8_t>* probe);
+HIqDecimator<int8_t>::HIqDecimator(std::string id, HReader<int8_t>* reader, int factor, size_t blocksize, bool collect, HProbe<int8_t>* probe);
 
 template
-HIqDecimator<uint8_t>::HIqDecimator(HReader<uint8_t>* reader, int factor, size_t blocksize, bool collect, HProbe<uint8_t>* probe);
+HIqDecimator<uint8_t>::HIqDecimator(std::string id, HReader<uint8_t>* reader, int factor, size_t blocksize, bool collect, HProbe<uint8_t>* probe);
 
 template
-HIqDecimator<int16_t>::HIqDecimator(HReader<int16_t>* reader, int factor, size_t blocksize, bool collect, HProbe<int16_t>* probe);
+HIqDecimator<int16_t>::HIqDecimator(std::string id, HReader<int16_t>* reader, int factor, size_t blocksize, bool collect, HProbe<int16_t>* probe);
 
 template
-HIqDecimator<int32_t>::HIqDecimator(HReader<int32_t>* reader, int factor, size_t blocksize, bool collect, HProbe<int32_t>* probe);
+HIqDecimator<int32_t>::HIqDecimator(std::string id, HReader<int32_t>* reader, int factor, size_t blocksize, bool collect, HProbe<int32_t>* probe);
 
 // ~HIqDecimator()
 template

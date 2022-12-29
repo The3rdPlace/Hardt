@@ -14,13 +14,13 @@ class HPassThrough : public HFilter<T>
     public:
 
         /** Construct a new HPassThrough object that writes to a writer */
-        HPassThrough(HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL);
+        HPassThrough(std::string id, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HPassThrough object that registers with an upstream writer */
-        HPassThrough(HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL);
+        HPassThrough(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HPassThrough object that reads from a reader */
-        HPassThrough(HReader<T>* reader, size_t blocksize, HProbe<T>* probe = NULL);
+        HPassThrough(std::string id, HReader<T>* reader, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Default destructor */
         ~HPassThrough();

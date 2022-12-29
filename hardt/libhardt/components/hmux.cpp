@@ -4,7 +4,10 @@
 #include "hmux.h"
 
 template <class T>
-HMux<T>::HMux( std::vector< HReader<T>* > readers, size_t blocksize, bool duplex):
+HMux<T>::HMux(std::string id, std::vector< HReader<T>* > readers, size_t blocksize, bool duplex):
+    HReader<T>(id),
+    HWriter<T>(id),
+    HWriterConsumer<T>(id),
     _blocksize(blocksize),
     _readers(readers),
     _writer(nullptr),
@@ -25,7 +28,10 @@ HMux<T>::HMux( std::vector< HReader<T>* > readers, size_t blocksize, bool duplex
 }
 
 template <class T>
-HMux<T>::HMux( HWriter<T>* writer, int writers, size_t blocksize, bool duplex):
+HMux<T>::HMux(std::string id, HWriter<T>* writer, int writers, size_t blocksize, bool duplex):
+    HReader<T>(id),
+    HWriter<T>(id),
+    HWriterConsumer<T>(id),
     _blocksize(blocksize),
     _writers(writers),
     _writer(writer),
@@ -50,14 +56,17 @@ HMux<T>::HMux( HWriter<T>* writer, int writers, size_t blocksize, bool duplex):
 
 
 template <class T>
-HMux<T>::HMux( std::vector< HWriterConsumer<T>* > consumers, size_t blocksize, bool duplex):
-        _blocksize(blocksize),
-        _writers(consumers.size()),
-        _writer(nullptr),
-        _buffers(nullptr),
-        _bufferCount(consumers.size()),
-        _received(0),
-        _duplex(duplex) {
+HMux<T>::HMux(std::string id, std::vector< HWriterConsumer<T>* > consumers, size_t blocksize, bool duplex):
+    HReader<T>(id),
+    HWriter<T>(id),
+    HWriterConsumer<T>(id),
+    _blocksize(blocksize),
+    _writers(consumers.size()),
+    _writer(nullptr),
+    _buffers(nullptr),
+    _bufferCount(consumers.size()),
+    _received(0),
+    _duplex(duplex) {
 
     HLog("HMux(%d consumers, duplex=%d)", consumers.size(), duplex);
 
@@ -176,40 +185,40 @@ Explicit instantiation
 
 // HMux
 template
-HMux<int8_t>::HMux( std::vector< HReader<int8_t>* > readers, size_t blocksize, bool duplex);
+HMux<int8_t>::HMux(std::string id, std::vector< HReader<int8_t>* > readers, size_t blocksize, bool duplex);
 
 template
-HMux<uint8_t>::HMux( std::vector< HReader<uint8_t>* > readers, size_t blocksize, bool duplex);
+HMux<uint8_t>::HMux(std::string id, std::vector< HReader<uint8_t>* > readers, size_t blocksize, bool duplex);
 
 template
-HMux<int16_t>::HMux( std::vector< HReader<int16_t>* > readers, size_t blocksize, bool duplex);
+HMux<int16_t>::HMux(std::string id, std::vector< HReader<int16_t>* > readers, size_t blocksize, bool duplex);
 
 template
-HMux<int32_t>::HMux( std::vector< HReader<int32_t>* > readers, size_t blocksize, bool duplex);
+HMux<int32_t>::HMux(std::string id, std::vector< HReader<int32_t>* > readers, size_t blocksize, bool duplex);
 
 template
-HMux<int8_t>::HMux( HWriter<int8_t>* writer, int writers, size_t blocksize, bool duplex);
+HMux<int8_t>::HMux(std::string id, HWriter<int8_t>* writer, int writers, size_t blocksize, bool duplex);
 
 template
-HMux<uint8_t>::HMux( HWriter<uint8_t>* writer, int writers, size_t blocksize, bool duplex);
+HMux<uint8_t>::HMux(std::string id, HWriter<uint8_t>* writer, int writers, size_t blocksize, bool duplex);
 
 template
-HMux<int16_t>::HMux( HWriter<int16_t>* writer, int writers, size_t blocksize, bool duplex);
+HMux<int16_t>::HMux(std::string id, HWriter<int16_t>* writer, int writers, size_t blocksize, bool duplex);
 
 template
-HMux<int32_t>::HMux( HWriter<int32_t>* writer, int writers, size_t blocksize, bool duplex);
+HMux<int32_t>::HMux(std::string id, HWriter<int32_t>* writer, int writers, size_t blocksize, bool duplex);
 
 template
-HMux<int8_t>::HMux( std::vector< HWriterConsumer<int8_t>* > consumers, size_t blocksize, bool duplex);
+HMux<int8_t>::HMux(std::string id, std::vector< HWriterConsumer<int8_t>* > consumers, size_t blocksize, bool duplex);
 
 template
-HMux<uint8_t>::HMux( std::vector< HWriterConsumer<uint8_t>* > consumers, size_t blocksize, bool duplex);
+HMux<uint8_t>::HMux(std::string id, std::vector< HWriterConsumer<uint8_t>* > consumers, size_t blocksize, bool duplex);
 
 template
-HMux<int16_t>::HMux( std::vector< HWriterConsumer<int16_t>* > consumers, size_t blocksize, bool duplex);
+HMux<int16_t>::HMux(std::string id, std::vector< HWriterConsumer<int16_t>* > consumers, size_t blocksize, bool duplex);
 
 template
-HMux<int32_t>::HMux( std::vector< HWriterConsumer<int32_t>* > consumers, size_t blocksize, bool duplex);
+HMux<int32_t>::HMux(std::string id, std::vector< HWriterConsumer<int32_t>* > consumers, size_t blocksize, bool duplex);
 
 // ~HMux()
 template

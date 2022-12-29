@@ -22,13 +22,13 @@ class HMute : public HFilter<T>
     public:
 
         /** Construct a new HMute object that writes to a writer */
-        HMute(HWriter<T>* writer, bool muted, size_t blocksize);
+        HMute(std::string id, HWriter<T>* writer, bool muted, size_t blocksize);
 
         /** Construct a new HMute object that registers with an upstream writer */
-        HMute(HWriterConsumer<T>* consumer, bool muted, size_t blocksize);
+        HMute(std::string id, HWriterConsumer<T>* consumer, bool muted, size_t blocksize);
 
         /** Construct a new HMute object that reads from a reader */
-        HMute(HReader<T>* reader, bool muted, size_t blocksize);
+        HMute(std::string id, HReader<T>* reader, bool muted, size_t blocksize);
 
         /** Default destructor */
         ~HMute();

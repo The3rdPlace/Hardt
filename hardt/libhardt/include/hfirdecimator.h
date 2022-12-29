@@ -49,7 +49,7 @@ class HFirDecimator: public HReader<T>, public HWriter<T>, public HWriterConsume
          *                result in a write of 1024/factor samples to the next writer.
          * @param probe Probe
          */
-        HFirDecimator(HWriter<T>* writer, int factor, float* coefficients, int points, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
+        HFirDecimator(std::string id, HWriter<T>* writer, int factor, float* coefficients, int points, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
 
         /**
          * Construct a new HFirDecimator that handle writer consumers.
@@ -67,7 +67,7 @@ class HFirDecimator: public HReader<T>, public HWriter<T>, public HWriterConsume
          *                result in a write of 1024/factor samples to the next writer.
          * @param probe Probe
          */
-        HFirDecimator(HWriterConsumer<T>* consumer, int factor, float* coefficients, int points, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
+        HFirDecimator(std::string id, HWriterConsumer<T>* consumer, int factor, float* coefficients, int points, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
 
         /**
          * Construct a new HFirDecimator that handle readers.
@@ -85,7 +85,7 @@ class HFirDecimator: public HReader<T>, public HWriter<T>, public HWriterConsume
          *                result in a write of 1024/factor samples to the next writer.
          * @param probe Probe
          */
-        HFirDecimator(HReader<T>* reader, int factor, float* coefficients, int points, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
+        HFirDecimator(std::string id, HReader<T>* reader, int factor, float* coefficients, int points, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
 
         /**
          * Implements HWriterConsumer::SetWriter()

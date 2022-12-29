@@ -16,10 +16,10 @@ class HNetworkReader : public HReader<T>
     public:
 
         /** Construct a new HNetworkReader */
-        HNetworkReader();
+        HNetworkReader(std::string id);
 
         /** Construct a new HNetworkReader with an initialized socket */
-        HNetworkReader(int socket);
+        HNetworkReader(std::string id, int socket);
 
         /** Set the socket to use for reading */
         void SetSocket(int socket);

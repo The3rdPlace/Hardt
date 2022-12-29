@@ -17,13 +17,13 @@ class HClickRemovingFilter : public HFilter<T>
     public:
 
         /** Construct a new HClickRemovingFilter object that writes to a writer */
-        HClickRemovingFilter(HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL);
+        HClickRemovingFilter(std::string id, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HClickRemovingFilter object that registers with an upstream writer */
-        HClickRemovingFilter(HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL);
+        HClickRemovingFilter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HClickRemovingFilter object that reads from a reader */
-        HClickRemovingFilter(HReader<T>* reader, size_t blocksize, HProbe<T>* probe = NULL);
+        HClickRemovingFilter(std::string id, HReader<T>* reader, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Default destructor */
         ~HClickRemovingFilter();

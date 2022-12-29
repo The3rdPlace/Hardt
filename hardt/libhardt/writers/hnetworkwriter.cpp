@@ -8,12 +8,14 @@ Class implementation
 ********************************************************************/
 
 template <class T>
-HNetworkWriter<T>::HNetworkWriter():
+HNetworkWriter<T>::HNetworkWriter(std::string id):
+    HWriter<T>(id),
     _socket(-1)
 {}
 
 template <class T>
-HNetworkWriter<T>::HNetworkWriter(int socket):
+HNetworkWriter<T>::HNetworkWriter(std::string id, int socket):
+    HWriter<T>(id),
     _socket(socket)
 {}
 
@@ -41,28 +43,28 @@ Explicit instantiation
 
 // HNetworkWriter
 template
-HNetworkWriter<int8_t>::HNetworkWriter();
+HNetworkWriter<int8_t>::HNetworkWriter(std::string id);
 
 template
-HNetworkWriter<uint8_t>::HNetworkWriter();
+HNetworkWriter<uint8_t>::HNetworkWriter(std::string id);
 
 template
-HNetworkWriter<int16_t>::HNetworkWriter();
+HNetworkWriter<int16_t>::HNetworkWriter(std::string id);
 
 template
-HNetworkWriter<int32_t>::HNetworkWriter();
+HNetworkWriter<int32_t>::HNetworkWriter(std::string id);
 
 template
-HNetworkWriter<int8_t>::HNetworkWriter(int socket);
+HNetworkWriter<int8_t>::HNetworkWriter(std::string id, int socket);
 
 template
-HNetworkWriter<uint8_t>::HNetworkWriter(int socket);
+HNetworkWriter<uint8_t>::HNetworkWriter(std::string id, int socket);
 
 template
-HNetworkWriter<int16_t>::HNetworkWriter(int socket);
+HNetworkWriter<int16_t>::HNetworkWriter(std::string id, int socket);
 
 template
-HNetworkWriter<int32_t>::HNetworkWriter(int socket);
+HNetworkWriter<int32_t>::HNetworkWriter(std::string id, int socket);
 
 // Write()
 template

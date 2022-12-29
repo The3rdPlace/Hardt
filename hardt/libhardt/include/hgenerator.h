@@ -40,7 +40,7 @@ class HGenerator : public HReader<T>
          * @param amplitude Generator amplitude (max abs. value)
          * @param phase Generator phase (in radians)
          * */
-        HGenerator(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase = 0);
+        HGenerator(std::string id, H_SAMPLE_RATE rate, int frequency, T amplitude, float phase = 0);
 
         /** Default destructor */
         ~HGenerator();

@@ -25,22 +25,22 @@ class HSubtracter : public HReader<T>, public HWriter<T>, public HWriterConsumer
     public:
 
         /** Construct a new HSubtracter */
-        HSubtracter(HReader<T>* reader_1, HReader<T>* reader_2, size_t blocksize, HProbe<T>* probe = NULL);
+        HSubtracter(std::string id, HReader<T>* reader_1, HReader<T>* reader_2, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HSubtracter */
-        HSubtracter(HReader<T>* reader, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL);
+        HSubtracter(std::string id, HReader<T>* reader, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HSubtracter which mixes two inputs by multiplexing between alternating writes.
             Every 1st. write is kept in a buffer and with the 2nd. write, the sample values from the first and
             second write is subtracted. The result is then written to the next writer.
          */
-        HSubtracter(HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL);
+        HSubtracter(std::string id, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HSubtracter */
-        HSubtracter(HReader<T>* reader, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL);
+        HSubtracter(std::string id, HReader<T>* reader, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HSubtracter */
-        HSubtracter(HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL);
+        HSubtracter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Default destructor */
         ~HSubtracter();

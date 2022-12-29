@@ -4,15 +4,15 @@
 #include "hstreamprocessor.h"
 
 template <class T>
-HStreamProcessor<T>::HStreamProcessor(HWriter<T>* writer, HReader<T>* reader, int blocksize, bool* terminationToken):
-    HProcessor<T>(writer, reader, blocksize, terminationToken)
+HStreamProcessor<T>::HStreamProcessor(std::string id, HWriter<T>* writer, HReader<T>* reader, int blocksize, bool* terminationToken):
+    HProcessor<T>(id, writer, reader, blocksize, terminationToken)
 {
     HLog("HStreamProcessor(...), blocksize is %d", blocksize);
 }
 
 template <class T>
-HStreamProcessor<T>::HStreamProcessor(HReader<T>* reader, int blocksize, bool* terminationToken):
-    HProcessor<T>(reader, blocksize, terminationToken)
+HStreamProcessor<T>::HStreamProcessor(std::string id, HReader<T>* reader, int blocksize, bool* terminationToken):
+    HProcessor<T>(id, reader, blocksize, terminationToken)
 {
     HLog("HStreamProcessor::HWriterConsumer(...), blocksize is %d", blocksize);
 }
@@ -33,46 +33,46 @@ Explicit instantiation
 
 // HStreamProcessor()
 template
-HStreamProcessor<int8_t>::HStreamProcessor(HWriter<int8_t>* writer, HReader<int8_t>* reader, int blocksize, bool* terminationToken);
+HStreamProcessor<int8_t>::HStreamProcessor(std::string id, HWriter<int8_t>* writer, HReader<int8_t>* reader, int blocksize, bool* terminationToken);
 
 template
-HStreamProcessor<uint8_t>::HStreamProcessor(HWriter<uint8_t>* writer, HReader<uint8_t>* reader, int blocksize, bool* terminationToken);
+HStreamProcessor<uint8_t>::HStreamProcessor(std::string id, HWriter<uint8_t>* writer, HReader<uint8_t>* reader, int blocksize, bool* terminationToken);
 
 template
-HStreamProcessor<int16_t>::HStreamProcessor(HWriter<int16_t>* writer, HReader<int16_t>* reader, int blocksize, bool* terminationToken);
+HStreamProcessor<int16_t>::HStreamProcessor(std::string id, HWriter<int16_t>* writer, HReader<int16_t>* reader, int blocksize, bool* terminationToken);
 
 template
-HStreamProcessor<int32_t>::HStreamProcessor(HWriter<int32_t>* writer, HReader<int32_t>* reader, int blocksize, bool* terminationToken);
+HStreamProcessor<int32_t>::HStreamProcessor(std::string id, HWriter<int32_t>* writer, HReader<int32_t>* reader, int blocksize, bool* terminationToken);
 
 template
-HStreamProcessor<double>::HStreamProcessor(HWriter<double>* writer, HReader<double>* reader, int blocksize, bool* terminationToken);
+HStreamProcessor<double>::HStreamProcessor(std::string id, HWriter<double>* writer, HReader<double>* reader, int blocksize, bool* terminationToken);
 
 template
-HStreamProcessor<float>::HStreamProcessor(HWriter<float>* writer, HReader<float>* reader, int blocksize, bool* terminationToken);
+HStreamProcessor<float>::HStreamProcessor(std::string id, HWriter<float>* writer, HReader<float>* reader, int blocksize, bool* terminationToken);
 
 template
-HStreamProcessor<std::complex<double>>::HStreamProcessor(HWriter<std::complex<double>>* writer, HReader<std::complex<double>>* reader, int blocksize, bool* terminationToken);
+HStreamProcessor<std::complex<double>>::HStreamProcessor(std::string id, HWriter<std::complex<double>>* writer, HReader<std::complex<double>>* reader, int blocksize, bool* terminationToken);
 
 template
-HStreamProcessor<int8_t>::HStreamProcessor(HReader<int8_t>* reader, int blocksize, bool* terminationToken);
+HStreamProcessor<int8_t>::HStreamProcessor(std::string id, HReader<int8_t>* reader, int blocksize, bool* terminationToken);
 
 template
-HStreamProcessor<uint8_t>::HStreamProcessor(HReader<uint8_t>* reader, int blocksize, bool* terminationToken);
+HStreamProcessor<uint8_t>::HStreamProcessor(std::string id, HReader<uint8_t>* reader, int blocksize, bool* terminationToken);
 
 template
-HStreamProcessor<int16_t>::HStreamProcessor(HReader<int16_t>* reader, int blocksize, bool* terminationToken);
+HStreamProcessor<int16_t>::HStreamProcessor(std::string id, HReader<int16_t>* reader, int blocksize, bool* terminationToken);
 
 template
-HStreamProcessor<int32_t>::HStreamProcessor(HReader<int32_t>* reader, int blocksize, bool* terminationToken);
+HStreamProcessor<int32_t>::HStreamProcessor(std::string id, HReader<int32_t>* reader, int blocksize, bool* terminationToken);
 
 template
-HStreamProcessor<double>::HStreamProcessor(HReader<double>* reader, int blocksize, bool* terminationToken);
+HStreamProcessor<double>::HStreamProcessor(std::string id, HReader<double>* reader, int blocksize, bool* terminationToken);
 
 template
-HStreamProcessor<float>::HStreamProcessor(HReader<float>* reader, int blocksize, bool* terminationToken);
+HStreamProcessor<float>::HStreamProcessor(std::string id, HReader<float>* reader, int blocksize, bool* terminationToken);
 
 template
-HStreamProcessor<std::complex<double>>::HStreamProcessor(HReader<std::complex<double>>* reader, int blocksize, bool* terminationToken);
+HStreamProcessor<std::complex<double>>::HStreamProcessor(std::string id, HReader<std::complex<double>>* reader, int blocksize, bool* terminationToken);
 
 // Run()
 template

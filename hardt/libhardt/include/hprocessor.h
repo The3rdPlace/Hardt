@@ -58,7 +58,7 @@ class HProcessor : public HWriterConsumer<T>
          * @param blocksize Number of samples to read and write per cycle
          * @param terminationToken The termination token. Set to true to halt the processor
          */
-        HProcessor(HWriter<T>* writer, HReader<T>* reader, size_t blocksize, bool* terminationToken);
+        HProcessor(std::string id, HWriter<T>* writer, HReader<T>* reader, size_t blocksize, bool* terminationToken);
 
         /**
          * Construct a new HProcessor
@@ -67,7 +67,7 @@ class HProcessor : public HWriterConsumer<T>
          * @param blocksize Number of samples to read and write per cycle
          * @param terminationToken The termination token. Set to true to halt the processor
          */
-        HProcessor(HReader<T>* reader, size_t blocksize, bool* terminationToken);
+        HProcessor(std::string id, HReader<T>* reader, size_t blocksize, bool* terminationToken);
 
         /**
          * Default destructor

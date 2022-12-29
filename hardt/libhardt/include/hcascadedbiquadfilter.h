@@ -45,22 +45,22 @@ class HCascadedBiQuadFilter: public HReader<T>, public HWriter<T>, public HWrite
     public:
 
         /** Construct a new HCascadedBiQuadFilter */
-        HCascadedBiQuadFilter(HWriter<T>* writer, float* coefficients, int length, size_t blocksize, HProbe<T>* probe = NULL);
+        HCascadedBiQuadFilter(std::string id, HWriter<T>* writer, float* coefficients, int length, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HCascadedBiQuadFilter */
-        HCascadedBiQuadFilter(HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize, HProbe<T>* probe = NULL);
+        HCascadedBiQuadFilter(std::string id, HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HCascadedBiQuadFilter */
-        HCascadedBiQuadFilter(HReader<T>* reader, float* coefficients, int length, size_t blocksize, HProbe<T>* probe = NULL);
+        HCascadedBiQuadFilter(std::string id, HReader<T>* reader, float* coefficients, int length, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HCascadedBiQuadFilter */
-        HCascadedBiQuadFilter(HWriter<T>* writer, std::vector<float*> biquadCoefficients, size_t blocksize, HProbe<T>* probe = NULL);
+        HCascadedBiQuadFilter(std::string id, HWriter<T>* writer, std::vector<float*> biquadCoefficients, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HCascadedBiQuadFilter */
-        HCascadedBiQuadFilter(HWriterConsumer<T>* consumer, std::vector<float*> biquadCoefficients, size_t blocksize, HProbe<T>* probe = NULL);
+        HCascadedBiQuadFilter(std::string id, HWriterConsumer<T>* consumer, std::vector<float*> biquadCoefficients, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HCascadedBiQuadFilter */
-        HCascadedBiQuadFilter(HReader<T>* reader, std::vector<float*> biquadCoefficients, size_t blocksize, HProbe<T>* probe = NULL);
+        HCascadedBiQuadFilter(std::string id, HReader<T>* reader, std::vector<float*> biquadCoefficients, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Default destructor */
         ~HCascadedBiQuadFilter();

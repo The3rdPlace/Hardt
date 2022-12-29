@@ -74,11 +74,11 @@ class HSignalLevelOutput : public HOutput<T, HSignalLevelResult>
     public:
 
         /** Construct a new HSignalLevel object */
-        HSignalLevelOutput(HWriter<HSignalLevelResult>* writer, int average, int ref = 54, int scale = 1);
+        HSignalLevelOutput(std::string id, HWriter<HSignalLevelResult>* writer, int average, int ref = 54, int scale = 1);
 
         /** Construct a new HSignalLevel object and register with the upstream writer by the
             HWriterConsumer scheme */
-        HSignalLevelOutput(HWriterConsumer<T>* consumer, int average, int ref = 54, int scale = 1);
+        HSignalLevelOutput(std::string id, HWriterConsumer<T>* consumer, int average, int ref = 54, int scale = 1);
 
         /** Destruct a HSignalLevel object */
         ~HSignalLevelOutput();

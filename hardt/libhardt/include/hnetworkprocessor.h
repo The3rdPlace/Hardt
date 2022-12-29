@@ -59,27 +59,27 @@ class HNetworkProcessor : public HProcessor<T>
 
         /** Construct a new HNetworkProcessor that acts as a client, reading samples from the remote endpoint
             and writing them to a local writer. */
-        HNetworkProcessor(const char* address, int dataPort, int commandPort, HWriter<T>* writer, int blocksize, bool* terminationToken);
+        HNetworkProcessor(std::string id, const char* address, int dataPort, int commandPort, HWriter<T>* writer, int blocksize, bool* terminationToken);
 
         /** Construct a new HNetworkProcessor that acts as a client, reading samples from the remote endpoint
             and writing them to a local writer which must register by using the HWriterConsumer interface. */
-        HNetworkProcessor(const char* address, int dataPort, int commandPort, int blocksize, bool* terminationToken);
+        HNetworkProcessor(std::string id, const char* address, int dataPort, int commandPort, int blocksize, bool* terminationToken);
 
         /** Construct a new HNetworkProcessor that acts as a client, reading samples from a local reader and
             writing them to the remote endpoint */
-        HNetworkProcessor(const char* address, int dataPort, int commandPort, HReader<T>* reader, int blocksize, bool* terminationToken);
+        HNetworkProcessor(std::string id, const char* address, int dataPort, int commandPort, HReader<T>* reader, int blocksize, bool* terminationToken);
 
         /** Construct a new HNetworkProcessor that acts as a server, reading samples from the remote endpoint
             and writing them to a local writer. */
-        HNetworkProcessor(int dataPort, int commandPort, HWriter<T>* writer, int blocksize, bool* terminationToken);
+        HNetworkProcessor(std::string id, int dataPort, int commandPort, HWriter<T>* writer, int blocksize, bool* terminationToken);
 
         /** Construct a new HNetworkProcessor that acts as a server, reading samples from the remote endpoint
             and writing them to a local writer which must register by using the HWriterConsumer interface. */
-        HNetworkProcessor(int dataPort, int commandPort, int blocksize, bool* terminationToken);
+        HNetworkProcessor(std::string id, int dataPort, int commandPort, int blocksize, bool* terminationToken);
 
         /** Construct a new HNetworkProcessor that acts as a server, reading samples from a local reader and
             writing them to the remote endpoint. */
-        HNetworkProcessor(int dataPort, int commandPort, HReader<T>* reader, int blocksize, bool* terminationToken);
+        HNetworkProcessor(std::string id, int dataPort, int commandPort, HReader<T>* reader, int blocksize, bool* terminationToken);
 
         /** Default destructor */
         ~HNetworkProcessor();

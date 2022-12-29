@@ -21,8 +21,8 @@ Class implementation
 ********************************************************************/
 
 template <class T>
-HNetworkProcessor<T>::HNetworkProcessor(const char* address, int dataPort, int commandPort, HWriter<T>* writer, int blocksize, bool* terminationToken):
-    HProcessor<T>(writer, &_networkReader, blocksize, terminationToken),
+HNetworkProcessor<T>::HNetworkProcessor(std::string id, const char* address, int dataPort, int commandPort, HWriter<T>* writer, int blocksize, bool* terminationToken):
+    HProcessor<T>(id, writer, &_networkReader, blocksize, terminationToken),
     _isServer(false),
     _isWriter(true),
     _reader(nullptr),
@@ -33,15 +33,17 @@ HNetworkProcessor<T>::HNetworkProcessor(const char* address, int dataPort, int c
     _clientSocket(-1),
     _serverSocket(-1),
     _commandSocket(-1),
-    _terminated(terminationToken)
+    _terminated(terminationToken),
+    _networkReader(nullptr),
+    _networkWriter(nullptr)
 {
     HLog("HNetworkProcessor(client)(address=%s, dataPort=%d, commandPort=%d, writer=*, terminationToken=%d), blocksize is %d", address, dataPort, commandPort, *terminationToken, blocksize);
     InitClient();
 }
 
 template <class T>
-HNetworkProcessor<T>::HNetworkProcessor(const char* address, int dataPort, int commandPort, int blocksize, bool* terminationToken):
-    HProcessor<T>(&_networkReader, blocksize, terminationToken),
+HNetworkProcessor<T>::HNetworkProcessor(std::string id, const char* address, int dataPort, int commandPort, int blocksize, bool* terminationToken):
+    HProcessor<T>(id, &_networkReader, blocksize, terminationToken),
     _isServer(false),
     _isWriter(true),
     _reader(nullptr),
@@ -52,15 +54,17 @@ HNetworkProcessor<T>::HNetworkProcessor(const char* address, int dataPort, int c
     _clientSocket(-1),
     _serverSocket(-1),
     _commandSocket(-1),
-    _terminated(terminationToken)
+    _terminated(terminationToken),
+    _networkReader(nullptr),
+    _networkWriter(nullptr)
 {
     HLog("HNetworkProcessor(client)(address=%s, dataPort=%d, commandPort=%d, terminationToken=%d), blocksize is %d", address, dataPort, commandPort, *terminationToken, blocksize);
     InitClient();
 }
 
 template <class T>
-HNetworkProcessor<T>::HNetworkProcessor(const char* address, int dataPort, int commandPort, HReader<T>* reader, int blocksize, bool* terminationToken):
-    HProcessor<T>(&_networkWriter, reader, blocksize, terminationToken),
+HNetworkProcessor<T>::HNetworkProcessor(std::string id, const char* address, int dataPort, int commandPort, HReader<T>* reader, int blocksize, bool* terminationToken):
+    HProcessor<T>(id, &_networkWriter, reader, blocksize, terminationToken),
     _isServer(false),
     _isWriter(false),
     _reader(reader),
@@ -71,15 +75,17 @@ HNetworkProcessor<T>::HNetworkProcessor(const char* address, int dataPort, int c
     _clientSocket(-1),
     _serverSocket(-1),
     _commandSocket(-1),
-    _terminated(terminationToken)
+    _terminated(terminationToken),
+    _networkReader(nullptr),
+    _networkWriter(nullptr)
 {
     HLog("HNetworkProcessor(client)(address=%s, dataPort=%d, commandPort=%d, reader=*, terminationToken=%d), blocksize is %d", address, dataPort, commandPort, *terminationToken, blocksize);
     InitClient();
 }
 
 template <class T>
-HNetworkProcessor<T>::HNetworkProcessor(int dataPort, int commandPort, HWriter<T>* writer, int blocksize, bool* terminationToken):
-    HProcessor<T>(writer, &_networkReader, blocksize, terminationToken),
+HNetworkProcessor<T>::HNetworkProcessor(std::string id, int dataPort, int commandPort, HWriter<T>* writer, int blocksize, bool* terminationToken):
+    HProcessor<T>(id, writer, &_networkReader, blocksize, terminationToken),
     _isServer(true),
     _isWriter(true),
     _reader(nullptr),
@@ -90,15 +96,17 @@ HNetworkProcessor<T>::HNetworkProcessor(int dataPort, int commandPort, HWriter<T
     _clientSocket(-1),
     _serverSocket(-1),
     _commandSocket(-1),
-    _terminated(terminationToken)
+    _terminated(terminationToken),
+    _networkReader(nullptr),
+    _networkWriter(nullptr)
 {
     HLog("HNetworkProcessor(server)(dataPort=%d, commandPort=%d, writer=*, terminationToken=%d), blocksize is %d", dataPort, commandPort, *terminationToken, blocksize);
     InitServer();
 }
 
 template <class T>
-HNetworkProcessor<T>::HNetworkProcessor(int dataPort, int commandPort, int blocksize, bool* terminationToken):
-    HProcessor<T>(&_networkReader, blocksize, terminationToken),
+HNetworkProcessor<T>::HNetworkProcessor(std::string id, int dataPort, int commandPort, int blocksize, bool* terminationToken):
+    HProcessor<T>(id, &_networkReader, blocksize, terminationToken),
     _isServer(true),
     _isWriter(true),
     _reader(nullptr),
@@ -109,15 +117,17 @@ HNetworkProcessor<T>::HNetworkProcessor(int dataPort, int commandPort, int block
     _clientSocket(-1),
     _serverSocket(-1),
     _commandSocket(-1),
-    _terminated(terminationToken)
+    _terminated(terminationToken),
+    _networkReader(nullptr),
+    _networkWriter(nullptr)
 {
     HLog("HNetworkProcessor(server)(dataPort=%d, commandPort=%d, terminationToken=%d), blocksize is %d", dataPort, commandPort, *terminationToken, blocksize);
     InitServer();
 }
 
 template <class T>
-HNetworkProcessor<T>::HNetworkProcessor(int dataPort, int commandPort, HReader<T>* reader, int blocksize, bool* terminationToken):
-    HProcessor<T>(&_networkWriter, reader, blocksize, terminationToken),
+HNetworkProcessor<T>::HNetworkProcessor(std::string id, int dataPort, int commandPort, HReader<T>* reader, int blocksize, bool* terminationToken):
+    HProcessor<T>(id, &_networkWriter, reader, blocksize, terminationToken),
     _isServer(true),
     _isWriter(false),
     _reader(reader),
@@ -128,7 +138,9 @@ HNetworkProcessor<T>::HNetworkProcessor(int dataPort, int commandPort, HReader<T
     _clientSocket(-1),
     _serverSocket(-1),
     _commandSocket(-1),
-    _terminated(terminationToken)
+    _terminated(terminationToken),
+    _networkReader(nullptr),
+    _networkWriter(nullptr)
 {
     HLog("HNetworkProcessor(server)(dataPort=%d, commandPort=%d, reader=*, terminationToken=%d), blocksize is %d", dataPort, commandPort, *terminationToken, blocksize);
     InitServer();
@@ -162,7 +174,9 @@ void HNetworkProcessor<T>::InitServer()
     InitServerCommandPort();
 
     // Ignore the SIGPIPE signal since it occurres when ever a client closes the connection
-    sigignore(SIGPIPE);
+    sigset_t new_set;
+    sigemptyset(&new_set);
+    sigprocmask(SIG_BLOCK, &new_set, nullptr);
     HLog("SIGPIPE disabled");
 }
 
@@ -524,8 +538,8 @@ void HNetworkProcessor<T>::ReceiveCommands()
 template <class T>
 void HNetworkProcessor<T>::ReadCommand(int socket)
 {
-    HNetworkReader<int8_t> reader(socket);
-    HNetworkWriter<int8_t> writer(socket);
+    HNetworkReader<int8_t> reader(HObject::GetId(), socket);
+    HNetworkWriter<int8_t> writer(HObject::GetId(), socket);
     int8_t FalseStatus = 0;
     int8_t TrueStatus = 1;
 
@@ -639,7 +653,7 @@ bool HNetworkProcessor<T>::SendCommand(HCommand* command)
     HLog("Connected");
 
     // Send the command
-    HNetworkWriter<int8_t> writer(commandSocket);
+    HNetworkWriter<int8_t> writer(HObject::GetId(), commandSocket);
     int8_t commandData[HCommandMinimumsSize + command->Length];
     memcpy((void*) commandData, (void*) command, HCommandMinimumsSize);
     memcpy((void*) &commandData[HCommandMinimumsSize], (void*) command->Data.Content, command->Length);
@@ -652,7 +666,7 @@ bool HNetworkProcessor<T>::SendCommand(HCommand* command)
     }
 
     // Read the return byte indicating error or success
-    HNetworkReader<int8_t> reader(commandSocket);
+    HNetworkReader<int8_t> reader(HObject::GetId(), commandSocket);
     int8_t commandStatus;
     length = reader.Read(&commandStatus, 1);
     if( length != 1 )
@@ -675,76 +689,76 @@ Explicit instantiation
 
 // HNetworkProcessor()
 template
-HNetworkProcessor<int8_t>::HNetworkProcessor(const char* address, int dataPort, int commandPort, HWriter<int8_t>* writer, int blocksize, bool* terminationToken);
+HNetworkProcessor<int8_t>::HNetworkProcessor(std::string id, const char* address, int dataPort, int commandPort, HWriter<int8_t>* writer, int blocksize, bool* terminationToken);
 
 template
-HNetworkProcessor<uint8_t>::HNetworkProcessor(const char* address, int dataPort, int commandPort, HWriter<uint8_t>* writer, int blocksize, bool* terminationToken);
+HNetworkProcessor<uint8_t>::HNetworkProcessor(std::string id, const char* address, int dataPort, int commandPort, HWriter<uint8_t>* writer, int blocksize, bool* terminationToken);
 
 template
-HNetworkProcessor<int16_t>::HNetworkProcessor(const char* address, int dataPort, int commandPort, HWriter<int16_t>* writer, int blocksize, bool* terminationToken);
+HNetworkProcessor<int16_t>::HNetworkProcessor(std::string id, const char* address, int dataPort, int commandPort, HWriter<int16_t>* writer, int blocksize, bool* terminationToken);
 
 template
-HNetworkProcessor<int32_t>::HNetworkProcessor(const char* address, int dataPort, int commandPort, HWriter<int32_t>* writer, int blocksize, bool* terminationToken);
+HNetworkProcessor<int32_t>::HNetworkProcessor(std::string id, const char* address, int dataPort, int commandPort, HWriter<int32_t>* writer, int blocksize, bool* terminationToken);
 
 template
-HNetworkProcessor<int8_t>::HNetworkProcessor(const char* address, int dataPort, int commandPort, int blocksize, bool* terminationToken);
+HNetworkProcessor<int8_t>::HNetworkProcessor(std::string id, const char* address, int dataPort, int commandPort, int blocksize, bool* terminationToken);
 
 template
-HNetworkProcessor<uint8_t>::HNetworkProcessor(const char* address, int dataPort, int commandPort, int blocksize, bool* terminationToken);
+HNetworkProcessor<uint8_t>::HNetworkProcessor(std::string id, const char* address, int dataPort, int commandPort, int blocksize, bool* terminationToken);
 
 template
-HNetworkProcessor<int16_t>::HNetworkProcessor(const char* address, int dataPort, int commandPort, int blocksize, bool* terminationToken);
+HNetworkProcessor<int16_t>::HNetworkProcessor(std::string id, const char* address, int dataPort, int commandPort, int blocksize, bool* terminationToken);
 
 template
-HNetworkProcessor<int32_t>::HNetworkProcessor(const char* address, int dataPort, int commandPort, int blocksize, bool* terminationToken);
+HNetworkProcessor<int32_t>::HNetworkProcessor(std::string id, const char* address, int dataPort, int commandPort, int blocksize, bool* terminationToken);
 
 template
-HNetworkProcessor<int8_t>::HNetworkProcessor(const char* address, int dataPort, int commandPort, HReader<int8_t>* reader, int blocksize, bool* terminationToken);
+HNetworkProcessor<int8_t>::HNetworkProcessor(std::string id, const char* address, int dataPort, int commandPort, HReader<int8_t>* reader, int blocksize, bool* terminationToken);
 
 template
-HNetworkProcessor<uint8_t>::HNetworkProcessor(const char* address, int dataPort, int commandPort, HReader<uint8_t>* reader, int blocksize, bool* terminationToken);
+HNetworkProcessor<uint8_t>::HNetworkProcessor(std::string id, const char* address, int dataPort, int commandPort, HReader<uint8_t>* reader, int blocksize, bool* terminationToken);
 
 template
-HNetworkProcessor<int16_t>::HNetworkProcessor(const char* address, int dataPort, int commandPort, HReader<int16_t>* reader, int blocksize, bool* terminationToken);
+HNetworkProcessor<int16_t>::HNetworkProcessor(std::string id, const char* address, int dataPort, int commandPort, HReader<int16_t>* reader, int blocksize, bool* terminationToken);
 
 template
-HNetworkProcessor<int32_t>::HNetworkProcessor(const char* address, int dataPort, int commandPort, HReader<int32_t>* reader, int blocksize, bool* terminationToken);
+HNetworkProcessor<int32_t>::HNetworkProcessor(std::string id, const char* address, int dataPort, int commandPort, HReader<int32_t>* reader, int blocksize, bool* terminationToken);
 
 template
-HNetworkProcessor<int8_t>::HNetworkProcessor(int dataPort, int commandPort, HWriter<int8_t>* writer, int blocksize, bool* terminationToken);
+HNetworkProcessor<int8_t>::HNetworkProcessor(std::string id, int dataPort, int commandPort, HWriter<int8_t>* writer, int blocksize, bool* terminationToken);
 
 template
-HNetworkProcessor<uint8_t>::HNetworkProcessor(int dataPort, int commandPort, HWriter<uint8_t>* writer, int blocksize, bool* terminationToken);
+HNetworkProcessor<uint8_t>::HNetworkProcessor(std::string id, int dataPort, int commandPort, HWriter<uint8_t>* writer, int blocksize, bool* terminationToken);
 
 template
-HNetworkProcessor<int16_t>::HNetworkProcessor(int dataPort, int commandPort, HWriter<int16_t>* writer, int blocksize, bool* terminationToken);
+HNetworkProcessor<int16_t>::HNetworkProcessor(std::string id, int dataPort, int commandPort, HWriter<int16_t>* writer, int blocksize, bool* terminationToken);
 
 template
-HNetworkProcessor<int32_t>::HNetworkProcessor(int dataPort, int commandPort, HWriter<int32_t>* writer, int blocksize, bool* terminationToken);
+HNetworkProcessor<int32_t>::HNetworkProcessor(std::string id, int dataPort, int commandPort, HWriter<int32_t>* writer, int blocksize, bool* terminationToken);
 
 template
-HNetworkProcessor<int8_t>::HNetworkProcessor(int dataPort, int commandPort, int blocksize, bool* terminationToken);
+HNetworkProcessor<int8_t>::HNetworkProcessor(std::string id, int dataPort, int commandPort, int blocksize, bool* terminationToken);
 
 template
-HNetworkProcessor<uint8_t>::HNetworkProcessor(int dataPort, int commandPort, int blocksize, bool* terminationToken);
+HNetworkProcessor<uint8_t>::HNetworkProcessor(std::string id, int dataPort, int commandPort, int blocksize, bool* terminationToken);
 
 template
-HNetworkProcessor<int16_t>::HNetworkProcessor(int dataPort, int commandPort, int blocksize, bool* terminationToken);
+HNetworkProcessor<int16_t>::HNetworkProcessor(std::string id, int dataPort, int commandPort, int blocksize, bool* terminationToken);
 
 template
-HNetworkProcessor<int32_t>::HNetworkProcessor(int dataPort, int commandPort, int blocksize, bool* terminationToken);
+HNetworkProcessor<int32_t>::HNetworkProcessor(std::string id, int dataPort, int commandPort, int blocksize, bool* terminationToken);
 
 template
-HNetworkProcessor<int8_t>::HNetworkProcessor(int dataPort, int commandPort, HReader<int8_t>* reader, int blocksize, bool* terminationToken);
+HNetworkProcessor<int8_t>::HNetworkProcessor(std::string id, int dataPort, int commandPort, HReader<int8_t>* reader, int blocksize, bool* terminationToken);
 
 template
-HNetworkProcessor<uint8_t>::HNetworkProcessor(int dataPort, int commandPort, HReader<uint8_t>* reader, int blocksize, bool* terminationToken);
+HNetworkProcessor<uint8_t>::HNetworkProcessor(std::string id, int dataPort, int commandPort, HReader<uint8_t>* reader, int blocksize, bool* terminationToken);
 
 template
-HNetworkProcessor<int16_t>::HNetworkProcessor(int dataPort, int commandPort, HReader<int16_t>* reader, int blocksize, bool* terminationToken);
+HNetworkProcessor<int16_t>::HNetworkProcessor(std::string id, int dataPort, int commandPort, HReader<int16_t>* reader, int blocksize, bool* terminationToken);
 
 template
-HNetworkProcessor<int32_t>::HNetworkProcessor(int dataPort, int commandPort, HReader<int32_t>* reader, int blocksize, bool* terminationToken);
+HNetworkProcessor<int32_t>::HNetworkProcessor(std::string id, int dataPort, int commandPort, HReader<int32_t>* reader, int blocksize, bool* terminationToken);
 
 // ~HNetworkProcessor
 template

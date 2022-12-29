@@ -49,16 +49,16 @@ class HGoertzelOutput : public HOutput<T, HGoertzelResult>
     public:
 
         /** Construct a new HGoertzelOutput, with a given frequency bin, that writes to a writer */
-        HGoertzelOutput(int size, int average, float bin, HWriter<HGoertzelResult>* writer, HWindow<T>* window);
+        HGoertzelOutput(std::string id, int size, int average, float bin, HWriter<HGoertzelResult>* writer, HWindow<T>* window);
 
         /** Construct a new HGoertzelOutput, with a given frequency bin, that registers with an upstream writer */
-        HGoertzelOutput(int size, int average, float bin, HWriterConsumer<T>* consumer, HWindow<T>* window);
+        HGoertzelOutput(std::string id, int size, int average, float bin, HWriterConsumer<T>* consumer, HWindow<T>* window);
 
         /** Construct a new HGoertzelOutput, from the sample rate and a frequency, that writes to a writer */
-        HGoertzelOutput(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<HGoertzelResult>* writer, HWindow<T>* window);
+        HGoertzelOutput(std::string id, int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<HGoertzelResult>* writer, HWindow<T>* window);
 
         /** Construct a new HGoertzelFilter, from the sample rate and a frequency, that registers with an upstream writer */
-        HGoertzelOutput(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriterConsumer<T>* consumer, HWindow<T>* window);
+        HGoertzelOutput(std::string id, int size, int average, H_SAMPLE_RATE rate, int frequency, HWriterConsumer<T>* consumer, HWindow<T>* window);
 
         /** Default destructor */
         ~HGoertzelOutput()
