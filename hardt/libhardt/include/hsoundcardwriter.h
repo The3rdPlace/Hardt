@@ -40,10 +40,10 @@ class HSoundcardWriter : public HWriter<T>
     public:
 
         /** Construct a new HSoundcardWriter */
-        HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer);
+        HSoundcardWriter(std::string id, int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer);
 
         /** Construct a new HSoundcardWriter and let it register with the upstream writer using the HWriterConsumer scheme */
-        HSoundcardWriter(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer, HWriterConsumer<T>* consumer);
+        HSoundcardWriter(std::string id, int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int framesPerBuffer, HWriterConsumer<T>* consumer);
 
         /** Default destructor */
         ~HSoundcardWriter();

@@ -7,8 +7,8 @@
 #include "hsignalleveloutput.h"
 
 template <class T>
-HSignalLevelOutput<T>::HSignalLevelOutput(HWriter<HSignalLevelResult>* writer, int average, int ref, int scale):
-    HOutput<T, HSignalLevelResult>(writer),
+HSignalLevelOutput<T>::HSignalLevelOutput(std::string id, HWriter<HSignalLevelResult>* writer, int average, int ref, int scale):
+    HOutput<T, HSignalLevelResult>(id, writer),
     _ref(ref),
     _scale(scale),
     _avg(NULL),
@@ -21,8 +21,8 @@ HSignalLevelOutput<T>::HSignalLevelOutput(HWriter<HSignalLevelResult>* writer, i
 }
 
 template <class T>
-HSignalLevelOutput<T>::HSignalLevelOutput(HWriterConsumer<T>* consumer, int average, int ref, int scale):
-    HOutput<T, HSignalLevelResult>(consumer),
+HSignalLevelOutput<T>::HSignalLevelOutput(std::string id, HWriterConsumer<T>* consumer, int average, int ref, int scale):
+    HOutput<T, HSignalLevelResult>(id, consumer),
     _ref(ref),
     _scale(scale),
     _avg(NULL),
@@ -61,26 +61,23 @@ HSignalLevelOutput<T>::~HSignalLevelOutput()
 template <class T>
 int HSignalLevelOutput<T>::Output(T* src, size_t blocksize)
 {
-    // Analyze block - disable warnings about using abs() for unsigned types
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wabsolute-value"
+    // Analyze block
     int max = 0;
     int min = std::numeric_limits<T>::max();
     double sum = 0;
     for( int i = 0; i < blocksize; i++ )
     {
-        if( abs(src[i]) > max )
+        if( abs((int) src[i]) > max )
         {
-            max = abs(src[i]);
+            max = abs((int) src[i]);
         }
         if( abs(src[i]) < min )
         {
-            min = abs(src[i]);
+            min = abs((int) src[i]);
         }
 
-        sum += abs(src[i]);
+        sum += abs((int) src[i]);
     }
-    #pragma GCC diagnostic pop
 
     // Scaling
     max *= _scale;
@@ -144,28 +141,28 @@ Explicit instantiation
 
 // HGoertzelFilter
 template
-HSignalLevelOutput<int8_t>::HSignalLevelOutput(HWriter<HSignalLevelResult>* writer, int skip, int ref, int scale);
+HSignalLevelOutput<int8_t>::HSignalLevelOutput(std::string id, HWriter<HSignalLevelResult>* writer, int skip, int ref, int scale);
 
 template
-HSignalLevelOutput<uint8_t>::HSignalLevelOutput(HWriter<HSignalLevelResult>* writer, int skip, int ref, int scale);
+HSignalLevelOutput<uint8_t>::HSignalLevelOutput(std::string id, HWriter<HSignalLevelResult>* writer, int skip, int ref, int scale);
 
 template
-HSignalLevelOutput<int16_t>::HSignalLevelOutput(HWriter<HSignalLevelResult>* writer, int skip, int ref, int scale);
+HSignalLevelOutput<int16_t>::HSignalLevelOutput(std::string id, HWriter<HSignalLevelResult>* writer, int skip, int ref, int scale);
 
 template
-HSignalLevelOutput<int32_t>::HSignalLevelOutput(HWriter<HSignalLevelResult>* writer, int skip, int ref, int scale);
+HSignalLevelOutput<int32_t>::HSignalLevelOutput(std::string id, HWriter<HSignalLevelResult>* writer, int skip, int ref, int scale);
 
 template
-HSignalLevelOutput<int8_t>::HSignalLevelOutput(HWriterConsumer<int8_t>* consumer, int skip, int ref, int scale);
+HSignalLevelOutput<int8_t>::HSignalLevelOutput(std::string id, HWriterConsumer<int8_t>* consumer, int skip, int ref, int scale);
 
 template
-HSignalLevelOutput<uint8_t>::HSignalLevelOutput(HWriterConsumer<uint8_t>* consumer, int skip, int ref, int scale);
+HSignalLevelOutput<uint8_t>::HSignalLevelOutput(std::string id, HWriterConsumer<uint8_t>* consumer, int skip, int ref, int scale);
 
 template
-HSignalLevelOutput<int16_t>::HSignalLevelOutput(HWriterConsumer<int16_t>* consumer, int skip, int ref, int scale);
+HSignalLevelOutput<int16_t>::HSignalLevelOutput(std::string id, HWriterConsumer<int16_t>* consumer, int skip, int ref, int scale);
 
 template
-HSignalLevelOutput<int32_t>::HSignalLevelOutput(HWriterConsumer<int32_t>* consumer, int skip, int ref, int scale);
+HSignalLevelOutput<int32_t>::HSignalLevelOutput(std::string id, HWriterConsumer<int32_t>* consumer, int skip, int ref, int scale);
 
 // ~HSignalLevel
 template

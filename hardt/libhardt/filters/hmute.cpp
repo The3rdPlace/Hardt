@@ -6,24 +6,24 @@
 #include "hmute.h"
 
 template <class T>
-HMute<T>::HMute(HWriter<T>* writer, bool muted, size_t blocksize):
-    HFilter<T>(writer, blocksize),
+HMute<T>::HMute(std::string id, HWriter<T>* writer, bool muted, size_t blocksize):
+    HFilter<T>(id, writer, blocksize),
     _muted(muted)
 {
     HLog("HMute(HWriter*, %d, %d)", muted, blocksize);
 }
 
 template <class T>
-HMute<T>::HMute(HWriterConsumer<T>* consumer, bool muted, size_t blocksize):
-    HFilter<T>(consumer, blocksize),
+HMute<T>::HMute(std::string id, HWriterConsumer<T>* consumer, bool muted, size_t blocksize):
+    HFilter<T>(id, consumer, blocksize),
     _muted(muted)
 {
     HLog("HMute(HWriterConsumer*, %d, %d)", muted, blocksize);
 }
 
 template <class T>
-HMute<T>::HMute(HReader<T>* reader, bool muted, size_t blocksize):
-    HFilter<T>(reader, blocksize),
+HMute<T>::HMute(std::string id, HReader<T>* reader, bool muted, size_t blocksize):
+    HFilter<T>(id, reader, blocksize),
     _muted(muted)
 {
     HLog("HMute(HReader*, %d, %d)", muted, blocksize);
@@ -108,40 +108,40 @@ Explicit instantiation
 
 // HMute
 template
-HMute<int8_t>::HMute(HWriter<int8_t>* writer, bool muted, size_t blocksize);
+HMute<int8_t>::HMute(std::string id, HWriter<int8_t>* writer, bool muted, size_t blocksize);
 
 template
-HMute<uint8_t>::HMute(HWriter<uint8_t>* writer, bool muted, size_t blocksize);
+HMute<uint8_t>::HMute(std::string id, HWriter<uint8_t>* writer, bool muted, size_t blocksize);
 
 template
-HMute<int16_t>::HMute(HWriter<int16_t>* writer, bool muted, size_t blocksize);
+HMute<int16_t>::HMute(std::string id, HWriter<int16_t>* writer, bool muted, size_t blocksize);
 
 template
-HMute<int32_t>::HMute(HWriter<int32_t>* writer, bool muted, size_t blocksize);
+HMute<int32_t>::HMute(std::string id, HWriter<int32_t>* writer, bool muted, size_t blocksize);
 
 template
-HMute<int8_t>::HMute(HWriterConsumer<int8_t>* consumer, bool muted, size_t blocksize);
+HMute<int8_t>::HMute(std::string id, HWriterConsumer<int8_t>* consumer, bool muted, size_t blocksize);
 
 template
-HMute<uint8_t>::HMute(HWriterConsumer<uint8_t>* consumer, bool muted, size_t blocksize);
+HMute<uint8_t>::HMute(std::string id, HWriterConsumer<uint8_t>* consumer, bool muted, size_t blocksize);
 
 template
-HMute<int16_t>::HMute(HWriterConsumer<int16_t>* consumer, bool muted, size_t blocksize);
+HMute<int16_t>::HMute(std::string id, HWriterConsumer<int16_t>* consumer, bool muted, size_t blocksize);
 
 template
-HMute<int32_t>::HMute(HWriterConsumer<int32_t>* consumer, bool muted, size_t blocksize);
+HMute<int32_t>::HMute(std::string id, HWriterConsumer<int32_t>* consumer, bool muted, size_t blocksize);
 
 template
-HMute<int8_t>::HMute(HReader<int8_t>* reader, bool muted, size_t blocksize);
+HMute<int8_t>::HMute(std::string id, HReader<int8_t>* reader, bool muted, size_t blocksize);
 
 template
-HMute<uint8_t>::HMute(HReader<uint8_t>* reader, bool muted, size_t blocksize);
+HMute<uint8_t>::HMute(std::string id, HReader<uint8_t>* reader, bool muted, size_t blocksize);
 
 template
-HMute<int16_t>::HMute(HReader<int16_t>* reader, bool muted, size_t blocksize);
+HMute<int16_t>::HMute(std::string id, HReader<int16_t>* reader, bool muted, size_t blocksize);
 
 template
-HMute<int32_t>::HMute(HReader<int32_t>* reader, bool muted, size_t blocksize);
+HMute<int32_t>::HMute(std::string id, HReader<int32_t>* reader, bool muted, size_t blocksize);
 
 // ~HMute()
 template

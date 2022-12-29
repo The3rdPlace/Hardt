@@ -48,7 +48,7 @@ class HRtl2832Reader : public HReader<T>
         // Indicate if the device has been started
         bool _isStarted;
 
-        // Indicate if the device has been initialize
+        // Indicate if the device has been initialized
         bool _isInitialized;
 
         /**
@@ -81,7 +81,7 @@ class HRtl2832Reader : public HReader<T>
          * @param correction Frequency correction in ppm
          * @param probe Probe
          */
-        HRtl2832Reader(int device, H_SAMPLE_RATE rate, HRtl2832::MODE mode, int gain, int32_t frequency, int blocksize, bool offset = 0, int correction = 0, HProbe<T>* probe = nullptr);
+        HRtl2832Reader(std::string id, int device, H_SAMPLE_RATE rate, HRtl2832::MODE mode, int gain, int32_t frequency, int blocksize, bool offset = 0, int correction = 0, HProbe<T>* probe = nullptr);
 
         /**
          * Default destructor

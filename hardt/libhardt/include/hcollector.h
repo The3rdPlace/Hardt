@@ -9,7 +9,7 @@
 #include <vector>
 
 /**
-    Implements a component that collects blocks of samples untill
+    Implements a component that collects blocks of samples until
     a requested size has been reached. All collected samples are then
     written or returned to the upstream reader.
 
@@ -41,7 +41,7 @@ class HCollector: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
          * @param blocksizeOut Output blocksize
          * @param probe Probe
          */
-        HCollector(HWriter<T>* writer, size_t blocksizeIn, size_t blocksizeOut, HProbe<T>* probe = nullptr);
+        HCollector(std::string id, HWriter<T>* writer, size_t blocksizeIn, size_t blocksizeOut, HProbe<T>* probe = nullptr);
 
         /**
          * Construct a new HCollector that handle writer consumers
@@ -51,7 +51,7 @@ class HCollector: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
          * @param blocksizeOut Output blocksize
          * @param probe Probe
          */
-        HCollector(HWriterConsumer<T>* consumer, size_t blocksizeIn, size_t blocksizeOut, HProbe<T>* probe = nullptr);
+        HCollector(std::string id, HWriterConsumer<T>* consumer, size_t blocksizeIn, size_t blocksizeOut, HProbe<T>* probe = nullptr);
 
         /**
          * Construct a new HCollector that handle readers
@@ -61,7 +61,7 @@ class HCollector: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
          * @param blocksizeOut Output blocksize
          * @param probe Probe
          */
-        HCollector(HReader<T>* reader, size_t blocksizeIn, size_t blocksizeOut, HProbe<T>* probe = nullptr);
+        HCollector(std::string id, HReader<T>* reader, size_t blocksizeIn, size_t blocksizeOut, HProbe<T>* probe = nullptr);
 
         /** Implements HWriterConsumer::SetWriter() */
         void SetWriter(HWriter<T>* writer);

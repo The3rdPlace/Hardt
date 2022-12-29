@@ -24,7 +24,9 @@ class HMemoryWriter : public HWriter<T>, public HWriterConsumer<T>
     public:
 
         /** Construct a new HMemoryWriter */
-        HMemoryWriter(T* buffer, size_t size, bool infinite = false):
+        HMemoryWriter(std::string id, T* buffer, size_t size, bool infinite = false):
+            HWriter<T>(id),
+            HWriterConsumer<T>(id),
             _buffer(buffer),
             _size(size),
             _pos(0),
@@ -32,7 +34,9 @@ class HMemoryWriter : public HWriter<T>, public HWriterConsumer<T>
         {}
 
         /** Construct a new HMemoryWriter that registers with the upstream writer */
-        HMemoryWriter(HWriterConsumer<T>* consumer, T* buffer, size_t size, bool infinite = false):
+        HMemoryWriter(std::string id, HWriterConsumer<T>* consumer, T* buffer, size_t size, bool infinite = false):
+            HWriter<T>(id),
+            HWriterConsumer<T>(id),
             _buffer(buffer),
             _size(size),
             _pos(0),

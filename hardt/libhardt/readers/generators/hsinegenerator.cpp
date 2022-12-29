@@ -4,8 +4,8 @@
 #include "hsinegenerator.h"
 
 template <class T>
-HSineGenerator<T>::HSineGenerator(H_SAMPLE_RATE rate, int frequency, T amplitude):
-    HGenerator<T>::HGenerator(rate, frequency, amplitude)
+HSineGenerator<T>::HSineGenerator(std::string id, H_SAMPLE_RATE rate, int frequency, T amplitude):
+    HGenerator<T>::HGenerator(id, rate, frequency, amplitude)
 {}
 
 /********************************************************************
@@ -15,16 +15,16 @@ Explicit instantiation
 
 // HSineGenerator
 template
-HSineGenerator<int8_t>::HSineGenerator(H_SAMPLE_RATE rate, int frequency, int8_t amplitude);
+HSineGenerator<int8_t>::HSineGenerator(std::string id, H_SAMPLE_RATE rate, int frequency, int8_t amplitude);
 
 template
-HSineGenerator<uint8_t>::HSineGenerator(H_SAMPLE_RATE rate, int frequency, uint8_t amplitude);
+HSineGenerator<uint8_t>::HSineGenerator(std::string id, H_SAMPLE_RATE rate, int frequency, uint8_t amplitude);
 
 template
-HSineGenerator<int16_t>::HSineGenerator(H_SAMPLE_RATE rate, int frequency, int16_t amplitude);
+HSineGenerator<int16_t>::HSineGenerator(std::string id, H_SAMPLE_RATE rate, int frequency, int16_t amplitude);
 
 template
-HSineGenerator<int32_t>::HSineGenerator(H_SAMPLE_RATE rate, int frequency, int32_t amplitude);
+HSineGenerator<int32_t>::HSineGenerator(std::string id, H_SAMPLE_RATE rate, int frequency, int32_t amplitude);
 
 //! @endcond
 #endif

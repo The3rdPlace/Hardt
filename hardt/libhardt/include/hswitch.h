@@ -69,13 +69,13 @@ class HSwitch: public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
     public:
 
         /** Construct a new HSwitch that handle writers */
-        HSwitch(HWriter<T>* writer, size_t blocksize);
+        HSwitch(std::string id, HWriter<T>* writer, size_t blocksize);
 
         /** Construct a new HSwitch that handle writer consumers */
-        HSwitch(HWriterConsumer<T>* consumer, size_t blocksize);
+        HSwitch(std::string id, HWriterConsumer<T>* consumer, size_t blocksize);
 
         /** Construct a new HSwitch that handle readers */
-        HSwitch(HReader<T>* reader, size_t blocksize);
+        HSwitch(std::string id, HReader<T>* reader, size_t blocksize);
 
         /** Implements HWriterConsumer::SetWriter() */
         void SetWriter(HWriter<T>* writer);

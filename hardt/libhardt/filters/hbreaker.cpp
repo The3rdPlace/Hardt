@@ -9,24 +9,24 @@
 #include "hbreaker.h"
 
 template <class T>
-HBreaker<T>::HBreaker(HWriter<T>* writer, bool off, size_t blocksize):
-    HFilter<T>(writer, blocksize),
+HBreaker<T>::HBreaker(std::string id, HWriter<T>* writer, bool off, size_t blocksize):
+    HFilter<T>(id, writer, blocksize),
     _off(off)
 {
     HLog("HBreaker(HWriter*, %d, %d)", off, blocksize);
 }
 
 template <class T>
-HBreaker<T>::HBreaker(HWriterConsumer<T>* consumer, bool off, size_t blocksize):
-    HFilter<T>(consumer, blocksize),
+HBreaker<T>::HBreaker(std::string id, HWriterConsumer<T>* consumer, bool off, size_t blocksize):
+    HFilter<T>(id, consumer, blocksize),
     _off(off)
 {
     HLog("HBreaker(HWriterConsumer*, %d, %d)", off, blocksize);
 }
 
 template <class T>
-HBreaker<T>::HBreaker(HReader<T>* reader, bool off, size_t blocksize):
-    HFilter<T>(reader, blocksize),
+HBreaker<T>::HBreaker(std::string id, HReader<T>* reader, bool off, size_t blocksize):
+    HFilter<T>(id, reader, blocksize),
     _off(off)
 {
     HLog("HBreaker(HReader*, %d, %d)", off, blocksize);
@@ -107,40 +107,40 @@ Explicit instantiation
 
 // HBreaker
 template
-HBreaker<int8_t>::HBreaker(HWriter<int8_t>* writer, bool muted, size_t blocksize);
+HBreaker<int8_t>::HBreaker(std::string id, HWriter<int8_t>* writer, bool muted, size_t blocksize);
 
 template
-HBreaker<uint8_t>::HBreaker(HWriter<uint8_t>* writer, bool muted, size_t blocksize);
+HBreaker<uint8_t>::HBreaker(std::string id, HWriter<uint8_t>* writer, bool muted, size_t blocksize);
 
 template
-HBreaker<int16_t>::HBreaker(HWriter<int16_t>* writer, bool muted, size_t blocksize);
+HBreaker<int16_t>::HBreaker(std::string id, HWriter<int16_t>* writer, bool muted, size_t blocksize);
 
 template
-HBreaker<int32_t>::HBreaker(HWriter<int32_t>* writer, bool muted, size_t blocksize);
+HBreaker<int32_t>::HBreaker(std::string id, HWriter<int32_t>* writer, bool muted, size_t blocksize);
 
 template
-HBreaker<int8_t>::HBreaker(HWriterConsumer<int8_t>* consumer, bool muted, size_t blocksize);
+HBreaker<int8_t>::HBreaker(std::string id, HWriterConsumer<int8_t>* consumer, bool muted, size_t blocksize);
 
 template
-HBreaker<uint8_t>::HBreaker(HWriterConsumer<uint8_t>* consumer, bool muted, size_t blocksize);
+HBreaker<uint8_t>::HBreaker(std::string id, HWriterConsumer<uint8_t>* consumer, bool muted, size_t blocksize);
 
 template
-HBreaker<int16_t>::HBreaker(HWriterConsumer<int16_t>* consumer, bool muted, size_t blocksize);
+HBreaker<int16_t>::HBreaker(std::string id, HWriterConsumer<int16_t>* consumer, bool muted, size_t blocksize);
 
 template
-HBreaker<int32_t>::HBreaker(HWriterConsumer<int32_t>* consumer, bool muted, size_t blocksize);
+HBreaker<int32_t>::HBreaker(std::string id, HWriterConsumer<int32_t>* consumer, bool muted, size_t blocksize);
 
 template
-HBreaker<int8_t>::HBreaker(HReader<int8_t>* reader, bool muted, size_t blocksize);
+HBreaker<int8_t>::HBreaker(std::string id, HReader<int8_t>* reader, bool muted, size_t blocksize);
 
 template
-HBreaker<uint8_t>::HBreaker(HReader<uint8_t>* reader, bool muted, size_t blocksize);
+HBreaker<uint8_t>::HBreaker(std::string id, HReader<uint8_t>* reader, bool muted, size_t blocksize);
 
 template
-HBreaker<int16_t>::HBreaker(HReader<int16_t>* reader, bool muted, size_t blocksize);
+HBreaker<int16_t>::HBreaker(std::string id, HReader<int16_t>* reader, bool muted, size_t blocksize);
 
 template
-HBreaker<int32_t>::HBreaker(HReader<int32_t>* reader, bool muted, size_t blocksize);
+HBreaker<int32_t>::HBreaker(std::string id, HReader<int32_t>* reader, bool muted, size_t blocksize);
 
 // ~HBreaker()
 template

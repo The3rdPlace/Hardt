@@ -4,8 +4,8 @@
 #include "hcosinegenerator.h"
 
 template <class T>
-HCosineGenerator<T>::HCosineGenerator(H_SAMPLE_RATE rate, int frequency, T amplitude):
-    HGenerator<T>::HGenerator(rate, frequency, amplitude, -1 * M_PI / 2.0f)
+HCosineGenerator<T>::HCosineGenerator(std::string id, H_SAMPLE_RATE rate, int frequency, T amplitude):
+    HGenerator<T>::HGenerator(id, rate, frequency, amplitude, -1 * M_PI / 2.0f)
 {}
 
 /********************************************************************
@@ -15,16 +15,16 @@ Explicit instantiation
 
 // HCosineGenerator
 template
-HCosineGenerator<int8_t>::HCosineGenerator(H_SAMPLE_RATE rate, int frequency, int8_t amplitude);
+HCosineGenerator<int8_t>::HCosineGenerator(std::string id, H_SAMPLE_RATE rate, int frequency, int8_t amplitude);
 
 template
-HCosineGenerator<uint8_t>::HCosineGenerator(H_SAMPLE_RATE rate, int frequency, uint8_t amplitude);
+HCosineGenerator<uint8_t>::HCosineGenerator(std::string id, H_SAMPLE_RATE rate, int frequency, uint8_t amplitude);
 
 template
-HCosineGenerator<int16_t>::HCosineGenerator(H_SAMPLE_RATE rate, int frequency, int16_t amplitude);
+HCosineGenerator<int16_t>::HCosineGenerator(std::string id, H_SAMPLE_RATE rate, int frequency, int16_t amplitude);
 
 template
-HCosineGenerator<int32_t>::HCosineGenerator(H_SAMPLE_RATE rate, int frequency, int32_t amplitude);
+HCosineGenerator<int32_t>::HCosineGenerator(std::string id, H_SAMPLE_RATE rate, int frequency, int32_t amplitude);
 
 //! @endcond
 #endif

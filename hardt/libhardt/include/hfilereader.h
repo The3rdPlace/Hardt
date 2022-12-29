@@ -16,15 +16,17 @@ class HFileReader : public HReader<T>
     public:
 
         /** Construct a new HFileReader */
-        HFileReader(const char* filename, HProbe<T>* probe = nullptr):
+        HFileReader(std::string id, const char* filename, HProbe<T>* probe = nullptr):
+            HReader<T>(id),
             _filename(std::string(filename)),
             _probe(probe)
         {}
 
         /** Construct a new HFileReader */
-        HFileReader(const std::string filename, HProbe<T>* probe = nullptr):
-                _filename(filename),
-                _probe(probe)
+        HFileReader(std::string id, const std::string filename, HProbe<T>* probe = nullptr):
+            HReader<T>(id),
+            _filename(filename),
+            _probe(probe)
         {}
 
         /** Read a block of samples */

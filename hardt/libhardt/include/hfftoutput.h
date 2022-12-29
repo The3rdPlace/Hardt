@@ -60,7 +60,7 @@ class HFftOutput : public HOutput<T, HFftResults>
 
         HFft<T>* _fft;
 
-        void Init();
+        void Init(std::string id);
 
         int _zoomFactor;
         int _zoomCenter;
@@ -100,7 +100,7 @@ class HFftOutput : public HOutput<T, HFftResults>
          * samplerate. You can set the factor to 1 initially to disable zooming. But if you
          * have not provided zoomRate != 0, zooming will not be setup and be available.!
          */
-        HFftOutput(int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<T>* window, H_SAMPLE_RATE zoomRate = 0, int zoomFactor = 1, int zoomCenter = 0);
+        HFftOutput(std::string id, int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<T>* window, H_SAMPLE_RATE zoomRate = 0, int zoomFactor = 1, int zoomCenter = 0);
 
         /**
          * Create a new HFft output that registers with an upstream writer
@@ -128,7 +128,7 @@ class HFftOutput : public HOutput<T, HFftResults>
          * samplerate. You can set the factor to 1 initially to disable zooming. But if you
          * have not provided zoomRate != 0, zooming will not be setup and be available.!
          */
-        HFftOutput(int size, int average, int skip, HWriterConsumer<T>* consumer, HWindow<T>* window, H_SAMPLE_RATE zoomRate = 0, int zoomFactor = 1, int zoomCenter = 0);
+        HFftOutput(std::string id, int size, int average, int skip, HWriterConsumer<T>* consumer, HWindow<T>* window, H_SAMPLE_RATE zoomRate = 0, int zoomFactor = 1, int zoomCenter = 0);
 
         /** Create a new HFft output that writes to a writer
         *
@@ -145,7 +145,7 @@ class HFftOutput : public HOutput<T, HFftResults>
         * samplerate. You can set the factor to 1 initially to disable zooming. But if you
         * have not provided zoomRate != 0, zooming will not be setup and be available.!
         */
-        HFftOutput(int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<T>* window, bool isIq);
+        HFftOutput(std::string id, int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<T>* window, bool isIq);
 
         /** Create a new HFft output that writes to a writer
         *
@@ -162,7 +162,7 @@ class HFftOutput : public HOutput<T, HFftResults>
         * samplerate. You can set the factor to 1 initially to disable zooming. But if you
         * have not provided zoomRate != 0, zooming will not be setup and be available.!
         */
-        HFftOutput(int size, int average, int skip, HWriterConsumer<T>* consumer, HWindow<T>* window, bool isIq);
+        HFftOutput(std::string id, int size, int average, int skip, HWriterConsumer<T>* consumer, HWindow<T>* window, bool isIq);
 
         /**
          * Default destructor

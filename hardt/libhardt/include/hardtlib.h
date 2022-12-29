@@ -12,7 +12,6 @@ Initialization, logging and other basic functions.
 #include "hsoundcard.h"
 #include "hwav.h"
 #include "hmetrics.h"
-#include "hobject.h"
 #include "hfft.h"
 #include "hfir.h"
 #include "hrtl2832.h"

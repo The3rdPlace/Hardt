@@ -4,8 +4,8 @@
 #include "hvfo.h"
 
 template <class T>
-HVfo<T>::HVfo(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase):
-    HGenerator<T>::HGenerator(rate, frequency, amplitude, phase),
+HVfo<T>::HVfo(std::string id, H_SAMPLE_RATE rate, int frequency, T amplitude, float phase):
+    HGenerator<T>::HGenerator(id, rate, frequency, amplitude, phase),
     _rate(rate),
     _amplitude(amplitude)
 {
@@ -25,22 +25,22 @@ Explicit instantiation
 
 // HVfo
 template
-HVfo<int8_t>::HVfo(H_SAMPLE_RATE rate, int frequency, int8_t amplitude, float phase);
+HVfo<int8_t>::HVfo(std::string id, H_SAMPLE_RATE rate, int frequency, int8_t amplitude, float phase);
 
 template
-HVfo<uint8_t>::HVfo(H_SAMPLE_RATE rate, int frequency, uint8_t amplitude, float phase);
+HVfo<uint8_t>::HVfo(std::string id, H_SAMPLE_RATE rate, int frequency, uint8_t amplitude, float phase);
 
 template
-HVfo<int16_t>::HVfo(H_SAMPLE_RATE rate, int frequency, int16_t amplitude, float phase);
+HVfo<int16_t>::HVfo(std::string id, H_SAMPLE_RATE rate, int frequency, int16_t amplitude, float phase);
 
 template
-HVfo<int32_t>::HVfo(H_SAMPLE_RATE rate, int frequency, int32_t amplitude, float phase);
+HVfo<int32_t>::HVfo(std::string id, H_SAMPLE_RATE rate, int frequency, int32_t amplitude, float phase);
 
 template
-HVfo<float>::HVfo(H_SAMPLE_RATE rate, int frequency, float amplitude, float phase);
+HVfo<float>::HVfo(std::string id, H_SAMPLE_RATE rate, int frequency, float amplitude, float phase);
 
 template
-HVfo<double>::HVfo(H_SAMPLE_RATE rate, int frequency, double amplitude, float phase);
+HVfo<double>::HVfo(std::string id, H_SAMPLE_RATE rate, int frequency, double amplitude, float phase);
 
 // SetFrequency
 template

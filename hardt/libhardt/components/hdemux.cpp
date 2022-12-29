@@ -11,7 +11,10 @@
 #include "hdemux.h"
 
 template <class T>
-HDeMux<T>::HDeMux( std::vector< HWriter<T>* > writers, size_t blocksize):
+HDeMux<T>::HDeMux(std::string id, std::vector< HWriter<T>* > writers, size_t blocksize):
+    HReader<T>(id),
+    HWriter<T>(id),
+    HWriterConsumer<T>(id),
     _writers(writers),
     _reader(nullptr),
     _blocksize(blocksize),
@@ -29,7 +32,10 @@ HDeMux<T>::HDeMux( std::vector< HWriter<T>* > writers, size_t blocksize):
 }
 
 template <class T>
-HDeMux<T>::HDeMux( HWriterConsumer<T>* consumer, size_t blocksize):
+HDeMux<T>::HDeMux(std::string id, HWriterConsumer<T>* consumer, size_t blocksize):
+    HReader<T>(id),
+    HWriter<T>(id),
+    HWriterConsumer<T>(id),
     _buffers(NULL),
     _reader(nullptr),
     _blocksize(blocksize),
@@ -43,12 +49,15 @@ HDeMux<T>::HDeMux( HWriterConsumer<T>* consumer, size_t blocksize):
 }
 
 template <class T>
-HDeMux<T>::HDeMux( HReader<T>* reader, int readers, size_t blocksize):
-        _buffers(NULL),
-        _reader(reader),
-        _blocksize(blocksize),
-        _readers(readers),
-        _nextReader(0)
+HDeMux<T>::HDeMux(std::string id, HReader<T>* reader, int readers, size_t blocksize):
+    HReader<T>(id),
+    HWriter<T>(id),
+    HWriterConsumer<T>(id),
+    _buffers(NULL),
+    _reader(reader),
+    _blocksize(blocksize),
+    _readers(readers),
+    _nextReader(0)
 {
     HLog("HDeMux(reader)");
     _readBuffer = new T[blocksize * readers];
@@ -126,40 +135,40 @@ Explicit instantiation
 
 // HDeMux
 template
-HDeMux<int8_t>::HDeMux( std::vector< HWriter<int8_t>* > writers, size_t blocksize);
+HDeMux<int8_t>::HDeMux(std::string id, std::vector< HWriter<int8_t>* > writers, size_t blocksize);
 
 template
-HDeMux<uint8_t>::HDeMux( std::vector< HWriter<uint8_t>* > writers, size_t blocksize);
+HDeMux<uint8_t>::HDeMux(std::string id, std::vector< HWriter<uint8_t>* > writers, size_t blocksize);
 
 template
-HDeMux<int16_t>::HDeMux( std::vector< HWriter<int16_t>* > writers, size_t blocksize);
+HDeMux<int16_t>::HDeMux(std::string id, std::vector< HWriter<int16_t>* > writers, size_t blocksize);
 
 template
-HDeMux<int32_t>::HDeMux( std::vector< HWriter<int32_t>* > writers, size_t blocksize);
+HDeMux<int32_t>::HDeMux(std::string id, std::vector< HWriter<int32_t>* > writers, size_t blocksize);
 
 template
-HDeMux<int8_t>::HDeMux( HWriterConsumer<int8_t>* consumer, size_t blocksize);
+HDeMux<int8_t>::HDeMux(std::string id, HWriterConsumer<int8_t>* consumer, size_t blocksize);
 
 template
-HDeMux<uint8_t>::HDeMux( HWriterConsumer<uint8_t>* consumer, size_t blocksize);
+HDeMux<uint8_t>::HDeMux(std::string id, HWriterConsumer<uint8_t>* consumer, size_t blocksize);
 
 template
-HDeMux<int16_t>::HDeMux( HWriterConsumer<int16_t>* consumer, size_t blocksize);
+HDeMux<int16_t>::HDeMux(std::string id, HWriterConsumer<int16_t>* consumer, size_t blocksize);
 
 template
-HDeMux<int32_t>::HDeMux( HWriterConsumer<int32_t>* consumer, size_t blocksize);
+HDeMux<int32_t>::HDeMux(std::string id, HWriterConsumer<int32_t>* consumer, size_t blocksize);
 
 template
-HDeMux<int8_t>::HDeMux( HReader<int8_t>* reader, int readers, size_t blocksize);
+HDeMux<int8_t>::HDeMux(std::string id, HReader<int8_t>* reader, int readers, size_t blocksize);
 
 template
-HDeMux<uint8_t>::HDeMux( HReader<uint8_t>* reader, int readers, size_t blocksize);
+HDeMux<uint8_t>::HDeMux(std::string id, HReader<uint8_t>* reader, int readers, size_t blocksize);
 
 template
-HDeMux<int16_t>::HDeMux( HReader<int16_t>* reader, int readers, size_t blocksize);
+HDeMux<int16_t>::HDeMux(std::string id, HReader<int16_t>* reader, int readers, size_t blocksize);
 
 template
-HDeMux<int32_t>::HDeMux( HReader<int32_t>* reader, int readers, size_t blocksize);
+HDeMux<int32_t>::HDeMux(std::string id, HReader<int32_t>* reader, int readers, size_t blocksize);
 
 // ~HDeMux()
 template

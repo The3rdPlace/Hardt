@@ -33,13 +33,13 @@ class HIqMultiplier : public HReader<T>, public HWriter<T>, public HWriterConsum
     public:
 
         /** Construct a new HIqMultiplier (frequency mixer) */
-        HIqMultiplier(HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<T>* probe = NULL);
+        HIqMultiplier(std::string id, HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HIqMultiplier (frequency mixer) */
-        HIqMultiplier(HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<T>* probe = NULL);
+        HIqMultiplier(std::string id, HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Construct a new HIqMultiplier (frequency mixer) */
-        HIqMultiplier(HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<T>* probe = NULL);
+        HIqMultiplier(std::string id, HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<T>* probe = NULL);
 
         /** Default destructor */
         ~HIqMultiplier();

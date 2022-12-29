@@ -1,7 +1,10 @@
 #ifndef __HREADER_H
 #define __HREADER_H
 
+#include <utility>
+
 #include "hcommand.h"
+#include "hobject.h"
 
 /**
     The base class for any reader type. It provides a pure virtual Read() function which must
@@ -23,10 +26,20 @@
 template <class T>
 class HReader : public HObject
 {
+    private:
+
+        std::string _id;
+
     public:
+
+        /** Constructor */
+        explicit HReader(std::string id):
+            _id(std::move(id)) {}
 
         /** Virtual destructor enabling delete on derived objects */
         virtual ~HReader() = default;
+
+        std::string GetId() { return _id; }
 
         /** Read a block of samples */
         virtual int Read(T* dest, size_t blocksize) = 0;

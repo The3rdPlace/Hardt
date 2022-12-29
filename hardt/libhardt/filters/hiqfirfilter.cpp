@@ -4,8 +4,8 @@
 #include "hiqfirfilter.h"
 
 template <class T>
-HIqFirFilter<T>::HIqFirFilter(HWriter<T>* writer, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
-    HFilter<T>(writer, blocksize, probe) {
+HIqFirFilter<T>::HIqFirFilter(std::string id, HWriter<T>* writer, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
+    HFilter<T>(id, writer, blocksize, probe) {
 
     HLog("HIqFirFilter(HWriter*)");
     HLog("_length = %d", length);
@@ -13,8 +13,8 @@ HIqFirFilter<T>::HIqFirFilter(HWriter<T>* writer, float* coefficients, int lengt
 }
 
 template <class T>
-HIqFirFilter<T>::HIqFirFilter(HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
-    HFilter<T>(consumer, blocksize, probe) {
+HIqFirFilter<T>::HIqFirFilter(std::string id, HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
+    HFilter<T>(id, consumer, blocksize, probe) {
 
     HLog("HIqFirFilter(HWriterConsumer*)");
     HLog("_length = %d", length);
@@ -24,8 +24,8 @@ HIqFirFilter<T>::HIqFirFilter(HWriterConsumer<T>* consumer, float* coefficients,
 }
 
 template <class T>
-HIqFirFilter<T>::HIqFirFilter(HReader<T>* reader, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
-    HFilter<T>(reader, blocksize, probe) {
+HIqFirFilter<T>::HIqFirFilter(std::string id, HReader<T>* reader, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
+    HFilter<T>(id, reader, blocksize, probe) {
 
     HLog("HIqFirFilter(HReader*)");
     HLog("_length = %d", length);
@@ -71,40 +71,40 @@ Explicit instantiation
 
 // HIqFirFilter
 template
-HIqFirFilter<int8_t>::HIqFirFilter(HWriter<int8_t>* writer, float* coefficients, int length, size_t blocksize, HProbe<int8_t>* probe);
+HIqFirFilter<int8_t>::HIqFirFilter(std::string id, HWriter<int8_t>* writer, float* coefficients, int length, size_t blocksize, HProbe<int8_t>* probe);
 
 template
-HIqFirFilter<uint8_t>::HIqFirFilter(HWriter<uint8_t>* writer, float* coefficients, int length, size_t blocksize, HProbe<uint8_t>* probe);
+HIqFirFilter<uint8_t>::HIqFirFilter(std::string id, HWriter<uint8_t>* writer, float* coefficients, int length, size_t blocksize, HProbe<uint8_t>* probe);
 
 template
-HIqFirFilter<int16_t>::HIqFirFilter(HWriter<int16_t>* writer, float* coefficients, int length, size_t blocksize, HProbe<int16_t>* probe);
+HIqFirFilter<int16_t>::HIqFirFilter(std::string id, HWriter<int16_t>* writer, float* coefficients, int length, size_t blocksize, HProbe<int16_t>* probe);
 
 template
-HIqFirFilter<int32_t>::HIqFirFilter(HWriter<int32_t>* writer, float* coefficients, int length, size_t blocksize, HProbe<int32_t>* probe);
+HIqFirFilter<int32_t>::HIqFirFilter(std::string id, HWriter<int32_t>* writer, float* coefficients, int length, size_t blocksize, HProbe<int32_t>* probe);
 
 template
-HIqFirFilter<int8_t>::HIqFirFilter(HWriterConsumer<int8_t>* consumer, float* coefficients, int length, size_t blocksize, HProbe<int8_t>* probe);
+HIqFirFilter<int8_t>::HIqFirFilter(std::string id, HWriterConsumer<int8_t>* consumer, float* coefficients, int length, size_t blocksize, HProbe<int8_t>* probe);
 
 template
-HIqFirFilter<uint8_t>::HIqFirFilter(HWriterConsumer<uint8_t>* consumer, float* coefficients, int length, size_t blocksize, HProbe<uint8_t>* probe);
+HIqFirFilter<uint8_t>::HIqFirFilter(std::string id, HWriterConsumer<uint8_t>* consumer, float* coefficients, int length, size_t blocksize, HProbe<uint8_t>* probe);
 
 template
-HIqFirFilter<int16_t>::HIqFirFilter(HWriterConsumer<int16_t>* consumer, float* coefficients, int length, size_t blocksize, HProbe<int16_t>* probe);
+HIqFirFilter<int16_t>::HIqFirFilter(std::string id, HWriterConsumer<int16_t>* consumer, float* coefficients, int length, size_t blocksize, HProbe<int16_t>* probe);
 
 template
-HIqFirFilter<int32_t>::HIqFirFilter(HWriterConsumer<int32_t>* consumer, float* coefficients, int length, size_t blocksize, HProbe<int32_t>* probe);
+HIqFirFilter<int32_t>::HIqFirFilter(std::string id, HWriterConsumer<int32_t>* consumer, float* coefficients, int length, size_t blocksize, HProbe<int32_t>* probe);
 
 template
-HIqFirFilter<int8_t>::HIqFirFilter(HReader<int8_t>* reader, float* coefficients, int length, size_t blocksize, HProbe<int8_t>* probe);
+HIqFirFilter<int8_t>::HIqFirFilter(std::string id, HReader<int8_t>* reader, float* coefficients, int length, size_t blocksize, HProbe<int8_t>* probe);
 
 template
-HIqFirFilter<uint8_t>::HIqFirFilter(HReader<uint8_t>* reader, float* coefficients, int length, size_t blocksize, HProbe<uint8_t>* probe);
+HIqFirFilter<uint8_t>::HIqFirFilter(std::string id, HReader<uint8_t>* reader, float* coefficients, int length, size_t blocksize, HProbe<uint8_t>* probe);
 
 template
-HIqFirFilter<int16_t>::HIqFirFilter(HReader<int16_t>* reader, float* coefficients, int length, size_t blocksize, HProbe<int16_t>* probe);
+HIqFirFilter<int16_t>::HIqFirFilter(std::string id, HReader<int16_t>* reader, float* coefficients, int length, size_t blocksize, HProbe<int16_t>* probe);
 
 template
-HIqFirFilter<int32_t>::HIqFirFilter(HReader<int32_t>* reader, float* coefficients, int length, size_t blocksize, HProbe<int32_t>* probe);
+HIqFirFilter<int32_t>::HIqFirFilter(std::string id, HReader<int32_t>* reader, float* coefficients, int length, size_t blocksize, HProbe<int32_t>* probe);
 
 // Init
 template

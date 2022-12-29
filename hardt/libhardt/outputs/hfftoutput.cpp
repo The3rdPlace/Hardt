@@ -8,8 +8,8 @@
 #include <valarray>
 
 template <class T>
-HFftOutput<T>::HFftOutput(int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<T>* window, H_SAMPLE_RATE zoomRate, int zoomFactor, int zoomCenter):
-    HOutput<T, HFftResults>(writer, size),
+HFftOutput<T>::HFftOutput(std::string id, int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<T>* window, H_SAMPLE_RATE zoomRate, int zoomFactor, int zoomCenter):
+    HOutput<T, HFftResults>(id, writer, size),
     _size(size),
     _average(average),
     _isIq(false),
@@ -23,12 +23,12 @@ HFftOutput<T>::HFftOutput(int size, int average, int skip, HWriter<HFftResults>*
     _zoomEnabled(false)
 {
     HLog("HFftOutput(%d, %d, %d, ..., %d, %d, %d)", size, average, skip, zoomRate, zoomFactor, zoomCenter);
-    Init();
+    Init(id);
 }
 
 template <class T>
-HFftOutput<T>::HFftOutput(int size, int average, int skip, HWriterConsumer<T>* consumer, HWindow<T>* window, H_SAMPLE_RATE zoomRate, int zoomFactor, int zoomCenter):
-    HOutput<T, HFftResults>(size, consumer),
+HFftOutput<T>::HFftOutput(std::string id, int size, int average, int skip, HWriterConsumer<T>* consumer, HWindow<T>* window, H_SAMPLE_RATE zoomRate, int zoomFactor, int zoomCenter):
+    HOutput<T, HFftResults>(id, size, consumer),
     _size(size),
     _average(average),
     _isIq(false),
@@ -42,12 +42,12 @@ HFftOutput<T>::HFftOutput(int size, int average, int skip, HWriterConsumer<T>* c
     _zoomEnabled(false)
 {
     HLog("HFftOutput(%d, %d, %d, ..., %d, %d, %d)", size, average, skip, zoomRate, zoomFactor, zoomCenter);
-    Init();
+    Init(id);
 }
 
 template <class T>
-HFftOutput<T>::HFftOutput(int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<T>* window, bool isIq):
-    HOutput<T, HFftResults>(writer, size),
+HFftOutput<T>::HFftOutput(std::string id, int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<T>* window, bool isIq):
+    HOutput<T, HFftResults>(id, writer, size),
     _size(size),
     _average(average),
     _isIq(isIq),
@@ -61,12 +61,12 @@ HFftOutput<T>::HFftOutput(int size, int average, int skip, HWriter<HFftResults>*
     _zoomEnabled(false)
 {
     HLog("HFftOutput(%d, %d, %d, ...)", _size, average, skip);
-    Init();
+    Init(id);
 }
 
 template <class T>
-HFftOutput<T>::HFftOutput(int size, int average, int skip, HWriterConsumer<T>* consumer, HWindow<T>* window, bool isIq):
-    HOutput<T, HFftResults>(size, consumer),
+HFftOutput<T>::HFftOutput(std::string id, int size, int average, int skip, HWriterConsumer<T>* consumer, HWindow<T>* window, bool isIq):
+    HOutput<T, HFftResults>(id, size, consumer),
     _size(size),
     _average(average),
     _isIq(isIq),
@@ -80,11 +80,11 @@ HFftOutput<T>::HFftOutput(int size, int average, int skip, HWriterConsumer<T>* c
     _zoomEnabled(false)
 {
     HLog("HFftOutput(%d, %d, %d, ...)", _size, average, skip);
-    Init();
+    Init(id);
 }
 
 template <class T>
-void HFftOutput<T>::Init()
+void HFftOutput<T>::Init(std::string id)
 {
     // Allocate a buffer for the spectrum and phase values
     _spectrum = new double[_size / 2];
@@ -118,11 +118,11 @@ void HFftOutput<T>::Init()
         }
 
         // Setup zoom chain
-        _zoomInputWriter = new HInputWriter<T>();
-        _zoomBaseband = new HBaseband<T>(_zoomInputWriter->Consumer(), _zoomRate, _zoomCenter, (_zoomRate / 2) / _zoomFactor, _size);
-        _zoomDecimator = new HDecimator<T>(_zoomBaseband->Consumer(), _zoomFactor, _size);
+        _zoomInputWriter = new HInputWriter<T>(HWriter<T>::GetId());
+        _zoomBaseband = new HBaseband<T>(id, _zoomInputWriter->Consumer(), _zoomRate, _zoomCenter, (_zoomRate / 2) / _zoomFactor, _size);
+        _zoomDecimator = new HDecimator<T>(HWriter<T>::GetId(), _zoomBaseband->Consumer(), _zoomFactor, _size);
         _zoomOutput = new T[_size];
-        _zoomMemoryWriter = new HMemoryWriter<T>(_zoomDecimator->Consumer(), _zoomOutput, _size);
+        _zoomMemoryWriter = new HMemoryWriter<T>(HWriter<T>::GetId(), _zoomDecimator->Consumer(), _zoomOutput, _size);
     }
 }
 
@@ -241,52 +241,52 @@ Explicit instantiation
 //! @cond Doxygen_Suppress
 
 template
-HFftOutput<int8_t>::HFftOutput(int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<int8_t>* window, int zoomFactor, int zoomCenter, H_SAMPLE_RATE zoomRate);
+HFftOutput<int8_t>::HFftOutput(std::string id, int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<int8_t>* window, int zoomFactor, int zoomCenter, H_SAMPLE_RATE zoomRate);
 
 template
-HFftOutput<uint8_t>::HFftOutput(int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<uint8_t>* window, int zoomFactor, int zoomCenter, H_SAMPLE_RATE zoomRate);
+HFftOutput<uint8_t>::HFftOutput(std::string id, int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<uint8_t>* window, int zoomFactor, int zoomCenter, H_SAMPLE_RATE zoomRate);
 
 template
-HFftOutput<int16_t>::HFftOutput(int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<int16_t>* window, int zoomFactor, int zoomCenter, H_SAMPLE_RATE zoomRate);
+HFftOutput<int16_t>::HFftOutput(std::string id, int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<int16_t>* window, int zoomFactor, int zoomCenter, H_SAMPLE_RATE zoomRate);
 
 template
-HFftOutput<int32_t>::HFftOutput(int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<int32_t>* window, int zoomFactor, int zoomCenter, H_SAMPLE_RATE zoomRate);
+HFftOutput<int32_t>::HFftOutput(std::string id, int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<int32_t>* window, int zoomFactor, int zoomCenter, H_SAMPLE_RATE zoomRate);
 
 template
-HFftOutput<int8_t>::HFftOutput(int size, int average, int skip, HWriterConsumer<int8_t>* consumer, HWindow<int8_t>* window, int zoomFactor, int zoomCenter, H_SAMPLE_RATE zoomRate);
+HFftOutput<int8_t>::HFftOutput(std::string id, int size, int average, int skip, HWriterConsumer<int8_t>* consumer, HWindow<int8_t>* window, int zoomFactor, int zoomCenter, H_SAMPLE_RATE zoomRate);
 
 template
-HFftOutput<uint8_t>::HFftOutput(int size, int average, int skip, HWriterConsumer<uint8_t>* consumer, HWindow<uint8_t>* window, int zoomFactor, int zoomCenter, H_SAMPLE_RATE zoomRate);
+HFftOutput<uint8_t>::HFftOutput(std::string id, int size, int average, int skip, HWriterConsumer<uint8_t>* consumer, HWindow<uint8_t>* window, int zoomFactor, int zoomCenter, H_SAMPLE_RATE zoomRate);
 
 template
-HFftOutput<int16_t>::HFftOutput(int size, int average, int skip, HWriterConsumer<int16_t>* consumer, HWindow<int16_t>* window, int zoomFactor, int zoomCenter, H_SAMPLE_RATE zoomRate);
+HFftOutput<int16_t>::HFftOutput(std::string id, int size, int average, int skip, HWriterConsumer<int16_t>* consumer, HWindow<int16_t>* window, int zoomFactor, int zoomCenter, H_SAMPLE_RATE zoomRate);
 
 template
-HFftOutput<int32_t>::HFftOutput(int size, int average, int skip, HWriterConsumer<int32_t>* consumer, HWindow<int32_t>* window, int zoomFactor, int zoomCenter, H_SAMPLE_RATE zoomRate);
+HFftOutput<int32_t>::HFftOutput(std::string id, int size, int average, int skip, HWriterConsumer<int32_t>* consumer, HWindow<int32_t>* window, int zoomFactor, int zoomCenter, H_SAMPLE_RATE zoomRate);
 
 template
-HFftOutput<int8_t>::HFftOutput(int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<int8_t>* window, bool isIq);
+HFftOutput<int8_t>::HFftOutput(std::string id, int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<int8_t>* window, bool isIq);
 
 template
-HFftOutput<uint8_t>::HFftOutput(int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<uint8_t>* window, bool isIq);
+HFftOutput<uint8_t>::HFftOutput(std::string id, int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<uint8_t>* window, bool isIq);
 
 template
-HFftOutput<int16_t>::HFftOutput(int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<int16_t>* window, bool isIq);
+HFftOutput<int16_t>::HFftOutput(std::string id, int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<int16_t>* window, bool isIq);
 
 template
-HFftOutput<int32_t>::HFftOutput(int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<int32_t>* window, bool isIq);
+HFftOutput<int32_t>::HFftOutput(std::string id, int size, int average, int skip, HWriter<HFftResults>* writer, HWindow<int32_t>* window, bool isIq);
 
 template
-HFftOutput<int8_t>::HFftOutput(int size, int average, int skip, HWriterConsumer<int8_t>* consumer, HWindow<int8_t>* window, bool isIq);
+HFftOutput<int8_t>::HFftOutput(std::string id, int size, int average, int skip, HWriterConsumer<int8_t>* consumer, HWindow<int8_t>* window, bool isIq);
 
 template
-HFftOutput<uint8_t>::HFftOutput(int size, int average, int skip, HWriterConsumer<uint8_t>* consumer, HWindow<uint8_t>* window, bool isIq);
+HFftOutput<uint8_t>::HFftOutput(std::string id, int size, int average, int skip, HWriterConsumer<uint8_t>* consumer, HWindow<uint8_t>* window, bool isIq);
 
 template
-HFftOutput<int16_t>::HFftOutput(int size, int average, int skip, HWriterConsumer<int16_t>* consumer, HWindow<int16_t>* window, bool isIq);
+HFftOutput<int16_t>::HFftOutput(std::string id, int size, int average, int skip, HWriterConsumer<int16_t>* consumer, HWindow<int16_t>* window, bool isIq);
 
 template
-HFftOutput<int32_t>::HFftOutput(int size, int average, int skip, HWriterConsumer<int32_t>* consumer, HWindow<int32_t>* window, bool isIq);
+HFftOutput<int32_t>::HFftOutput(std::string id, int size, int average, int skip, HWriterConsumer<int32_t>* consumer, HWindow<int32_t>* window, bool isIq);
 
 // Output
 template

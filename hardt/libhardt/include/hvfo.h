@@ -21,7 +21,7 @@ class HVfo : public HGenerator<T>
 
         /** Construct a new HVfo running at the given frequency and phase
             with the given amplitude */
-        HVfo(H_SAMPLE_RATE rate, int frequency, T amplitude, float phase = 0);
+        HVfo(std::string id, H_SAMPLE_RATE rate, int frequency, T amplitude, float phase = 0);
 
         /** Set the frequency and phase of the vfo */
         void SetFrequency(int frequency, float phase = 0);

@@ -44,7 +44,7 @@ class HIqDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer
          *                result in a write of 1024/factor samples to the next writer.
          * @param probe Probe
          */
-        HIqDecimator(HWriter<T>* writer, int factor, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
+        HIqDecimator(std::string id, HWriter<T>* writer, int factor, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
 
         /**
          * Construct a new HIqDecimator that handle writer consumers.
@@ -60,7 +60,7 @@ class HIqDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer
          *                result in a write of 1024/factor samples to the next writer.
          * @param probe Probe
          */
-        HIqDecimator(HWriterConsumer<T>* consumer, int factor, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
+        HIqDecimator(std::string id, HWriterConsumer<T>* consumer, int factor, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
 
         /**
          * Construct a new HIqDecimator that handle readers.
@@ -76,7 +76,7 @@ class HIqDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer
          *                with 'blocksize=256' will then be expected.
          * @param probe Probe
          */
-        HIqDecimator(HReader<T>* reader, int factor, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
+        HIqDecimator(std::string id, HReader<T>* reader, int factor, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
 
         /**
          * Implements HWriterConsumer::SetWriter()

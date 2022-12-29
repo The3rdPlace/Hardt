@@ -45,7 +45,7 @@ class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
          * @param start Begin decimating from this position in the buffer
          * @param probe Probe
          */
-        HDecimator(HWriter<T>* writer, int factor, size_t blocksize, bool collect = true, int start = 0, HProbe<T>* probe = nullptr);
+        HDecimator(std::string id, HWriter<T>* writer, int factor, size_t blocksize, bool collect = true, int start = 0, HProbe<T>* probe = nullptr);
 
         /**
          * Construct a new HDecimator that handle writer consumers.
@@ -62,7 +62,7 @@ class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
          * @param start Begin decimating from this position in the buffer
          * @param probe Probe
          */
-        HDecimator(HWriterConsumer<T>* consumer, int factor, size_t blocksize, bool collect = true, int start = 0, HProbe<T>* probe = nullptr);
+        HDecimator(std::string id, HWriterConsumer<T>* consumer, int factor, size_t blocksize, bool collect = true, int start = 0, HProbe<T>* probe = nullptr);
 
         /**
          * Construct a new HDecimator that handle readers.
@@ -79,7 +79,7 @@ class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
          * @param start Begin decimating from this position in the buffer
          * @param probe Probe
          */
-        HDecimator(HReader<T>* reader, int factor, size_t blocksize, bool collect = true, int start = 0, HProbe<T>* probe = nullptr);
+        HDecimator(std::string id, HReader<T>* reader, int factor, size_t blocksize, bool collect = true, int start = 0, HProbe<T>* probe = nullptr);
 
         /**
          * Implements HWriterConsumer::SetWriter()

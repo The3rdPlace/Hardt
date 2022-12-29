@@ -1,7 +1,6 @@
 #ifndef __HOBJECT_H
 #define __HOBJECT_H
 
-#include "hmetrics.h"
 #include <string>
 
 /**
@@ -13,19 +12,20 @@
 */
 class HObject
 {
+    private:
+
+        //std::string _id;
+
     public:
 
-        /** The metrics object */
-        //HMetrics Metrics;
-
         /** Construct a new HObject */
-        HObject();
+        //explicit HObject(std::string id);
 
-        /** Get metrics details as a formatted output string */
-        //std::string GetMetrics(std::string id);
+        /** Destruct a HObject */
+        //~HObject();
 
-        /** Reset all metrics */
-        //void ResetMetrics();
+        /** Get the object id */
+        virtual std::string GetId() = 0;
 };
 
 #endif

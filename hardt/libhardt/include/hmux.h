@@ -58,7 +58,7 @@ class HMux : public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
          *               a single block, then duplicate the block and output same
          *               block as two channels multiplexed (mono->stereo for mono input)
          */
-        HMux( std::vector< HReader<T>* > readers, size_t blocksize, bool duplex = false);
+        HMux(std::string id, std::vector< HReader<T>* > readers, size_t blocksize, bool duplex = false);
 
         /**
          * Construct a new HMux
@@ -70,7 +70,7 @@ class HMux : public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
          *               a single block is written, then duplicate the block and output same
          *               block as two channels multiplexed (mono->stereo for mono input)
          */
-        HMux( HWriter<T>* writer, int writers, size_t blocksize, bool duplex = false);
+        HMux(std::string id, HWriter<T>* writer, int writers, size_t blocksize, bool duplex = false);
 
         /**
          * Construct a new HMux
@@ -81,7 +81,7 @@ class HMux : public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
          *               a single block is written, then duplicate the block and output same
          *               block as two channels multiplexed (mono->stereo for mono input)
          */
-        HMux( std::vector< HWriterConsumer<T>* > consumers, size_t blocksize, bool duplex = false);
+        HMux(std::string id, std::vector< HWriterConsumer<T>* > consumers, size_t blocksize, bool duplex = false);
 
         /** Default destructor */
         ~HMux();

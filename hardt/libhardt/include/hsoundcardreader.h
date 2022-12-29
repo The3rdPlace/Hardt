@@ -63,7 +63,7 @@ class HSoundcardReader : public HReader<T>
          * @param blocksize Number of samples per chunk read
          * @param probe Probe
          */
-        HSoundcardReader(int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int blocksize = DEFAULT_BLOCKSIZE, HProbe<T>* probe = nullptr);
+        HSoundcardReader(std::string id, int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int blocksize = DEFAULT_BLOCKSIZE, HProbe<T>* probe = nullptr);
 
         /**
          * Default destructor

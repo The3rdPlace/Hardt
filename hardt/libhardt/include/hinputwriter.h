@@ -25,7 +25,9 @@ class HInputWriter : public HWriter<T>, public HWriterConsumer<T>
               writer = A downstream writer
               autostart = Set to true to make the input-writer call Start() on the downstream writer on first Write(..)
         */
-        HInputWriter(HWriter<T>* writer, bool autostart = true):
+        HInputWriter(std::string id, HWriter<T>* writer, bool autostart = true):
+            HWriter<T>(id),
+            HWriterConsumer<T>(id),
             _writer(writer),
             _autostart(autostart),
             _started(false) {}
@@ -35,7 +37,9 @@ class HInputWriter : public HWriter<T>, public HWriterConsumer<T>
             Arguments:
               autostart = Set to true to make the input-writer call Start() on the downstream writer on first Write(..)
         */
-        HInputWriter(bool autostart = true):
+        HInputWriter(std::string id, bool autostart = true):
+            HWriter<T>(id),
+            HWriterConsumer<T>(id),
             _writer(nullptr),
             _autostart(autostart),
             _started(false) {}

@@ -11,8 +11,8 @@
 #include <complex>
 
 template <class T>
-HGoertzelOutput<T>::HGoertzelOutput(int size, int average, float bin, HWriter<HGoertzelResult>* writer, HWindow<T>* window):
-    HOutput<T, HGoertzelResult>(writer, size),
+HGoertzelOutput<T>::HGoertzelOutput(std::string id, int size, int average, float bin, HWriter<HGoertzelResult>* writer, HWindow<T>* window):
+    HOutput<T, HGoertzelResult>(id, writer, size),
     _size(size),
     _average(average),
     _bin(bin),
@@ -25,8 +25,8 @@ HGoertzelOutput<T>::HGoertzelOutput(int size, int average, float bin, HWriter<HG
 }
 
 template <class T>
-HGoertzelOutput<T>::HGoertzelOutput(int size, int average, float bin, HWriterConsumer<T>* consumer, HWindow<T>* window):
-    HOutput<T, HGoertzelResult>(size, consumer),
+HGoertzelOutput<T>::HGoertzelOutput(std::string id, int size, int average, float bin, HWriterConsumer<T>* consumer, HWindow<T>* window):
+    HOutput<T, HGoertzelResult>(id, size, consumer),
     _size(size),
     _average(average),
     _bin(bin),
@@ -39,8 +39,8 @@ HGoertzelOutput<T>::HGoertzelOutput(int size, int average, float bin, HWriterCon
 }
 
 template <class T>
-HGoertzelOutput<T>::HGoertzelOutput(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<HGoertzelResult>* writer, HWindow<T>* window):
-    HOutput<T, HGoertzelResult>(writer, size),
+HGoertzelOutput<T>::HGoertzelOutput(std::string id, int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<HGoertzelResult>* writer, HWindow<T>* window):
+    HOutput<T, HGoertzelResult>(id, writer, size),
     _size(size),
     _average(average),
     _bin( (float) frequency / ((float) rate / (float) size) ),
@@ -54,8 +54,8 @@ HGoertzelOutput<T>::HGoertzelOutput(int size, int average, H_SAMPLE_RATE rate, i
 }
 
 template <class T>
-HGoertzelOutput<T>::HGoertzelOutput(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriterConsumer<T>* consumer, HWindow<T>* window):
-    HOutput<T, HGoertzelResult>(size, consumer),
+HGoertzelOutput<T>::HGoertzelOutput(std::string id, int size, int average, H_SAMPLE_RATE rate, int frequency, HWriterConsumer<T>* consumer, HWindow<T>* window):
+    HOutput<T, HGoertzelResult>(id, size, consumer),
     _size(size),
     _average(average),
     _bin( (float) frequency / ((float) rate / (float) size) ),
@@ -137,52 +137,52 @@ Explicit instantiation
 
 // HGoertzelOutput
 template
-HGoertzelOutput<int8_t>::HGoertzelOutput(int size, int average, float bin, HWriter<HGoertzelResult>* writer, HWindow<int8_t>* window);
+HGoertzelOutput<int8_t>::HGoertzelOutput(std::string id, int size, int average, float bin, HWriter<HGoertzelResult>* writer, HWindow<int8_t>* window);
 
 template
-HGoertzelOutput<uint8_t>::HGoertzelOutput(int size, int average, float bin, HWriter<HGoertzelResult>* writer, HWindow<uint8_t>* window);
+HGoertzelOutput<uint8_t>::HGoertzelOutput(std::string id, int size, int average, float bin, HWriter<HGoertzelResult>* writer, HWindow<uint8_t>* window);
 
 template
-HGoertzelOutput<int16_t>::HGoertzelOutput(int size, int average, float bin, HWriter<HGoertzelResult>* writer, HWindow<int16_t>* window);
+HGoertzelOutput<int16_t>::HGoertzelOutput(std::string id, int size, int average, float bin, HWriter<HGoertzelResult>* writer, HWindow<int16_t>* window);
 
 template
-HGoertzelOutput<int32_t>::HGoertzelOutput(int size, int average, float bin, HWriter<HGoertzelResult>* writer, HWindow<int32_t>* window);
+HGoertzelOutput<int32_t>::HGoertzelOutput(std::string id, int size, int average, float bin, HWriter<HGoertzelResult>* writer, HWindow<int32_t>* window);
 
 template
-HGoertzelOutput<int8_t>::HGoertzelOutput(int size, int average, float bin, HWriterConsumer<int8_t>* consumer, HWindow<int8_t>* window);
+HGoertzelOutput<int8_t>::HGoertzelOutput(std::string id, int size, int average, float bin, HWriterConsumer<int8_t>* consumer, HWindow<int8_t>* window);
 
 template
-HGoertzelOutput<uint8_t>::HGoertzelOutput(int size, int average, float bin, HWriterConsumer<uint8_t>* consumer, HWindow<uint8_t>* window);
+HGoertzelOutput<uint8_t>::HGoertzelOutput(std::string id, int size, int average, float bin, HWriterConsumer<uint8_t>* consumer, HWindow<uint8_t>* window);
 
 template
-HGoertzelOutput<int16_t>::HGoertzelOutput(int size, int average, float bin, HWriterConsumer<int16_t>* consumer, HWindow<int16_t>* window);
+HGoertzelOutput<int16_t>::HGoertzelOutput(std::string id, int size, int average, float bin, HWriterConsumer<int16_t>* consumer, HWindow<int16_t>* window);
 
 template
-HGoertzelOutput<int32_t>::HGoertzelOutput(int size, int average, float bin, HWriterConsumer<int32_t>* consumer, HWindow<int32_t>* window);
+HGoertzelOutput<int32_t>::HGoertzelOutput(std::string id, int size, int average, float bin, HWriterConsumer<int32_t>* consumer, HWindow<int32_t>* window);
 
 template
-HGoertzelOutput<int8_t>::HGoertzelOutput(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<HGoertzelResult>* writer, HWindow<int8_t>* window);
+HGoertzelOutput<int8_t>::HGoertzelOutput(std::string id, int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<HGoertzelResult>* writer, HWindow<int8_t>* window);
 
 template
-HGoertzelOutput<uint8_t>::HGoertzelOutput(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<HGoertzelResult>* writer, HWindow<uint8_t>* window);
+HGoertzelOutput<uint8_t>::HGoertzelOutput(std::string id, int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<HGoertzelResult>* writer, HWindow<uint8_t>* window);
 
 template
-HGoertzelOutput<int16_t>::HGoertzelOutput(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<HGoertzelResult>* writer, HWindow<int16_t>* window);
+HGoertzelOutput<int16_t>::HGoertzelOutput(std::string id, int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<HGoertzelResult>* writer, HWindow<int16_t>* window);
 
 template
-HGoertzelOutput<int32_t>::HGoertzelOutput(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<HGoertzelResult>* writer, HWindow<int32_t>* window);
+HGoertzelOutput<int32_t>::HGoertzelOutput(std::string id, int size, int average, H_SAMPLE_RATE rate, int frequency, HWriter<HGoertzelResult>* writer, HWindow<int32_t>* window);
 
 template
-HGoertzelOutput<int8_t>::HGoertzelOutput(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriterConsumer<int8_t>* consumer, HWindow<int8_t>* window);
+HGoertzelOutput<int8_t>::HGoertzelOutput(std::string id, int size, int average, H_SAMPLE_RATE rate, int frequency, HWriterConsumer<int8_t>* consumer, HWindow<int8_t>* window);
 
 template
-HGoertzelOutput<uint8_t>::HGoertzelOutput(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriterConsumer<uint8_t>* consumer, HWindow<uint8_t>* window);
+HGoertzelOutput<uint8_t>::HGoertzelOutput(std::string id, int size, int average, H_SAMPLE_RATE rate, int frequency, HWriterConsumer<uint8_t>* consumer, HWindow<uint8_t>* window);
 
 template
-HGoertzelOutput<int16_t>::HGoertzelOutput(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriterConsumer<int16_t>* consumer, HWindow<int16_t>* window);
+HGoertzelOutput<int16_t>::HGoertzelOutput(std::string id, int size, int average, H_SAMPLE_RATE rate, int frequency, HWriterConsumer<int16_t>* consumer, HWindow<int16_t>* window);
 
 template
-HGoertzelOutput<int32_t>::HGoertzelOutput(int size, int average, H_SAMPLE_RATE rate, int frequency, HWriterConsumer<int32_t>* consumer, HWindow<int32_t>* window);
+HGoertzelOutput<int32_t>::HGoertzelOutput(std::string id, int size, int average, H_SAMPLE_RATE rate, int frequency, HWriterConsumer<int32_t>* consumer, HWindow<int32_t>* window);
 
 // Output
 template

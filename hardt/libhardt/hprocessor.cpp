@@ -4,7 +4,8 @@
 #include "hprocessor.h"
 
 template <class T>
-HProcessor<T>::HProcessor(HWriter<T>* writer, HReader<T>* reader, size_t blocksize, bool* terminationToken):
+HProcessor<T>::HProcessor(std::string id, HWriter<T>* writer, HReader<T>* reader, size_t blocksize, bool* terminationToken):
+    HWriterConsumer<T>(id),
     _writer(writer),
     _reader(reader),
     _blocksize(blocksize),
@@ -15,7 +16,8 @@ HProcessor<T>::HProcessor(HWriter<T>* writer, HReader<T>* reader, size_t blocksi
 }
 
 template <class T>
-HProcessor<T>::HProcessor(HReader<T>* reader, size_t blocksize, bool* terminationToken):
+HProcessor<T>::HProcessor(std::string id, HReader<T>* reader, size_t blocksize, bool* terminationToken):
+    HWriterConsumer<T>(id),
     _reader(reader),
     _blocksize(blocksize),
     _terminated(terminationToken)
@@ -189,28 +191,28 @@ Explicit instantiation
 
 // HProcessor()
 template
-HProcessor<int8_t>::HProcessor(HWriter<int8_t>* writer, HReader<int8_t>* reader, size_t blocksize, bool* terminationToken);
+HProcessor<int8_t>::HProcessor(std::string id, HWriter<int8_t>* writer, HReader<int8_t>* reader, size_t blocksize, bool* terminationToken);
 
 template
-HProcessor<uint8_t>::HProcessor(HWriter<uint8_t>* writer, HReader<uint8_t>* reader, size_t blocksize, bool* terminationToken);
+HProcessor<uint8_t>::HProcessor(std::string id, HWriter<uint8_t>* writer, HReader<uint8_t>* reader, size_t blocksize, bool* terminationToken);
 
 template
-HProcessor<int16_t>::HProcessor(HWriter<int16_t>* writer, HReader<int16_t>* reader, size_t blocksize, bool* terminationToken);
+HProcessor<int16_t>::HProcessor(std::string id, HWriter<int16_t>* writer, HReader<int16_t>* reader, size_t blocksize, bool* terminationToken);
 
 template
-HProcessor<int32_t>::HProcessor(HWriter<int32_t>* writer, HReader<int32_t>* reader, size_t blocksize, bool* terminationToken);
+HProcessor<int32_t>::HProcessor(std::string id, HWriter<int32_t>* writer, HReader<int32_t>* reader, size_t blocksize, bool* terminationToken);
 
 template
-HProcessor<int8_t>::HProcessor(HReader<int8_t>* reader, size_t blocksize, bool* terminationToken);
+HProcessor<int8_t>::HProcessor(std::string id, HReader<int8_t>* reader, size_t blocksize, bool* terminationToken);
 
 template
-HProcessor<uint8_t>::HProcessor(HReader<uint8_t>* reader, size_t blocksize, bool* terminationToken);
+HProcessor<uint8_t>::HProcessor(std::string id, HReader<uint8_t>* reader, size_t blocksize, bool* terminationToken);
 
 template
-HProcessor<int16_t>::HProcessor(HReader<int16_t>* reader, size_t blocksize, bool* terminationToken);
+HProcessor<int16_t>::HProcessor(std::string id, HReader<int16_t>* reader, size_t blocksize, bool* terminationToken);
 
 template
-HProcessor<int32_t>::HProcessor(HReader<int32_t>* reader, size_t blocksize, bool* terminationToken);
+HProcessor<int32_t>::HProcessor(std::string id, HReader<int32_t>* reader, size_t blocksize, bool* terminationToken);
 
 // ~HProcessor
 template

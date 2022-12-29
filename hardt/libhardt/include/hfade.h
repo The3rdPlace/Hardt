@@ -21,13 +21,13 @@ class HFade : public HGain<T>
     public:
 
         /** Construct a new HFade object that reads from a reader */
-        HFade(HReader<T>* reader, int initialLevel, int samples, bool fade, size_t blocksize);
+        HFade(std::string id, HReader<T>* reader, int initialLevel, int samples, bool fade, size_t blocksize);
 
         /** Construct a new HFade object that writes to a writer */
-        HFade(HWriter<T>* writer, int initialLevel, int samples, bool fade, size_t blocksize);
+        HFade(std::string id, HWriter<T>* writer, int initialLevel, int samples, bool fade, size_t blocksize);
 
         /** Construct a new HFade object that registers with an upstream writer */
-        HFade(HWriterConsumer<T>* consumer, int initialLevel, int samples, bool fade, size_t blocksize);
+        HFade(std::string id, HWriterConsumer<T>* consumer, int initialLevel, int samples, bool fade, size_t blocksize);
 
         /** Default destructor */
         ~HFade();

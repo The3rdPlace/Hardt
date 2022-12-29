@@ -18,10 +18,10 @@ class HNetworkWriter : public HWriter<T>
     public:
 
         /** Construct a new HNetworkWriter */
-        HNetworkWriter();
+        HNetworkWriter(std::string id);
 
         /** Construct a new HNetworkWriter with an initialized socket */
-        HNetworkWriter(int socket);
+        HNetworkWriter(std::string id, int socket);
 
         /** Set the socket to use for writes */
         void SetSocket(int socket);

@@ -8,12 +8,14 @@ Class implementation
 ********************************************************************/
 
 template <class T>
-HNetworkReader<T>::HNetworkReader():
+HNetworkReader<T>::HNetworkReader(std::string id):
+    HReader<T>(id),
     _socket(-1)
 {}
 
 template <class T>
-HNetworkReader<T>::HNetworkReader(int socket):
+HNetworkReader<T>::HNetworkReader(std::string id, int socket):
+    HReader<T>(id),
     _socket(socket)
 {}
 
@@ -50,28 +52,28 @@ Explicit instantiation
 
 // HNetworkReader
 template
-HNetworkReader<int8_t>::HNetworkReader();
+HNetworkReader<int8_t>::HNetworkReader(std::string id);
 
 template
-HNetworkReader<uint8_t>::HNetworkReader();
+HNetworkReader<uint8_t>::HNetworkReader(std::string id);
 
 template
-HNetworkReader<int16_t>::HNetworkReader();
+HNetworkReader<int16_t>::HNetworkReader(std::string id);
 
 template
-HNetworkReader<int32_t>::HNetworkReader();
+HNetworkReader<int32_t>::HNetworkReader(std::string id);
 
 template
-HNetworkReader<int8_t>::HNetworkReader(int socket);
+HNetworkReader<int8_t>::HNetworkReader(std::string id, int socket);
 
 template
-HNetworkReader<uint8_t>::HNetworkReader(int socket);
+HNetworkReader<uint8_t>::HNetworkReader(std::string id, int socket);
 
 template
-HNetworkReader<int16_t>::HNetworkReader(int socket);
+HNetworkReader<int16_t>::HNetworkReader(std::string id, int socket);
 
 template
-HNetworkReader<int32_t>::HNetworkReader(int socket);
+HNetworkReader<int32_t>::HNetworkReader(std::string id, int socket);
 
 // SetSocket()
 template

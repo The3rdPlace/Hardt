@@ -4,8 +4,8 @@
 #include "hfade.h"
 
 template <class T>
-HFade<T>::HFade(HReader<T>* reader, int initialLevel, int samples, bool fade, size_t blocksize):
-    HGain<T>(reader, 1, blocksize),
+HFade<T>::HFade(std::string id, HReader<T>* reader, int initialLevel, int samples, bool fade, size_t blocksize):
+    HGain<T>(id, reader, 1, blocksize),
     _level(initialLevel),
     _samples(samples),
     _direction(initialLevel > 50), // if initial level is above 50, fade up, otherwise down
@@ -16,8 +16,8 @@ HFade<T>::HFade(HReader<T>* reader, int initialLevel, int samples, bool fade, si
 }
 
 template <class T>
-HFade<T>::HFade(HWriter<T>* writer, int initialLevel, int samples, bool fade, size_t blocksize):
-    HGain<T>(writer, 1, blocksize),
+HFade<T>::HFade(std::string id, HWriter<T>* writer, int initialLevel, int samples, bool fade, size_t blocksize):
+    HGain<T>(id, writer, 1, blocksize),
     _level(initialLevel),
     _samples(samples),
     _direction(initialLevel >= 50), // if initial level is above 50, fade up, otherwise down
@@ -28,8 +28,8 @@ HFade<T>::HFade(HWriter<T>* writer, int initialLevel, int samples, bool fade, si
 }
 
 template <class T>
-HFade<T>::HFade(HWriterConsumer<T>* consumer, int initialLevel, int samples, bool fade, size_t blocksize):
-    HGain<T>(consumer, 1, blocksize),
+HFade<T>::HFade(std::string id, HWriterConsumer<T>* consumer, int initialLevel, int samples, bool fade, size_t blocksize):
+    HGain<T>(id, consumer, 1, blocksize),
     _level(initialLevel),
     _samples(samples),
     _direction(initialLevel >= 50), // if initial level is above 50, fade up, otherwise down
@@ -130,40 +130,40 @@ Explicit instantiation
 
 // HFade
 template
-HFade<int8_t>::HFade(HWriter<int8_t>* writer, int initialLevel, int samples, bool fade, size_t blocksize);
+HFade<int8_t>::HFade(std::string id, HWriter<int8_t>* writer, int initialLevel, int samples, bool fade, size_t blocksize);
 
 template
-HFade<uint8_t>::HFade(HWriter<uint8_t>* writer, int initialLevel, int samples, bool fade, size_t blocksize);
+HFade<uint8_t>::HFade(std::string id, HWriter<uint8_t>* writer, int initialLevel, int samples, bool fade, size_t blocksize);
 
 template
-HFade<int16_t>::HFade(HWriter<int16_t>* writer, int initialLevel, int samples, bool fade, size_t blocksize);
+HFade<int16_t>::HFade(std::string id, HWriter<int16_t>* writer, int initialLevel, int samples, bool fade, size_t blocksize);
 
 template
-HFade<int32_t>::HFade(HWriter<int32_t>* writer, int initialLevel, int samples, bool fade, size_t blocksize);
+HFade<int32_t>::HFade(std::string id, HWriter<int32_t>* writer, int initialLevel, int samples, bool fade, size_t blocksize);
 
 template
-HFade<int8_t>::HFade(HWriterConsumer<int8_t>* consumer, int initialLevel, int samples, bool fade, size_t blocksize);
+HFade<int8_t>::HFade(std::string id, HWriterConsumer<int8_t>* consumer, int initialLevel, int samples, bool fade, size_t blocksize);
 
 template
-HFade<uint8_t>::HFade(HWriterConsumer<uint8_t>* consumer, int initialLevel, int samples, bool fade, size_t blocksize);
+HFade<uint8_t>::HFade(std::string id, HWriterConsumer<uint8_t>* consumer, int initialLevel, int samples, bool fade, size_t blocksize);
 
 template
-HFade<int16_t>::HFade(HWriterConsumer<int16_t>* consumer, int initialLevel, int samples, bool fade, size_t blocksize);
+HFade<int16_t>::HFade(std::string id, HWriterConsumer<int16_t>* consumer, int initialLevel, int samples, bool fade, size_t blocksize);
 
 template
-HFade<int32_t>::HFade(HWriterConsumer<int32_t>* consumer, int initialLevel, int samples, bool fade, size_t blocksize);
+HFade<int32_t>::HFade(std::string id, HWriterConsumer<int32_t>* consumer, int initialLevel, int samples, bool fade, size_t blocksize);
 
 template
-HFade<int8_t>::HFade(HReader<int8_t>* reader, int initialLevel, int samples, bool fade, size_t blocksize);
+HFade<int8_t>::HFade(std::string id, HReader<int8_t>* reader, int initialLevel, int samples, bool fade, size_t blocksize);
 
 template
-HFade<uint8_t>::HFade(HReader<uint8_t>* reader, int initialLevel, int samples, bool fade, size_t blocksize);
+HFade<uint8_t>::HFade(std::string id, HReader<uint8_t>* reader, int initialLevel, int samples, bool fade, size_t blocksize);
 
 template
-HFade<int16_t>::HFade(HReader<int16_t>* reader, int initialLevel, int samples, bool fade, size_t blocksize);
+HFade<int16_t>::HFade(std::string id, HReader<int16_t>* reader, int initialLevel, int samples, bool fade, size_t blocksize);
 
 template
-HFade<int32_t>::HFade(HReader<int32_t>* reader, int initialLevel, int samples, bool fade, size_t blocksize);
+HFade<int32_t>::HFade(std::string id, HReader<int32_t>* reader, int initialLevel, int samples, bool fade, size_t blocksize);
 
 // ~HFade()
 template

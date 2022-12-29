@@ -50,7 +50,7 @@ class HAgc : public HGain<T>
          * @param allowUnity Allow use of unity gain (1), do not reduce gain further
          * @param probe Probe
          */
-        HAgc(HWriter<T>* writer, T level, int average, size_t blocksize, int increment = 4, bool allowUnity = false, HProbe<T>* probe = NULL);
+        HAgc(std::string id, HWriter<T>* writer, T level, int average, size_t blocksize, int increment = 4, bool allowUnity = false, HProbe<T>* probe = NULL);
 
         /**
          * Construct a new HAgc object that registers with an upstream writer
@@ -63,7 +63,7 @@ class HAgc : public HGain<T>
          * @param allowUnity Allow use of unity gain (1), do not reduce gain further
          * @param probe Probe
          */
-        HAgc(HWriterConsumer<T>* consumer, T level, int average, size_t blocksize, int increment = 1, bool allowUnity = false, HProbe<T>* probe = NULL);
+        HAgc(std::string id, HWriterConsumer<T>* consumer, T level, int average, size_t blocksize, int increment = 1, bool allowUnity = false, HProbe<T>* probe = NULL);
 
         /**
          * Construct a new HAgc object that reads from a reader
@@ -76,7 +76,7 @@ class HAgc : public HGain<T>
          * @param allowUnity Allow use of unity gain (1), do not reduce gain further
          * @param probe Probe
          */
-        HAgc(HReader<T>* reader, T level, int average, size_t blocksize, int increment = 1, bool allowUnity = false, HProbe<T>* probe = NULL);
+        HAgc(std::string id, HReader<T>* reader, T level, int average, size_t blocksize, int increment = 1, bool allowUnity = false, HProbe<T>* probe = NULL);
 
         /** Default destructor */
         ~HAgc();
