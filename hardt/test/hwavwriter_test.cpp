@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -113,7 +112,7 @@ class HWavWriter_Test: public Test
             memcpy((void*) &expected[44], (void*) _data, 2048);
 
             // Create writer and write the wav file
-            HWavWriter<uint8_t>* wr = new HWavWriter<uint8_t>("/tmp/hwavwriter_uint8_data.txt", H_SAMPLE_FORMAT_UINT_8, 1, H_SAMPLE_RATE_8K);
+            HWavWriter<uint8_t>* wr = new HWavWriter<uint8_t>("hwavwriter", "/tmp/hwavwriter_uint8_data.txt", H_SAMPLE_FORMAT_UINT_8, 1, H_SAMPLE_RATE_8K);
             wr->Start();
             wr->Write((uint8_t*) _data, 2048 / sizeof(uint8_t));
             wr->Stop();
@@ -179,7 +178,7 @@ class HWavWriter_Test: public Test
             memcpy((void*) &expected[44], (void*) _data, 2048);
 
             // Create writer and write the wav file
-            HWavWriter<int16_t>* wr = new HWavWriter<int16_t>("/tmp/hwavwriter_uint16_data.txt", H_SAMPLE_FORMAT_INT_16, 2, H_SAMPLE_RATE_22K);
+            HWavWriter<int16_t>* wr = new HWavWriter<int16_t>("hwavwriter", "/tmp/hwavwriter_uint16_data.txt", H_SAMPLE_FORMAT_INT_16, 2, H_SAMPLE_RATE_22K);
             wr->Start();
             wr->Write((int16_t*) _data, 2048 / sizeof(int16_t));
             wr->Stop();

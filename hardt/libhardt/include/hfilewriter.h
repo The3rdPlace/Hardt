@@ -23,32 +23,33 @@ class HFileWriter : public HWriter<T>
     public:
 
         /** Construct a new HFileWriter with the given filename */
-        HFileWriter(const char* filename, bool sequence = false):
-                _filename(std::string(filename)),
-                _seq(sequence)
+        HFileWriter(std::string id, const char* filename, bool sequence = false):
+            HWriter<T>(id),
+            _filename(std::string(filename)),
+            _seq(sequence)
         {}
 
         /** Construct a new HFileWriter with the given filename */
-        HFileWriter(const std::string filename, bool sequence = false):
-                _filename(filename),
-                _seq(sequence)
-        {}
+        HFileWriter(std::string id, const std::string filename, bool sequence = false):
+            HWriter<T>(id),
+            _filename(filename),
+            _seq(sequence) {}
 
         /** Construct a new HFileWriter with the given filename and register
             with the given consumer */
-        HFileWriter(const char* filename, HWriterConsumer<T>* consumer, bool sequence = false):
-                _filename(std::string(filename)),
-                _seq(sequence)
-        {
+        HFileWriter(std::string id, const char* filename, HWriterConsumer<T>* consumer, bool sequence = false):
+            HWriter<T>(id),
+            _filename(std::string(filename)),
+            _seq(sequence) {
             consumer->SetWriter(this);
         }
 
         /** Construct a new HFileWriter with the given filename and register
             with the given consumer */
-        HFileWriter(const std::string filename, HWriterConsumer<T>* consumer, bool sequence = false):
-                _filename(filename),
-                _seq(sequence)
-        {
+        HFileWriter(std::string id, const std::string filename, HWriterConsumer<T>* consumer, bool sequence = false):
+            HWriter<T>(id),
+            _filename(filename),
+            _seq(sequence){
             consumer->SetWriter(this);
         }
 

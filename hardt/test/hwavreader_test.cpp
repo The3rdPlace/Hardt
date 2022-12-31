@@ -24,7 +24,7 @@ class HWavReader_Test: public Test
         {
             std::string SourceDir(Test::sourceDir);
             std::string TestInput = SourceDir + "/resources/16bit_48k_mono.wav";
-            HWavReader<int16_t>* rd = new HWavReader<int16_t>(TestInput.c_str());
+            HWavReader<int16_t>* rd = new HWavReader<int16_t>("hwavreader", TestInput.c_str());
             ASSERT_IS_TRUE(rd->Start());
             ASSERT_IS_EQUAL(rd->GetFormat(), H_SAMPLE_FORMAT_INT_16);
             ASSERT_IS_EQUAL(rd->GetRate(), 48000);
