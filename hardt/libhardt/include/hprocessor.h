@@ -3,6 +3,7 @@
 
 #include "hwriter.h"
 #include "hreader.h"
+#include "hmetrics.h"
 
 /**
     The processor makes a Hardt application tick, it reads from a given reader

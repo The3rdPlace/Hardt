@@ -189,17 +189,18 @@ class Test
                 void* LastContent;
 
                 TestReader(T* data, int blocksize, bool multipleReads = true, bool continuedReads = false):
-                        Reads(0),
-                        Samples(0),
-                        _data(data),
-                        _first(true),
-                        _multipleReads(multipleReads),
-                        _continuedReads(continuedReads),
-                        _continuedPosition(0),
-                        Started(0),
-                        Stopped(0),
-                        Commands(0),
-                        LastContent(nullptr)
+                    HReader<T>("reader"),
+                    Reads(0),
+                    Samples(0),
+                    _data(data),
+                    _first(true),
+                    _multipleReads(multipleReads),
+                    _continuedReads(continuedReads),
+                    _continuedPosition(0),
+                    Started(0),
+                    Stopped(0),
+                    Commands(0),
+                    LastContent(nullptr)
                 {}
 
                 ~TestReader()
@@ -289,6 +290,46 @@ class Test
                 void* LastContent;
 
                 TestWriter(size_t blocksize, bool multipleWrites = true, int writeDelay = 0, bool continuedWrites = false):
+                    HWriter<T>("writer"),
+                    HWriterConsumer<T>("writerconsumer"),
+                    Writes(0),
+                    Samples(0),
+                    _writer(nullptr),
+                    Started(0),
+                    Stopped(0),
+                    _first(true),
+                    _multipleWrites(multipleWrites),
+                    _writeDelay(writeDelay),
+                    Commands(0),
+                    LastContent(nullptr),
+                    _continuedPosition(0),
+                    _continuedWrites(continuedWrites) {
+                    Received = new T[blocksize];
+                    memset((void*) Received, 0, blocksize * sizeof(T));
+                }
+
+                TestWriter(HWriter<T>* writer, size_t blocksize, bool multipleWrites = true, int writeDelay = 0, bool continuedWrites = false):
+                    HWriter<T>("writer"),
+                    HWriterConsumer<T>("writerconsumer"),
+                    Writes(0),
+                    Samples(0),
+                    _writer(writer),
+                    Started(0),
+                    Stopped(0),
+                    _first(true),
+                    _multipleWrites(multipleWrites),
+                    _writeDelay(writeDelay),
+                    Commands(0),
+                    LastContent(nullptr),
+                    _continuedPosition(0),
+                    _continuedWrites(continuedWrites) {
+                    Received = new T[blocksize];
+                    memset((void*) Received, 0, blocksize * sizeof(T));
+                }
+
+                TestWriter(HWriterConsumer<T>* consumer, size_t blocksize, bool multipleWrites = true, int writeDelay = 0, bool continuedWrites = false):
+                    HWriter<T>("writer"),
+                    HWriterConsumer<T>("writerconsumer"),
                     Writes(0),
                     Samples(0),
                     _writer(nullptr),
@@ -301,42 +342,6 @@ class Test
                     LastContent(nullptr),
                     _continuedPosition(0),
                     _continuedWrites(continuedWrites)
-                {
-                    Received = new T[blocksize];
-                    memset((void*) Received, 0, blocksize * sizeof(T));
-                }
-
-                TestWriter(HWriter<T>* writer, size_t blocksize, bool multipleWrites = true, int writeDelay = 0, bool continuedWrites = false):
-                        Writes(0),
-                        Samples(0),
-                        _writer(writer),
-                        Started(0),
-                        Stopped(0),
-                        _first(true),
-                        _multipleWrites(multipleWrites),
-                        _writeDelay(writeDelay),
-                        Commands(0),
-                        LastContent(nullptr),
-                        _continuedPosition(0),
-                        _continuedWrites(continuedWrites)
-                {
-                    Received = new T[blocksize];
-                    memset((void*) Received, 0, blocksize * sizeof(T));
-                }
-
-                TestWriter(HWriterConsumer<T>* consumer, size_t blocksize, bool multipleWrites = true, int writeDelay = 0, bool continuedWrites = false):
-                        Writes(0),
-                        Samples(0),
-                        _writer(nullptr),
-                        Started(0),
-                        Stopped(0),
-                        _first(true),
-                        _multipleWrites(multipleWrites),
-                        _writeDelay(writeDelay),
-                        Commands(0),
-                        LastContent(nullptr),
-                        _continuedPosition(0),
-                        _continuedWrites(continuedWrites)
                 {
                     Received = new T[blocksize];
                     memset((void*) Received, 0, blocksize * sizeof(T));

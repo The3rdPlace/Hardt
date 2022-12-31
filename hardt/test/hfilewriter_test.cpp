@@ -25,7 +25,7 @@ class HFileWriter_Test: public Test
         {
             int8_t data[] = {1, 3, 2, 4, 3, 5, 4, 6, 5, 7, 6, 8, 7, 9};
             int datalen = sizeof(data) / sizeof(int8_t);
-            HFileWriter<int8_t> *wr = new HFileWriter<int8_t>("/tmp/hfilewriter_int8_data.txt");
+            HFileWriter<int8_t> *wr = new HFileWriter<int8_t>("hfilewriter", "/tmp/hfilewriter_int8_data.txt");
             wr->Start();
             ASSERT_IS_EQUAL(wr->Write(data, datalen), datalen);
             wr->Stop();
@@ -55,7 +55,7 @@ class HFileWriter_Test: public Test
         {
             uint8_t data[] = {1, 3, 2, 4, 3, 5, 4, 6, 5, 7, 6, 8, 7, 9};
             int datalen = sizeof(data) / sizeof(uint8_t);
-            HFileWriter<uint8_t> *wr = new HFileWriter<uint8_t>("/tmp/hfilewriter_uint8_data.txt");
+            HFileWriter<uint8_t> *wr = new HFileWriter<uint8_t>("hfilewriter", "/tmp/hfilewriter_uint8_data.txt");
             wr->Start();
             ASSERT_IS_EQUAL(wr->Write(data, datalen), datalen);
             wr->Stop();
@@ -85,7 +85,7 @@ class HFileWriter_Test: public Test
         {
             int16_t data[] = {1, 3, 2, 4, 3, 5, 4, 6, 5, 7, 6, 8, 7, 9};
             int datalen = sizeof(data) / sizeof(int16_t);
-            HFileWriter<int16_t> *wr = new HFileWriter<int16_t>("/tmp/hfilewriter_int_data.txt");
+            HFileWriter<int16_t> *wr = new HFileWriter<int16_t>("hfilewriter", "/tmp/hfilewriter_int_data.txt");
             wr->Start();
             ASSERT_IS_EQUAL(wr->Write(data, datalen), datalen);
             wr->Stop();

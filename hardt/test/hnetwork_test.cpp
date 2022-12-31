@@ -1,8 +1,7 @@
-#include <stdio.h>
 #include <iostream>
+#include <thread>
 
 #include "test.h"
-#include <thread>
 
 HNetworkProcessor<int16_t> *server;
 HNetworkProcessor<int16_t> *client;
@@ -43,11 +42,11 @@ class HNetwork_Test: public Test
             int16_t expected[] = {1, 3, 2, 4, 3, 5, 4, 6, 5, 7, 6, 8, 7, 9};
 
             TestReader<int16_t> rdr(expected, 14, false);
-            server = new HNetworkProcessor<int16_t>(1231, 1232, &rdr, 14, &terminated);
+            server = new HNetworkProcessor<int16_t>("hnetworkprocessor_server", 1231, 1232, &rdr, 14, &terminated);
             std::thread serverThread(runServer);
             sleep(1);
             TestWriter<int16_t > wr(14);
-            client = new HNetworkProcessor<int16_t>("127.0.0.1", 1231, 1232,  &wr, 14, &terminated);
+            client = new HNetworkProcessor<int16_t>("hnetworkprocessor_client", "127.0.0.1", 1231, 1232,  &wr, 14, &terminated);
             std::thread clientThread(runClient);
 
             clientThread.join();
@@ -65,11 +64,11 @@ class HNetwork_Test: public Test
             int16_t expected[] = {1, 3, 2, 4, 3, 5, 4, 6, 5, 7, 6, 8, 7, 9};
 
             TestWriter<int16_t> wr(14);
-            server = new HNetworkProcessor<int16_t>(1233, 1234, &wr, 14, &terminated);
+            server = new HNetworkProcessor<int16_t>("hnetworkprocessor_server", 1233, 1234, &wr, 14, &terminated);
             std::thread serverThread(runServer);
             sleep(1);
             TestReader<int16_t> rdr(expected, 14, false);
-            client = new HNetworkProcessor<int16_t>("127.0.0.1", 1233, 1234, &rdr, 14, &terminated);
+            client = new HNetworkProcessor<int16_t>("hnetworkprocessor_client", "127.0.0.1", 1233, 1234, &rdr, 14, &terminated);
             std::thread clientThread(runClient);
 
             clientThread.join();
@@ -87,11 +86,11 @@ class HNetwork_Test: public Test
             int16_t expected[] = {1, 3, 2, 4, 3, 5, 4, 6, 5, 7, 6, 8, 7, 9};
 
             TestReader<int16_t> rdr(expected, 14, false);
-            server = new HNetworkProcessor<int16_t>(1235, 1236, &rdr, 14, &terminated);
+            server = new HNetworkProcessor<int16_t>("hnetworkprocessor_server", 1235, 1236, &rdr, 14, &terminated);
             std::thread serverThread(runServer);
             sleep(1);
             TestWriter<int16_t > wr(14);
-            client = new HNetworkProcessor<int16_t>("127.0.0.1", 1235, 1236, &wr, 14, &terminated);
+            client = new HNetworkProcessor<int16_t>("hnetworkprocessor_client", "127.0.0.1", 1235, 1236, &wr, 14, &terminated);
             std::thread clientThread(runClient);
 
             sleep(5);
@@ -130,11 +129,11 @@ class HNetwork_Test: public Test
             int16_t expected[] = {1, 3, 2, 4, 3, 5, 4, 6, 5, 7, 6, 8, 7, 9};
 
             TestWriter<int16_t> wr(14);
-            server = new HNetworkProcessor<int16_t>(1237, 1238, &wr, 14, &terminated);
+            server = new HNetworkProcessor<int16_t>("hnetworkprocessor_server", 1237, 1238, &wr, 14, &terminated);
             std::thread serverThread(runServer);
             sleep(1);
             TestReader<int16_t> rdr(expected, 14, false);
-            client = new HNetworkProcessor<int16_t>("127.0.0.1", 1237, 1238, &rdr, 14, &terminated);
+            client = new HNetworkProcessor<int16_t>("hnetworkprocessor_client", "127.0.0.1", 1237, 1238, &rdr, 14, &terminated);
             std::thread clientThread(runClient);
 
             sleep(5);
