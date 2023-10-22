@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -7,13 +6,13 @@ class HStreamProcessor_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(test_read_write);
             UNITTEST(test_command);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HStreamProcessor";
         }
@@ -27,7 +26,7 @@ class HStreamProcessor_Test: public Test
 
             TestReader<int8_t> rdr(expected, 14);
             TestWriter<int8_t> wr(14);
-            HStreamProcessor<int8_t> proc(&wr, &rdr, 14, &terminated);
+            HStreamProcessor<int8_t> proc("hstreamprocessor_test_read_write", &wr, &rdr, 14, &terminated);
 
             proc.Run(1);
 
@@ -40,7 +39,7 @@ class HStreamProcessor_Test: public Test
 
             TestReader<int8_t> rdr(nullptr, 0);
             TestWriter<int8_t> wr(0);
-            HStreamProcessor<int8_t> proc(&wr, &rdr, 0, &terminated);
+            HStreamProcessor<int8_t> proc("hstreamprocessor_test_command", &wr, &rdr, 0, &terminated);
 
             HCommandData data;
             data.State = true;

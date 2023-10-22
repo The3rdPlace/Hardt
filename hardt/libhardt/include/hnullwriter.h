@@ -17,12 +17,14 @@ class HNullWriter : public HWriter<T>, public HWriterConsumer<T>
     public:
 
         /** Construct a new HNullWriter */
-        HNullWriter()
-        {}
+        HNullWriter(std::string id):
+            HWriter<T>(id),
+            HWriterConsumer<T>(id) {}
 
         /** Construct a new HNullWriter that registers with the upstream writer */
-        HNullWriter(HWriterConsumer<T>* consumer)
-        {
+        HNullWriter(std::string id, HWriterConsumer<T>* consumer):
+            HWriter<T>(id),
+            HWriterConsumer<T>(id) {
             consumer->SetWriter(this);
         }
 

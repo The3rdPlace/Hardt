@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -7,7 +6,7 @@ class HConverter_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(test_converter_int8_int8_read);
             UNITTEST(test_converter_int8_int8_write);
@@ -21,7 +20,7 @@ class HConverter_Test: public Test
             UNITTEST(test_converter_int8_int8_write_2_1);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HConverter";
         }
@@ -37,7 +36,7 @@ class HConverter_Test: public Test
 
                 int _factor;
 
-                int Convert(Tin* src, Tout* dest, size_t blocksize)
+                int Convert(Tin* src, Tout* dest, size_t blocksize) override
                 {
                     for( int i = 0; i < blocksize; i++ )
                     {
@@ -48,13 +47,13 @@ class HConverter_Test: public Test
 
             public:
 
-                TestConverter(HReader<Tin>* reader, size_t blocksize, int factor):
-                    HConverter<Tin, Tout>(reader, blocksize, blocksize),
+                TestConverter(std::string id, HReader<Tin>* reader, size_t blocksize, int factor):
+                    HConverter<Tin, Tout>(id, reader, blocksize, blocksize),
                     _factor(factor)
                 {}
 
-                TestConverter(HWriter<Tout>* writer, size_t blocksize, int factor):
-                    HConverter<Tin, Tout>(writer, blocksize, blocksize),
+                TestConverter(std::string id, HWriter<Tout>* writer, size_t blocksize, int factor):
+                    HConverter<Tin, Tout>(id, writer, blocksize, blocksize),
                     _factor(factor)
                 {}
         };
@@ -66,7 +65,7 @@ class HConverter_Test: public Test
 
                 int _factor;
 
-                int Convert(Tin* src, Tout* dest, size_t blocksize)
+                int Convert(Tin* src, Tout* dest, size_t blocksize) override
                 {
                     for( int i = 0; i < blocksize * 2; i++ )
                     {
@@ -77,13 +76,13 @@ class HConverter_Test: public Test
 
             public:
 
-                TestConverter_1_2(HReader<Tin>* reader, size_t blocksize, int factor):
-                        HConverter<Tin, Tout>(reader, blocksize, blocksize * 2),
+                TestConverter_1_2(std::string id, HReader<Tin>* reader, size_t blocksize, int factor):
+                        HConverter<Tin, Tout>(id, reader, blocksize, blocksize * 2),
                         _factor(factor)
                 {}
 
-                TestConverter_1_2(HWriter<Tout>* writer, size_t blocksize, int factor):
-                        HConverter<Tin, Tout>(writer, blocksize, blocksize * 2),
+                TestConverter_1_2(std::string id, HWriter<Tout>* writer, size_t blocksize, int factor):
+                        HConverter<Tin, Tout>(id, writer, blocksize, blocksize * 2),
                         _factor(factor)
                 {}
         };
@@ -95,7 +94,7 @@ class HConverter_Test: public Test
 
                 int _factor;
 
-                int Convert(Tin* src, Tout* dest, size_t blocksize)
+                int Convert(Tin* src, Tout* dest, size_t blocksize) override
                 {
                     for( int i = 0; i < blocksize; i++ )
                     {
@@ -106,13 +105,13 @@ class HConverter_Test: public Test
 
             public:
 
-                TestConverter_2_1(HReader<Tin>* reader, size_t blocksize, int factor):
-                        HConverter<Tin, Tout>(reader, blocksize, blocksize / 2),
+                TestConverter_2_1(std::string id, HReader<Tin>* reader, size_t blocksize, int factor):
+                        HConverter<Tin, Tout>(id, reader, blocksize, blocksize / 2),
                         _factor(factor)
                 {}
 
-                TestConverter_2_1(HWriter<Tout>* writer, size_t blocksize, int factor):
-                        HConverter<Tin, Tout>(writer, blocksize, blocksize / 2),
+                TestConverter_2_1(std::string id, HWriter<Tout>* writer, size_t blocksize, int factor):
+                        HConverter<Tin, Tout>(id, writer, blocksize, blocksize / 2),
                         _factor(factor)
                 {}
         };
@@ -124,7 +123,7 @@ class HConverter_Test: public Test
             int8_t output[6] = {0, 0 ,0 ,0 ,0 ,0};
 
             TestReader<int8_t> reader(input, 6);
-            TestConverter<int8_t, int8_t> converter(&reader, 6, 2);
+            TestConverter<int8_t, int8_t> converter("hconverter_test_int8_int8_read", &reader, 6, 2);
 
             converter.Read(output, 6);
 
@@ -143,7 +142,7 @@ class HConverter_Test: public Test
             int8_t expected[6] = {3, 6, 9, 12, 15, 18};
 
             TestWriter<int8_t> writer(6);
-            TestConverter<int8_t, int8_t> converter(&writer, 6, 3);
+            TestConverter<int8_t, int8_t> converter("hconverter_test_int8_int8_write", &writer, 6, 3);
 
             converter.Write(input, 6);
 
@@ -163,7 +162,7 @@ class HConverter_Test: public Test
             int8_t output[6] = {0, 0 ,0 ,0 ,0 ,0};
 
             TestReader<int8_t> reader(input, 6);
-            TestConverter<int8_t, int8_t> converter(&reader, 6, 1000);
+            TestConverter<int8_t, int8_t> converter("hconverter_test_int8_int8_read_overflow", &reader, 6, 1000);
 
             converter.Read(output, 6);
 
@@ -182,7 +181,7 @@ class HConverter_Test: public Test
             int8_t expected[6] = {-48, -96, 112, 64, 16, -32};
 
             TestWriter<int8_t> writer(6);
-            TestConverter<int8_t, int8_t> converter(&writer, 6, 2000);
+            TestConverter<int8_t, int8_t> converter("hconverter_test_int8_int8_write_overflow", &writer, 6, 2000);
 
             converter.Write(input, 6);
 
@@ -202,7 +201,7 @@ class HConverter_Test: public Test
             int16_t output[6] = {0, 0 ,0 ,0 ,0 ,0};
 
             TestReader<int8_t> reader(input, 6);
-            TestConverter<int8_t, int16_t> converter(&reader, 6, 3000);
+            TestConverter<int8_t, int16_t> converter("hconverter_test_int8_int16_read", &reader, 6, 3000);
 
             converter.Read(output, 6);
 
@@ -221,7 +220,7 @@ class HConverter_Test: public Test
             int16_t expected[6] = {4000, 8000, 12000, 16000, 20000, 24000};
 
             TestWriter<int16_t> writer(6);
-            TestConverter<int8_t, int16_t> converter(&writer, 6, 4000);
+            TestConverter<int8_t, int16_t> converter("hconverter_test_int8_int16_write", &writer, 6, 4000);
 
             converter.Write(input, 6);
 
@@ -241,7 +240,7 @@ class HConverter_Test: public Test
             int8_t output[12] = {0, 0 ,0 ,0 ,0 ,0, 0, 0 ,0 ,0 ,0 ,0};
 
             TestReader<int8_t> reader(input, 6);
-            TestConverter_1_2<int8_t, int8_t> converter(&reader, 6, 2);
+            TestConverter_1_2<int8_t, int8_t> converter("hconverter_test_int8_int8_read_1_2", &reader, 6, 2);
 
             ASSERT_IS_EQUAL(converter.Read(output, 12), 12);
             ASSERT_IS_EQUAL(reader.Reads, 1);
@@ -262,7 +261,7 @@ class HConverter_Test: public Test
             int8_t expected[12] = {3, 3, 6, 6, 9, 9, 12, 12, 15, 15, 18, 18};
 
             TestWriter<int8_t> writer(12);
-            TestConverter_1_2<int8_t, int8_t> converter(&writer, 6, 3);
+            TestConverter_1_2<int8_t, int8_t> converter("hconverter_test_int8_int8_write_1_2", &writer, 6, 3);
 
             ASSERT_IS_EQUAL(converter.Write(input, 6), 6);
             ASSERT_IS_EQUAL(writer.Writes, 1);
@@ -284,7 +283,7 @@ class HConverter_Test: public Test
             int8_t output[6] = {0, 0 ,0 ,0 ,0 ,0};
 
             TestReader<int8_t> reader(input, 6);
-            TestConverter_2_1<int8_t, int8_t> converter(&reader, 12, 2);
+            TestConverter_2_1<int8_t, int8_t> converter("hconverter_test_int8_int8_read_2_1", &reader, 12, 2);
 
             ASSERT_IS_EQUAL(converter.Read(output, 6), 6);
             ASSERT_IS_EQUAL(reader.Reads, 1);
@@ -305,7 +304,7 @@ class HConverter_Test: public Test
             int8_t expected[12] = {6, 12, 18, 6, 12, 18};
 
             TestWriter<int8_t> writer(12);
-            TestConverter_2_1<int8_t, int8_t> converter(&writer, 12, 3);
+            TestConverter_2_1<int8_t, int8_t> converter("hconverter_test_int8_int8_write_2_1", &writer, 12, 3);
 
             ASSERT_IS_EQUAL(converter.Write(input, 12), 12);
             ASSERT_IS_EQUAL(writer.Writes, 1);

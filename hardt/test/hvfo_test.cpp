@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -7,13 +6,13 @@ class HVfo_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(test_sine_cosine_10_100);
             UNITTEST(test_frequency_10_20);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HVfo";
         }
@@ -25,7 +24,7 @@ class HVfo_Test: public Test
             int rate = 100;
             int frequency = 10;
 
-            HVfo<int8_t> g(rate, frequency, 127);
+            HVfo<int8_t> g("hvfo_test_sine_cosine_10_100", rate, frequency, 127);
 
             int8_t buffer[11];
             g.Read(buffer, 11);
@@ -62,7 +61,7 @@ class HVfo_Test: public Test
         {
             int rate = 100;
 
-            HVfo<int8_t> g(rate, 10, 127);
+            HVfo<int8_t> g("htest_hvfo_test_frequency_10_20", rate, 10, 127);
 
             int8_t buffer[11];
             g.Read(buffer, 11);

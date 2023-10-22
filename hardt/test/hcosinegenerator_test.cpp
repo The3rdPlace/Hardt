@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -7,12 +6,12 @@ class HCosineGenerator_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(test_cosine_10_100);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HCosineGenerator";
         }
@@ -25,7 +24,7 @@ class HCosineGenerator_Test: public Test
             int frequency = 10;
             int amplitude = 127;
 
-            HCosineGenerator<int8_t> g(rate, frequency, amplitude);
+            HCosineGenerator<int8_t> g("hcosinegenerator_test_cosine_10_100", rate, frequency, amplitude);
 
             int8_t buffer[11];
             g.Read(buffer, 11);

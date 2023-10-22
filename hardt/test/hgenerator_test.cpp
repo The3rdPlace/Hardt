@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include <iostream>
+#include <utility>
 
 #include "test.h"
 
@@ -7,14 +7,14 @@ class HGenerator_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(test_sine_10_100);
             UNITTEST(test_cosine_10_100);
             UNITTEST(test_cosine_10_100_from_next);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HGenerator";
         }
@@ -25,8 +25,8 @@ class HGenerator_Test: public Test
         {
             public:
 
-                test_generator(int rate, int frequency, float phase = 0):
-                    HGenerator<int8_t>((H_SAMPLE_RATE) rate, frequency, 127, phase)
+                test_generator(std::string id, int rate, int frequency, float phase = 0):
+                    HGenerator<int8_t>(std::move(id), (H_SAMPLE_RATE) rate, frequency, 127, phase)
                 {}
         };
 
@@ -35,7 +35,7 @@ class HGenerator_Test: public Test
             int rate = 100;
             int frequency = 10;
 
-            test_generator tg(rate, frequency);
+            test_generator tg("test_generator", rate, frequency);
 
             int8_t buffer[11];
             tg.Read(buffer, 11);
@@ -58,7 +58,7 @@ class HGenerator_Test: public Test
             int rate = 100;
             int frequency = 10;
             float phase = M_PI / 2;
-            test_generator tg(rate, frequency, phase);
+            test_generator tg("test_generator", rate, frequency, phase);
 
             int8_t buffer[11];
             tg.Read(buffer, 11);
@@ -81,11 +81,11 @@ class HGenerator_Test: public Test
         int rate = 100;
         int frequency = 10;
         float phase = M_PI / 2;
-        test_generator tg(rate, frequency, phase);
+        test_generator tg("test_generator", rate, frequency, phase);
 
         int8_t buffer[11];
-        for( int i = 0; i < 11; i++ ) {
-            buffer[i] = tg.Next();
+        for(signed char & i : buffer) {
+            i = tg.Next();
         }
 
         ASSERT_IS_EQUAL((int) buffer[0], 127);
