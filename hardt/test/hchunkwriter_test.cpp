@@ -4,13 +4,13 @@ class HChunkWriter_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(test_write);
             UNITTEST(test_write_chunked);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HChunkWriter";
         }
@@ -25,11 +25,11 @@ class HChunkWriter_Test: public Test
                 int8_t Received[1024];
 
                 TestWriter():
-                    HChunkWriter()
+                    HChunkWriter("testwriter")
                 {}
 
                 TestWriter(int chunksize):
-                    HChunkWriter(chunksize)
+                    HChunkWriter("testwriter", chunksize)
                 {}
 
                 int WriteChunk(int8_t* src, size_t chunksize)

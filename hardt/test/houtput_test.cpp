@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -12,7 +11,7 @@ class HOutput_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(test_output);
             UNITTEST(test_output_ready);
@@ -21,7 +20,7 @@ class HOutput_Test: public Test
             UNITTEST(test_chunked_output);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HOutput";
         }
@@ -35,7 +34,7 @@ class HOutput_Test: public Test
         {
             private:
 
-                int Output(T* src, size_t blocksize)
+                int Output(T* src, size_t blocksize) override
                 {
                     counter++;
 
@@ -57,31 +56,32 @@ class HOutput_Test: public Test
 
             public:
 
-                TestOutput():
+                explicit TestOutput(std::string id):
+                    HOutput<T, int32_t>(id),
                     counter(0),
                     result(0)
                 {}
 
-                TestOutput(std::function<void()> ready):
-                    HOutput<T, int32_t>(ready),
+                TestOutput(std::string id, std::function<void()> ready):
+                    HOutput<T, int32_t>(id, ready),
                     counter(0),
                     result(0)
                 {}
 
-                TestOutput(std::function<void(int32_t*, size_t)> ready):
-                    HOutput<T, int32_t>(ready),
+                TestOutput(std::string id, std::function<void(int32_t*, size_t)> ready):
+                    HOutput<T, int32_t>(id, ready),
                     counter(0),
                     result(0)
                 {}
 
-                TestOutput(std::function<void(int32_t)> ready):
-                    HOutput<T, int32_t>(ready),
+                TestOutput(std::string id, std::function<void(int32_t)> ready):
+                    HOutput<T, int32_t>(id, ready),
                     counter(0),
                     result(0)
                 {}
 
-                TestOutput(int chunksize):
-                    HOutput<T, int32_t>(2),
+                TestOutput(std::string id, int chunksize):
+                    HOutput<T, int32_t>(id, 2),
                     counter(0),
                     result(0)
                 {}
@@ -123,7 +123,7 @@ class HOutput_Test: public Test
         {
             int8_t input[8] = {1, 2, 3, 4, 5, 6};
 
-            TestOutput<int8_t> output;
+            TestOutput<int8_t> output("test_output");
             readyCalled = 0;
             readyBufferCalled = 0;
             readyValueCalled = 0;
@@ -152,7 +152,7 @@ class HOutput_Test: public Test
             int8_t input[8] = {1, 2, 3, 4, 5, 6};
 
             std::function<void()> func = std::bind( &HOutput_Test::ready, this);
-            TestOutput<int8_t> output(func);
+            TestOutput<int8_t> output("houtput_test_output_ready", func);
             readyCalled = 0;
             readyBufferCalled = 0;
             readyValueCalled = 0;
@@ -183,7 +183,7 @@ class HOutput_Test: public Test
             using std::placeholders::_1;
             using std::placeholders::_2;
             std::function<void(int32_t*, size_t)> func = std::bind( &HOutput_Test::readyBuffer, this, _1, _2);
-            TestOutput<int8_t> output(func);
+            TestOutput<int8_t> output("houtput_test_ready_buffer", func);
             readyCalled = 0;
             readyBufferCalled = 0;
             readyValueCalled = 0;
@@ -213,7 +213,7 @@ class HOutput_Test: public Test
 
             using std::placeholders::_1;
             std::function<void(int32_t)> func = std::bind( &HOutput_Test::readyValue, this, _1);
-            TestOutput<int8_t> output(func);
+            TestOutput<int8_t> output("houtput_test_ready_value", func);
             readyCalled = 0;
             readyBufferCalled = 0;
             readyValueCalled = 0;
@@ -241,7 +241,7 @@ class HOutput_Test: public Test
         {
             int8_t input[8] = {1, 2, 3, 4, 5, 6};
 
-            TestOutput<int8_t> output(2);
+            TestOutput<int8_t> output("houtput_test_chunked_output", 2);
             readyCalled = 0;
             readyBufferCalled = 0;
             readyValueCalled = 0;

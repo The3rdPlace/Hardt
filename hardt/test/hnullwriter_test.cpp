@@ -19,7 +19,7 @@ class HNullWriter_Test: public Test
 
         void test_writes_int8()
         {
-            HNullWriter<int8_t> wr;
+            HNullWriter<int8_t> wr("hnullwriter_test_int8");
             int8_t input[1024];
 
             ASSERT_IS_EQUAL(wr.Write(input, 10), 10);
@@ -31,7 +31,7 @@ class HNullWriter_Test: public Test
 
         void test_writes_int32()
         {
-            HNullWriter<int32_t> wr;
+            HNullWriter<int32_t> wr("hnullwriter_test_int32");
             int32_t input[1024];
 
             ASSERT_IS_EQUAL(wr.Write(input, 10), 10);

@@ -52,14 +52,16 @@ class HConverter : public HReader<Tout>, public HWriter<Tin>, public HWriterCons
          * @param blocksizeOut Number of output samples
          * @param probe Probe
          */
-        HConverter(HReader<Tin>* reader, size_t blocksizeIn, size_t blocksizeOut, HProbe<Tout>* probe = nullptr):
+        HConverter(std::string id, HReader<Tin>* reader, size_t blocksizeIn, size_t blocksizeOut, HProbe<Tout>* probe = nullptr):
+            HReader<Tout>(id),
+            HWriter<Tin>(id),
+            HWriterConsumer<Tout>(id),
             _reader(reader),
             _writer(nullptr),
             _blocksizeIn(blocksizeIn),
             _blocksizeOut(blocksizeOut),
             _output(NULL),
             _probe(probe) {
-
             _input = new Tin[blocksizeIn];
         }
 
@@ -71,7 +73,10 @@ class HConverter : public HReader<Tout>, public HWriter<Tin>, public HWriterCons
          * @param blocksizeOut Number of output samples
          * @param probe Probe
          */
-        HConverter(HWriter<Tout>* writer, size_t blocksizeIn, size_t blocksizeOut, HProbe<Tout>* probe = nullptr):
+        HConverter(std::string id, HWriter<Tout>* writer, size_t blocksizeIn, size_t blocksizeOut, HProbe<Tout>* probe = nullptr):
+            HReader<Tout>(id),
+            HWriter<Tin>(id),
+            HWriterConsumer<Tout>(id),
             _reader(nullptr),
             _writer(writer),
             _blocksizeIn(blocksizeIn),

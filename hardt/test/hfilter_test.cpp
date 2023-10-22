@@ -44,11 +44,11 @@ class HFilter_Test: public Test
             public:
 
                 TestFilter(HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL):
-                    HFilter<T>(writer, blocksize, probe)
+                    HFilter<T>("testfilter", writer, blocksize, probe)
                 {}
 
                 TestFilter(HReader<T>* reader, size_t blocksize, HProbe<T>* probe = NULL):
-                    HFilter<T>(reader, blocksize, probe)
+                    HFilter<T>("testfilter", reader, blocksize, probe)
                 {}
         };
 

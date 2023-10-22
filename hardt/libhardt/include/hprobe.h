@@ -15,10 +15,10 @@ class HProbe: public HFileWriter<T>
 
     public:
 
-        /** Initialize probe, writes only occurres when 'enable'
+        /** Initialize probe, writes only occurs when 'enable'
             is set to true */
         HProbe(std::string name, bool enable):
-            HFileWriter<T>("PROBE_" + name + ".pcm"),
+            HFileWriter<T>(name, "PROBE_" + name + ".pcm"),
             _enabled(enable)
         {
             if( _enabled )
