@@ -289,9 +289,9 @@ class Test
                 HCommand LastCommand;
                 void* LastContent;
 
-                TestWriter(size_t blocksize, bool multipleWrites = true, int writeDelay = 0, bool continuedWrites = false):
-                    HWriter<T>("writer"),
-                    HWriterConsumer<T>("writerconsumer"),
+                TestWriter(std::string id, size_t blocksize, bool multipleWrites = true, int writeDelay = 0, bool continuedWrites = false):
+                    HWriter<T>(id),
+                    HWriterConsumer<T>(id),
                     Writes(0),
                     Samples(0),
                     _writer(nullptr),
@@ -308,9 +308,9 @@ class Test
                     memset((void*) Received, 0, blocksize * sizeof(T));
                 }
 
-                TestWriter(HWriter<T>* writer, size_t blocksize, bool multipleWrites = true, int writeDelay = 0, bool continuedWrites = false):
-                    HWriter<T>("writer"),
-                    HWriterConsumer<T>("writerconsumer"),
+                TestWriter(std::string id, HWriter<T>* writer, size_t blocksize, bool multipleWrites = true, int writeDelay = 0, bool continuedWrites = false):
+                    HWriter<T>(id),
+                    HWriterConsumer<T>(id),
                     Writes(0),
                     Samples(0),
                     _writer(writer),
@@ -327,9 +327,9 @@ class Test
                     memset((void*) Received, 0, blocksize * sizeof(T));
                 }
 
-                TestWriter(HWriterConsumer<T>* consumer, size_t blocksize, bool multipleWrites = true, int writeDelay = 0, bool continuedWrites = false):
-                    HWriter<T>("writer"),
-                    HWriterConsumer<T>("writerconsumer"),
+                TestWriter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, bool multipleWrites = true, int writeDelay = 0, bool continuedWrites = false):
+                    HWriter<T>(id),
+                    HWriterConsumer<T>(id),
                     Writes(0),
                     Samples(0),
                     _writer(nullptr),

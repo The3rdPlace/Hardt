@@ -7,7 +7,7 @@ class HFilter_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(test_filter_as_writer);
             UNITTEST(test_filter_as_reader);
@@ -19,7 +19,7 @@ class HFilter_Test: public Test
             UNITTEST(test_filter_read_disable_enable);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HFilter";
         }
@@ -54,7 +54,7 @@ class HFilter_Test: public Test
 
         void test_filter_as_writer()
         {
-            TestWriter<int8_t> wr(8);
+            TestWriter<int8_t> wr("hfilter_test_testwriter", 8);
             TestFilter<int8_t> filter(&wr, 6);
 
             int8_t input[8] = {1, 2, 4, 8, 16, 32, 0, 0};
@@ -110,7 +110,7 @@ class HFilter_Test: public Test
 
         void test_filter_with_probe()
         {
-            TestWriter<int8_t> wr(6);
+            TestWriter<int8_t> wr("hfilter_test_testwriter", 6);
             TestFilter<int8_t> filter(&wr, 6);
             HProbe<int8_t> probe("hfilter_test", true);
 
@@ -228,7 +228,7 @@ class HFilter_Test: public Test
 
         void test_filter_write_disable_enable()
         {
-            TestWriter<int8_t> wr(6);
+            TestWriter<int8_t> wr("hfilter_test_testwriter", 6);
             TestFilter<int8_t> filter(&wr, 6);
 
             int8_t input[6] = {1, 2, 4, 8, 16, 32};

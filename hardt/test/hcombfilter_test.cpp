@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -7,13 +6,13 @@ class HCombFilter_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(test_feedforward_filter_as_writer);
             UNITTEST(test_feedforward_filter_as_reader);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HCombFilter";
         }
@@ -33,8 +32,8 @@ class HCombFilter_Test: public Test
 
         void test_feedforward_filter_as_writer()
         {
-            TestWriter<int8_t> wr(1024);
-            HCombFilter<int8_t> filter(wr.Writer(), 48000, 50, -1, 1024);
+            TestWriter<int8_t> wr("hcombfilter_test_testwriter", 1024);
+            HCombFilter<int8_t> filter("hcombfilter_test_feedforward_filter_as_writer", wr.Writer(), 48000, 50, -1, 1024);
 
             ASSERT_IS_EQUAL(filter.Write(input, 1024), 1024);
             ASSERT_IS_EQUAL((int) wr.Received[0], 1);
@@ -68,7 +67,7 @@ class HCombFilter_Test: public Test
         void test_feedforward_filter_as_reader()
         {
             TestReader<int8_t> rd(input, 1024);
-            HCombFilter<int8_t> filter(&rd, 48000, 50, -1, 1024);
+            HCombFilter<int8_t> filter("hcombfilter_test_feedforward_filter_as_reader", &rd, 48000, 50, -1, 1024);
 
             int8_t received[1024];
             ASSERT_IS_EQUAL(filter.Read(received, 1024), 1024);

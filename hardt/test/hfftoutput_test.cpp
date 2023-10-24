@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -7,7 +6,7 @@ class HFftOutput_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(test_fft_static_callback);
             UNITTEST(test_fft_static_callback_with_factory);
@@ -21,7 +20,7 @@ class HFftOutput_Test: public Test
             INTEGRATIONTEST(test_fft_speed_with_chunking);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HFftOutput";
         }
@@ -42,7 +41,7 @@ class HFftOutput_Test: public Test
         {
             staticReady++;
 
-            if( staticSpectrum != NULL && data != NULL )
+            if( staticSpectrum != nullptr && data != NULL )
             {
                 memcpy((void*) staticSpectrum, (void*) data[0].Spectrum, data[0].Size * sizeof(double));
             }
@@ -69,7 +68,7 @@ class HFftOutput_Test: public Test
         void test_fft_static_callback()
         {
             staticReady = 0;
-            auto fft = HFftOutput<int16_t>(10, 1, 1, new HCustomWriter<HFftResults>(staticCallback), new TestWindow);
+            auto fft = HFftOutput<int16_t>("hfftoutput_test_static_callback", 10, 1, 1, new HCustomWriter<HFftResults>("hfftoutput_test_static_callback_custom_writer", staticCallback), new TestWindow);
             writeToFFT(&fft);
             ASSERT_IS_EQUAL(staticReady, 2);
         }
@@ -77,7 +76,7 @@ class HFftOutput_Test: public Test
         void test_fft_static_callback_with_factory()
         {
             staticReady = 0;
-            HFftOutput<int16_t> fft(10, 1, 1, HCustomWriter<HFftResults>::Create(staticCallback), new TestWindow);
+            HFftOutput<int16_t> fft("hfftoutput_test_static_callback_with_factory", 10, 1, 1, HCustomWriter<HFftResults>::Create("hfftoutput_test_static_callback_with_factory_custom_writer", staticCallback), new TestWindow);
             writeToFFT(&fft);
             ASSERT_IS_EQUAL(staticReady, 2);
         }
@@ -85,7 +84,7 @@ class HFftOutput_Test: public Test
         void test_fft_member_callback()
         {
             ready = 0;
-            HFftOutput<int16_t> fft(10, 1, 1, HCustomWriter<HFftResults>::Create<HFftOutput_Test>(this, &HFftOutput_Test::memberCallback), new TestWindow);
+            HFftOutput<int16_t> fft("hfftoutput_test_member_callback", 10, 1, 1, HCustomWriter<HFftResults>::Create<HFftOutput_Test>("hfftoutput_test_member_callback_custom_writer", this, &HFftOutput_Test::memberCallback), new TestWindow);
             writeToFFT(&fft);
             ASSERT_IS_EQUAL(ready, 2);
         }
@@ -96,10 +95,10 @@ class HFftOutput_Test: public Test
             staticSpectrum = new double[N / 2];
 
             // Create the fft
-            HFftOutput<int16_t> fft(N, 1, 1, new HCustomWriter<HFftResults>(staticCallback), new TestWindow, fs, factor, center);
+            HFftOutput<int16_t> fft("hfftoutput_test_rate_frequency", N, 1, 1, new HCustomWriter<HFftResults>("hfftoutput_test_rate_frequency_custom_writer", staticCallback), new TestWindow, fs, factor, center);
 
             // Get a sinewave at 'fg' with samplerate 'fs' and amplitude '100'
-            HSineGenerator<int16_t> g(fs, fg, 100);
+            HSineGenerator<int16_t> g("hfftoutput_test_rate_frequency_sine_generator", fs, fg, 100);
             int16_t input[N];
 
             // Run a number of read-write iterations
@@ -220,14 +219,14 @@ class HFftOutput_Test: public Test
             staticSpectrum = new double[N / 2];
 
             // Get a 1KHz sinewave generator at samplerate 48K
-            HSineGenerator<int16_t> g(48000, 1000, 100);
+            HSineGenerator<int16_t> g("hfftoutput_test_speed_N_sine_generator", 48000, 1000, 100);
             int16_t input[N * chunks];
             g.Read(input, N * chunks);
 
             time_t start;
             time_t end;
 
-            HFftOutput<int16_t> fft(N, 1, 1, new HCustomWriter<HFftResults>(staticCallback), new TestWindow);
+            HFftOutput<int16_t> fft("hfftoutput_test_speed_N", N, 1, 1, new HCustomWriter<HFftResults>("hfftoutput_test_speed_N_custom_writer", staticCallback), new TestWindow);
 
             int ffts = 0;
             time(&start);
@@ -283,7 +282,7 @@ class HFftOutput_Test: public Test
         void test_zoom_helpers()
         {
             // Zoom = 1 (no zoom)
-            HFftOutput<int16_t> fft_1(1024, 1, 1, new HCustomWriter<HFftResults>(staticCallback), new TestWindow);
+            HFftOutput<int16_t> fft_1("hfftoutput_test_zoom_helpers_1", 1024, 1, 1, new HCustomWriter<HFftResults>("hftoutput_test_zoom_helpers_1_custom_writer", staticCallback), new TestWindow);
             ASSERT_IS_EQUAL(fft_1.Width(), 0);
             ASSERT_IS_EQUAL(fft_1.Center(), 0);
             ASSERT_IS_EQUAL(fft_1.Left(), 0);
@@ -292,7 +291,7 @@ class HFftOutput_Test: public Test
             ASSERT_IS_EQUAL( test_fft_rate_frequency_N(H_SAMPLE_RATE_8K, 1000, 1024), 1000 );
 
             // Zoom = 2, center = 0 (middle)
-            HFftOutput<int16_t> fft_2(1024, 1, 1, new HCustomWriter<HFftResults>(staticCallback), new TestWindow, H_SAMPLE_RATE_8K, 2, 0);
+            HFftOutput<int16_t> fft_2("hfftoutput_test_zoom_helpers_2", 1024, 1, 1, new HCustomWriter<HFftResults>("hfftoutput_test_zoom_helpers_2_custom_writer", staticCallback), new TestWindow, H_SAMPLE_RATE_8K, 2, 0);
             ASSERT_IS_EQUAL(fft_2.Rate(), 4000);
             ASSERT_IS_EQUAL(fft_2.Width(), 2000);
             ASSERT_IS_EQUAL(fft_2.Center(), 2000);
@@ -302,7 +301,7 @@ class HFftOutput_Test: public Test
             ASSERT_IS_EQUAL( test_fft_rate_frequency_N(H_SAMPLE_RATE_8K, 1500, 1024, 2, 0, 2) / 2, 500 );
 
             // Zoom = 2, center = 1000
-            HFftOutput<int16_t> fft_3(1024, 1, 1, new HCustomWriter<HFftResults>(staticCallback), new TestWindow, H_SAMPLE_RATE_8K, 2, 1000);
+            HFftOutput<int16_t> fft_3("hfftoutput_test_zoom_helpers_3", 1024, 1, 1, new HCustomWriter<HFftResults>("hfftoutput_test_zoom_helpers_3_custom_writer", staticCallback), new TestWindow, H_SAMPLE_RATE_8K, 2, 1000);
             ASSERT_IS_EQUAL(fft_3.Rate(), 4000);
             ASSERT_IS_EQUAL(fft_3.Width(), 2000);
             ASSERT_IS_EQUAL(fft_3.Center(), 1000);
@@ -312,7 +311,7 @@ class HFftOutput_Test: public Test
             ASSERT_IS_EQUAL( test_fft_rate_frequency_N(H_SAMPLE_RATE_8K, 800, 1024, 2, 1000, 2) / 2, 800 );
 
             // Zoom = 4, center = 2500
-            HFftOutput<int16_t> fft_4(1024, 1, 1, new HCustomWriter<HFftResults>(staticCallback), new TestWindow, H_SAMPLE_RATE_8K, 4, 2500);
+            HFftOutput<int16_t> fft_4("hfftoutput_test_zoom_helpers_4", 1024, 1, 1, new HCustomWriter<HFftResults>("hfftoutput_test_zoom_helpers_4_custom_writer", staticCallback), new TestWindow, H_SAMPLE_RATE_8K, 4, 2500);
             ASSERT_IS_EQUAL(fft_4.Rate(), 2000);
             ASSERT_IS_EQUAL(fft_4.Width(), 1000);
             ASSERT_IS_EQUAL(fft_4.Center(), 2500);

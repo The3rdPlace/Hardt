@@ -7,7 +7,7 @@ class HBiQuads_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             // Test that parameters is assigned and propagated to the IIR filter
             UNITTEST(test_biquad_parameters);
@@ -36,7 +36,7 @@ class HBiQuads_Test: public Test
             UNITTEST(test_highshelvingbiquad_as_reader);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HBiquad(s)";
         }
@@ -82,25 +82,25 @@ class HBiQuads_Test: public Test
                 static HIirFilter<T>* Create(HWriter<T>* writer, size_t blocksize)
                 {
                     TestBiQuad<T>* bq = new TestBiQuad(1, 1, 2, 1, 2, 3);
-                    return new HIirFilter<T>(writer, ((HBiQuad<T>*) bq)->Calculate(), 5, blocksize);
+                    return new HIirFilter<T>("hbiquads_test_hiirfilter", writer, ((HBiQuad<T>*) bq)->Calculate(), 5, blocksize);
                 }
 
                 static HIirFilter<T>* Create(HReader<T>* writer, size_t blocksize)
                 {
                     TestBiQuad<T>* bq = new TestBiQuad(1, 1, 2, 1, 2, 3);
-                    return new HIirFilter<T>(writer, ((HBiQuad<T>*) bq)->Calculate(), 5, blocksize);
+                    return new HIirFilter<T>("hbiquads_test_hiirfilter", writer, ((HBiQuad<T>*) bq)->Calculate(), 5, blocksize);
                 }
 
                 static HIirFilter<T>* CreateNormalized(HWriter<T>* writer, size_t blocksize)
                 {
                     TestBiQuad<T>* bq = new TestBiQuad(2, 2, 4, 2, 4, 6);
-                    return new HIirFilter<T>(writer, ((HBiQuad<T>*) bq)->Calculate(), 5, blocksize);
+                    return new HIirFilter<T>("hbiquads_test_hiirfilter", writer, ((HBiQuad<T>*) bq)->Calculate(), 5, blocksize);
                 }
         };
 
         void test_biquad_parameters()
         {
-            TestWriter<int16_t> wr(6);
+            TestWriter<int16_t> wr("hbiquads_test_testwriter", 6);
             HFilter<int16_t>* filter = TestBiQuad<int16_t>::Create(&wr, 6);
 
             std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
@@ -116,7 +116,7 @@ class HBiQuads_Test: public Test
 
         void test_biquad_parameters_normalized()
         {
-            TestWriter<int16_t> wr(6);
+            TestWriter<int16_t> wr("hbiquads_test_testwriter", 6);
             HFilter<int16_t>* filter = TestBiQuad<int16_t>::CreateNormalized(&wr, 6);
 
             std::vector<float> c = ((HIirFilter<int16_t>*) filter)->GetCoefficients();
@@ -132,7 +132,7 @@ class HBiQuads_Test: public Test
 
         void test_filter_as_writer()
         {
-            TestWriter<int16_t> wr(6);
+            TestWriter<int16_t> wr("hbiquards_test_testwriter", 6);
             HFilter<int16_t>* filter = TestBiQuad<int16_t>::Create(&wr, 6);
 
             int16_t input[6] = {1, 2, 4, 8, 16, 32};
@@ -165,8 +165,8 @@ class HBiQuads_Test: public Test
 
         void test_lowpassbiquad_as_writer()
         {
-            TestWriter<int16_t> wr(6);
-            HBiQuadFilter<HLowpassBiQuad<int16_t>, int16_t> filter(wr.Writer(), 8000, 48000, 0.7, 1, 4096);
+            TestWriter<int16_t> wr("hbiquads_test_testwriter", 6);
+            HBiQuadFilter<HLowpassBiQuad<int16_t>, int16_t> filter("hbiquads_test_lowpass_biquads_as_writer", wr.Writer(), 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = filter.GetCoefficients();
             ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(0.154455f));  // b0
@@ -183,7 +183,7 @@ class HBiQuads_Test: public Test
         {
             int16_t output[6] = {1, 2, 4, 8, 16, 32};
             TestReader<int16_t> rd(output, 6);
-            HBiQuadFilter<HLowpassBiQuad<int16_t>, int16_t> filter(&rd, 8000, 48000, 0.7, 1, 4096);
+            HBiQuadFilter<HLowpassBiQuad<int16_t>, int16_t> filter("hbiquads_test_lowpass_biquad_as_reader", &rd, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = filter.GetCoefficients();
             ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(0.154455f));  // b0
@@ -198,8 +198,8 @@ class HBiQuads_Test: public Test
 
         void test_highpassbiquad_as_writer()
         {
-            TestWriter<int16_t> wr(6);
-            HBiQuadFilter<HHighpassBiQuad<int16_t>, int16_t> filter(wr.Writer(), 8000, 48000, 0.7, 1, 4096);
+            TestWriter<int16_t> wr("hbiquads_test_testwriter", 6);
+            HBiQuadFilter<HHighpassBiQuad<int16_t>, int16_t> filter("hbiquads_test_highpass_biquad_as_writer", wr.Writer(), 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = filter.GetCoefficients();
             ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(0.463367f));  // b0
@@ -216,7 +216,7 @@ class HBiQuads_Test: public Test
         {
             int16_t output[6] = {1, 2, 4, 8, 16, 32};
             TestReader<int16_t> rd(output, 6);
-            HBiQuadFilter<HHighpassBiQuad<int16_t>, int16_t> filter(&rd, 8000, 48000, 0.7, 1, 4096);
+            HBiQuadFilter<HHighpassBiQuad<int16_t>, int16_t> filter("hbiquads_test_highpass_biquad_as_reader", &rd, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = filter.GetCoefficients();
             ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(0.463367f));  // b0
@@ -231,8 +231,8 @@ class HBiQuads_Test: public Test
 
         void test_bandpassbiquad_as_writer()
         {
-            TestWriter<int16_t> wr(6);
-            HBiQuadFilter<HBandpassBiQuad<int16_t>, int16_t> filter(wr.Writer(), 8000, 48000, 0.7, 1, 4096);
+            TestWriter<int16_t> wr("hbiquads_test_testwriter", 6);
+            HBiQuadFilter<HBandpassBiQuad<int16_t>, int16_t> filter("hbiquads_test_bandpass_biquad_as_writer", wr.Writer(), 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = filter.GetCoefficients();
             ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(0.267525f));  // b0
@@ -249,7 +249,7 @@ class HBiQuads_Test: public Test
         {
             int16_t output[6] = {1, 2, 4, 8, 16, 32};
             TestReader<int16_t> rd(output, 6);
-            HBiQuadFilter<HBandpassBiQuad<int16_t>, int16_t> filter(&rd, 8000, 48000, 0.7, 1, 4096);
+            HBiQuadFilter<HBandpassBiQuad<int16_t>, int16_t> filter("hbiquads_test_bandpass_biquad_as_reader", &rd, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = filter.GetCoefficients();
             ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(0.267525f));  // b0
@@ -264,8 +264,8 @@ class HBiQuads_Test: public Test
 
         void test_notchbiquad_as_writer()
         {
-            TestWriter<int16_t> wr(6);
-            HBiQuadFilter<HNotchBiQuad<int16_t>, int16_t> filter(wr.Writer(), 8000, 48000, 0.7, 1, 4096);
+            TestWriter<int16_t> wr("hbiquads_test_testwriter", 6);
+            HBiQuadFilter<HNotchBiQuad<int16_t>, int16_t> filter("hbiquads_test_notchpass_biquad_as_writer", wr.Writer(), 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = filter.GetCoefficients();
             ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(0.617822f));  // b0
@@ -282,7 +282,7 @@ class HBiQuads_Test: public Test
         {
             int16_t output[6] = {1, 2, 4, 8, 16, 32};
             TestReader<int16_t> rd(output, 6);
-            HBiQuadFilter<HNotchBiQuad<int16_t>, int16_t> filter(&rd, 8000, 48000, 0.7, 1, 4096);
+            HBiQuadFilter<HNotchBiQuad<int16_t>, int16_t> filter("hbiquads_test_notchpass_biquad_as_reader", &rd, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = filter.GetCoefficients();
             ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(0.617822f));  // b0
@@ -297,8 +297,8 @@ class HBiQuads_Test: public Test
 
         void test_allpassbiquad_as_writer()
         {
-            TestWriter<int16_t> wr(6);
-            HBiQuadFilter<HAllpassBiQuad<int16_t>, int16_t> filter(wr.Writer(), 8000, 48000, 0.7, 1, 4096);
+            TestWriter<int16_t> wr("hbiquads_test_testwriter", 6);
+            HBiQuadFilter<HAllpassBiQuad<int16_t>, int16_t> filter("hbiquads_test_allpass_biquad_as_writer", wr.Writer(), 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = filter.GetCoefficients();
             ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(0.235644f));  // b0
@@ -315,7 +315,7 @@ class HBiQuads_Test: public Test
         {
             int16_t output[6] = {1, 2, 4, 8, 16, 32};
             TestReader<int16_t> rd(output, 6);
-            HBiQuadFilter<HAllpassBiQuad<int16_t>, int16_t> filter(&rd, 8000, 48000, 0.7, 1, 4096);
+            HBiQuadFilter<HAllpassBiQuad<int16_t>, int16_t> filter("hbiquads_test_allpass_biquad_as_reader", &rd, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = filter.GetCoefficients();
             ASSERT_IS_EQUAL(ftrim(c[0]), ftrim(0.235644f));  // b0
@@ -330,8 +330,8 @@ class HBiQuads_Test: public Test
 
         void test_peakingeqbiquad_as_writer()
         {
-            TestWriter<int16_t> wr(6);
-            HBiQuadFilter<HPeakingEQBiQuad<int16_t>, int16_t> filter(wr.Writer(), 8000, 48000, 0.7, 1, 4096);
+            TestWriter<int16_t> wr("hbiquads_test_testwriter", 6);
+            HBiQuadFilter<HPeakingEQBiQuad<int16_t>, int16_t> filter("hbiquads_test_peaking_biquad_as_writer", wr.Writer(), 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = filter.GetCoefficients();
             ASSERT_IS_EQUAL(ftrim(c[0]), 1044986);           // b0
@@ -348,7 +348,7 @@ class HBiQuads_Test: public Test
         {
             int16_t output[6] = {1, 2, 4, 8, 16, 32};
             TestReader<int16_t> rd(output, 6);
-            HBiQuadFilter<HPeakingEQBiQuad<int16_t>, int16_t> filter(&rd, 8000, 48000, 0.7, 1, 4096);
+            HBiQuadFilter<HPeakingEQBiQuad<int16_t>, int16_t> filter("hbiquads_test_peaking_biquad_as_reader", &rd, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = filter.GetCoefficients();
             ASSERT_IS_EQUAL(ftrim(c[0]), 1044986);           // b0
@@ -363,8 +363,8 @@ class HBiQuads_Test: public Test
 
         void test_lowshelvingbiquad_as_writer()
         {
-            TestWriter<int16_t> wr(6);
-            HBiQuadFilter<HLowShelvingBiQuad<int16_t>, int16_t> filter(wr.Writer(), 8000, 48000, 0.7, 1, 4096);
+            TestWriter<int16_t> wr("hbiquads_test_testwriter", 6);
+            HBiQuadFilter<HLowShelvingBiQuad<int16_t>, int16_t> filter("hbiquads_test_lowshelving_biquad_as_writer", wr.Writer(), 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = filter.GetCoefficients();
             ASSERT_IS_EQUAL(ftrim(c[0]), 1040586);          // b0
@@ -381,7 +381,7 @@ class HBiQuads_Test: public Test
         {
             int16_t output[6] = {1, 2, 4, 8, 16, 32};
             TestReader<int16_t> rd(output, 6);
-            HBiQuadFilter<HLowShelvingBiQuad<int16_t>, int16_t> filter(&rd, 8000, 48000, 0.7, 1, 4096);
+            HBiQuadFilter<HLowShelvingBiQuad<int16_t>, int16_t> filter("hbiquads_test_lowshelving_biquad_as_reader", &rd, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = filter.GetCoefficients();
             ASSERT_IS_EQUAL(ftrim(c[0]), 1040586);          // b0
@@ -396,8 +396,8 @@ class HBiQuads_Test: public Test
 
         void test_highshelvingbiquad_as_writer()
         {
-            TestWriter<int16_t> wr(6);
-            HBiQuadFilter<HHighShelvingBiQuad<int16_t>, int16_t> filter(wr.Writer(), 8000, 48000, 0.7, 1, 4096);
+            TestWriter<int16_t> wr("hbiquads_test_testwriter", 6);
+            HBiQuadFilter<HHighShelvingBiQuad<int16_t>, int16_t> filter("hbiquads_test_highshelving_biquad_as_writer", wr.Writer(), 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = filter.GetCoefficients();
             ASSERT_IS_EQUAL(ftrim(c[0]), 1078257); // b0
@@ -414,7 +414,7 @@ class HBiQuads_Test: public Test
         {
             int16_t output[6] = {1, 2, 4, 8, 16, 32};
             TestReader<int16_t> rd(output, 6);
-            HBiQuadFilter<HHighShelvingBiQuad<int16_t>, int16_t> filter(&rd, 8000, 48000, 0.7, 1, 4096);
+            HBiQuadFilter<HHighShelvingBiQuad<int16_t>, int16_t> filter("hbiquads_test_highshelving_biquad_as_reader", &rd, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = filter.GetCoefficients();
             ASSERT_IS_EQUAL(ftrim(c[0]), 1078257); // b0

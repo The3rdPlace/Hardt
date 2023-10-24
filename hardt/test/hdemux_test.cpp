@@ -7,14 +7,14 @@ class HDeMux_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(test_demux_write);
             UNITTEST(test_demux_read);
             UNITTEST(test_demux_consume);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HDeMux";
         }
@@ -23,13 +23,13 @@ class HDeMux_Test: public Test
 
         void test_demux_write()
         {
-            TestWriter<int8_t> wr_1(8);
-            TestWriter<int8_t> wr_2(8);
+            TestWriter<int8_t> wr_1("hdemux_test_testwriter_1", 8);
+            TestWriter<int8_t> wr_2("hdemux_test_testwriter_2", 8);
             std::vector< HWriter<int8_t>* > writers = { &wr_1, &wr_2 };
             int8_t input[8] = {1, 2, 3, 4, 5, 6, 7, 8};
             int8_t expected_1[8] = {1, 3, 5, 7, 0, 0, 0, 0};
             int8_t expected_2[8] = {2, 4, 6, 8, 0, 0, 0, 0};
-            HDeMux<int8_t> demux(writers, 8);
+            HDeMux<int8_t> demux("hdemux_test_write", writers, 8);
 
             ASSERT_IS_EQUAL(demux.Write(input, 8), 8);
             ASSERT_IS_EQUAL(memcmp((void*) wr_1.Received, (void*) expected_1, 8 * sizeof(int8_t)), 0);
@@ -46,7 +46,7 @@ class HDeMux_Test: public Test
             int8_t expected_1[8] = {1, 3, 5, 7, 9, 11, 13, 15};
             int8_t expected_2[8] = {2, 4, 6, 8, 10, 12, 14, 16};
             TestReader<int8_t> rd(input, 16);
-            HDeMux<int8_t> demux(&rd, 2, 8);
+            HDeMux<int8_t> demux("hdemux_test_read", &rd, 2, 8);
 
             int8_t received[8];
             ASSERT_IS_EQUAL(demux.Read(received, 8), 8);
@@ -70,10 +70,10 @@ class HDeMux_Test: public Test
 
         void test_demux_consume()
         {
-            TestWriter<int8_t> srcWr(8);
-            HDeMux<int8_t> demux(srcWr.Consumer(), 8);
-            TestWriter<int8_t> wr_1(demux.Consumer(), 8);
-            TestWriter<int8_t> wr_2(demux.Consumer(), 8);
+            TestWriter<int8_t> srcWr("hdemux_test_testwriter_src", 8);
+            HDeMux<int8_t> demux("hdemux_test_consume", srcWr.Consumer(), 8);
+            TestWriter<int8_t> wr_1("hdemux_test_testwriter_1", demux.Consumer(), 8);
+            TestWriter<int8_t> wr_2("hdemux_test_testwriter_2", demux.Consumer(), 8);
             int8_t input[8] = {1, 2, 3, 4, 5, 6, 7, 8};
             int8_t expected_1[8] = {1, 3, 5, 7, 0, 0, 0, 0};
             int8_t expected_2[8] = {2, 4, 6, 8, 0, 0, 0, 0};
