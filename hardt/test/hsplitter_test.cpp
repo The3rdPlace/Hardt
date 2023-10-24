@@ -6,14 +6,14 @@ class HSplitter_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(test_write);
             UNITTEST(test_write_with_vector);
             UNITTEST(test_ignore_multiple_setwriter_calls);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HSplitter";
         }
@@ -58,10 +58,10 @@ class HSplitter_Test: public Test
 
         void test_write()
         {
-            TestWriter<int8_t> writer1 = TestWriter<int8_t>(10);
-            TestWriter<int8_t> writer2 = TestWriter<int8_t>(10);
+            TestWriter<int8_t> writer1 = TestWriter<int8_t>("hsplitter_test_testwriter_1", 10);
+            TestWriter<int8_t> writer2 = TestWriter<int8_t>("hsplitter_test_testwriter_2", 10);
 
-            HSplitter<int8_t> splitter(&writer1, &writer2);
+            HSplitter<int8_t> splitter("hsplitter_test_write", &writer1, &writer2);
             int8_t input[10] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
             ASSERT_IS_NOT_EQUAL(memcmp((void*) writer1.Received, (void*) input, 10 * sizeof(int8_t)), 0);
@@ -75,16 +75,16 @@ class HSplitter_Test: public Test
 
         void test_write_with_vector()
         {
-            TestWriter<int8_t> writer1 = TestWriter<int8_t>(10);
-            TestWriter<int8_t> writer2 = TestWriter<int8_t>(10);
-            TestWriter<int8_t> writer3 = TestWriter<int8_t>(10);
+            TestWriter<int8_t> writer1 = TestWriter<int8_t>("hsplitter_test_testwriter_1", 10);
+            TestWriter<int8_t> writer2 = TestWriter<int8_t>("hsplitter_test_testwriter_2", 10);
+            TestWriter<int8_t> writer3 = TestWriter<int8_t>("hsplitter_test_testwriter_3", 10);
 
             std::vector< HWriter<int8_t>* > writers;
             writers.push_back(&writer1);
             writers.push_back(&writer2);
             writers.push_back(&writer3);
 
-            HSplitter<int8_t> splitter(writers);
+            HSplitter<int8_t> splitter("hsplitter_test_write_with_vector", writers);
             int8_t input[10] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
             ASSERT_IS_NOT_EQUAL(memcmp((void*) writer1.Received, (void*) input, 10 * sizeof(int8_t)), 0);
@@ -105,11 +105,11 @@ class HSplitter_Test: public Test
 
         void test_ignore_multiple_setwriter_calls()
         {
-            TestWriter<int8_t> Parent(10);
-            TestWriter<int8_t> writer1(10);
-            TestWriter<int8_t> writer2(10);
+            TestWriter<int8_t> Parent("hsplitter_test_testwriter_parent", 10);
+            TestWriter<int8_t> writer1("hsplitter_test_testwriter_1", 10);
+            TestWriter<int8_t> writer2("hsplitter_test_testwriter_2", 10);
 
-            HSplitter<int8_t> splitter(Parent.Consumer());
+            HSplitter<int8_t> splitter("hsplitter_test_ignore_multiple_setwriter_calls", Parent.Consumer());
             int8_t input[10] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
             splitter.SetWriter(&writer1);

@@ -141,7 +141,7 @@ class HConverter_Test: public Test
             int8_t input[6] = {1, 2, 3, 4, 5, 6};
             int8_t expected[6] = {3, 6, 9, 12, 15, 18};
 
-            TestWriter<int8_t> writer(6);
+            TestWriter<int8_t> writer("hconverter_test_testwriter", 6);
             TestConverter<int8_t, int8_t> converter("hconverter_test_int8_int8_write", &writer, 6, 3);
 
             converter.Write(input, 6);
@@ -180,7 +180,7 @@ class HConverter_Test: public Test
             int8_t input[6] = {1, 2, 3, 4, 5, 6};
             int8_t expected[6] = {-48, -96, 112, 64, 16, -32};
 
-            TestWriter<int8_t> writer(6);
+            TestWriter<int8_t> writer("hconverter_test_testwriter", 6);
             TestConverter<int8_t, int8_t> converter("hconverter_test_int8_int8_write_overflow", &writer, 6, 2000);
 
             converter.Write(input, 6);
@@ -219,7 +219,7 @@ class HConverter_Test: public Test
             int8_t input[6] = {1, 2, 3, 4, 5, 6};
             int16_t expected[6] = {4000, 8000, 12000, 16000, 20000, 24000};
 
-            TestWriter<int16_t> writer(6);
+            TestWriter<int16_t> writer("hconverter_test_testwriter", 6);
             TestConverter<int8_t, int16_t> converter("hconverter_test_int8_int16_write", &writer, 6, 4000);
 
             converter.Write(input, 6);
@@ -260,7 +260,7 @@ class HConverter_Test: public Test
             int8_t input[6] = {1, 2, 3, 4, 5, 6};
             int8_t expected[12] = {3, 3, 6, 6, 9, 9, 12, 12, 15, 15, 18, 18};
 
-            TestWriter<int8_t> writer(12);
+            TestWriter<int8_t> writer("hconverter_test_testwriter", 12);
             TestConverter_1_2<int8_t, int8_t> converter("hconverter_test_int8_int8_write_1_2", &writer, 6, 3);
 
             ASSERT_IS_EQUAL(converter.Write(input, 6), 6);
@@ -303,7 +303,7 @@ class HConverter_Test: public Test
             int8_t input[12] = {1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6};
             int8_t expected[12] = {6, 12, 18, 6, 12, 18};
 
-            TestWriter<int8_t> writer(12);
+            TestWriter<int8_t> writer("hconverter_test_testwriter", 12);
             TestConverter_2_1<int8_t, int8_t> converter("hconverter_test_int8_int8_write_2_1", &writer, 12, 3);
 
             ASSERT_IS_EQUAL(converter.Write(input, 12), 12);

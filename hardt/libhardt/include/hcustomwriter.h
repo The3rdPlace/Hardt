@@ -32,14 +32,16 @@ class HCustomWriter : public HWriter<T>
 
         /** Construct a HCustomWriter that wraps a function
             "int func(T* data, size_t size){}" by use of std::function */
-        HCustomWriter(std::function<int(T*, size_t)> customWriteFunc):
+        HCustomWriter(std::string id, std::function<int(T*, size_t)> customWriteFunc):
+            HWriter<T>(id),
             _customWriteFunc(customWriteFunc)
         {}
 
         /** Construct a new HCustomWriter that wraps a function
             "int func(T* data, size_t size){}" by use of std::function
             and registers with an upstream writer */
-        HCustomWriter(std::function<int(T*, size_t)> customWriteFunc, HWriterConsumer<T>* consumer):
+        HCustomWriter(std::string id, std::function<int(T*, size_t)> customWriteFunc, HWriterConsumer<T>* consumer):
+            HWriter<T>(id),
             _customWriteFunc(customWriteFunc)
         {
             consumer->SetWriter(this);
@@ -65,44 +67,44 @@ class HCustomWriter : public HWriter<T>
 
         /** Factory function to create a new HCustomWriter by wrapping a static
             function "int func(T* data, size_t size){}" */
-        static HCustomWriter<T>* Create(int(*customWriteFunc)(T*, size_t blocksize))
+        static HCustomWriter<T>* Create(std::string id, int(*customWriteFunc)(T*, size_t blocksize))
         {
             std::function<int(T*, size_t)> func = customWriteFunc;
 
-            return new HCustomWriter<T>(func);
+            return new HCustomWriter<T>(id, func);
         }
 
         /** Factory function to create a new HCustomWriter by wrapping a static
             function "int func(T* data, size_t size){}" and register with an upstream writer */
-        static HCustomWriter<T>* Create(int(*customWriteFunc)(T*, size_t blocksize), HWriterConsumer<T>* consumer)
+        static HCustomWriter<T>* Create(std::string id, int(*customWriteFunc)(T*, size_t blocksize), HWriterConsumer<T>* consumer)
         {
             std::function<int(T*, size_t)> func = customWriteFunc;
 
-            return new HCustomWriter<T>(func, consumer);
+            return new HCustomWriter<T>(id, func, consumer);
         }
 
         /** Factory function to create a new HCustomWriter by wrapping a member function
             function "int F::func(T* data, size_t size){}" */
         template <typename F>
-        static HCustomWriter<T>* Create(F* customWriterObject, int (F::*customWriteFunc)(T*, size_t blocksize))
+        static HCustomWriter<T>* Create(std::string id, F* customWriterObject, int (F::*customWriteFunc)(T*, size_t blocksize))
         {
             using std::placeholders::_1;
             using std::placeholders::_2;
             std::function<int(T*, size_t)> func = std::bind( customWriteFunc, customWriterObject, _1, _2);
 
-            return new HCustomWriter<T>(func);
+            return new HCustomWriter<T>(id, func);
         }
 
         /** Factory function to create a new HCustomWriter by wrapping a member function
             function "int F::func(T* data, size_t size){}" and register with an upstream writer */
         template <typename F>
-        static HCustomWriter<T>* Create(F* customWriterObject, int (F::*customWriteFunc)(T*, size_t blocksize), HWriterConsumer<T>* consumer)
+        static HCustomWriter<T>* Create(std::string id, F* customWriterObject, int (F::*customWriteFunc)(T*, size_t blocksize), HWriterConsumer<T>* consumer)
         {
             using std::placeholders::_1;
             using std::placeholders::_2;
             std::function<int(T*, size_t)> func = std::bind( customWriteFunc, customWriterObject, _1, _2);
 
-            return new HCustomWriter<T>(func, consumer);
+            return new HCustomWriter<T>(id, func, consumer);
         }
 
         bool Command(HCommand* command) {

@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -7,14 +6,14 @@ class HGoertzelOutput_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(test_goertzel_magnitude);
             UNITTEST(test_goertzel_bin);
             UNITTEST(test_goertzel_phase);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HGoertzelOutput";
         }
@@ -36,7 +35,7 @@ class HGoertzelOutput_Test: public Test
             const int N = 1024;
 
             // Get a 1KHz sinewave generator at samplerate 48K
-            HSineGenerator<int16_t> g(48000, 1000, 100);
+            HSineGenerator<int16_t> g("hgoertzeloutput_test_sine_generator", 48000, 1000, 100);
             int16_t input[4 * N];
             g.Read(input, 4 * N);
 
@@ -47,7 +46,7 @@ class HGoertzelOutput_Test: public Test
             for( float bin = 1; bin < N / 2; bin += 0.1f )
             {
                 // Check for result at 1KHz
-                grtzl = new HGoertzelOutput<int16_t>(N, 4, bin, HCustomWriter<HGoertzelResult>::Create<HGoertzelOutput_Test>(this, &HGoertzelOutput_Test::callback), &window);
+                grtzl = new HGoertzelOutput<int16_t>("hgoertzeloutput_test_magnitude", N, 4, bin, HCustomWriter<HGoertzelResult>::Create<HGoertzelOutput_Test>("hgoertzeloutput_test_magnitude_custom_writer", this, &HGoertzelOutput_Test::callback), &window);
                 ASSERT_IS_EQUAL(grtzl->Write(input, 4 * N), 4 * N);
 
                 if( floor(bin * 10) == 213 ) // = bin 21.3 adjusted for tiny decimal fractions
@@ -76,13 +75,13 @@ class HGoertzelOutput_Test: public Test
             const int N = 1024;
 
             // Get a 1KHz sinewave generator at samplerate 48K
-            HSineGenerator<int16_t> g(48000, 1000, 100);
+            HSineGenerator<int16_t> g("hgoertzeloutput_test_sine_generator", 48000, 1000, 100);
             int16_t input[4 * N];
             g.Read(input, 4 * N);
 
             // Get a Goertzel filter at 1Khz (bin = 21.3)
             HRectangularWindow<int16_t> window;
-            HGoertzelOutput<int16_t> grtzl(N, 4, 48000, 1000, HCustomWriter<HGoertzelResult>::Create<HGoertzelOutput_Test>(this, &HGoertzelOutput_Test::callback), &window);
+            HGoertzelOutput<int16_t> grtzl("hgoertzeloutput_test_bin", N, 4, 48000, 1000, HCustomWriter<HGoertzelResult>::Create<HGoertzelOutput_Test>("hgoertzeloutput_test_bin_custom_writer", this, &HGoertzelOutput_Test::callback), &window);
 
             // Check for result at 1KHz
             ASSERT_IS_EQUAL(grtzl.Write(input, 4 * N), 4 * N);
@@ -97,12 +96,12 @@ class HGoertzelOutput_Test: public Test
             // Get a 1KHz sine and cosine generator at samplerate 48K
             // It has not importance to use sin and cos, other than that
             // we know that they have a phase difference of 90 degr.,
-            HSineGenerator<int16_t> sinGenerator(48000, 1000, 100);
-            HCosineGenerator<int16_t> cosGenerator(48000, 1000, 100);
+            HSineGenerator<int16_t> sinGenerator("hgoertzeloutput_test_sine_generator", 48000, 1000, 100);
+            HCosineGenerator<int16_t> cosGenerator("hgoertzeloutput_test_cos_generator", 48000, 1000, 100);
             int16_t buffer[N * Iter];
 
             HRectangularWindow<int16_t> window;
-            HGoertzelOutput<int16_t> grtzl(N, Iter, 21.3f, HCustomWriter<HGoertzelResult>::Create<HGoertzelOutput_Test>(this, &HGoertzelOutput_Test::callback), &window);;
+            HGoertzelOutput<int16_t> grtzl("hgoertzeloutput_test_phase", N, Iter, 21.3f, HCustomWriter<HGoertzelResult>::Create<HGoertzelOutput_Test>("hgoertzeloutput_test_phase_custom_writer", this, &HGoertzelOutput_Test::callback), &window);;
 
             // Run several reads and compare phase
             for( int i = 0; i < 4; i++ )

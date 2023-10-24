@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -7,13 +6,13 @@ class HGain_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(test_gain_as_writer);
             UNITTEST(test_gain_as_reader);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HGain";
         }
@@ -26,9 +25,9 @@ class HGain_Test: public Test
 
         void test_gain_as_writer()
         {
-            TestWriter<int8_t> wr(8);
+            TestWriter<int8_t> wr("hgain_test_testwriter", 8);
             int8_t input[8] = {1, 2, 3, 4, 5, 6, 7, 8};
-            HGain<int8_t> gain(wr.Writer(), 2, 6);
+            HGain<int8_t> gain("hgain_test_as_writer", wr.Writer(), 2, 6);
 
             ASSERT_IS_EQUAL(gain.Write(input, 6), 6);
             ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected_2, 6 * sizeof(int8_t)), 0);
@@ -63,7 +62,7 @@ class HGain_Test: public Test
         {
             int8_t output[8] = {1, 2, 3, 4, 5, 6, 7, 8};
             TestReader<int8_t> rd(output, 8);
-            HGain<int8_t> gain(&rd, 2, 6);
+            HGain<int8_t> gain("hgain_test_as_reader", &rd, 2, 6);
 
             int8_t received[6];
             ASSERT_IS_EQUAL(gain.Read(received, 6), 6);

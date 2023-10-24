@@ -17,16 +17,18 @@ class HSplitter : public HWriter<T>, public HWriterConsumer<T>
     public:
 
         /** Construct a new HSplitter */
-        HSplitter(HWriter<T>* writer1, HWriter<T>* writer2)
-        {
+        HSplitter(std::string id, HWriter<T>* writer1, HWriter<T>* writer2):
+            HWriter<T>(id),
+            HWriterConsumer<T>(id) {
             HLog("HSplitter(HWriter*, HWriter*)");
             _writers.push_back(writer1);
             _writers.push_back(writer2);
         }
 
         /** Construct a new HSplitter */
-        HSplitter( std::vector< HWriter<T>* > writers)
-        {
+        HSplitter(std::string id, std::vector< HWriter<T>* > writers):
+            HWriter<T>(id),
+            HWriterConsumer<T>(id) {
             HLog("HSplitter( std::vector< HWriter* >)");
             for( typename std::vector< HWriter<T>* >::iterator it = writers.begin(); it != writers.end(); it++ )
             {
@@ -36,8 +38,9 @@ class HSplitter : public HWriter<T>, public HWriterConsumer<T>
 
         /** Construct a new HSplitter which will later receive its
             writers via the HWriterConsumer scheme */
-        HSplitter(HWriterConsumer<T>* consumer)
-        {
+        HSplitter(std::string id, HWriterConsumer<T>* consumer):
+            HWriter<T>(id),
+            HWriterConsumer<T>(id) {
             HLog("HSplitter(HWriterConsumer*)");
             consumer->SetWriter(this);
         }

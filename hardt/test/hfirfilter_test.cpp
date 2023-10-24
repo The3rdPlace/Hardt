@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -7,13 +6,13 @@ class HFirFilter_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(test_filter_as_writer);
             UNITTEST(test_filter_as_reader);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HFirFilter";
         }
@@ -50,8 +49,8 @@ class HFirFilter_Test: public Test
 
         void test_filter_as_writer()
         {
-            TestWriter<int8_t> wr(8);
-            HFirFilter<int8_t> filter(wr.Writer(), coeefs, 3, 6);
+            TestWriter<int8_t> wr("hfirfilter_test_testwriter", 8);
+            HFirFilter<int8_t> filter("hfirfilter_test_as_writer", wr.Writer(), coeefs, 3, 6);
 
             int8_t input[8] = {1, 2, 4, 8, 16, 32, 0, 0};
             ASSERT_IS_EQUAL(filter.Write(input, 6), 6);
@@ -80,7 +79,7 @@ class HFirFilter_Test: public Test
         {
             int8_t output[8] = {1, 2, 4, 8, 16, 32, 0, 0};
             TestReader<int8_t> rd(output, 8);
-            HFirFilter<int8_t> filter(&rd, coeefs, 3, 6);
+            HFirFilter<int8_t> filter("hfirfilter_test_as_reader", &rd, coeefs, 3, 6);
 
             int8_t received[6];
             ASSERT_IS_EQUAL(filter.Read(received, 6), 6);
