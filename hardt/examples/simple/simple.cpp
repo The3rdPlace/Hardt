@@ -38,7 +38,7 @@ int main(int argc, char** argv)
     // chain being constructed - but we use no filters here
 
     // Create a sinus generator running at 1KHz
-    HSineGenerator<int16_t> generator(H_SAMPLE_RATE_48K, 1000, 20000);
+    HSineGenerator<int16_t> generator("sine generator", H_SAMPLE_RATE_48K, 1000, 20000);
 
     // -------------------------------------------------------------------------------------
     // Setup a processor
@@ -48,7 +48,7 @@ int main(int argc, char** argv)
 
     // Create a processor that reads from the last reader and writes to the first writer
     bool terminated = false;
-    HStreamProcessor<int16_t> processor(generator.Reader(), BLOCKSIZE, &terminated);
+    HStreamProcessor<int16_t> processor("processor", generator.Reader(), BLOCKSIZE, &terminated);
 
     // Setup dsp chain for writers
     //
@@ -61,7 +61,7 @@ int main(int argc, char** argv)
     // the chain once created.
 
     // Create a soundcard writer, to output the 1KHz signal
-    HSoundcardWriter<int16_t> soundcard(atoi(argv[1]), H_SAMPLE_RATE_48K, 1, H_SAMPLE_FORMAT_INT_16, BLOCKSIZE, processor.Consumer());
+    HSoundcardWriter<int16_t> soundcard("soundcard output", atoi(argv[1]), H_SAMPLE_RATE_48K, 1, H_SAMPLE_FORMAT_INT_16, BLOCKSIZE, processor.Consumer());
 
 
     // -------------------------------------------------------------------------------------

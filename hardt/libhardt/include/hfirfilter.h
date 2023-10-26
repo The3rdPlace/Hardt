@@ -50,27 +50,27 @@ class HFirFilter : public HFilter<T>
         }
 
         /** Factory function to create a new HFirFilter that writes to a  writer */
-        static HFirFilter<T>* Create(HWriter<T>* writer, size_t blocksize, char* coeffsFilename)
+        static HFirFilter<T>* Create(std::string id, HWriter<T>* writer, size_t blocksize, char* coeffsFilename)
         {
             std::vector<float> coeffs = HFilter<T>::ReadCoeffsFromFile(coeffsFilename);
 
-            return new HFirFilter<T>(writer, coeffs.data(), coeffs.size(), blocksize);
+            return new HFirFilter<T>(id, writer, coeffs.data(), coeffs.size(), blocksize);
         }
 
         /** Factory function to create a new HFirFilter that registers with an upstream writer */
-        static HFirFilter<T>* Create(HWriterConsumer<T>* consumer, size_t blocksize, char* coeffsFilename)
+        static HFirFilter<T>* Create(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, char* coeffsFilename)
         {
             std::vector<float> coeffs = HFilter<T>::ReadCoeffsFromFile(coeffsFilename);
 
-            return new HFirFilter<T>(consumer, coeffs.data(), coeffs.size(), blocksize);
+            return new HFirFilter<T>(id, consumer, coeffs.data(), coeffs.size(), blocksize);
         }
 
         /** Factory function to create a new HFirFilter that reads from a reader */
-        static HFirFilter<T>* Create(HReader<T>* reader, size_t blocksize, char* coeffsFilename)
+        static HFirFilter<T>* Create(std::string id, HReader<T>* reader, size_t blocksize, char* coeffsFilename)
         {
             std::vector<float> coeffs = HFilter<T>::ReadCoeffsFromFile(coeffsFilename);
 
-            return new HFirFilter<T>(reader, coeffs.data(), coeffs.size(), blocksize);
+            return new HFirFilter<T>(id, reader, coeffs.data(), coeffs.size(), blocksize);
         }
 };
 

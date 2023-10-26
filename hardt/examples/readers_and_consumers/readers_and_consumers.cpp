@@ -42,18 +42,18 @@ int main(int argc, char** argv)
     // - use a helper method: gain( generator.Reader(), ... );
 
     // Create a sinus generator running at 1KHz
-    HSineGenerator<int16_t> generator(H_SAMPLE_RATE_48K, 1000, 10000);
+    HSineGenerator<int16_t> generator("sine generator", H_SAMPLE_RATE_48K, 1000, 10000);
 
     // Increase the generator amplitude (just to add some readers)
-    HGain<int16_t> gain(generator.Reader(), 2, BLOCKSIZE);
+    HGain<int16_t> gain("gain", generator.Reader(), 2, BLOCKSIZE);
 
     // Mix with a 500Hz tone
     // ==> 1000Hz - 500Hz = 500Hz
     // ==> 1000Hz + 500Hz = 1500Hz
-    HMultiplier<int16_t> multiplier(gain.Reader(), H_SAMPLE_RATE_48K, 500, 10, BLOCKSIZE);
+    HMultiplier<int16_t> multiplier("multiplier", gain.Reader(), H_SAMPLE_RATE_48K, 500, 10, BLOCKSIZE);
 
     // General highpass filtering after mixing to make the 1500Hz tone the dominant
-    HBiQuadFilter<HHighpassBiQuad<int16_t>, int16_t> highpass(multiplier.Reader(), 1000, H_SAMPLE_RATE_48K, 0.7071f, 1, BLOCKSIZE);    // -------------------------------------------------------------------------------------
+    HBiQuadFilter<HHighpassBiQuad<int16_t>, int16_t> highpass("highpass biquad", multiplier.Reader(), 1000, H_SAMPLE_RATE_48K, 0.7071f, 1, BLOCKSIZE);    // -------------------------------------------------------------------------------------
 
     // Setup dsp chain for writers using the HWriterConsumer interface
     //
@@ -75,13 +75,13 @@ int main(int argc, char** argv)
 
     // Processor that reads from the last reader and writes to the first writer
     bool terminated = false;
-    HStreamProcessor<int16_t> processor(highpass.Reader(), BLOCKSIZE, &terminated);
+    HStreamProcessor<int16_t> processor("processor", highpass.Reader(), BLOCKSIZE, &terminated);
 
     // Create a fader that turns up the output volume when we begin to process samples.
-    HFade<int16_t> fade(processor.Consumer(), 0, 3000, true, BLOCKSIZE);
+    HFade<int16_t> fade("fade", processor.Consumer(), 0, 3000, true, BLOCKSIZE);
 
     // Create a soundcard writer, to output the 500Hz + 1500Hz signal
-    HSoundcardWriter<int16_t> soundcard(atoi(argv[1]), H_SAMPLE_RATE_48K, 1, H_SAMPLE_FORMAT_INT_16, BLOCKSIZE, fade.Consumer());
+    HSoundcardWriter<int16_t> soundcard("soundcard writer", atoi(argv[1]), H_SAMPLE_RATE_48K, 1, H_SAMPLE_FORMAT_INT_16, BLOCKSIZE, fade.Consumer());
 
     // -------------------------------------------------------------------------------------
     // Run

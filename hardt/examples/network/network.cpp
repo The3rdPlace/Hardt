@@ -38,10 +38,10 @@ int main(int argc, char** argv)
     //
 
     // Create a sinus generator running at 1KHz
-    HSineGenerator<int16_t> generator(H_SAMPLE_RATE_48K, 1000, 10000);
+    HSineGenerator<int16_t> generator("server sine generator", H_SAMPLE_RATE_48K, 1000, 10000);
 
     // Increase the generator amplitude (just to add some readers)
-    HGain<int16_t> gain(generator.Reader(), 2, BLOCKSIZE);
+    HGain<int16_t> gain("server gain", generator.Reader(), 2, BLOCKSIZE);
 
     // Setup a network processor that reads from the local readers and ships
     // the data to the remote end.
@@ -54,7 +54,7 @@ int main(int argc, char** argv)
 
     // Create the servers processor
     bool serverTerminated = false;
-    HNetworkProcessor<int16_t> serverProcessor(1928, 1929, gain.Reader(), BLOCKSIZE, &serverTerminated);
+    HNetworkProcessor<int16_t> serverProcessor("server processor", 1928, 1929, gain.Reader(), BLOCKSIZE, &serverTerminated);
 
     // On the server, the processor is started as you would normally do. It will begin to read
     // data once you connect, and stop again when you disconnect.
@@ -74,14 +74,17 @@ int main(int argc, char** argv)
 
     // Setup a network processor that reads from the remote server and writes to a local
     // writer. The downstream writers register using the HWriterConsumer interface.
+    //
+    // WARNING: Do not forget to add either the id og the host address, otherwise you'll
+    //          create a server on http://localhost with the id <expected server hostname>
     bool clientTerminated = false;
-    HNetworkProcessor<int16_t> clientProcessor("127.0.0.1", 1928, 1929, BLOCKSIZE, &clientTerminated);
+    HNetworkProcessor<int16_t> clientProcessor("client processor", "127.0.0.1", 1928, 1929, BLOCKSIZE, &clientTerminated);
 
     // Create a fader that turns up the output volume when we begin to process samples.
-    HFade<int16_t> fade(clientProcessor.Consumer(), 0, 3000, true, BLOCKSIZE);
+    HFade<int16_t> fade("client fade", clientProcessor.Consumer(), 0, 3000, true, BLOCKSIZE);
 
     // Create a soundcard writer, to output the received 1KHz signal
-    HSoundcardWriter<int16_t> soundcard(atoi(argv[1]), H_SAMPLE_RATE_48K, 1, H_SAMPLE_FORMAT_INT_16, BLOCKSIZE, fade.Consumer());
+    HSoundcardWriter<int16_t> soundcard("client soundcard writer", atoi(argv[1]), H_SAMPLE_RATE_48K, 1, H_SAMPLE_FORMAT_INT_16, BLOCKSIZE, fade.Consumer());
 
     // -------------------------------------------------------------------------------------
     // Run
