@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -7,13 +6,13 @@ class HHilbertFilter_Test: public Test
 {
 public:
 
-    void run()
+    void run() override
     {
         UNITTEST(test_filter_as_writer);
         UNITTEST(test_filter_as_reader);
     }
 
-    const char* name()
+    const char* name() override
     {
         return "HHilbertFilter";
     }
@@ -22,12 +21,12 @@ private:
 
     void test_filter_as_writer()
     {
-        HSineGenerator<int16_t> osc(H_SAMPLE_RATE_8K, 1000, 100);
+        HSineGenerator<int16_t> osc("hhilbertfilter_test_sine_generator", H_SAMPLE_RATE_8K, 1000, 100);
         int16_t input[1024];
         osc.Read(input, 1024);
 
-        TestWriter<int16_t> wr(1024);
-        HHilbertFilter<int16_t> filter(wr.Writer(), 1024);
+        TestWriter<int16_t> wr("hhilbertfilter_test_testwriter", 1024);
+        HHilbertFilter<int16_t> filter("hhilbertfilter_test_as_writer", wr.Writer(), 1024);
         ASSERT_IS_EQUAL(filter.Write(input, 1024), 1024);
 
         // Apply fft to compare spectrum of the inverse-fft'ed signal
@@ -68,12 +67,12 @@ private:
 
     void test_filter_as_reader()
     {
-        HSineGenerator<int16_t> osc(H_SAMPLE_RATE_8K, 1000, 100);
+        HSineGenerator<int16_t> osc("hhilbertfilter_test_sine_generator", H_SAMPLE_RATE_8K, 1000, 100);
         int16_t output[1024];
         osc.Read(output, 1024);
 
-        TestReader<int16_t> rd(output, 1024);
-        HHilbertFilter<int16_t> filter(rd.Reader(), 1024);
+        TestReader<int16_t> rd("hhilbertfilter_test_testreader", output, 1024);
+        HHilbertFilter<int16_t> filter("hhilbertfilter_test_as_reader", rd.Reader(), 1024);
 
         int16_t received[1024];
         ASSERT_IS_EQUAL(filter.Read(received, 1024), 1024);

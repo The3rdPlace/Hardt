@@ -66,7 +66,7 @@ class HCombFilter_Test: public Test
 
         void test_feedforward_filter_as_reader()
         {
-            TestReader<int8_t> rd(input, 1024);
+            TestReader<int8_t> rd("hcombfilter_test_testreader", input, 1024);
             HCombFilter<int8_t> filter("hcombfilter_test_feedforward_filter_as_reader", &rd, 48000, 50, -1, 1024);
 
             int8_t received[1024];

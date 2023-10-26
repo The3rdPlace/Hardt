@@ -95,7 +95,10 @@ class HConverter : public HReader<Tout>, public HWriter<Tin>, public HWriterCons
          * @param blocksizeOut Number of output samples
          * @param probe Probe
          */
-        HConverter(HWriterConsumer<Tin>* consumer, size_t blocksizeIn, size_t blocksizeOut, HProbe<Tout>* probe = nullptr):
+        HConverter(std::string id, HWriterConsumer<Tin>* consumer, size_t blocksizeIn, size_t blocksizeOut, HProbe<Tout>* probe = nullptr):
+            HReader<Tout>(id),
+            HWriter<Tin>(id),
+            HWriterConsumer<Tout>(id),
             _reader(nullptr),
             _writer(nullptr),
             _blocksizeIn(blocksizeIn),

@@ -47,7 +47,7 @@ class HWriterConsumer_Test: public Test
 
             // Processor
             bool terminated = false;
-            HStreamProcessor<int8_t> proc(wr1.Writer(), &rd1, 10, &terminated);
+            HStreamProcessor<int8_t> proc("hwriterconsumer_test_bottom_to_top", wr1.Writer(), &rd1, 10, &terminated);
 
             //----------------------------------------
             //  Run the chain

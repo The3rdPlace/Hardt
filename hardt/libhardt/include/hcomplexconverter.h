@@ -20,19 +20,19 @@ private:
 public:
 
     /** Create a new complex-converter with a reader */
-    HComplexConverter(HReader<Tin>* reader, size_t blocksize):
-            HConverter<Tin, Tout>(reader, blocksize, blocksize) {}
+    HComplexConverter(std::string id, HReader<Tin>* reader, size_t blocksize):
+            HConverter<Tin, Tout>(id, reader, blocksize, blocksize) {}
 
     /** Create a new complex-converter with a writer */
-    HComplexConverter(HWriter<Tout>* writer, size_t blocksize):
-            HConverter<Tin, Tout>(writer, blocksize, blocksize) {}
+    HComplexConverter(std::string id, HWriter<Tout>* writer, size_t blocksize):
+            HConverter<Tin, Tout>(id, writer, blocksize, blocksize) {}
 
     /** Create a new complex-converter with a writerconsumer */
-    HComplexConverter(HWriterConsumer<Tin>* consumer, size_t blocksize):
-            HConverter<Tin, Tout>(consumer, blocksize, blocksize) {}
+    HComplexConverter(std::string id, HWriterConsumer<Tin>* consumer, size_t blocksize):
+            HConverter<Tin, Tout>(id, consumer, blocksize, blocksize) {}
 
     /** Destruct this type-converter instance */
-    ~HComplexConverter() {}
+    ~HComplexConverter() = default;
 };
 
 #endif

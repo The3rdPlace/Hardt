@@ -61,7 +61,7 @@ class HGain_Test: public Test
         void test_gain_as_reader()
         {
             int8_t output[8] = {1, 2, 3, 4, 5, 6, 7, 8};
-            TestReader<int8_t> rd(output, 8);
+            TestReader<int8_t> rd("hgain_test_testreader", output, 8);
             HGain<int8_t> gain("hgain_test_as_reader", &rd, 2, 6);
 
             int8_t received[6];

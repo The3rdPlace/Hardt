@@ -37,27 +37,29 @@ class HBufferedWriter : public HWriter<T>, public HWriterConsumer<T>
     public:
 
         /** Create a new buffered writer with a preset enabled/disabled state and with a specific reserved buffer size (in blocks) */
-        HBufferedWriter(HWriterConsumer<T>* consumer, size_t blocksize, int reserved = DEFAULT_BLOCKS_RESERVED, bool enabled = true):
+        HBufferedWriter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, int reserved = DEFAULT_BLOCKS_RESERVED, bool enabled = true):
+                HWriter<T>(id),
+                HWriterConsumer<T>(id),
                 _blocksize(blocksize),
                 _blocksReserved(reserved),
                 _blocks(reserved),
                 _isDraining(false),
-                _enabled(enabled)
-        {
+                _enabled(enabled) {
             Init();
 
             consumer->SetWriter(this->Writer());
         }
 
         /** Create a new buffered writer with a preset enabled/disabled state and with a specific reserved buffer size (in blocks) */
-        HBufferedWriter(HWriter<T>* writer, size_t blocksize, int reserved = DEFAULT_BLOCKS_RESERVED, bool enabled = true):
+        HBufferedWriter(std::string id, HWriter<T>* writer, size_t blocksize, int reserved = DEFAULT_BLOCKS_RESERVED, bool enabled = true):
+                HWriter<T>(id),
+                HWriterConsumer<T>(id),
                 _blocksize(blocksize),
                 _blocksReserved(reserved),
                 _blocks(reserved),
                 _isDraining(false),
                 _enabled(enabled),
-                _writer(writer)
-        {
+                _writer(writer) {
             Init();
         }
 

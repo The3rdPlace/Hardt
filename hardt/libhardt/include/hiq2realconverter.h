@@ -65,8 +65,8 @@ class HIq2RealConverter: public HConverter<T, T> {
          * @param blocksize Number of samples to read
          * @param probe Probe
          */
-        HIq2RealConverter(HReader<T>* reader, size_t blocksize, HProbe<T>* probe = nullptr):
-                HConverter<T, T>(reader, blocksize * 2, blocksize, probe) {
+        HIq2RealConverter(std::string id, HReader<T>* reader, size_t blocksize, HProbe<T>* probe = nullptr):
+                HConverter<T, T>(id, reader, blocksize * 2, blocksize, probe) {
 
             Init(blocksize * 2);
         }
@@ -81,8 +81,8 @@ class HIq2RealConverter: public HConverter<T, T> {
          * @param blocksize Number of samples to write
          * @param probe Probe
          */
-        HIq2RealConverter(HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = nullptr):
-                HConverter<T, T>(writer, blocksize, blocksize / 2, probe) {
+        HIq2RealConverter(std::string id, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = nullptr):
+                HConverter<T, T>(id, writer, blocksize, blocksize / 2, probe) {
 
             Init(blocksize);
         }
@@ -97,8 +97,8 @@ class HIq2RealConverter: public HConverter<T, T> {
          * @param blocksize Number of samples to write
          * @param probe Probe
          */
-        HIq2RealConverter(HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = nullptr):
-                HConverter<T, T>(consumer, blocksize, blocksize / 2, probe) {
+        HIq2RealConverter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = nullptr):
+                HConverter<T, T>(id, consumer, blocksize, blocksize / 2, probe) {
 
             Init(blocksize);
         }

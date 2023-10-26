@@ -50,8 +50,8 @@ class HGaussianFilter : public HFilter<T>
          * @param n FFT size
          * @param probe A probe
          * */
-        HGaussianFilter(HWriter<T>* writer, size_t blocksize, int strength, int n, HProbe<T>* probe = NULL):
-            HFilter<T>(writer, blocksize, probe),
+        HGaussianFilter(std::string id, HWriter<T>* writer, size_t blocksize, int strength, int n, HProbe<T>* probe = NULL):
+            HFilter<T>(id, writer, blocksize, probe),
             _blocksize(blocksize),
             _strength(strength),
             _n(n) {
@@ -65,8 +65,8 @@ class HGaussianFilter : public HFilter<T>
          * @param n FFT size
          * @param probe A probe
          * */
-        HGaussianFilter(HWriterConsumer<T>* consumer, size_t blocksize, int strength, int n, HProbe<T>* probe = NULL):
-            HFilter<T>(consumer, blocksize, probe),
+        HGaussianFilter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, int strength, int n, HProbe<T>* probe = NULL):
+            HFilter<T>(id, consumer, blocksize, probe),
             _blocksize(blocksize),
             _strength(strength),
             _n(n) {
@@ -80,8 +80,8 @@ class HGaussianFilter : public HFilter<T>
          * @param n FFT size
          * @param probe A probe
          * */
-        HGaussianFilter(HReader<T>* reader, size_t blocksize, int strength, int n, HProbe<T>* probe = NULL):
-            HFilter<T>(reader, blocksize, probe),
+        HGaussianFilter(std::string id, HReader<T>* reader, size_t blocksize, int strength, int n, HProbe<T>* probe = NULL):
+            HFilter<T>(id, reader, blocksize, probe),
             _blocksize(blocksize),
             _strength(strength),
             _n(n) {

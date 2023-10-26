@@ -24,16 +24,16 @@ class HComplex2MultiplexedConverter: public HConverter<std::complex<T>, T> {
     public:
 
         /** Create a new complex-2-multiplexed converter with a reader */
-        HComplex2MultiplexedConverter(HReader<std::complex<T>>* reader, size_t blocksize):
-            HConverter<std::complex<T>, T>(reader, blocksize, blocksize * 2) {}
+        HComplex2MultiplexedConverter(std::string id, HReader<std::complex<T>>* reader, size_t blocksize):
+            HConverter<std::complex<T>, T>(id, reader, blocksize, blocksize * 2) {}
 
         /** Create a new complex-2-multiplexed converter with a writer */
-        HComplex2MultiplexedConverter(HWriter<T>* writer, size_t blocksize):
-            HConverter<std::complex<T>, T>(writer, blocksize, blocksize * 2) {}
+        HComplex2MultiplexedConverter(std::string id, HWriter<T>* writer, size_t blocksize):
+            HConverter<std::complex<T>, T>(id, writer, blocksize, blocksize * 2) {}
 
         /** Create a new complex-2-multiplexed converter with a writerconsumer */
-        HComplex2MultiplexedConverter(HWriterConsumer<std::complex<T>>* consumer, size_t blocksize):
-            HConverter<std::complex<T>, T>(consumer, blocksize, blocksize * 2) {}
+        HComplex2MultiplexedConverter(std::string id, HWriterConsumer<std::complex<T>>* consumer, size_t blocksize):
+            HConverter<std::complex<T>, T>(id, consumer, blocksize, blocksize * 2) {}
 
         /** Destruct this complex-2-multiplexed converter instance */
         ~HComplex2MultiplexedConverter() {}

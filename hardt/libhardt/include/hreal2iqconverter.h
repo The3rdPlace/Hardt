@@ -76,8 +76,8 @@ class HReal2IqConverter: public HConverter<T, T> {
          * @param blocksize Number of samples to read
          * @param probe Probe
          */
-        HReal2IqConverter(HReader<T>* reader, size_t blocksize, HProbe<T>* probe = nullptr):
-            HConverter<T, T>(reader, blocksize / 2, blocksize, probe) {
+        HReal2IqConverter(std::string id, HReader<T>* reader, size_t blocksize, HProbe<T>* probe = nullptr):
+            HConverter<T, T>(id, reader, blocksize / 2, blocksize, probe) {
             Init(blocksize);
         }
 
@@ -88,8 +88,8 @@ class HReal2IqConverter: public HConverter<T, T> {
          * @param blocksize Number of samples to write
          * @param probe Probe
          */
-        HReal2IqConverter(HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = nullptr):
-            HConverter<T, T>(writer, blocksize, blocksize * 2, probe) {
+        HReal2IqConverter(std::string id, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = nullptr):
+            HConverter<T, T>(id, writer, blocksize, blocksize * 2, probe) {
             Init(blocksize);
         }
 
@@ -100,8 +100,8 @@ class HReal2IqConverter: public HConverter<T, T> {
          * @param blocksize Number of samples to write
          * @param probe Probe
          */
-        HReal2IqConverter(HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = nullptr):
-            HConverter<T, T>(consumer, blocksize, blocksize * 2, probe) {
+        HReal2IqConverter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = nullptr):
+            HConverter<T, T>(id, consumer, blocksize, blocksize * 2, probe) {
             Init(blocksize);
         }
 

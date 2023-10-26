@@ -41,7 +41,7 @@ class HNetwork_Test: public Test
             bool terminated = false;
             int16_t expected[] = {1, 3, 2, 4, 3, 5, 4, 6, 5, 7, 6, 8, 7, 9};
 
-            TestReader<int16_t> rdr(expected, 14, false);
+            TestReader<int16_t> rdr("hnetwork_test_testreader", expected, 14, false);
             server = new HNetworkProcessor<int16_t>("hnetworkprocessor_server", 1231, 1232, &rdr, 14, &terminated);
             std::thread serverThread(runServer);
             sleep(1);
@@ -67,7 +67,7 @@ class HNetwork_Test: public Test
             server = new HNetworkProcessor<int16_t>("hnetworkprocessor_server", 1233, 1234, &wr, 14, &terminated);
             std::thread serverThread(runServer);
             sleep(1);
-            TestReader<int16_t> rdr(expected, 14, false);
+            TestReader<int16_t> rdr("hnetwork_test_testreader", expected, 14, false);
             client = new HNetworkProcessor<int16_t>("hnetworkprocessor_client", "127.0.0.1", 1233, 1234, &rdr, 14, &terminated);
             std::thread clientThread(runClient);
 
@@ -85,7 +85,7 @@ class HNetwork_Test: public Test
             bool terminated = false;
             int16_t expected[] = {1, 3, 2, 4, 3, 5, 4, 6, 5, 7, 6, 8, 7, 9};
 
-            TestReader<int16_t> rdr(expected, 14, false);
+            TestReader<int16_t> rdr("hnetwork_test_testreader", expected, 14, false);
             server = new HNetworkProcessor<int16_t>("hnetworkprocessor_server", 1235, 1236, &rdr, 14, &terminated);
             std::thread serverThread(runServer);
             sleep(1);
@@ -132,7 +132,7 @@ class HNetwork_Test: public Test
             server = new HNetworkProcessor<int16_t>("hnetworkprocessor_server", 1237, 1238, &wr, 14, &terminated);
             std::thread serverThread(runServer);
             sleep(1);
-            TestReader<int16_t> rdr(expected, 14, false);
+            TestReader<int16_t> rdr("hnetwork_test_testreader", expected, 14, false);
             client = new HNetworkProcessor<int16_t>("hnetworkprocessor_client", "127.0.0.1", 1237, 1238, &rdr, 14, &terminated);
             std::thread clientThread(runClient);
 

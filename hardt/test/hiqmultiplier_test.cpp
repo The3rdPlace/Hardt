@@ -6,13 +6,13 @@ class HIqMultiplier_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(test_multiplier_with_reader);
             UNITTEST(test_multiplier_with_writer);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HIqMultiplier";
         }
@@ -22,10 +22,10 @@ class HIqMultiplier_Test: public Test
         void test_multiplier_with_reader()
         {
             int8_t output[10] = {0, 4, 1, 3, 2, 2, 3, 1, 4, 0};
-            TestReader<int8_t> reader(output, 10);
-            HLocalOscillator<int8_t> sinOscillator(8000, 1000, 10);
-            HLocalOscillator<int8_t> cosOscillator(8000, 1000, 10, 0);
-            HIqMultiplier<int8_t> multiplier(&reader, 8000, 1000, 10, 10);
+            TestReader<int8_t> reader("hiqmultiplier_test_testreader", output, 10);
+            HLocalOscillator<int8_t> sinOscillator("hiqmultiplier_test_sine_generator", 8000, 1000, 10);
+            HLocalOscillator<int8_t> cosOscillator("hiqmultiplier_test_cos_generator", 8000, 1000, 10, 0);
+            HIqMultiplier<int8_t> multiplier("hiqmultiplier_test_with_reader", &reader, 8000, 1000, 10, 10);
 
             int8_t received[10];
             int8_t sin[5];
@@ -53,10 +53,10 @@ class HIqMultiplier_Test: public Test
 
         void test_multiplier_with_writer()
         {
-            TestWriter<int8_t> writer(10);
-            HLocalOscillator<int8_t> sinOscillator(8000, 1000, 10);
-            HLocalOscillator<int8_t> cosOscillator(8000, 1000, 10, 0);
-            HIqMultiplier<int8_t> multiplier(writer.Writer(), 8000, 1000, 10, 10);
+            TestWriter<int8_t> writer("hiqmultiplier_test_testwriter", 10);
+            HLocalOscillator<int8_t> sinOscillator("hiqmultiplier_test_sine_generator", 8000, 1000, 10);
+            HLocalOscillator<int8_t> cosOscillator("hiqmultiplier_test_cos_generator", 8000, 1000, 10, 0);
+            HIqMultiplier<int8_t> multiplier("hiqmultiplier_test_with_writer", writer.Writer(), 8000, 1000, 10, 10);
 
             int8_t input[10] = {0, 4, 1, 3, 2, 2, 3, 1, 4, 0};
             int8_t sin[5];

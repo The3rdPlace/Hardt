@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -7,7 +6,7 @@ class HMute_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(test_mute_as_writer);
             UNITTEST(test_mute_as_reader);
@@ -16,7 +15,7 @@ class HMute_Test: public Test
             UNITTEST(test_start_stop_as_reader);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HMute";
         }
@@ -27,9 +26,9 @@ class HMute_Test: public Test
 
         void test_mute_as_writer()
         {
-            TestWriter<int8_t> wr(8);
+            TestWriter<int8_t> wr("hmute_test_testwriter", 8);
             int8_t input[8] = {10, 20, 30, 40, 50, 60, 70, 80};
-            HMute<int8_t> mute(wr.Writer(), false, 6);
+            HMute<int8_t> mute("hmute_test_as_writer", wr.Writer(), false, 6);
 
             ASSERT_IS_EQUAL(mute.Write(input, 6), 6);
             ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) input, 6 * sizeof(int8_t)), 0);
@@ -45,8 +44,8 @@ class HMute_Test: public Test
         void test_mute_as_reader()
         {
             int8_t output[8] = {10, 20, 30, 40, 50, 60, 70, 80};
-            TestReader<int8_t> rd(output, 8);
-            HMute<int8_t> mute(&rd, false, 6);
+            TestReader<int8_t> rd("hmute_test_testreader", output, 8);
+            HMute<int8_t> mute("hmute_test_as_reader", &rd, false, 6);
 
             int8_t received[6];
             ASSERT_IS_EQUAL(mute.Read(received, 6), 6);
@@ -63,8 +62,8 @@ class HMute_Test: public Test
         void test_start_stop_as_writer()
         {
             // Initial start not-muted (false)
-            TestWriter<int8_t> wr(8);
-            HMute<int8_t> mute(wr.Writer(), false, 6);
+            TestWriter<int8_t> wr("hmute_test_testwriter", 8);
+            HMute<int8_t> mute("hmute_test_start_stop_as_writer", wr.Writer(), false, 6);
 
             mute.Start(); // start = 1
             mute.Start(); // start = 2
@@ -96,8 +95,8 @@ class HMute_Test: public Test
         {
             // Initial start not-muted (false)
             int8_t output[8] = {10, 20, 30, 40, 50, 60, 70, 80};
-            TestReader<int8_t> rd(output, 8);
-            HMute<int8_t> mute(&rd, false, 6);
+            TestReader<int8_t> rd("hmute_test_testreader", output, 8);
+            HMute<int8_t> mute("hmute_test_start_stop_as_reader", &rd, false, 6);
 
             mute.Start(); // start = 1
             mute.Start(); // start = 2

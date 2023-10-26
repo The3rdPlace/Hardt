@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -7,13 +6,13 @@ class HMultiplier_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(test_multiplier_with_readers);
             UNITTEST(test_multiplier_with_reader_and_writer);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HMultiplier";
         }
@@ -23,9 +22,9 @@ class HMultiplier_Test: public Test
         void test_multiplier_with_readers()
         {
             int8_t output[5] = {0, 1, 2, 3, 4};
-            TestReader<int8_t> reader(output, 5);
-            HLocalOscillator<int8_t> localOscillator(8000, 1000, 10);
-            HMultiplier<int8_t> multiplier(&reader, 8000, 1000, 10, 5);
+            TestReader<int8_t> reader("hmultiplier_test_testreader", output, 5);
+            HLocalOscillator<int8_t> localOscillator("hmultiplier_test_lo", 8000, 1000, 10);
+            HMultiplier<int8_t> multiplier("hmultiplier_test_with_readers", &reader, 8000, 1000, 10, 5);
 
             int8_t received[5];
             int8_t oscillator[5];
@@ -43,9 +42,9 @@ class HMultiplier_Test: public Test
 
         void test_multiplier_with_reader_and_writer()
         {
-            TestWriter<int8_t> writer(5);
-            HLocalOscillator<float> localOscillator(8000, 1000);
-            HMultiplier<int8_t> multiplier(writer.Writer(), 8000, 1000, 10, 5);
+            TestWriter<int8_t> writer("hmultiplier_test_testwriter", 5);
+            HLocalOscillator<float> localOscillator("hmultiplier_test_lo", 8000, 1000);
+            HMultiplier<int8_t> multiplier("hmultiplier_test_with_reader_and_writer", writer.Writer(), 8000, 1000, 10, 5);
 
             int8_t input[5] = {0, 1, 2, 3, 4};
             float oscillator[5];

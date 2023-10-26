@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -7,13 +6,13 @@ class HDelay_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(test_delay_with_seconds);
             UNITTEST(test_delay_with_blocks);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HDelay";
         }
@@ -22,13 +21,13 @@ class HDelay_Test: public Test
 
         void test_delay_with_seconds()
         {
-            TestWriter<int8_t> wr(6);
+            TestWriter<int8_t> wr("hdelay_test_testwriter", 6);
             int8_t input_even[6] = {1, 1, 1, 1, 1, 1};
             int8_t input_odd[6] = {16, 16, 16, 16, 16, 16};
             int8_t expected_0[6] = {0, 0, 0, 0, 0, 0};
             int8_t expected_even[6] = {1, 1, 1, 1, 1, 1};
             int8_t expected_odd[6] = {16, 16, 16, 16, 16, 16};
-            HDelay<int8_t> agc(wr.Writer(), 6, 100, 2);
+            HDelay<int8_t> agc("hdelay_test_delay_with_seconds", wr.Writer(), 6, 100, 2);
 
             // Run 2 seconds á 100 samples per seconds at blocksize=6 through the filter
             //   100 / 6 = 16.67 ~= 17 blocks per second
@@ -60,13 +59,13 @@ class HDelay_Test: public Test
 
         void test_delay_with_blocks()
         {
-            TestWriter<int8_t> wr(6);
+            TestWriter<int8_t> wr("hdelay_test_testwriter", 6);
             int8_t input_even[6] = {1, 1, 1, 1, 1, 1};
             int8_t input_odd[6] = {16, 16, 16, 16, 16, 16};
             int8_t expected_0[6] = {0, 0, 0, 0, 0, 0};
             int8_t expected_even[6] = {1, 1, 1, 1, 1, 1};
             int8_t expected_odd[6] = {16, 16, 16, 16, 16, 16};
-            HDelay<int8_t> agc(wr.Writer(), 6, 34);
+            HDelay<int8_t> agc("hdelay_test_delay_with_blocks", wr.Writer(), 6, 34);
 
             // Run 2 seconds á 100 samples per seconds at blocksize=6 through the filter
             //   100 / 6 = 16.67 ~= 17 blocks per second

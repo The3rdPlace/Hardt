@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -33,7 +32,7 @@ class HFilter_Test: public Test
         {
             private:
 
-                void Filter(T* src, T* dest, size_t blocksize)
+                void Filter(T* src, T* dest, size_t blocksize) override
                 {
                     for( int i = 0; i < blocksize; i++ )
                     {
@@ -43,19 +42,19 @@ class HFilter_Test: public Test
 
             public:
 
-                TestFilter(HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL):
-                    HFilter<T>("testfilter", writer, blocksize, probe)
+                TestFilter(std::string id, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = nullptr):
+                    HFilter<T>(id, writer, blocksize, probe)
                 {}
 
-                TestFilter(HReader<T>* reader, size_t blocksize, HProbe<T>* probe = NULL):
-                    HFilter<T>("testfilter", reader, blocksize, probe)
+                TestFilter(std::string id, HReader<T>* reader, size_t blocksize, HProbe<T>* probe = nullptr):
+                    HFilter<T>(id, reader, blocksize, probe)
                 {}
         };
 
         void test_filter_as_writer()
         {
             TestWriter<int8_t> wr("hfilter_test_testwriter", 8);
-            TestFilter<int8_t> filter(&wr, 6);
+            TestFilter<int8_t> filter("hfilter_test_as_writer", &wr, 6);
 
             int8_t input[8] = {1, 2, 4, 8, 16, 32, 0, 0};
             ASSERT_IS_EQUAL(filter.Write(input, 6), 6);
@@ -83,8 +82,8 @@ class HFilter_Test: public Test
         {
             int8_t output[8] = {1, 2, 4, 8, 16, 32, 0, 0};
 
-            TestReader<int8_t> rd(output, 8);
-            TestFilter<int8_t> filter(&rd, 6);
+            TestReader<int8_t> rd("hfilter_test_testreader", output, 8);
+            TestFilter<int8_t> filter("hfilter_test_testfilter", &rd, 6);
 
             int8_t received[6];
             ASSERT_IS_EQUAL(filter.Read(received, 6), 6);
@@ -111,7 +110,7 @@ class HFilter_Test: public Test
         void test_filter_with_probe()
         {
             TestWriter<int8_t> wr("hfilter_test_testwriter", 6);
-            TestFilter<int8_t> filter(&wr, 6);
+            TestFilter<int8_t> filter("hfilter_test_with_probe", &wr, 6);
             HProbe<int8_t> probe("hfilter_test", true);
 
             int8_t input[8] = {1, 2, 4, 8, 16, 32, 0, 0};
@@ -229,7 +228,7 @@ class HFilter_Test: public Test
         void test_filter_write_disable_enable()
         {
             TestWriter<int8_t> wr("hfilter_test_testwriter", 6);
-            TestFilter<int8_t> filter(&wr, 6);
+            TestFilter<int8_t> filter("hfilter_test_write_disable_enabled", &wr, 6);
 
             int8_t input[6] = {1, 2, 4, 8, 16, 32};
             ASSERT_IS_TRUE(filter.GetEnabled());
@@ -253,8 +252,8 @@ class HFilter_Test: public Test
         {
             int8_t output[6] = {1, 2, 4, 8, 16, 32};
 
-            TestReader<int8_t> rd(output, 6);
-            TestFilter<int8_t> filter(&rd, 6);
+            TestReader<int8_t> rd("hfilter_test_testreader", output, 6);
+            TestFilter<int8_t> filter("hfilter_test_read_disable_enable", &rd, 6);
 
             int8_t received[6];
             ASSERT_IS_TRUE(filter.GetEnabled());

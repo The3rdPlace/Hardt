@@ -24,8 +24,8 @@ class HComplex2MultiplexedConverter_Test: public Test
             int8_t expected[6] = {1, 2, 3, 4, 5, 6};
             int8_t output[6] = {0, 0 ,0, 0, 0, 0};
 
-            TestReader<std::complex<int8_t>> rd(input, 3);
-            HComplex2MultiplexedConverter<int8_t> converter(&rd, 3);
+            TestReader<std::complex<int8_t>> rd("hcomplex2multiplexedconverter_test_testreader", input, 3);
+            HComplex2MultiplexedConverter<int8_t> converter("hcomplex2multiplexedconverter_test_read", &rd, 3);
 
             ASSERT_IS_EQUAL(converter.Read(output, 6), 6);
             ASSERT_IS_EQUAL(rd.Reads, 1);
@@ -45,8 +45,8 @@ class HComplex2MultiplexedConverter_Test: public Test
             std::complex<int8_t> input[3] = {{1, 2}, {3, 4}, {5, 6}};
             int8_t expected[6] = {1, 2, 3, 4, 5, 6};
 
-            TestWriter<int8_t> wr(6);
-            HComplex2MultiplexedConverter<int8_t> converter(&wr, 3);
+            TestWriter<int8_t> wr("hcomplex2multiplexedconverter_test_testwriter", 6);
+            HComplex2MultiplexedConverter<int8_t> converter("hcomplex2multiplexedconverter_test_write", &wr, 3);
 
             ASSERT_IS_EQUAL(converter.Write(input, 3), 3);
             ASSERT_IS_EQUAL(wr.Writes, 1);

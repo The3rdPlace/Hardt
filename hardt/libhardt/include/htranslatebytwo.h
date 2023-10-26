@@ -25,16 +25,16 @@ class HTranslateByTwo : public HFilter<T>
     public:
 
         /** Construct a new HTranslateByTwo object that writes to a writer */
-        HTranslateByTwo(HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL):
-            HFilter<T>(writer, blocksize, probe) {}
+        HTranslateByTwo(std::string id, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL):
+            HFilter<T>(id, writer, blocksize, probe) {}
 
         /** Construct a new HTranslateByTwo object that registers with an upstream writer */
-        HTranslateByTwo(HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL):
-            HFilter<T>(consumer, blocksize, probe) {}
+        HTranslateByTwo(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL):
+            HFilter<T>(id, consumer, blocksize, probe) {}
 
         /** Construct a new HTranslateByTwo object that reads from a reader */
-        HTranslateByTwo(HReader<T>* reader, size_t blocksize, HProbe<T>* probe = NULL):
-            HFilter<T>(reader, blocksize, probe) {}
+        HTranslateByTwo(std::string id, HReader<T>* reader, size_t blocksize, HProbe<T>* probe = NULL):
+            HFilter<T>(id, reader, blocksize, probe) {}
 
         /** Default destructor */
         ~HTranslateByTwo() {}

@@ -41,18 +41,18 @@ public:
     public:
 
         /** Create a new type-converter with a reader */
-        HTypeConverter(HReader<Tin>* reader, size_t blocksize, double scale = 1):
-            HConverter<Tin, Tout>(reader, blocksize, blocksize),
+        HTypeConverter(std::string id, HReader<Tin>* reader, size_t blocksize, double scale = 1):
+            HConverter<Tin, Tout>(id, reader, blocksize, blocksize),
             _scale(scale) {}
 
         /** Create a new type-converter with a writer */
-        HTypeConverter(HWriter<Tout>* writer, size_t blocksize, double scale = 1):
-            HConverter<Tin, Tout>(writer, blocksize, blocksize),
+        HTypeConverter(std::string id, HWriter<Tout>* writer, size_t blocksize, double scale = 1):
+            HConverter<Tin, Tout>(id, writer, blocksize, blocksize),
             _scale(scale) {}
 
         /** Create a new type-converter with a writerconsumer */
-        HTypeConverter(HWriterConsumer<Tin>* consumer, size_t blocksize, double scale = 1):
-            HConverter<Tin, Tout>(consumer, blocksize, blocksize),
+        HTypeConverter(std::string id, HWriterConsumer<Tin>* consumer, size_t blocksize, double scale = 1):
+            HConverter<Tin, Tout>(id, consumer, blocksize, blocksize),
             _scale(scale) {}
 
         /** Destruct this type-converter instance */

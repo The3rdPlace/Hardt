@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -7,14 +6,14 @@ class HSwitch_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(test_read);
             UNITTEST(test_write);
             UNITTEST(test_writerConsumer);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HSwitch";
         }
@@ -28,12 +27,12 @@ class HSwitch_Test: public Test
             int8_t data2[] = {1, 3, 5, 7, 9};
             int8_t data3[] = {5, 4, 3, 2, 1};
 
-            TestReader<int8_t> rd0(data0, 5); // bypass (position 0)
-            TestReader<int8_t> rd1(data1, 5);
-            TestReader<int8_t> rd2(data2, 5);
-            TestReader<int8_t> rd3(data3, 5);
+            TestReader<int8_t> rd0("hswitch_test_testreader_0", data0, 5); // bypass (position 0)
+            TestReader<int8_t> rd1("hswitch_test_testreader_1", data1, 5);
+            TestReader<int8_t> rd2("hswitch_test_testreader_2", data2, 5);
+            TestReader<int8_t> rd3("hswitch_test_testreader_3", data3, 5);
 
-            HSwitch<int8_t> sw(&rd0, 5);
+            HSwitch<int8_t> sw("hswitch_test_read", &rd0, 5);
 
             sw.Add(&rd1);
             sw.Add(&rd2);
@@ -93,12 +92,12 @@ class HSwitch_Test: public Test
             int8_t data[] = {1, 2, 3, 4, 5};
             int8_t zero[] = {0, 0, 0, 0, 0};
 
-            TestWriter<int8_t> wr0(5); // bypass (position 0)
-            TestWriter<int8_t> wr1(5);
-            TestWriter<int8_t> wr2(5);
-            TestWriter<int8_t> wr3(5);
+            TestWriter<int8_t> wr0("hswitch_test_testwriter_0", 5); // bypass (position 0)
+            TestWriter<int8_t> wr1("hswitch_test_testwriter_1", 5);
+            TestWriter<int8_t> wr2("hswitch_test_testwriter_2", 5);
+            TestWriter<int8_t> wr3("hswitch_test_testwriter_3", 5);
 
-            HSwitch<int8_t> sw(wr0.Writer(), 5);
+            HSwitch<int8_t> sw("hswitch_test_write", wr0.Writer(), 5);
             sw.Add(&wr1);
             sw.Add(&wr2);
             sw.Add(&wr3);
@@ -196,20 +195,20 @@ class HSwitch_Test: public Test
             int8_t received[5];
 
             // Upstream writer
-            TestWriter<int8_t> upstream(5);
+            TestWriter<int8_t> upstream("hswitch_test_testwriter_upstream", 5);
 
             // The switch
-            HSwitch<int8_t> sw(upstream.Consumer(), 5);
+            HSwitch<int8_t> sw("hswitch_test_writerconsumer", upstream.Consumer(), 5);
 
             // Downstream writer, simulate the consumer interface pattern
-            TestWriter<int8_t> downstream(sw.Consumer(), 5); // bypass (position 0)
+            TestWriter<int8_t> downstream("hswitch_test_testwriter_downstream", sw.Consumer(), 5); // bypass (position 0)
 
             // Add writers to the switch
-            HGain<int8_t> wr1(downstream.Writer(), 2, 5);
+            HGain<int8_t> wr1("hswitch_test_gain_1", downstream.Writer(), 2, 5);
             sw.Add(wr1.Writer());
-            HGain<int8_t> wr2(downstream.Writer(), 3, 5);
+            HGain<int8_t> wr2("hswitch_test_gain_2", downstream.Writer(), 3, 5);
             sw.Add(wr2.Writer());
-            HGain<int8_t> wr3(downstream.Writer(), 4, 5);
+            HGain<int8_t> wr3("hswitch_test_gain_3", downstream.Writer(), 4, 5);
             sw.Add(wr3.Writer());
 
             // Initial position should be bypass mode
