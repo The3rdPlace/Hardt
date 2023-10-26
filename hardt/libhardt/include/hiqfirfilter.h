@@ -51,27 +51,27 @@ class HIqFirFilter : public HFilter<T>
         }
 
         /** Factory function to create a new HIqFirFilter that writes to a  writer */
-        static HIqFirFilter<T>* Create(HWriter<T>* writer, size_t blocksize, char* coeffsFilename)
+        static HIqFirFilter<T>* Create(std::string id, HWriter<T>* writer, size_t blocksize, char* coeffsFilename)
         {
             std::vector<float> coeffs = HFilter<T>::ReadCoeffsFromFile(coeffsFilename);
 
-            return new HIqFirFilter<T>(writer, coeffs.data(), coeffs.size(), blocksize);
+            return new HIqFirFilter<T>(id, writer, coeffs.data(), coeffs.size(), blocksize);
         }
 
         /** Factory function to create a new HIqFirFilter that registers with an upstream writer */
-        static HIqFirFilter<T>* Create(HWriterConsumer<T>* consumer, size_t blocksize, char* coeffsFilename)
+        static HIqFirFilter<T>* Create(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, char* coeffsFilename)
         {
             std::vector<float> coeffs = HFilter<T>::ReadCoeffsFromFile(coeffsFilename);
 
-            return new HIqFirFilter<T>(consumer, coeffs.data(), coeffs.size(), blocksize);
+            return new HIqFirFilter<T>(id, consumer, coeffs.data(), coeffs.size(), blocksize);
         }
 
         /** Factory function to create a new HIqFirFilter that reads from a reader */
-        static HIqFirFilter<T>* Create(HReader<T>* reader, size_t blocksize, char* coeffsFilename)
+        static HIqFirFilter<T>* Create(std::string id, HReader<T>* reader, size_t blocksize, char* coeffsFilename)
         {
             std::vector<float> coeffs = HFilter<T>::ReadCoeffsFromFile(coeffsFilename);
 
-            return new HIqFirFilter<T>(reader, coeffs.data(), coeffs.size(), blocksize);
+            return new HIqFirFilter<T>(id, reader, coeffs.data(), coeffs.size(), blocksize);
         }
 };
 

@@ -81,27 +81,27 @@ class HCascadedBiQuadFilter: public HReader<T>, public HWriter<T>, public HWrite
         void SetCoefficients(float* coefficients, int length);
 
         /** Factory method to create a new cascaded filter from the name of a file with coefficients */
-        static HCascadedBiQuadFilter<T>* Create(HWriter<T>* writer, size_t blocksize, char* coeffsFilename)
+        static HCascadedBiQuadFilter<T>* Create(std::string id, HWriter<T>* writer, size_t blocksize, char* coeffsFilename)
         {
             std::vector<float> coeffs = HFilter<T>::ReadCoeffsFromFile(coeffsFilename);
 
-            return new HCascadedBiQuadFilter<T>(writer, coeffs.data(), coeffs.size(), blocksize);
+            return new HCascadedBiQuadFilter<T>(id, writer, coeffs.data(), coeffs.size(), blocksize);
         }
 
         /** Factory method to create a new cascaded filter from the name of a file with coefficients */
-        static HCascadedBiQuadFilter<T>* Create(HWriterConsumer<T>* consumer, size_t blocksize, char* coeffsFilename)
+        static HCascadedBiQuadFilter<T>* Create(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, char* coeffsFilename)
         {
             std::vector<float> coeffs = HFilter<T>::ReadCoeffsFromFile(coeffsFilename);
 
-            return new HCascadedBiQuadFilter<T>(consumer, coeffs.data(), coeffs.size(), blocksize);
+            return new HCascadedBiQuadFilter<T>(id, consumer, coeffs.data(), coeffs.size(), blocksize);
         }
 
         /** Factory method to create a new cascaded filter from the name of a file with coefficients */
-        static HCascadedBiQuadFilter<T>* Create(HReader<T>* reader, size_t blocksize, char* coeffsFilename)
+        static HCascadedBiQuadFilter<T>* Create(std::string id, HReader<T>* reader, size_t blocksize, char* coeffsFilename)
         {
             std::vector<float> coeffs = HFilter<T>::ReadCoeffsFromFile(coeffsFilename);
 
-            return new HCascadedBiQuadFilter<T>(reader, coeffs.data(), coeffs.size(), blocksize);
+            return new HCascadedBiQuadFilter<T>(id, reader, coeffs.data(), coeffs.size(), blocksize);
         }
 
         /** Execute or carry through a command */

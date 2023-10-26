@@ -14,7 +14,7 @@
 template <class T>
 double GetCalibratedReference(double fdelta, int start, int stop, int amplitude, bool shrink = true) {
     int freq = start;
-    HVfo<T> vfo(Config.Rate, freq, amplitude, 0);
+    HVfo<T> vfo("vfo", Config.Rate, freq, amplitude, 0);
 
     // Calibration - measure input spectrum magnitude when passed directly to the FFT
     const int Blocks = 128;
@@ -48,8 +48,8 @@ double GetCalibratedReference(double fdelta, int start, int stop, int amplitude,
 template <typename T>
 int RunNetworkWriterServer()
 {
-    HSoundcardReader<T> rdr(Config.InputDevice, Config.Rate, 1, Config.Format, Config.Blocksize);
-    HNetworkProcessor<T> srv(Config.Port, Config.Port + 1, &rdr, Config.Blocksize, &terminated);
+    HSoundcardReader<T> rdr("soundcard reader", Config.InputDevice, Config.Rate, 1, Config.Format, Config.Blocksize);
+    HNetworkProcessor<T> srv("network processor", Config.Port, Config.Port + 1, &rdr, Config.Blocksize, &terminated);
     try
     {
         srv.Run();
@@ -70,11 +70,11 @@ int RunNetworkReaderClient()
     HWriter<T>* wr;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+        wr = new HWavWriter<T>("wav writer", Config.OutputFile, Config.Format, 1, Config.Rate);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        wr = new HFileWriter<T>(Config.OutputFile);
+        wr = new HFileWriter<T>("file writer", "filewriter", Config.OutputFile);
     }
     else
     {
@@ -83,7 +83,7 @@ int RunNetworkReaderClient()
     }
 
     // Create a network processor and run the client
-    HNetworkProcessor<T> client(Config.Address, Config.Port, Config.Port + 1, wr, Config.Blocksize, &terminated);
+    HNetworkProcessor<T> client("client processor", Config.Address, Config.Port, Config.Port + 1, wr, Config.Blocksize, &terminated);
     try
     {
         if( Config.Timer.Duration() > 0 )
@@ -121,17 +121,17 @@ int RunSignalGenerator()
     HWriter<T>* wr;
     if( Config.OutputDevice != -1 )
     {
-        wr = new HSoundcardWriter<T>(Config.OutputDevice, Config.Rate, 1, Config.Format, Config.Blocksize);
+        wr = new HSoundcardWriter<T>("soundcard writer", Config.OutputDevice, Config.Rate, 1, Config.Format, Config.Blocksize);
     }
     else if ( Config.OutputFile != NULL )
     {
         if( strcmp(Config.FileFormat, "wav") == 0 )
         {
-            wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+            wr = new HWavWriter<T>("wav writer", Config.OutputFile, Config.Format, 1, Config.Rate);
         }
         else if( strcmp(Config.FileFormat, "pcm") == 0 )
         {
-            wr = new HFileWriter<T>(Config.OutputFile);
+            wr = new HFileWriter<T>("file writer", Config.OutputFile);
         }
         else
         {
@@ -152,8 +152,8 @@ int RunSignalGenerator()
     HLog("Using amplitude %d", Config.Amplitude);
 
     // Create and run the signalgenerator
-    HVfo<T> sg(Config.Rate, Config.Frequency, Config.Amplitude, Config.Phase);
-    HStreamProcessor<T> proc(wr, &sg, Config.Blocksize, &terminated);
+    HVfo<T> sg("vfo", Config.Rate, Config.Frequency, Config.Amplitude, Config.Phase);
+    HStreamProcessor<T> proc("stream processor", wr, &sg, Config.Blocksize, &terminated);
     proc.Run(blocks);
 
     // Delete writer
@@ -183,11 +183,11 @@ int RunFileRecorder()
     HReader<T>* rd;
     if( Config.InputDeviceType == DspCmdConfig::DeviceType::AUDIO )
     {
-        rd = new HSoundcardReader<T>(Config.InputDevice, Config.Rate, 1, Config.Format, Config.Blocksize);
+        rd = new HSoundcardReader<T>("sound card reader", Config.InputDevice, Config.Rate, 1, Config.Format, Config.Blocksize);
     }
     else if ( Config.InputDeviceType == DspCmdConfig::DeviceType::RTL )
     {
-        rd = new HRtl2832Reader<T>(Config.InputDevice, Config.Rate, Config.Mode, Config.Gain, Config.Frequency, Config.Blocksize);
+        rd = new HRtl2832Reader<T>("rtl 2832 reader", Config.InputDevice, Config.Rate, Config.Mode, Config.Gain, Config.Frequency, Config.Blocksize);
     }
     else
     {
@@ -199,11 +199,11 @@ int RunFileRecorder()
     HWriter<T>* wr;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+        wr = new HWavWriter<T>("wav writer", Config.OutputFile, Config.Format, 1, Config.Rate);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        wr = new HFileWriter<T>(Config.OutputFile);
+        wr = new HFileWriter<T>("file writer", Config.OutputFile);
     }
     else
     {
@@ -212,7 +212,7 @@ int RunFileRecorder()
     }
 
     // Create processor
-    HStreamProcessor<T> proc(wr, rd, Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", wr, rd, Config.Blocksize, &terminated);
     if( Config.Timer.Duration() > 0 )
     {
         unsigned long int blocks = (Config.Timer.Duration() * Config.Rate) / Config.Blocksize;
@@ -253,11 +253,11 @@ int RunFilePlayer()
     HReader<T>* rd;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        rd = new HWavReader<T>(Config.InputFile);
+        rd = new HWavReader<T>("wav reader", Config.InputFile);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        rd = new HFileReader<T>(Config.InputFile);
+        rd = new HFileReader<T>("file reader", Config.InputFile);
     }
     else
     {
@@ -266,10 +266,10 @@ int RunFilePlayer()
     }
 
     // Create writer
-    HSoundcardWriter<T> wr(Config.OutputDevice, Config.Rate, 1, Config.Format, Config.Blocksize);
+    HSoundcardWriter<T> wr("soundcard writer", Config.OutputDevice, Config.Rate, 1, Config.Format, Config.Blocksize);
 
     // Create processor
-    HStreamProcessor<T> proc(&wr, rd, Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", &wr, rd, Config.Blocksize, &terminated);
     proc.Run(Config.BlockCount);
 
     // Delete reader
@@ -450,11 +450,11 @@ int RunFFTMagnitudePlot()
     HReader<T>* rd;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        rd = new HWavReader<T>(Config.InputFile);
+        rd = new HWavReader<T>("wav reader", Config.InputFile);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        rd = new HFileReader<T>(Config.InputFile);
+        rd = new HFileReader<T>("file reader", Config.InputFile);
     }
     else
     {
@@ -463,14 +463,14 @@ int RunFFTMagnitudePlot()
     }
 
     // Create writer
-    HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
+    HCustomWriter<HFftResults> fftWriter("fft writer", FFTMagnitudePlotWriter);
 
     // Create FFT
     HFftOutput<T>* fft;
     if( Config.FCenter > 0 ) {
-        fft = new HFftOutput<T>(Config.FFTSize, Config.Average, 1, &fftWriter, new HHahnWindow<T>(), Config.Rate, Config.ZoomFactor, Config.FCenter);
+        fft = new HFftOutput<T>("fft output", Config.FFTSize, Config.Average, 1, &fftWriter, new HHahnWindow<T>(), Config.Rate, Config.ZoomFactor, Config.FCenter);
     } else {
-        fft = new HFftOutput<T>(Config.FFTSize, Config.Average, 1, &fftWriter, new HHahnWindow<T>(), Config.IsIq);
+        fft = new HFftOutput<T>("fft output", Config.FFTSize, Config.Average, 1, &fftWriter, new HHahnWindow<T>(), Config.IsIq);
     }
 
     // Buffer for the accumulated spectrum values
@@ -478,7 +478,7 @@ int RunFFTMagnitudePlot()
     aggregatedMagnitudeSpectrum = new double[Config.FFTSize / 2];
 
     // Create processor
-    HStreamProcessor<T> proc(fft->Writer(), rd, Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", fft->Writer(), rd, Config.Blocksize, &terminated);
     proc.Run(Config.BlockCount);
 
     // Delete reader
@@ -507,11 +507,11 @@ int RunFileConverter()
     HReader<T>* rd;
     if( strcmp(Config.InFileFormat, "wav") == 0 )
     {
-        rd = new HWavReader<T>(Config.InputFile);
+        rd = new HWavReader<T>("wav reader", Config.InputFile);
     }
     else if( strcmp(Config.InFileFormat, "pcm") == 0 )
     {
-        rd = new HFileReader<T>(Config.InputFile);
+        rd = new HFileReader<T>("file reader", Config.InputFile);
     }
     else
     {
@@ -523,11 +523,11 @@ int RunFileConverter()
     HWriter<T>* wr;
     if( strcmp(Config.OutFileFormat, "wav") == 0 )
     {
-        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+        wr = new HWavWriter<T>("wav writer", Config.OutputFile, Config.Format, 1, Config.Rate);
     }
     else if( strcmp(Config.OutFileFormat, "pcm") == 0 )
     {
-        wr = new HFileWriter<T>(Config.OutputFile);
+        wr = new HFileWriter<T>("file writer", Config.OutputFile);
     }
     else
     {
@@ -536,7 +536,7 @@ int RunFileConverter()
     }
 
     // Create processor
-    HStreamProcessor<T> proc(wr, rd, Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", wr, rd, Config.Blocksize, &terminated);
     proc.Run(Config.BlockCount);
 
     // Delete reader
@@ -569,11 +569,11 @@ int RunClickRemoval()
     HReader<T>* rd;
     if( strcmp(Config.InFileFormat, "wav") == 0 )
     {
-        rd = new HWavReader<T>(Config.InputFile);
+        rd = new HWavReader<T>("wav reader", Config.InputFile);
     }
     else if( strcmp(Config.InFileFormat, "pcm") == 0 )
     {
-        rd = new HFileReader<T>(Config.InputFile);
+        rd = new HFileReader<T>("file reader", Config.InputFile);
     }
     else
     {
@@ -582,20 +582,20 @@ int RunClickRemoval()
     }
 
     // Create processor
-    HStreamProcessor<T> proc(rd, Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", rd, Config.Blocksize, &terminated);
 
     // Create clickremoval filter
-    HClickRemovingFilter<T>* filter = new HClickRemovingFilter<T>(proc.Consumer(), Config.Blocksize);
+    HClickRemovingFilter<T>* filter = new HClickRemovingFilter<T>("click removing filter", proc.Consumer(), Config.Blocksize);
 
     // Create writer
     HWriter<T>* wr;
     if( strcmp(Config.OutFileFormat, "wav") == 0 )
     {
-        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate, filter->Consumer());
+        wr = new HWavWriter<T>("wav writer", Config.OutputFile, Config.Format, 1, Config.Rate, filter->Consumer());
     }
     else if( strcmp(Config.OutFileFormat, "pcm") == 0 )
     {
-        wr = new HFileWriter<T>(Config.OutputFile, filter->Consumer());
+        wr = new HFileWriter<T>("file writer", Config.OutputFile, filter->Consumer());
     }
     else
     {
@@ -640,11 +640,11 @@ int RunMixer()
     HReader<T>* rd1;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        rd1 = new HWavReader<T>(Config.InputFile1);
+        rd1 = new HWavReader<T>("wav reader", Config.InputFile1);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        rd1 = new HFileReader<T>(Config.InputFile1);
+        rd1 = new HFileReader<T>("file reader", Config.InputFile1);
     }
     else
     {
@@ -656,11 +656,11 @@ int RunMixer()
     HReader<T>* rd2;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        rd2 = new HWavReader<T>(Config.InputFile2);
+        rd2 = new HWavReader<T>("wav reader", Config.InputFile2);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        rd2 = new HFileReader<T>(Config.InputFile2);
+        rd2 = new HFileReader<T>("file reader", Config.InputFile2);
     }
     else
     {
@@ -672,11 +672,11 @@ int RunMixer()
     HWriter<T>* wr;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+        wr = new HWavWriter<T>("wav writer", Config.OutputFile, Config.Format, 1, Config.Rate);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        wr = new HFileWriter<T>(Config.OutputFile);
+        wr = new HFileWriter<T>("file writer", Config.OutputFile);
     }
     else
     {
@@ -685,10 +685,10 @@ int RunMixer()
     }
 
     // Create  mixer
-    HLinearMixer<T> mixer(rd1, rd2, Config.Blocksize);
+    HLinearMixer<T> mixer("linear mixer", rd1, rd2, Config.Blocksize);
 
     // Create processor
-    HStreamProcessor<T> proc(wr, (HReader<T>*) &mixer, Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", wr, (HReader<T>*) &mixer, Config.Blocksize, &terminated);
     proc.Run(Config.BlockCount);
 
     // Delete readers and the writer
@@ -715,11 +715,11 @@ int RunSubtracter()
     HReader<T>* rd1;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        rd1 = new HWavReader<T>(Config.InputFile1);
+        rd1 = new HWavReader<T>("wav reader", Config.InputFile1);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        rd1 = new HFileReader<T>(Config.InputFile1);
+        rd1 = new HFileReader<T>("file reader", Config.InputFile1);
     }
     else
     {
@@ -731,11 +731,11 @@ int RunSubtracter()
     HReader<T>* rd2;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        rd2 = new HWavReader<T>(Config.InputFile2);
+        rd2 = new HWavReader<T>("wav reader", Config.InputFile2);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        rd2 = new HFileReader<T>(Config.InputFile2);
+        rd2 = new HFileReader<T>("file reader", Config.InputFile2);
     }
     else
     {
@@ -747,11 +747,11 @@ int RunSubtracter()
     HWriter<T>* wr;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+        wr = new HWavWriter<T>("wav writer", Config.OutputFile, Config.Format, 1, Config.Rate);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        wr = new HFileWriter<T>(Config.OutputFile);
+        wr = new HFileWriter<T>("file writer", Config.OutputFile);
     }
     else
     {
@@ -760,10 +760,10 @@ int RunSubtracter()
     }
 
     // Create  subtracter
-    HSubtracter<T> subtracter(rd1, rd2, Config.Blocksize);
+    HSubtracter<T> subtracter("subtracter", rd1, rd2, Config.Blocksize);
 
     // Create processor
-    HStreamProcessor<T> proc(wr, (HReader<T>*) &subtracter, Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", wr, (HReader<T>*) &subtracter, Config.Blocksize, &terminated);
     proc.Run(Config.BlockCount);
 
     // Delete readers and the writer
@@ -790,11 +790,11 @@ int RunMultiplier()
     HReader<T>* rd;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        rd = new HWavReader<T>(Config.InputFile);
+        rd = new HWavReader<T>("wav reader", Config.InputFile);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        rd = new HFileReader<T>(Config.InputFile);
+        rd = new HFileReader<T>("file reader", Config.InputFile);
     }
     else
     {
@@ -806,11 +806,11 @@ int RunMultiplier()
     HWriter<T>* wr;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+        wr = new HWavWriter<T>("wav writer", Config.OutputFile, Config.Format, 1, Config.Rate);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        wr = new HFileWriter<T>(Config.OutputFile);
+        wr = new HFileWriter<T>("file writer", Config.OutputFile);
     }
     else
     {
@@ -820,12 +820,12 @@ int RunMultiplier()
 
     // Create  multiplier
     if( Config.IsIq ) {
-        HIqMultiplier<T> multiplier(rd, Config.Rate, Config.Frequency, 10, Config.Blocksize);
-        HStreamProcessor<T> proc(wr, (HReader<T>*) &multiplier, Config.Blocksize, &terminated);
+        HIqMultiplier<T> multiplier("multiplier", rd, Config.Rate, Config.Frequency, 10, Config.Blocksize);
+        HStreamProcessor<T> proc("stream processor", wr, (HReader<T>*) &multiplier, Config.Blocksize, &terminated);
         proc.Run(Config.BlockCount);
     } else {
-        HMultiplier<T> multiplier(rd, Config.Rate, Config.Frequency, 10, Config.Blocksize);
-        HStreamProcessor<T> proc(wr, (HReader<T>*) &multiplier, Config.Blocksize, &terminated);
+        HMultiplier<T> multiplier("multiplier", rd, Config.Rate, Config.Frequency, 10, Config.Blocksize);
+        HStreamProcessor<T> proc("stream processor", wr, (HReader<T>*) &multiplier, Config.Blocksize, &terminated);
         proc.Run(Config.BlockCount);
     }
 
@@ -851,11 +851,11 @@ int RunFilter()
     HReader<T>* rd;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        rd = new HWavReader<T>(Config.InputFile);
+        rd = new HWavReader<T>("wav reader", Config.InputFile);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        rd = new HFileReader<T>(Config.InputFile);
+        rd = new HFileReader<T>("file reader", Config.InputFile);
     }
     else
     {
@@ -867,11 +867,11 @@ int RunFilter()
     HWriter<T>* wr;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+        wr = new HWavWriter<T>("wav writer", Config.OutputFile, Config.Format, 1, Config.Rate);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        wr = new HFileWriter<T>(Config.OutputFile);
+        wr = new HFileWriter<T>("file writer", Config.OutputFile);
     }
     else
     {
@@ -884,14 +884,14 @@ int RunFilter()
     if( strcmp(Config.FilterName, "HFirFilter") == 0 )
     {
         if( Config.IsIq ) {
-            filter = HIqFirFilter<T>::Create((HReader<T>*) rd, Config.Blocksize, Config.FilterCoeffs);
+            filter = HIqFirFilter<T>::Create("iq fir filter", (HReader<T>*) rd, Config.Blocksize, Config.FilterCoeffs);
         } else {
-            filter = HFirFilter<T>::Create((HReader<T>*) rd, Config.Blocksize, Config.FilterCoeffs);
+            filter = HFirFilter<T>::Create("fir filter", (HReader<T>*) rd, Config.Blocksize, Config.FilterCoeffs);
         }
     }
     else if( strcmp(Config.FilterName, "HIirFilter") == 0 )
     {
-        filter = HIirFilter<T>::Create((HReader<T>*) rd, Config.Blocksize, Config.FilterCoeffs);
+        filter = HIirFilter<T>::Create("iir filter", (HReader<T>*) rd, Config.Blocksize, Config.FilterCoeffs);
     }
     else
     {
@@ -900,7 +900,7 @@ int RunFilter()
     }
 
     // Create processor
-    HStreamProcessor<T> proc(wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
     proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
@@ -940,7 +940,8 @@ class FilterSpectrumReader : public HReader<T>
 
     public:
 
-        FilterSpectrumReader():
+        FilterSpectrumReader(std::string id):
+            HReader<T>(id),
             _ref(0)
         {
             // Calculate f-delta
@@ -961,7 +962,7 @@ class FilterSpectrumReader : public HReader<T>
 
             // Create vfo
             int amplitude = std::numeric_limits<T>::max() / 2;
-            vfo = new HVfo<T>(Config.Rate, _freq, amplitude, 0);
+            vfo = new HVfo<T>("vfo", Config.Rate, _freq, amplitude, 0);
 
             // Calibration - measure input spectrum magnitude
             _ref = GetCalibratedReference<T>(_fDelta, _freqStart, _freqStop, amplitude);
@@ -1006,18 +1007,18 @@ template <typename T>
 int RunFilterSpectrum()
 {
    // Create reader
-    FilterSpectrumReader<T> rd;
+    FilterSpectrumReader<T> rd("spectrum reader");
 
     // Create  filter
     HFilter<T>* filter;
     if( strcmp(Config.FilterName, "HFirFilter") == 0 )
     {
         std::cout << "coefs: " << Config.FilterCoeffs << std::endl;
-        filter = HFirFilter<T>::Create((HReader<T>*) &rd, Config.Blocksize, Config.FilterCoeffs);
+        filter = HFirFilter<T>::Create("fir filter", (HReader<T>*) &rd, Config.Blocksize, Config.FilterCoeffs);
     }
     else if( strcmp(Config.FilterName, "HIirFilter") == 0 )
     {
-        filter = HIirFilter<T>::Create((HReader<T>*) &rd, Config.Blocksize, Config.FilterCoeffs);
+        filter = HIirFilter<T>::Create("iir filter", (HReader<T>*) &rd, Config.Blocksize, Config.FilterCoeffs);
     }
     else
     {
@@ -1026,16 +1027,16 @@ int RunFilterSpectrum()
     }
 
     // Create writer
-    HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
+    HCustomWriter<HFftResults> fftWriter("fft writer", FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFftOutput<T> fft(Config.Blocksize, 1, 1, &fftWriter, new HHahnWindow<T>());
+    HFftOutput<T> fft("fft output", Config.Blocksize, 1, 1, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
 
     // Create processor
-    HStreamProcessor<T> proc(&fft, (HReader<T>*) filter, Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", &fft, (HReader<T>*) filter, Config.Blocksize, &terminated);
     std::cout << "Sweep from 0Hz - " << (Config.Rate / 2) << "Hz" << std::endl;
     proc.Run(Config.BlockCount);
 
@@ -1049,41 +1050,41 @@ template <typename T>
 int RunBiQuadSpectrum()
 {
     // Create reader
-    FilterSpectrumReader<T> rd;
+    FilterSpectrumReader<T> rd("spectrum reader");
 
     // Create  filter
     HFilter<T>* filter;
     if( strcmp(Config.FilterName, "HLowpassBiQuad") == 0 )
     {
-        filter = new HBiQuadFilter<HLowpassBiQuad<T>, T>((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HLowpassBiQuad<T>, T>("biquad filter", (HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HHighpassBiQuad") == 0 )
     {
-        filter = new HBiQuadFilter<HHighpassBiQuad<T>, T>((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HHighpassBiQuad<T>, T>("biquad filter", (HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HBandpassBiQuad") == 0 )
     {
-        filter = new HBiQuadFilter<HBandpassBiQuad<T>, T>((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HBandpassBiQuad<T>, T>("biquad filter", (HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HNotchBiQuad") == 0 )
     {
-        filter = new HBiQuadFilter<HNotchBiQuad<T>, T>((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HNotchBiQuad<T>, T>("biquad filter", (HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HAllpassBiQuad") == 0 )
     {
-        filter = new HBiQuadFilter<HAllpassBiQuad<T>, T>((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HAllpassBiQuad<T>, T>("biquad filter", (HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HPeakingEQBiQuad") == 0 )
     {
-        filter = new HBiQuadFilter<HPeakingEQBiQuad<T>, T>((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HPeakingEQBiQuad<T>, T>("biquad filter", (HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HLowShelvingBiQuad") == 0 )
     {
-        filter = new HBiQuadFilter<HLowShelvingBiQuad<T>, T>((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HLowShelvingBiQuad<T>, T>("biquad filter", (HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HHighShelvingBiQuad") == 0 )
     {
-        filter = new HBiQuadFilter<HHighShelvingBiQuad<T>, T>((HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HHighShelvingBiQuad<T>, T>("biquad filter", (HReader<T>*) &rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else
     {
@@ -1104,16 +1105,16 @@ int RunBiQuadSpectrum()
     stream.close();
 
     // Create writer
-    HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
+    HCustomWriter<HFftResults> fftWriter("fft writer", FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFftOutput<T> fft(Config.Blocksize, 1, 1, &fftWriter, new HHahnWindow<T>());
+    HFftOutput<T> fft("fft output", Config.Blocksize, 1, 1, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
 
     // Create processor
-    HStreamProcessor<T> proc(&fft, filter->Reader(), Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", &fft, filter->Reader(), Config.Blocksize, &terminated);
     std::cout << "Sweep from 0Hz - " << (Config.Rate / 2) << "Hz" << std::endl;
     proc.Run(Config.BlockCount);
 
@@ -1130,11 +1131,11 @@ int RunBiQuadFilter()
     HReader<T>* rd;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        rd = new HWavReader<T>(Config.InputFile);
+        rd = new HWavReader<T>("wav reader", Config.InputFile);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        rd = new HFileReader<T>(Config.InputFile);
+        rd = new HFileReader<T>("file reader", Config.InputFile);
     }
     else
     {
@@ -1146,11 +1147,11 @@ int RunBiQuadFilter()
     HWriter<T>* wr;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+        wr = new HWavWriter<T>("wav writer", Config.OutputFile, Config.Format, 1, Config.Rate);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        wr = new HFileWriter<T>(Config.OutputFile);
+        wr = new HFileWriter<T>("file writer", Config.OutputFile);
     }
     else
     {
@@ -1162,35 +1163,35 @@ int RunBiQuadFilter()
     HFilter<T>* filter;
     if( strcmp(Config.FilterName, "HLowpassBiQuad") == 0 )
     {
-        filter = new HBiQuadFilter<HLowpassBiQuad<T>, T> ((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HLowpassBiQuad<T>, T> ("biquad filter", (HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HHighpassBiQuad") == 0 )
     {
-        filter = new HBiQuadFilter<HHighpassBiQuad<T>, T>((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HHighpassBiQuad<T>, T>("biquad filter", (HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HBandpassBiQuad") == 0 )
     {
-        filter = new HBiQuadFilter<HBandpassBiQuad<T>, T>((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HBandpassBiQuad<T>, T>("biquad filter", (HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HNotchBiQuad") == 0 )
     {
-        filter = new HBiQuadFilter<HNotchBiQuad<T>, T>((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HNotchBiQuad<T>, T>("biquad filter", (HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HAllpassBiQuad") == 0 )
     {
-        filter = new HBiQuadFilter<HAllpassBiQuad<T>, T>((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HAllpassBiQuad<T>, T>("biquad filter", (HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HPeakingEQBiQuad") == 0 )
     {
-        filter = new HBiQuadFilter<HPeakingEQBiQuad<T>, T>((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HPeakingEQBiQuad<T>, T>("biquad filter", (HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HLowShelvingBiQuad") == 0 )
     {
-        filter = new HBiQuadFilter<HLowShelvingBiQuad<T>, T>((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HLowShelvingBiQuad<T>, T>("biquad filter", (HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HHighShelvingBiQuad") == 0 )
     {
-        filter = new HBiQuadFilter<HHighShelvingBiQuad<T>, T>((HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
+        filter = new HBiQuadFilter<HHighShelvingBiQuad<T>, T>("biquad filter", (HReader<T>*) rd, Config.FCutOff, Config.Rate, Config.Quality, Config.Gain, Config.Blocksize);
     }
     else
     {
@@ -1199,7 +1200,7 @@ int RunBiQuadFilter()
     }
 
     // Create processor
-    HStreamProcessor<T> proc(wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
     proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
@@ -1221,31 +1222,31 @@ template <typename T>
 int RunKaiserBesselSpectrum()
 {
     // Create reader
-    FilterSpectrumReader<T> rd;
+    FilterSpectrumReader<T> rd("spectrum reader");
 
     // Create  filter
     HFirFilter<T>* filter;
     if( strcmp(Config.FilterName, "HLowpassKaiserBessel") == 0 )
     {
         HLowpassKaiserBessel<T> kb(Config.FStop, Config.Rate, Config.Points, Config.Attenuation);
-        filter = new HFirFilter<T>(rd.Reader(), kb.Calculate(), Config.Points, Config.Blocksize );
+        filter = new HFirFilter<T>("fir filter", rd.Reader(), kb.Calculate(), Config.Points, Config.Blocksize );
         std::cout << "Ignoring Fstart for lowpass Kaiser-Bessel filter" << std::endl;
     }
     else if( strcmp(Config.FilterName, "HHighpassKaiserBessel") == 0 )
     {
         HHighpassKaiserBessel<T> kb(Config.FStart, Config.Rate, Config.Points, Config.Attenuation);
-        filter = new HFirFilter<T>(rd.Reader(), kb.Calculate(), Config.Points, Config.Blocksize );
+        filter = new HFirFilter<T>("fir filter", rd.Reader(), kb.Calculate(), Config.Points, Config.Blocksize );
         std::cout << "Ignoring Fstop for highpass Kaiser-Bessel filter" << std::endl;
     }
     else if( strcmp(Config.FilterName, "HBandpassKaiserBessel") == 0 )
     {
         HBandpassKaiserBessel<T> kb(Config.FStart, Config.FStop, Config.Rate, Config.Points, Config.Attenuation);
-        filter = new HFirFilter<T>(rd.Reader(), kb.Calculate(), Config.Points, Config.Blocksize );
+        filter = new HFirFilter<T>("fir filter", rd.Reader(), kb.Calculate(), Config.Points, Config.Blocksize );
     }
     else if( strcmp(Config.FilterName, "HBandstopKaiserBessel") == 0 )
     {
         HBandstopKaiserBessel<T> kb(Config.FStart, Config.FStop, Config.Rate, Config.Points, Config.Attenuation);
-        filter = new HFirFilter<T>(rd.Reader(), kb.Calculate(), Config.Points, Config.Blocksize );
+        filter = new HFirFilter<T>("fir filter", rd.Reader(), kb.Calculate(), Config.Points, Config.Blocksize );
     }
     else
     {
@@ -1264,16 +1265,16 @@ int RunKaiserBesselSpectrum()
     stream.close();
 
     // Create writer
-    HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
+    HCustomWriter<HFftResults> fftWriter("fft result", FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFftOutput<T> fft(Config.Blocksize, 1, 1, &fftWriter, new HHahnWindow<T>());
+    HFftOutput<T> fft("fft output", Config.Blocksize, 1, 1, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
 
     // Create processor
-    HStreamProcessor<T> proc(&fft, filter->Reader(), Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", &fft, filter->Reader(), Config.Blocksize, &terminated);
     std::cout << "Sweep from 0Hz - " << (Config.Rate / 2) << "Hz" << std::endl;
     proc.Run(Config.BlockCount);
 
@@ -1290,11 +1291,11 @@ int RunKaiserBesselFilter()
     HReader<T>* rd;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        rd = new HWavReader<T>(Config.InputFile);
+        rd = new HWavReader<T>("wav reader", Config.InputFile);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        rd = new HFileReader<T>(Config.InputFile);
+        rd = new HFileReader<T>("file reader", Config.InputFile);
     }
     else
     {
@@ -1306,11 +1307,11 @@ int RunKaiserBesselFilter()
     HWriter<T>* wr;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+        wr = new HWavWriter<T>("wav writer", Config.OutputFile, Config.Format, 1, Config.Rate);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        wr = new HFileWriter<T>(Config.OutputFile);
+        wr = new HFileWriter<T>("file writer", Config.OutputFile);
     }
     else
     {
@@ -1323,22 +1324,22 @@ int RunKaiserBesselFilter()
     if( strcmp(Config.FilterName, "HLowpasskaiserBessel") == 0 )
     {
         HLowpassKaiserBessel<T> kb(Config.FStop, Config.Rate, Config.Points, Config.Attenuation);
-        filter = new HFirFilter<T>(rd, kb.Calculate(), Config.Points, Config.Blocksize);
+        filter = new HFirFilter<T>("fir filter", rd, kb.Calculate(), Config.Points, Config.Blocksize);
     }
     else if( strcmp(Config.FilterName, "HHighpassKaiserBessel") == 0 )
     {
         HHighpassKaiserBessel<T> kb(Config.FStart, Config.Rate, Config.Points, Config.Attenuation);
-        filter = new HFirFilter<T>(rd, kb.Calculate(), Config.Points, Config.Blocksize );
+        filter = new HFirFilter<T>("fir filter", rd, kb.Calculate(), Config.Points, Config.Blocksize );
     }
     else if( strcmp(Config.FilterName, "HBandpassKaiserBessel") == 0 )
     {
         HBandpassKaiserBessel<T> kb(Config.FStart, Config.FStop, Config.Rate, Config.Points, Config.Attenuation);
-        filter = new HFirFilter<T>(rd, kb.Calculate(), Config.Points, Config.Blocksize );
+        filter = new HFirFilter<T>("fir filter", rd, kb.Calculate(), Config.Points, Config.Blocksize );
     }
     else if( strcmp(Config.FilterName, "HBandstopKaiserBessel") == 0 )
     {
         HBandstopKaiserBessel<T> kb(Config.FStart, Config.FStop, Config.Rate, Config.Points, Config.Attenuation);
-        filter = new HFirFilter<T>(rd, kb.Calculate(), Config.Points, Config.Blocksize );
+        filter = new HFirFilter<T>("fir filter", rd, kb.Calculate(), Config.Points, Config.Blocksize );
     }
     else
     {
@@ -1347,7 +1348,7 @@ int RunKaiserBesselFilter()
     }
 
     // Create processor
-    HStreamProcessor<T> proc(wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
     proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
@@ -1372,11 +1373,11 @@ int RunGain()
     HReader<T>* rd;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        rd = new HWavReader<T>(Config.InputFile);
+        rd = new HWavReader<T>("wav reader", Config.InputFile);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        rd = new HFileReader<T>(Config.InputFile);
+        rd = new HFileReader<T>("file reader", Config.InputFile);
     }
     else
     {
@@ -1388,11 +1389,11 @@ int RunGain()
     HWriter<T>* wr;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+        wr = new HWavWriter<T>("wav writer", Config.OutputFile, Config.Format, 1, Config.Rate);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        wr = new HFileWriter<T>(Config.OutputFile);
+        wr = new HFileWriter<T>("file writer", Config.OutputFile);
     }
     else
     {
@@ -1401,10 +1402,10 @@ int RunGain()
     }
 
     // Create gain
-    HGain<T> gain(rd, Config.Gain, Config.Blocksize);
+    HGain<T> gain("gain", rd, Config.Gain, Config.Blocksize);
 
     // Create processor
-    HStreamProcessor<T> proc(wr, (HReader<T>*) &gain, Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", wr, (HReader<T>*) &gain, Config.Blocksize, &terminated);
     proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
@@ -1426,30 +1427,30 @@ template <typename T>
 int RunCombSpectrum()
 {
     // Create reader
-    FilterSpectrumReader<T> rd;
+    FilterSpectrumReader<T> rd("spectrum reader");
 
     // Create  filter
     HCombFilter<T>* filter;
     if( Config.IsHumSpectrum )
     {
-        filter = new HHumFilter<T>(&rd, Config.Rate, Config.Frequency, Config.FCutOff, Config.Blocksize);
+        filter = new HHumFilter<T>("hum filter", &rd, Config.Rate, Config.Frequency, Config.FCutOff, Config.Blocksize);
     }
     else
     {
-        filter = new HCombFilter<T>(&rd, Config.Rate, Config.Frequency, Config.Alpha, Config.Blocksize);
+        filter = new HCombFilter<T>("comb filter", &rd, Config.Rate, Config.Frequency, Config.Alpha, Config.Blocksize);
     }
 
     // Create writer
-    HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
+    HCustomWriter<HFftResults> fftWriter("fft writer", FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFftOutput<T> fft(Config.Blocksize, 1, 1, &fftWriter, new HHahnWindow<T>());
+    HFftOutput<T> fft("fft output", Config.Blocksize, 1, 1, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
 
     // Create processor
-    HStreamProcessor<T> proc(&fft, (HReader<T>*) filter, Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", &fft, (HReader<T>*) filter, Config.Blocksize, &terminated);
     std::cout << "Sweep from 0Hz - " << (Config.Rate / 2) << "Hz" << std::endl;
     proc.Run(Config.BlockCount);
 
@@ -1469,11 +1470,11 @@ int RunCombFilter()
     HReader<T>* rd;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        rd = new HWavReader<T>(Config.InputFile);
+        rd = new HWavReader<T>("wav reader", Config.InputFile);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        rd = new HFileReader<T>(Config.InputFile);
+        rd = new HFileReader<T>("file reader", Config.InputFile);
     }
     else
     {
@@ -1485,11 +1486,11 @@ int RunCombFilter()
     HWriter<T>* wr;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+        wr = new HWavWriter<T>("wav writer", Config.OutputFile, Config.Format, 1, Config.Rate);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        wr = new HFileWriter<T>(Config.OutputFile);
+        wr = new HFileWriter<T>("file writer", Config.OutputFile);
     }
     else
     {
@@ -1501,15 +1502,15 @@ int RunCombFilter()
     HCombFilter<T>* filter;
     if( Config.IsHum )
     {
-        filter = new HHumFilter<T>(rd, Config.Rate, Config.Frequency, Config.FCutOff, Config.Blocksize);
+        filter = new HHumFilter<T>("hum filter", rd, Config.Rate, Config.Frequency, Config.FCutOff, Config.Blocksize);
     }
     else
     {
-        filter = new HCombFilter<T>(rd, Config.Rate, Config.Frequency, Config.Alpha, Config.Blocksize);
+        filter = new HCombFilter<T>("comb filter", rd, Config.Rate, Config.Frequency, Config.Alpha, Config.Blocksize);
     }
 
     // Create processor
-    HStreamProcessor<T> proc(wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
     proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
@@ -1551,7 +1552,7 @@ int RunGoertzlSweep()
 
     // Sweep
     HRectangularWindow<T> window;
-    HCustomWriter<HGoertzelResult> resultWriter(GoertzelMagnitudePlotWriter);
+    HCustomWriter<HGoertzelResult> resultWriter("result writer", GoertzelMagnitudePlotWriter);
     HGoertzelOutput<T>* filter;
     HReader<T>* rd;
     std::cout << "Sweep from 0Hz - " << (Config.Rate / 2) << "Hz" << std::endl;
@@ -1563,11 +1564,11 @@ int RunGoertzlSweep()
         // Create reader
         if( strcmp(Config.FileFormat, "wav") == 0 )
         {
-            rd = new HWavReader<T>(Config.InputFile);
+            rd = new HWavReader<T>("wav reader", Config.InputFile);
         }
         else if( strcmp(Config.FileFormat, "pcm") == 0 )
         {
-            rd = new HFileReader<T>(Config.InputFile);
+            rd = new HFileReader<T>("file reader", Config.InputFile);
         }
         else
         {
@@ -1576,10 +1577,10 @@ int RunGoertzlSweep()
         }
 
         // Create Goertzl filter at this bin
-        filter = new HGoertzelOutput<T>(Config.Blocksize, 4, i, &resultWriter, &window);
+        filter = new HGoertzelOutput<T>("goertzel filter", Config.Blocksize, 4, i, &resultWriter, &window);
 
         // Create processor
-        HStreamProcessor<T> proc(filter, rd, Config.Blocksize, &terminated);
+        HStreamProcessor<T> proc("stream processor", filter, rd, Config.Blocksize, &terminated);
         proc.Run(Config.BlockCount);
         delete filter;
 
@@ -1621,11 +1622,11 @@ int RunBiQuadCascadeFilter()
     HReader<T>* rd;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        rd = new HWavReader<T>(Config.InputFile);
+        rd = new HWavReader<T>("wav reader", Config.InputFile);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        rd = new HFileReader<T>(Config.InputFile);
+        rd = new HFileReader<T>("file reader", Config.InputFile);
     }
     else
     {
@@ -1637,11 +1638,11 @@ int RunBiQuadCascadeFilter()
     HWriter<T>* wr;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+        wr = new HWavWriter<T>("wav writer", Config.OutputFile, Config.Format, 1, Config.Rate);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        wr = new HFileWriter<T>(Config.OutputFile);
+        wr = new HFileWriter<T>("file writer", Config.OutputFile);
     }
     else
     {
@@ -1650,10 +1651,10 @@ int RunBiQuadCascadeFilter()
     }
 
     // Create  filter
-    HCascadedBiQuadFilter<T>* filter = HCascadedBiQuadFilter<T>::Create((HReader<T>*) rd, Config.Blocksize, Config.FilterCoeffs);
+    HCascadedBiQuadFilter<T>* filter = HCascadedBiQuadFilter<T>::Create("biquad filter", (HReader<T>*) rd, Config.Blocksize, Config.FilterCoeffs);
 
     // Create processor
-    HStreamProcessor<T> proc(wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
     proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
@@ -1678,22 +1679,22 @@ template <typename T>
 int RunBiQuadCascadeSpectrum()
 {
    // Create reader
-    FilterSpectrumReader<T> rd;
+    FilterSpectrumReader<T> rd("spectrum reader");
 
     // Create  filter
-    HCascadedBiQuadFilter<T>* filter = HCascadedBiQuadFilter<T>::Create((HReader<T>*) &rd, Config.Blocksize, Config.FilterCoeffs);
+    HCascadedBiQuadFilter<T>* filter = HCascadedBiQuadFilter<T>::Create("biquad filter", (HReader<T>*) &rd, Config.Blocksize, Config.FilterCoeffs);
 
     // Create writer
-    HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
+    HCustomWriter<HFftResults> fftWriter("fft writer", FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFftOutput<T> fft(Config.Blocksize, 1, 1, &fftWriter, new HHahnWindow<T>());
+    HFftOutput<T> fft("fft output", Config.Blocksize, 1, 1, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
 
     // Create processor
-    HStreamProcessor<T> proc(&fft, (HReader<T>*) filter, Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", &fft, (HReader<T>*) filter, Config.Blocksize, &terminated);
     std::cout << "Sweep from 0Hz - " << (Config.Rate / 2) << "Hz" << std::endl;
     proc.Run(Config.BlockCount);
 
@@ -1710,22 +1711,22 @@ template <typename T>
 int RunMovingAverageSpectrum()
 {
     // Create reader
-    FilterSpectrumReader<T> rd;
+    FilterSpectrumReader<T> rd("spectrum reader");
 
     // Create  filter
-    HMovingAverageFilter<T>* filter = new HMovingAverageFilter<T>(&rd, Config.M, Config.Blocksize);
+    HMovingAverageFilter<T>* filter = new HMovingAverageFilter<T>("moving average", &rd, Config.M, Config.Blocksize);
 
     // Create writer
-    HCustomWriter<HFftResults> fftWriter(FFTMagnitudePlotWriter);
+    HCustomWriter<HFftResults> fftWriter("fft result", FFTMagnitudePlotWriter);
 
     // Create FFT
-    HFftOutput<T> fft(Config.Blocksize, 1, 1, &fftWriter, new HHahnWindow<T>());
+    HFftOutput<T> fft("fft output", Config.Blocksize, 1, 1, &fftWriter, new HHahnWindow<T>());
 
     // Buffer for the accumulated spectrum values
     aggregatedMagnitudeSpectrum = new double[Config.Blocksize / 2];
 
     // Create processor
-    HStreamProcessor<T> proc(&fft, (HReader<T>*) filter, Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", &fft, (HReader<T>*) filter, Config.Blocksize, &terminated);
     std::cout << "Sweep from 0Hz - " << (Config.Rate / 2) << "Hz" << std::endl;
     proc.Run(Config.BlockCount);
 
@@ -1745,11 +1746,11 @@ int RunMovingAverageFilter()
     HReader<T>* rd;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        rd = new HWavReader<T>(Config.InputFile);
+        rd = new HWavReader<T>("wav reader", Config.InputFile);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        rd = new HFileReader<T>(Config.InputFile);
+        rd = new HFileReader<T>("file reader", Config.InputFile);
     }
     else
     {
@@ -1761,11 +1762,11 @@ int RunMovingAverageFilter()
     HWriter<T>* wr;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+        wr = new HWavWriter<T>("wav writer", Config.OutputFile, Config.Format, 1, Config.Rate);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        wr = new HFileWriter<T>(Config.OutputFile);
+        wr = new HFileWriter<T>("file writer", Config.OutputFile);
     }
     else
     {
@@ -1774,10 +1775,10 @@ int RunMovingAverageFilter()
     }
 
     // Create  filter
-    HMovingAverageFilter<T>* filter = new HMovingAverageFilter<T>(rd, Config.M, Config.Blocksize);
+    HMovingAverageFilter<T>* filter = new HMovingAverageFilter<T>("moving average", rd, Config.M, Config.Blocksize);
 
     // Create processor
-    HStreamProcessor<T> proc(wr, filter->Reader(), Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", wr, filter->Reader(), Config.Blocksize, &terminated);
     proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
@@ -1805,11 +1806,11 @@ int RunReal2Iq()
     HReader<T>* rd;
     if( strcmp(Config.InFileFormat, "wav") == 0 )
     {
-        rd = new HWavReader<T>(Config.InputFile);
+        rd = new HWavReader<T>("wav reader", Config.InputFile);
     }
     else if( strcmp(Config.InFileFormat, "pcm") == 0 )
     {
-        rd = new HFileReader<T>(Config.InputFile);
+        rd = new HFileReader<T>("file reader", Config.InputFile);
     }
     else
     {
@@ -1818,13 +1819,13 @@ int RunReal2Iq()
     }
 
     // Create writer
-    HWriter<T>* wr = new HFileWriter<T>(Config.OutputFile);
+    HWriter<T>* wr = new HFileWriter<T>("file writer", Config.OutputFile);
 
     // Create  converter
-    HReal2IqConverter<T>* converter = new HReal2IqConverter<T>(rd, Config.Blocksize / 2);
+    HReal2IqConverter<T>* converter = new HReal2IqConverter<T>("real to iq converter", rd, Config.Blocksize / 2);
 
     // Create processor
-    HStreamProcessor<T> proc(wr, converter->Reader(), Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", wr, converter->Reader(), Config.Blocksize, &terminated);
     proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
@@ -1851,11 +1852,11 @@ int RunIq2Real()
     HReader<T>* rd;
     if( strcmp(Config.InFileFormat, "wav") == 0 )
     {
-        rd = new HWavReader<T>(Config.InputFile);
+        rd = new HWavReader<T>("wav reader", Config.InputFile);
     }
     else if( strcmp(Config.InFileFormat, "pcm") == 0 )
     {
-        rd = new HFileReader<T>(Config.InputFile);
+        rd = new HFileReader<T>("file reader", Config.InputFile);
     }
     else
     {
@@ -1864,13 +1865,13 @@ int RunIq2Real()
     }
 
     // Create writer
-    HWriter<T>* wr = new HFileWriter<T>(Config.OutputFile);
+    HWriter<T>* wr = new HFileWriter<T>("file writer", Config.OutputFile);
 
     // Create  converter
-    HIq2RealConverter<T>* converter = new HIq2RealConverter<T>(rd, Config.Blocksize);
+    HIq2RealConverter<T>* converter = new HIq2RealConverter<T>("iq to real converter", rd, Config.Blocksize);
 
     // Create processor
-    HStreamProcessor<T> proc(wr, converter->Reader(), Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", wr, converter->Reader(), Config.Blocksize, &terminated);
     proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
@@ -1897,11 +1898,11 @@ int RunIq2Abs()
     HReader<T>* rd;
     if( strcmp(Config.InFileFormat, "wav") == 0 )
     {
-        rd = new HWavReader<T>(Config.InputFile);
+        rd = new HWavReader<T>("wav reader", Config.InputFile);
     }
     else if( strcmp(Config.InFileFormat, "pcm") == 0 )
     {
-        rd = new HFileReader<T>(Config.InputFile);
+        rd = new HFileReader<T>("file reader", Config.InputFile);
     }
     else
     {
@@ -1910,13 +1911,13 @@ int RunIq2Abs()
     }
 
     // Create writer
-    HWriter<T>* wr = new HFileWriter<T>(Config.OutputFile);
+    HWriter<T>* wr = new HFileWriter<T>("file writer", Config.OutputFile);
 
     // Create  converter
-    HIq2AbsConverter<T>* converter = new HIq2AbsConverter<T>(rd, Config.Blocksize);
+    HIq2AbsConverter<T>* converter = new HIq2AbsConverter<T>("iq to abs converter", rd, Config.Blocksize);
 
     // Create processor
-    HStreamProcessor<T> proc(wr, converter->Reader(), Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", wr, converter->Reader(), Config.Blocksize, &terminated);
     proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
@@ -1943,11 +1944,11 @@ int RunFft()
     HReader<T>* rd;
     if( strcmp(Config.InFileFormat, "wav") == 0 )
     {
-        rd = new HWavReader<T>(Config.InputFile);
+        rd = new HWavReader<T>("wav reader", Config.InputFile);
     }
     else if( strcmp(Config.InFileFormat, "pcm") == 0 )
     {
-        rd = new HFileReader<T>(Config.InputFile);
+        rd = new HFileReader<T>("file reader", Config.InputFile);
     }
     else
     {
@@ -1957,7 +1958,7 @@ int RunFft()
 
     // Create writer
     HWriter<std::complex<double>>* wr;
-    wr = new HFileWriter<std::complex<double>>(Config.OutputFile);
+    wr = new HFileWriter<std::complex<double>>("file writer", Config.OutputFile);
 
     // Start reader and writer
     rd->Start();
@@ -1999,17 +2000,17 @@ int RunIfft()
 {
     // Create reader
     HReader<std::complex<double>>* rd;
-    rd = new HFileReader<std::complex<double>>(Config.InputFile);
+    rd = new HFileReader<std::complex<double>>("filereader", Config.InputFile);
 
     // Create writer
     HWriter<T>* wr;
     if( strcmp(Config.OutFileFormat, "wav") == 0 )
     {
-        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+        wr = new HWavWriter<T>("wav writer", Config.OutputFile, Config.Format, 1, Config.Rate);
     }
     else if( strcmp(Config.OutFileFormat, "pcm") == 0 )
     {
-        wr = new HFileWriter<T>(Config.OutputFile);
+        wr = new HFileWriter<T>("file writer", Config.OutputFile);
     }
     else
     {
@@ -2059,11 +2060,11 @@ int RunDemux()
     HReader<T>* rd;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        rd = new HWavReader<T>(Config.InputFile);
+        rd = new HWavReader<T>("wav reader", Config.InputFile);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        rd = new HFileReader<T>(Config.InputFile);
+        rd = new HFileReader<T>("file reader", Config.InputFile);
     }
     else
     {
@@ -2076,13 +2077,13 @@ int RunDemux()
     HWriter<T>* wr2;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        wr1 = new HWavWriter<T>(("1_" + std::string(Config.OutputFile)).c_str(), Config.Format, 1, Config.Rate);
-        wr2 = new HWavWriter<T>(("2_" + std::string(Config.OutputFile)).c_str(), Config.Format, 1, Config.Rate);
+        wr1 = new HWavWriter<T>("wav writer", ("1_" + std::string(Config.OutputFile)).c_str(), Config.Format, 1, Config.Rate);
+        wr2 = new HWavWriter<T>("wav writer", ("2_" + std::string(Config.OutputFile)).c_str(), Config.Format, 1, Config.Rate);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        wr1 = new HFileWriter<T>("1_" + std::string(Config.OutputFile));
-        wr2 = new HFileWriter<T>("2_" + std::string(Config.OutputFile));
+        wr1 = new HFileWriter<T>("file writer", "1_" + std::string(Config.OutputFile));
+        wr2 = new HFileWriter<T>("file writer", "2_" + std::string(Config.OutputFile));
     }
     else
     {
@@ -2094,10 +2095,10 @@ int RunDemux()
     std::vector<HWriter<T>*> writers;
     writers.push_back(wr1);
     writers.push_back(wr2);
-    HDeMux<T> dmx(writers, Config.Blocksize);
+    HDeMux<T> dmx("demux", writers, Config.Blocksize);
 
     // Create processor
-    HStreamProcessor<T> proc(dmx.Writer(), rd->Reader(), Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", dmx.Writer(), rd->Reader(), Config.Blocksize, &terminated);
     proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
@@ -2124,11 +2125,11 @@ int RunDecimator()
     HReader<T>* rd;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        rd = new HWavReader<T>(Config.InputFile);
+        rd = new HWavReader<T>("wav reader", Config.InputFile);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        rd = new HFileReader<T>(Config.InputFile);
+        rd = new HFileReader<T>("file reader", Config.InputFile);
     }
     else
     {
@@ -2140,11 +2141,11 @@ int RunDecimator()
     HWriter<T>* wr;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+        wr = new HWavWriter<T>("wav writer", Config.OutputFile, Config.Format, 1, Config.Rate);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        wr = new HFileWriter<T>(Config.OutputFile);
+        wr = new HFileWriter<T>("file writer", Config.OutputFile);
     }
     else
     {
@@ -2153,8 +2154,8 @@ int RunDecimator()
     }
 
     // Create decimator and a processor
-    HDecimator<T> dcm(wr, Config.DecimateFactor, Config.Blocksize);
-    HStreamProcessor<T> proc(dcm.Writer(), rd->Reader(), Config.Blocksize, &terminated);
+    HDecimator<T> dcm("decimator", wr, Config.DecimateFactor, Config.Blocksize);
+    HStreamProcessor<T> proc("stream processor", dcm.Writer(), rd->Reader(), Config.Blocksize, &terminated);
     proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
@@ -2179,11 +2180,11 @@ int RunTranslator()
     HReader<T>* rd;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        rd = new HWavReader<T>(Config.InputFile);
+        rd = new HWavReader<T>("wav reader", Config.InputFile);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        rd = new HFileReader<T>(Config.InputFile);
+        rd = new HFileReader<T>("file reader", Config.InputFile);
     }
     else
     {
@@ -2195,11 +2196,11 @@ int RunTranslator()
     HWriter<T>* wr;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+        wr = new HWavWriter<T>("wav writer", Config.OutputFile, Config.Format, 1, Config.Rate);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        wr = new HFileWriter<T>(Config.OutputFile);
+        wr = new HFileWriter<T>("file writer", Config.OutputFile);
     }
     else
     {
@@ -2211,25 +2212,25 @@ int RunTranslator()
     HStreamProcessor<T>* proc;
     if( Config.IsTranslateByTwo ) {
         if( Config.IsIq ) {
-            HIqTranslateByTwo<T> tr2(wr, Config.Blocksize);
-            proc = new HStreamProcessor<T>(tr2.Writer(), rd->Reader(), Config.Blocksize, &terminated);
+            HIqTranslateByTwo<T> tr2("translate by two", wr, Config.Blocksize);
+            proc = new HStreamProcessor<T>("stream processor", tr2.Writer(), rd->Reader(), Config.Blocksize, &terminated);
             proc->Run();
             delete proc;
         } else {
-            HTranslateByTwo<T> tr2(wr, Config.Blocksize);
-            proc = new HStreamProcessor<T>(tr2.Writer(), rd->Reader(), Config.Blocksize, &terminated);
+            HTranslateByTwo<T> tr2("translate by two", wr, Config.Blocksize);
+            proc = new HStreamProcessor<T>("stream processor", tr2.Writer(), rd->Reader(), Config.Blocksize, &terminated);
             proc->Run();
             delete proc;
         }
     } else if( Config.IsTranslateByFourI || Config.IsTranslateByFourQ ) {
         if( Config.IsIq ) {
-            HIqTranslateByFour<T> tr4(wr, Config.Blocksize, Config.IsTranslateByFourQ);
-            proc = new HStreamProcessor<T>(tr4.Writer(), rd->Reader(), Config.Blocksize, &terminated);
+            HIqTranslateByFour<T> tr4("translate by four", wr, Config.Blocksize, Config.IsTranslateByFourQ);
+            proc = new HStreamProcessor<T>("stream processor", tr4.Writer(), rd->Reader(), Config.Blocksize, &terminated);
             proc->Run();
             delete proc;
         } else {
-            HTranslateByFour<T> tr4(wr, Config.Blocksize, Config.IsTranslateByFourQ);
-            proc = new HStreamProcessor<T>(tr4.Writer(), rd->Reader(), Config.Blocksize, &terminated);
+            HTranslateByFour<T> tr4("translate by four", wr, Config.Blocksize, Config.IsTranslateByFourQ);
+            proc = new HStreamProcessor<T>("stream processor", tr4.Writer(), rd->Reader(), Config.Blocksize, &terminated);
             proc->Run();
             delete proc;
         }
@@ -2260,11 +2261,11 @@ int RunUpsampler()
     HReader<T>* rd;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        rd = new HWavReader<T>(Config.InputFile);
+        rd = new HWavReader<T>("wav reader", Config.InputFile);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        rd = new HFileReader<T>(Config.InputFile);
+        rd = new HFileReader<T>("file reader", Config.InputFile);
     }
     else
     {
@@ -2276,11 +2277,11 @@ int RunUpsampler()
     HWriter<T>* wr;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+        wr = new HWavWriter<T>("wav writer", Config.OutputFile, Config.Format, 1, Config.Rate);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        wr = new HFileWriter<T>(Config.OutputFile);
+        wr = new HFileWriter<T>("file writer", Config.OutputFile);
     }
     else
     {
@@ -2289,10 +2290,10 @@ int RunUpsampler()
     }
 
     // Create  upsampler
-    HUpsampler<T> up(wr, Config.UpsampleFactor, Config.Blocksize);
+    HUpsampler<T> up("upsampler", wr, Config.UpsampleFactor, Config.Blocksize);
 
     // Create processor
-    HStreamProcessor<T> proc(up.Writer(), rd->Reader(), Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", up.Writer(), rd->Reader(), Config.Blocksize, &terminated);
     proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
@@ -2317,11 +2318,11 @@ int RunInterpolator()
     HReader<T>* rd;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        rd = new HWavReader<T>(Config.InputFile);
+        rd = new HWavReader<T>("wav reader", Config.InputFile);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        rd = new HFileReader<T>(Config.InputFile);
+        rd = new HFileReader<T>("file reader", Config.InputFile);
     }
     else
     {
@@ -2333,11 +2334,11 @@ int RunInterpolator()
     HWriter<T>* wr;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+        wr = new HWavWriter<T>("wav writer", Config.OutputFile, Config.Format, 1, Config.Rate);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        wr = new HFileWriter<T>(Config.OutputFile);
+        wr = new HFileWriter<T>("file writer", Config.OutputFile);
     }
     else
     {
@@ -2353,10 +2354,10 @@ int RunInterpolator()
     }
 
     // Create  interpolator
-    HInterpolator<T> ip(wr, Config.UpsampleFactor, coefficients, coeffs.size(), Config.Blocksize);
+    HInterpolator<T> ip("interpolator", wr, Config.UpsampleFactor, coefficients, coeffs.size(), Config.Blocksize);
 
     // Create processor
-    HStreamProcessor<T> proc(ip.Writer(), rd->Reader(), Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", ip.Writer(), rd->Reader(), Config.Blocksize, &terminated);
     proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
@@ -2381,11 +2382,11 @@ int RunBaseband()
     HReader<T>* rd;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        rd = new HWavReader<T>(Config.InputFile);
+        rd = new HWavReader<T>("wav reader", Config.InputFile);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        rd = new HFileReader<T>(Config.InputFile);
+        rd = new HFileReader<T>("file reader", Config.InputFile);
     }
     else
     {
@@ -2397,11 +2398,11 @@ int RunBaseband()
     HWriter<T>* wr;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+        wr = new HWavWriter<T>("wav writer", Config.OutputFile, Config.Format, 1, Config.Rate);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        wr = new HFileWriter<T>(Config.OutputFile);
+        wr = new HFileWriter<T>("file writer", Config.OutputFile);
     }
     else
     {
@@ -2410,10 +2411,10 @@ int RunBaseband()
     }
 
     // Create Baseband translator
-    HBaseband<T> bb(wr, Config.Rate, Config.FCenter, Config.Width, Config.Blocksize);
+    HBaseband<T> bb("baseband", wr, Config.Rate, Config.FCenter, Config.Width, Config.Blocksize);
 
     // Create processor
-    HStreamProcessor<T> proc(bb.Writer(), rd->Reader(), Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", bb.Writer(), rd->Reader(), Config.Blocksize, &terminated);
     proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
@@ -2438,11 +2439,11 @@ int RunFirDecimator()
     HReader<T>* rd;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        rd = new HWavReader<T>(Config.InputFile);
+        rd = new HWavReader<T>("wav reader", Config.InputFile);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        rd = new HFileReader<T>(Config.InputFile);
+        rd = new HFileReader<T>("file reader", Config.InputFile);
     }
     else
     {
@@ -2454,11 +2455,11 @@ int RunFirDecimator()
     HWriter<T>* wr;
     if( strcmp(Config.FileFormat, "wav") == 0 )
     {
-        wr = new HWavWriter<T>(Config.OutputFile, Config.Format, 1, Config.Rate);
+        wr = new HWavWriter<T>("wav writer", Config.OutputFile, Config.Format, 1, Config.Rate);
     }
     else if( strcmp(Config.FileFormat, "pcm") == 0 )
     {
-        wr = new HFileWriter<T>(Config.OutputFile);
+        wr = new HFileWriter<T>("file writer", Config.OutputFile);
     }
     else
     {
@@ -2472,15 +2473,15 @@ int RunFirDecimator()
     HIqFirDecimator<T>* iqFirDecimator = nullptr;
     std::vector<float> coefs = HFilter<T>::ReadCoeffsFromFile(Config.FilterCoeffs);
     if( Config.IsIq ) {
-        iqFirDecimator = new HIqFirDecimator<T>(rd->Reader(), Config.DecimateFactor, &coefs[0], coefs.size(), Config.Blocksize);
+        iqFirDecimator = new HIqFirDecimator<T>("iq fir decimator", rd->Reader(), Config.DecimateFactor, &coefs[0], coefs.size(), Config.Blocksize);
         filter = iqFirDecimator->Reader();
     } else {
-        firDecimator = new HFirDecimator<T>(rd->Reader(), Config.DecimateFactor, &coefs[0], coefs.size(), Config.Blocksize);
+        firDecimator = new HFirDecimator<T>("fir decimator", rd->Reader(), Config.DecimateFactor, &coefs[0], coefs.size(), Config.Blocksize);
         filter = firDecimator->Reader();
     }
 
     // Create processor
-    HStreamProcessor<T> proc(wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", wr, (HReader<T>*) filter, Config.Blocksize, &terminated);
     proc.Run(Config.BlockCount);
 
     // Delete the reader and writer
@@ -2509,16 +2510,16 @@ template <typename T>
 int RunSampleTypeConverter()
 {
     // Create reader
-    HFileReader<float> rd(Config.InputFile);
+    HFileReader<float> rd("file reader", Config.InputFile);
 
     // Create converter
-    HTypeConverter<float, T> cnv(rd.Reader(), Config.Blocksize, Config.TypeConverterScale);
+    HTypeConverter<float, T> cnv("type converter", rd.Reader(), Config.Blocksize, Config.TypeConverterScale);
 
     // Create writer
-    HFileWriter<T> wr(Config.OutputFile);
+    HFileWriter<T> wr("file writer", Config.OutputFile);
 
     // Create processor
-    HStreamProcessor<T> proc(wr.Writer(), cnv.Reader(), Config.Blocksize, &terminated);
+    HStreamProcessor<T> proc("stream processor", wr.Writer(), cnv.Reader(), Config.Blocksize, &terminated);
     proc.Run(Config.BlockCount);
 
     return 0;
