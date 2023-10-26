@@ -16,8 +16,8 @@ class HNullReader : public HReader<T>
     public:
 
         /** Create a new HNullReader object */
-        HNullReader()
-        {
+        explicit HNullReader(std::string id):
+            HReader<T>(id) {
             _zero = std::numeric_limits<T>::lowest();
         }
 

@@ -24,7 +24,7 @@ class HStreamProcessor_Test: public Test
             bool terminated = false;
             int8_t expected[] = {1, 3, 2, 4, 3, 5, 4, 6, 5, 7, 6, 8, 7, 9};
 
-            TestReader<int8_t> rdr(expected, 14);
+            TestReader<int8_t> rdr("hstreamprocessor_test_testreader", expected, 14);
             TestWriter<int8_t> wr("hstreamprocessor_test_testwriter", 14);
             HStreamProcessor<int8_t> proc("hstreamprocessor_test_read_write", &wr, &rdr, 14, &terminated);
 
@@ -37,7 +37,7 @@ class HStreamProcessor_Test: public Test
         {
             bool terminated = false;
 
-            TestReader<int8_t> rdr(nullptr, 0);
+            TestReader<int8_t> rdr("hstreamprocessor_test_testreader", nullptr, 0);
             TestWriter<int8_t> wr("hstreamprocessor_test_testwriter", 0);
             HStreamProcessor<int8_t> proc("hstreamprocessor_test_command", &wr, &rdr, 0, &terminated);
 

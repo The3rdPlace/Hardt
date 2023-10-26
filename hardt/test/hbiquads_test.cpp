@@ -146,7 +146,7 @@ class HBiQuads_Test: public Test
         void test_filter_as_reader()
         {
             int16_t output[6] = {1, 2, 4, 8, 16, 32};
-            TestReader<int16_t> rd(output, 6);
+            TestReader<int16_t> rd("hbiquads_test_testreader", output, 6);
             HFilter<int16_t>* filter = TestBiQuad<int16_t>::Create(&rd, 6);
 
             int16_t received[6];
@@ -182,7 +182,7 @@ class HBiQuads_Test: public Test
         void test_lowpassbiquad_as_reader()
         {
             int16_t output[6] = {1, 2, 4, 8, 16, 32};
-            TestReader<int16_t> rd(output, 6);
+            TestReader<int16_t> rd("hbiquads_test_testreader", output, 6);
             HBiQuadFilter<HLowpassBiQuad<int16_t>, int16_t> filter("hbiquads_test_lowpass_biquad_as_reader", &rd, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = filter.GetCoefficients();
@@ -215,7 +215,7 @@ class HBiQuads_Test: public Test
         void test_highpassbiquad_as_reader()
         {
             int16_t output[6] = {1, 2, 4, 8, 16, 32};
-            TestReader<int16_t> rd(output, 6);
+            TestReader<int16_t> rd("hbiquads_test_testreader", output, 6);
             HBiQuadFilter<HHighpassBiQuad<int16_t>, int16_t> filter("hbiquads_test_highpass_biquad_as_reader", &rd, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = filter.GetCoefficients();
@@ -248,7 +248,7 @@ class HBiQuads_Test: public Test
         void test_bandpassbiquad_as_reader()
         {
             int16_t output[6] = {1, 2, 4, 8, 16, 32};
-            TestReader<int16_t> rd(output, 6);
+            TestReader<int16_t> rd("hbiquads_test_testreader", output, 6);
             HBiQuadFilter<HBandpassBiQuad<int16_t>, int16_t> filter("hbiquads_test_bandpass_biquad_as_reader", &rd, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = filter.GetCoefficients();
@@ -281,7 +281,7 @@ class HBiQuads_Test: public Test
         void test_notchbiquad_as_reader()
         {
             int16_t output[6] = {1, 2, 4, 8, 16, 32};
-            TestReader<int16_t> rd(output, 6);
+            TestReader<int16_t> rd("hbiquads_test_testreader", output, 6);
             HBiQuadFilter<HNotchBiQuad<int16_t>, int16_t> filter("hbiquads_test_notchpass_biquad_as_reader", &rd, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = filter.GetCoefficients();
@@ -314,7 +314,7 @@ class HBiQuads_Test: public Test
         void test_allpassbiquad_as_reader()
         {
             int16_t output[6] = {1, 2, 4, 8, 16, 32};
-            TestReader<int16_t> rd(output, 6);
+            TestReader<int16_t> rd("hbiquads_test_testreader", output, 6);
             HBiQuadFilter<HAllpassBiQuad<int16_t>, int16_t> filter("hbiquads_test_allpass_biquad_as_reader", &rd, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = filter.GetCoefficients();
@@ -347,7 +347,7 @@ class HBiQuads_Test: public Test
         void test_peakingeqbiquad_as_reader()
         {
             int16_t output[6] = {1, 2, 4, 8, 16, 32};
-            TestReader<int16_t> rd(output, 6);
+            TestReader<int16_t> rd("hbiquads_test_testreader", output, 6);
             HBiQuadFilter<HPeakingEQBiQuad<int16_t>, int16_t> filter("hbiquads_test_peaking_biquad_as_reader", &rd, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = filter.GetCoefficients();
@@ -380,7 +380,7 @@ class HBiQuads_Test: public Test
         void test_lowshelvingbiquad_as_reader()
         {
             int16_t output[6] = {1, 2, 4, 8, 16, 32};
-            TestReader<int16_t> rd(output, 6);
+            TestReader<int16_t> rd("hbiquads_test_testreader", output, 6);
             HBiQuadFilter<HLowShelvingBiQuad<int16_t>, int16_t> filter("hbiquads_test_lowshelving_biquad_as_reader", &rd, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = filter.GetCoefficients();
@@ -413,7 +413,7 @@ class HBiQuads_Test: public Test
         void test_highshelvingbiquad_as_reader()
         {
             int16_t output[6] = {1, 2, 4, 8, 16, 32};
-            TestReader<int16_t> rd(output, 6);
+            TestReader<int16_t> rd("hbiquads_test_testreader", output, 6);
             HBiQuadFilter<HHighShelvingBiQuad<int16_t>, int16_t> filter("hbiquads_test_highshelving_biquad_as_reader", &rd, 8000, 48000, 0.7, 1, 4096);
 
             std::vector<float> c = filter.GetCoefficients();

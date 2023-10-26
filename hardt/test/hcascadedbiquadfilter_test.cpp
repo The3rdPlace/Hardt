@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -7,7 +6,7 @@ class HCascadedBiQuadFilter_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(test_single_filters_as_writer);
             UNITTEST(test_single_filters_as_consumer);
@@ -17,7 +16,7 @@ class HCascadedBiQuadFilter_Test: public Test
             UNITTEST(test_cascaded_filter_as_reader);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HCascadedBiQuadFilter";
         }
@@ -135,9 +134,9 @@ class HCascadedBiQuadFilter_Test: public Test
 
         void test_single_filters_as_writer()
         {
-            TestWriter<int16_t> wr(8);
-            HIirFilter<int16_t> filter2(wr.Writer(), coeffs, 5, 6);
-            HIirFilter<int16_t> filter(filter2.Writer(), &coeffs[5], 5, 6);
+            TestWriter<int16_t> wr("hcascadedbiquadfilter_test_testwriter", 8);
+            HIirFilter<int16_t> filter2("hcascadedbiquadfilter_test_filter_2", wr.Writer(), coeffs, 5, 6);
+            HIirFilter<int16_t> filter("hcascadedbiquadfilter_test_filter", filter2.Writer(), &coeffs[5], 5, 6);
 
             int16_t input[8] = {1, 2, 4, 8, 16, 32, 0, 0};
             ASSERT_IS_EQUAL(filter.Write(input, 6), 6);
@@ -149,10 +148,10 @@ class HCascadedBiQuadFilter_Test: public Test
 
         void test_single_filters_as_consumer()
         {
-            HNullWriter<int16_t> dummy; // Can not write to next writer, only needed for constructor args
-            HIirFilter<int16_t> filter(dummy.Consumer(), &coeffs[5], 5, 6);
-            HIirFilter<int16_t> filter2(filter.Consumer(), coeffs, 5, 6);
-            TestWriter<int16_t> wr(filter2.Consumer(), 8);
+            HNullWriter<int16_t> dummy("hcascadedbiquadfilter_test_hnullwriter"); // Can not write to next writer, only needed for constructor args
+            HIirFilter<int16_t> filter("hcascadedbiquadfilter_test_filter", dummy.Consumer(), &coeffs[5], 5, 6);
+            HIirFilter<int16_t> filter2("hcascadedbiquadfilter_test_filter_2", filter.Consumer(), coeffs, 5, 6);
+            TestWriter<int16_t> wr("hcascadedbiquadfilter_test_testwriter", filter2.Consumer(), 8);
             
             int16_t input[8] = {1, 2, 4, 8, 16, 32, 0, 0};
             ASSERT_IS_EQUAL(filter.Write(input, 6), 6);
@@ -164,8 +163,8 @@ class HCascadedBiQuadFilter_Test: public Test
 
         void test_cascaded_filter_as_writer()
         {
-            TestWriter<int16_t> wr(8);
-            HCascadedBiQuadFilter<int16_t>* filter = new HCascadedBiQuadFilter<int16_t>(wr.Writer(), coeffs, 10, 6);
+            TestWriter<int16_t> wr("hcascadedbiquadfilter_test_testwriter", 8);
+            HCascadedBiQuadFilter<int16_t>* filter = new HCascadedBiQuadFilter<int16_t>("hcascadedbiquadfilter_test_as_writer", wr.Writer(), coeffs, 10, 6);
 
             int16_t input[8] = {1, 2, 4, 8, 16, 32, 0, 0};
             ASSERT_IS_EQUAL(filter->Write(input, 6), 6);
@@ -194,9 +193,9 @@ class HCascadedBiQuadFilter_Test: public Test
 
         void test_cascaded_filter_as_consumer()
         {
-            HNullWriter<int16_t> dummy; // Can not write to next writer, only needed for constructor args
-            HCascadedBiQuadFilter<int16_t>* filter = new HCascadedBiQuadFilter<int16_t>(dummy.Consumer(), coeffs, 10, 6);
-            TestWriter<int16_t> wr(filter->Consumer(), 8);
+            HNullWriter<int16_t> dummy("hcascadedbiquadfilter_test_nullwriter"); // Can not write to next writer, only needed for constructor args
+            HCascadedBiQuadFilter<int16_t>* filter = new HCascadedBiQuadFilter<int16_t>("hcascadedbiquadfilter_test_as_consumer", dummy.Consumer(), coeffs, 10, 6);
+            TestWriter<int16_t> wr("hcascadedbiquadfilter_test_testwriter", filter->Consumer(), 8);
 
             int16_t input[8] = {1, 2, 4, 8, 16, 32, 0, 0};
             ASSERT_IS_EQUAL(filter->Write(input, 6), 6);
@@ -224,9 +223,9 @@ class HCascadedBiQuadFilter_Test: public Test
         void test_single_filters_as_reader()
         {
             int16_t output[8] = {1, 2, 4, 8, 16, 32, 0, 0};
-            TestReader<int16_t> rd(output, 8);
-            HIirFilter<int16_t> filter(&rd, coeffs, 5, 6);
-            HIirFilter<int16_t> filter2(filter.Reader(), &coeffs[5], 5, 6);
+            TestReader<int16_t> rd("hcascadedbiquadfilter_test_testreader", output, 8);
+            HIirFilter<int16_t> filter("hcascadedbiquadfilter_test_filter", &rd, coeffs, 5, 6);
+            HIirFilter<int16_t> filter2("hcascadedbiquadfilter_test_filter_2", filter.Reader(), &coeffs[5], 5, 6);
 
             int16_t received[6];
             ASSERT_IS_EQUAL(filter2.Read(received, 6), 6);
@@ -239,8 +238,8 @@ class HCascadedBiQuadFilter_Test: public Test
         void test_cascaded_filter_as_reader()
         {
             int16_t output[8] = {1, 2, 4, 8, 16, 32, 0, 0};
-            TestReader<int16_t> rd(output, 8);
-            HCascadedBiQuadFilter<int16_t>* filter = new HCascadedBiQuadFilter<int16_t>(rd.Reader(), coeffs, 10, 6);
+            TestReader<int16_t> rd("hcascadedbiquadfilter_test_testreader", output, 8);
+            HCascadedBiQuadFilter<int16_t>* filter = new HCascadedBiQuadFilter<int16_t>("hcascadedbiquadfilter_test_as_reader", rd.Reader(), coeffs, 10, 6);
 
             int16_t received[6];
             ASSERT_IS_EQUAL(filter->Read(received, 6), 6);

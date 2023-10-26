@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -45,7 +44,7 @@ class HDeMux_Test: public Test
             int8_t input[16] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
             int8_t expected_1[8] = {1, 3, 5, 7, 9, 11, 13, 15};
             int8_t expected_2[8] = {2, 4, 6, 8, 10, 12, 14, 16};
-            TestReader<int8_t> rd(input, 16);
+            TestReader<int8_t> rd("hdemux_test_testreader", input, 16);
             HDeMux<int8_t> demux("hdemux_test_read", &rd, 2, 8);
 
             int8_t received[8];

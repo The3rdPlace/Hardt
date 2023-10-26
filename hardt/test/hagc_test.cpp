@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -23,7 +22,7 @@ class HAgc_Test: public Test
 
         void test_agc_as_writer()
         {
-            TestWriter<int8_t> wr(6);
+            TestWriter<int8_t> wr("hagc_test_testwriter", 6);
             int8_t input_low[6] = {1, 1, 1, 1, 1, 1};
             int8_t input_high[6] = {16, 16, 16, 16, 16, 16};
             int8_t expected_2[6] = {1, 1, 1, 1, 1, 1};
@@ -35,7 +34,7 @@ class HAgc_Test: public Test
             int8_t expected_18[6] = {8, 8, 8, 8, 8, 8};
             int8_t expected_20[6] = {8, 8, 8, 8, 8, 8};
             int8_t expected_26[6] = {8, 8, 8, 8, 8, 8};
-            HAgc<int8_t> agc(wr.Writer(), 8, 2, 6, 1);
+            HAgc<int8_t> agc("hagc_test_as_writer", wr.Writer(), 8, 2, 6, 1);
 
             ASSERT_IS_EQUAL(agc.Write(input_low, 6), 6);
             ASSERT_IS_EQUAL(agc.Write(input_low, 6), 6);
@@ -87,7 +86,7 @@ class HAgc_Test: public Test
 
         void test_agc_as_writer_with_allow_unity()
         {
-            TestWriter<int8_t> wr(6);
+            TestWriter<int8_t> wr("hagc_test_testwriter", 6);
             int8_t input_low[6] = {1, 1, 1, 1, 1, 1};
             int8_t input_high[6] = {16, 16, 16, 16, 16, 16};
             int8_t expected_2[6] = {1, 1, 1, 1, 1, 1};
@@ -99,7 +98,7 @@ class HAgc_Test: public Test
             int8_t expected_18[6] = {16, 16, 16, 16, 16, 16};
             int8_t expected_20[6] = {16, 16, 16, 16, 16, 16};
             int8_t expected_26[6] = {16, 16, 16, 16, 16, 16};
-            HAgc<int8_t> agc(wr.Writer(), 8, 2, 6, 1, true);
+            HAgc<int8_t> agc("hagc_test_as_writer_with_allow_unity", wr.Writer(), 8, 2, 6, 1, true);
 
             ASSERT_IS_EQUAL(agc.Write(input_low, 6), 6);
             ASSERT_IS_EQUAL(agc.Write(input_low, 6), 6);
@@ -151,7 +150,7 @@ class HAgc_Test: public Test
 
         void test_agc_as_writer_with_increment()
         {
-            TestWriter<int8_t> wr(6);
+            TestWriter<int8_t> wr("hagc_test_testwriter", 6);
             int8_t input_low[6] = {1, 1, 1, 1, 1, 1};
             int8_t input_high[6] = {16, 16, 16, 16, 16, 16};
             int8_t expected_2[6] = {1, 1, 1, 1, 1, 1};
@@ -163,7 +162,7 @@ class HAgc_Test: public Test
             int8_t expected_18[6] = {38, 38, 38, 38, 38, 38};
             int8_t expected_20[6] = {38, 38, 38, 38, 38, 38};
             int8_t expected_26[6] = {25, 25, 25, 25, 25, 25};
-            HAgc<int8_t> agc(wr.Writer(), 8, 2, 6, 4);
+            HAgc<int8_t> agc("hagc_test_as_writer_with_increment", wr.Writer(), 8, 2, 6, 4);
 
             ASSERT_IS_EQUAL(agc.Write(input_low, 6), 6);
             ASSERT_IS_EQUAL(agc.Write(input_low, 6), 6);

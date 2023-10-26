@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -7,14 +6,14 @@ class HCollector_Test: public Test
 {
 public:
 
-    void run()
+    void run() override
     {
         TEST(test_collector_as_writer);
         TEST(test_collector_as_reader);
         TEST(test_collector_as_consumer);
     }
 
-    const char* name()
+    const char* name() override
     {
         return "HCollector";
     }
@@ -25,8 +24,8 @@ private:
     {
         int8_t input[6] = {2, 4, 6, 8, 10, 12};
         int8_t expected[24] = {2, 4, 6, 8, 10, 12, 2, 4, 6, 8, 10, 12, 2, 4, 6, 8, 10, 12, 2, 4, 6, 8, 10, 12};
-        TestWriter<int8_t> wr(24);
-        HCollector<int8_t> collector(wr.Writer(), 6, 24);
+        TestWriter<int8_t> wr("hcollector_test_testwriter", 24);
+        HCollector<int8_t> collector("hcollector_test_as_writer", wr.Writer(), 6, 24);
 
         ASSERT_IS_EQUAL(collector.Write(input, 6), 6);
         ASSERT_IS_EQUAL(wr.Writes, 0);
@@ -59,8 +58,8 @@ private:
     {
         int8_t output[6] = {2, 4, 6, 8, 10, 12};
         int8_t expected[24] = {2, 4, 6, 8, 10, 12, 2, 4, 6, 8, 10, 12, 2, 4, 6, 8, 10, 12, 2, 4, 6, 8, 10, 12};
-        TestReader<int8_t> rd(output, 24);
-        HCollector<int8_t> collector(&rd, 6, 24);
+        TestReader<int8_t> rd("hcollector_test_testreader", output, 24);
+        HCollector<int8_t> collector("hcollector_test_as_reader", &rd, 6, 24);
 
         int8_t received[24];
         ASSERT_IS_EQUAL(collector.Read(received, 24), 24);
@@ -88,9 +87,9 @@ private:
     {
         int8_t input[6] = {2, 4, 6, 8, 10, 12};
         int8_t expected[24] = {2, 4, 6, 8, 10, 12, 2, 4, 6, 8, 10, 12, 2, 4, 6, 8, 10, 12, 2, 4, 6, 8, 10, 12};
-        TestWriter<int8_t> srcWr(6);
-        HCollector<int8_t> collector(srcWr.Consumer(), 6, 24);
-        TestWriter<int8_t> wr(collector.Consumer(), 24);
+        TestWriter<int8_t> srcWr("hcollector_test_testwriter_src", 6);
+        HCollector<int8_t> collector("hcollector_test_as_consumer", srcWr.Consumer(), 6, 24);
+        TestWriter<int8_t> wr("hcollector_test_testwriter_wr", collector.Consumer(), 24);
 
         ASSERT_IS_EQUAL(srcWr.Write(input, 6), 6);
         ASSERT_IS_EQUAL(wr.Writes, 0);

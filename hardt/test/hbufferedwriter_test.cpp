@@ -4,7 +4,7 @@ class HBufferedWriter_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(few_blocks);
             UNITTEST(more_blocks);
@@ -15,7 +15,7 @@ class HBufferedWriter_Test: public Test
             UNITTEST(many_writes);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HBufferedWriter";
         }
@@ -26,8 +26,8 @@ class HBufferedWriter_Test: public Test
         {
             int8_t input[8] = {1, 2, 3, 4, 5, 6, 7, 8};
 
-            TestWriter<int8_t> writer(8);
-            HBufferedWriter<int8_t> bufferedWriter(writer.Writer(), 8, 10);
+            TestWriter<int8_t> writer("hbufferedwriter_test_testwriter", 8);
+            HBufferedWriter<int8_t> bufferedWriter("hbufferedwriter_test_few_blocks", writer.Writer(), 8, 10);
 
             bufferedWriter.Write(input, 8);
             bufferedWriter.Write(input, 8);
@@ -49,8 +49,8 @@ class HBufferedWriter_Test: public Test
         {
             int8_t input[8] = {1, 2, 3, 4, 5, 6, 7, 8};
 
-            TestWriter<int8_t> writer(8);
-            HBufferedWriter<int8_t> bufferedWriter(writer.Writer(), 8, 10);
+            TestWriter<int8_t> writer("hbufferedwriter_test_testwriter", 8);
+            HBufferedWriter<int8_t> bufferedWriter("hbufferedwriter_test_more_blocks", writer.Writer(), 8, 10);
 
 
             bufferedWriter.Write(input, 8);
@@ -75,8 +75,8 @@ class HBufferedWriter_Test: public Test
         {
             int8_t input[8] = {1, 2, 3, 4, 5, 6, 7, 8};
 
-            TestWriter<int8_t> writer(8);
-            HBufferedWriter<int8_t> bufferedWriter(writer.Writer(), 8, 10, false);
+            TestWriter<int8_t> writer("hbufferedwriter_test_testwriter", 8);
+            HBufferedWriter<int8_t> bufferedWriter("hbufferedwriter_test_more_blocks_no_buffering", writer.Writer(), 8, 10, false);
 
             ASSERT_IS_EQUAL(bufferedWriter.Enabled(), false);
 
@@ -102,8 +102,8 @@ class HBufferedWriter_Test: public Test
         {
             int8_t input[8] = {1, 2, 3, 4, 5, 6, 7, 8};
 
-            TestWriter<int8_t> writer(8);
-            HBufferedWriter<int8_t> bufferedWriter(writer.Writer(), 8, 10);
+            TestWriter<int8_t> writer("hbufferedwriter_test_testwriter", 8);
+            HBufferedWriter<int8_t> bufferedWriter("hbufferedwriter_test_many_blocks", writer.Writer(), 8, 10);
 
             for( int i = 0; i < 100000; i++ )
             {
@@ -117,8 +117,8 @@ class HBufferedWriter_Test: public Test
 
         void inactive_drain()
         {
-            TestWriter<int8_t> writer(8);
-            HBufferedWriter<int8_t> bufferedWriter(writer.Writer(), 8, 10);
+            TestWriter<int8_t> writer("hbufferedwriter_test_testwriter", 8);
+            HBufferedWriter<int8_t> bufferedWriter("hbufferedwriter_test_inactive_drain", writer.Writer(), 8, 10);
 
             bufferedWriter.Start();
 
@@ -131,8 +131,8 @@ class HBufferedWriter_Test: public Test
         {
             int8_t input[8] = {1, 2, 3, 4, 5, 6, 7, 8};
 
-            TestWriter<int8_t> writer(8);
-            HBufferedWriter<int8_t> bufferedWriter(writer.Writer(), 8, 10);
+            TestWriter<int8_t> writer("hbufferedwriter_test_testwriter", 8);
+            HBufferedWriter<int8_t> bufferedWriter("hbufferedwriter_test_active_drain", writer.Writer(), 8, 10);
 
             bufferedWriter.Start();
 
@@ -154,8 +154,8 @@ class HBufferedWriter_Test: public Test
         {
             int8_t input[8] = {1, 2, 3, 4, 5, 6, 7, 8};
 
-            TestWriter<int8_t> writer(8, true, 10);
-            HBufferedWriter<int8_t> bufferedWriter(writer.Writer(), 8, 10);
+            TestWriter<int8_t> writer("hbufferedwriter_test_testwriter", 8, true, 10);
+            HBufferedWriter<int8_t> bufferedWriter("hbufferedwriter_test_many_writes", writer.Writer(), 8, 10);
 
             bufferedWriter.Start();
 

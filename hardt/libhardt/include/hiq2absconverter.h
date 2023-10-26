@@ -60,8 +60,8 @@ class HIq2AbsConverter: public HConverter<T, T> {
          * @param blocksize Number of samples to read per read
          * @param probe Probe
          */
-        HIq2AbsConverter(HReader<T>* reader, size_t blocksize, HProbe<T>* probe = nullptr):
-                HConverter<T, T>(reader, blocksize * 2, blocksize, probe) {
+        HIq2AbsConverter(std::string id, HReader<T>* reader, size_t blocksize, HProbe<T>* probe = nullptr):
+                HConverter<T, T>(id, reader, blocksize * 2, blocksize, probe) {
             Init(blocksize * 2);
         }
 
@@ -75,8 +75,8 @@ class HIq2AbsConverter: public HConverter<T, T> {
          * @param blocksize Number of samples to write per write
          * @param probe Probe
          */
-        HIq2AbsConverter(HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = nullptr):
-                HConverter<T, T>(writer, blocksize, blocksize / 2, probe) {
+        HIq2AbsConverter(std::string id, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = nullptr):
+                HConverter<T, T>(id, writer, blocksize, blocksize / 2, probe) {
             Init(blocksize);
         }
 
@@ -90,8 +90,8 @@ class HIq2AbsConverter: public HConverter<T, T> {
          * @param blocksize Number of samples to write per write
          * @param probe Probe
         */
-        HIq2AbsConverter(HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = nullptr):
-                HConverter<T, T>(consumer, blocksize, blocksize / 2, probe) {
+        HIq2AbsConverter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = nullptr):
+                HConverter<T, T>(id, consumer, blocksize, blocksize / 2, probe) {
             Init(blocksize);
         }
 

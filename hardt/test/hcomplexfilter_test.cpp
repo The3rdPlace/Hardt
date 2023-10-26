@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -7,7 +6,7 @@ class HComplexFilter_Test: public Test
 {
 public:
 
-    void run()
+    void run() override
     {
         // Full test to check the output of the HComplexFilter component
         UNITTEST(test_filter_as_writer);
@@ -20,7 +19,7 @@ public:
         UNITTEST(test_filter_with_real_signal);
     }
 
-    const char* name()
+    const char* name() override
     {
         return "HComplexFilter";
     }
@@ -61,15 +60,11 @@ private:
                 std::complex<int8_t>(27, -6),
         };
 
-        TestWriter<std::complex<int8_t>> wr(6);
-        HComplexFilter<int8_t> flt(wr.Writer(), 6, response);
+        TestWriter<std::complex<int8_t>> wr("hcomplexfilter_test_testwriter", 6);
+        HComplexFilter<int8_t> flt("hcomplexfilter_test_as_writer", wr.Writer(), 6, response);
 
         ASSERT_IS_EQUAL(flt.Write(input, 6), 6);
         ASSERT_IS_EQUAL(wr.Writes, 1);
-
-        /* for( int i = 0; i < 6; i++ ) {
-            std::cout << "[" << i << "] = " << std::to_string(wr.Received[i].real()) << ", i" << std::to_string(wr.Received[i].imag()) << std::endl;
-        } */
 
         ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, sizeof(int8_t) * 6), 0);
 
@@ -113,9 +108,9 @@ private:
                 std::complex<int8_t>(4, 1)
         };
 
-        TestWriter<std::complex<int8_t>> srcWr(8);
-        HComplexFilter<int8_t> flt(srcWr.Consumer(), 6, response);
-        TestWriter<std::complex<int8_t>> wr(flt.Consumer(),8);
+        TestWriter<std::complex<int8_t>> srcWr("hcomplexfilter_test_testwriter_src", 8);
+        HComplexFilter<int8_t> flt("hcomplexfilter_test_as_consumer", srcWr.Consumer(), 6, response);
+        TestWriter<std::complex<int8_t>> wr("hcomplexfilter_test_testwriter_wr", flt.Consumer(),8);
 
         ASSERT_IS_EQUAL(srcWr.Write(input, 6), 6);
         ASSERT_IS_EQUAL(wr.Writes, 1);
@@ -160,8 +155,8 @@ private:
                 std::complex<int8_t>(4, 1)
         };
 
-        TestReader<std::complex<int8_t>> rd(input, 8);
-        HComplexFilter<int8_t> flt(rd.Reader(), 6, response);
+        TestReader<std::complex<int8_t>> rd("hcomplexfilter_test_testreader", input, 8);
+        HComplexFilter<int8_t> flt("hcomplexfilter_test_as_reader", rd.Reader(), 6, response);
 
         std::complex<int8_t> received[6];
         ASSERT_IS_EQUAL(flt.Read(received, 6), 6);
@@ -186,7 +181,7 @@ private:
     void test_filter_with_real_signal() {
 
         // Build input signals
-        HVfo<int16_t> osc(H_SAMPLE_RATE_48K, 1000, 100);
+        HVfo<int16_t> osc("hcomplexfilter_test_hvfo", H_SAMPLE_RATE_48K, 1000, 100);
         int16_t osc1000[1024];
         int16_t osc4000[1024];
         int16_t osc10000[1024];
@@ -236,10 +231,10 @@ private:
         filterFft.SPECTRUM(filtercoefs, 115, filterSpectrum);
 
         // Filter input signal
-        HInputWriter<std::complex<double>> inputWriter;
-        HComplexFilter<double> cfilter(inputWriter.Consumer(), 1024, filterSpectrum);
+        HInputWriter<std::complex<double>> inputWriter("hcomplexfilter_test_inputwriter");
+        HComplexFilter<double> cfilter("hcomplexfilter_test_with_real_signal", inputWriter.Consumer(), 1024, filterSpectrum);
         std::complex<double> filteredSpectrum[1024];
-        HMemoryWriter<std::complex<double>> outputWriter(cfilter.Consumer(), filteredSpectrum, 1024);
+        HMemoryWriter<std::complex<double>> outputWriter("hcomplexfilter_test_outputwriter", cfilter.Consumer(), filteredSpectrum, 1024);
         inputWriter.Write(inputSpectrum, 1024);
 
         // Verify that only the peaks at bin 21 and 85 (1KHz and 4KHz) remains

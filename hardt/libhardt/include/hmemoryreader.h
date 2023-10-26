@@ -23,12 +23,12 @@ class HMemoryReader : public HReader<T>
     public:
 
         /** Construct a new HMemoryReader */
-        HMemoryReader(T* buffer, size_t size, bool infinite = false):
-            _buffer(buffer),
-            _size(size),
-            _pos(0),
-            _infinite(infinite)
-        {}
+        HMemoryReader(std::string id, T* buffer, size_t size, bool infinite = false):
+                HReader<T>(id),
+                _buffer(buffer),
+                _size(size),
+                _pos(0),
+                _infinite(infinite) {}
 
         /** Read a block of samples */
         int Read(T* dest, size_t blocksize)

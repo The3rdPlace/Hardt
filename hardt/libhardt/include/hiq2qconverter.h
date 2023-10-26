@@ -25,8 +25,8 @@ public:
      * @param blocksize The expected input and output blocksize
      * @param probe Probe
      */
-    HIq2QConverter(HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = nullptr):
-            HDecimator<T>(writer, 2, blocksize, true, 1, probe) {}
+    HIq2QConverter(std::string id, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = nullptr):
+            HDecimator<T>(id, writer, 2, blocksize, true, 1, probe) {}
 
     /**
      * Construct a new HIq2IConverter that handle writer consumers.
@@ -35,8 +35,8 @@ public:
      * @param blocksize The expected input and output blocksize
      * @param probe Probe
      */
-    HIq2QConverter(HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = nullptr):
-            HDecimator<T>(consumer, 2, blocksize, true, 1, probe) {}
+    HIq2QConverter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = nullptr):
+            HDecimator<T>(id, consumer, 2, blocksize, true, 1, probe) {}
 
     /**
      * Construct a new HIq2IConverter that handle readers.
@@ -45,8 +45,8 @@ public:
      * @param blocksize The expected input and output blocksize
      * @param probe Probe
      */
-    HIq2QConverter(HReader<T>* reader, size_t blocksize, HProbe<T>* probe = nullptr):
-            HDecimator<T>(reader, 2, blocksize, true, 1, probe) {}
+    HIq2QConverter(std::string id, HReader<T>* reader, size_t blocksize, HProbe<T>* probe = nullptr):
+            HDecimator<T>(id, reader, 2, blocksize, true, 1, probe) {}
 
 };
 

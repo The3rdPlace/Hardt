@@ -188,8 +188,8 @@ class Test
                 HCommand LastCommand;
                 void* LastContent;
 
-                TestReader(T* data, int blocksize, bool multipleReads = true, bool continuedReads = false):
-                    HReader<T>("reader"),
+                TestReader(std::string id, T* data, int blocksize, bool multipleReads = true, bool continuedReads = false):
+                    HReader<T>(id),
                     Reads(0),
                     Samples(0),
                     _data(data),

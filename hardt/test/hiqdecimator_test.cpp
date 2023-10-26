@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -7,7 +6,7 @@ class HIqDecimator_Test: public Test
 {
 public:
 
-    void run()
+    void run() override
     {
         UNITTEST(test_read);
         UNITTEST(test_write);
@@ -23,10 +22,10 @@ public:
         UNITTEST(test_read_5);
         UNITTEST(test_write_5);
 
-        UNITTEST(test_write_continuos);
+        UNITTEST(test_write_continuous);
     }
 
-    const char* name()
+    const char* name() override
     {
         return "HIqDecimator";
     }
@@ -37,9 +36,9 @@ private:
     {
         int8_t input[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
         int8_t expected[] = {1, 2, 5, 6, 9, 10, 1, 2, 5, 6, 9, 10};
-        TestReader<int8_t> rd(input, 12);
+        TestReader<int8_t> rd("hiqdecimator_test_testreader", input, 12);
 
-        HIqDecimator<int8_t> dm(rd.Reader(), 2, 12);
+        HIqDecimator<int8_t> dm("hiqdecimator_test_read", rd.Reader(), 2, 12);
 
         int8_t received[12];
 
@@ -52,9 +51,9 @@ private:
     {
         int8_t input[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
         int8_t expected[] = {1, 2, 5, 6, 9, 10, 1, 2, 5, 6, 9, 10};
-        TestWriter<int8_t> wr(12);
+        TestWriter<int8_t> wr("hiqdecimator_test_testwriter", 12);
 
-        HIqDecimator<int8_t> dm(wr.Writer(), 2, 12);
+        HIqDecimator<int8_t> dm("hiqdecimator_test_write", wr.Writer(), 2, 12);
 
         ASSERT_IS_EQUAL(dm.Write(input, 12), 12);
         ASSERT_IS_EQUAL(wr.Writes, 0);
@@ -67,10 +66,10 @@ private:
     {
         int8_t input[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
         int8_t expected[] = {1, 2, 5, 6, 9, 10, 1, 2, 5, 6, 9, 10};
-        TestWriter<int8_t> srcWr(12);
+        TestWriter<int8_t> srcWr("hiqdecimator_test_testwriter_src", 12);
 
-        HIqDecimator<int8_t> dm(srcWr.Consumer(), 2, 12);
-        TestWriter<int8_t> wr(dm.Consumer(), 12);
+        HIqDecimator<int8_t> dm("hiqdecimator_test_writerconsumer", srcWr.Consumer(), 2, 12);
+        TestWriter<int8_t> wr("hiqdecimator_test_testwriter_wr", dm.Consumer(), 12);
 
         ASSERT_IS_EQUAL(srcWr.Write(input, 12), 12);
         ASSERT_IS_EQUAL(wr.Writes, 0);
@@ -83,9 +82,9 @@ private:
     {
         int8_t input[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
         int8_t expected[] = {1, 2, 5, 6, 9, 10, 0, 0, 0, 0, 0, 0};
-        TestReader<int8_t> rd(input, 12);
+        TestReader<int8_t> rd("hiqdecimator_test_testreader", input, 12);
 
-        HIqDecimator<int8_t> dm(rd.Reader(), 2, 12, false);
+        HIqDecimator<int8_t> dm("hiqdecimator_test_read_dont_collect", rd.Reader(), 2, 12, false);
 
         int8_t received[12];
 
@@ -98,9 +97,9 @@ private:
     {
         int8_t input[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
         int8_t expected[] = {1, 2, 5, 6, 9, 10, 0, 0, 0, 0, 0, 0};
-        TestWriter<int8_t> wr(12);
+        TestWriter<int8_t> wr("hiqdecimator_test_testwriter", 12);
 
-        HIqDecimator<int8_t> dm(wr.Writer(), 2, 12, false);
+        HIqDecimator<int8_t> dm("hiqdecimator_test_write_dont_collect", wr.Writer(), 2, 12, false);
 
         ASSERT_IS_EQUAL(dm.Write(input, 12), 12);
         ASSERT_IS_EQUAL(wr.Writes, 1);
@@ -112,10 +111,10 @@ private:
     {
         int8_t input[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
         int8_t expected[] = {1, 2, 5, 6, 9, 10, 0, 0, 0, 0, 0, 0};
-        TestWriter<int8_t> srcWr(12);
+        TestWriter<int8_t> srcWr("hiqdecimator_test_testwriter_src", 12);
 
-        HIqDecimator<int8_t> dm(srcWr.Consumer(), 2, 12, false);
-        TestWriter<int8_t> wr(dm.Consumer(), 6);
+        HIqDecimator<int8_t> dm("hiqdecimator_test_writerconsumer_dont_collect", srcWr.Consumer(), 2, 12, false);
+        TestWriter<int8_t> wr("hiqdecimator_test_testwriter_wr", dm.Consumer(), 6);
 
         ASSERT_IS_EQUAL(srcWr.Write(input, 12), 12);
         ASSERT_IS_EQUAL(wr.Writes, 1);
@@ -126,9 +125,9 @@ private:
     {
         int8_t input[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
         int8_t expected[] = {1, 2, 7, 8, 1, 2, 7, 8, 1, 2, 7, 8};
-        TestReader<int8_t> rd(input, 12);
+        TestReader<int8_t> rd("hiqdecimator_test_testreader", input, 12);
 
-        HIqDecimator<int8_t> dm(rd.Reader(), 3, 12);
+        HIqDecimator<int8_t> dm("hiqdecimator_test_read_3", rd.Reader(), 3, 12);
 
         int8_t received[12];
 
@@ -144,9 +143,9 @@ private:
                           25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
                           37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48};
         int8_t expected[] = {1, 2, 7, 8, 1, 2, 7, 8, 1, 2, 7, 8};
-        TestWriter<int8_t> wr(12);
+        TestWriter<int8_t> wr("hiqdecimator_test_testwriter", 12);
 
-        HIqDecimator<int8_t> dm(wr.Writer(), 3, 12);
+        HIqDecimator<int8_t> dm("hiqdecimator_test_write_3", wr.Writer(), 3, 12);
 
         ASSERT_IS_EQUAL(dm.Write(input, 12), 12);
         ASSERT_IS_EQUAL(wr.Writes, 0);
@@ -161,9 +160,9 @@ private:
     {
         int8_t input[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
         int8_t expected[] = {1, 2, 11, 12, 9, 10, 7, 8, 5, 6, 3, 4};
-        TestReader<int8_t> rd(input, 12);
+        TestReader<int8_t> rd("hiqdecimator_test_testreader", input, 12);
 
-        HIqDecimator<int8_t> dm(rd.Reader(), 5, 12);
+        HIqDecimator<int8_t> dm("hiqdecimator_test_read_5", rd.Reader(), 5, 12);
 
         int8_t received[12];
 
@@ -176,9 +175,9 @@ private:
     {
         int8_t input[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
         int8_t expected[] = {1, 2, 11, 12, 9, 10, 7, 8, 5, 6, 3, 4};
-        TestWriter<int8_t> wr(12);
+        TestWriter<int8_t> wr("hiqdecimator_test_testwriter", 12);
 
-        HIqDecimator<int8_t> dm(wr.Writer(), 5, 12);
+        HIqDecimator<int8_t> dm("hiqdecimator_test_write_5", wr.Writer(), 5, 12);
 
         ASSERT_IS_EQUAL(dm.Write(input, 12), 12);
         ASSERT_IS_EQUAL(wr.Writes, 0);
@@ -193,7 +192,7 @@ private:
         ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, 12), 0);
     }
 
-    void test_write_continuos()
+    void test_write_continuous()
     {
         int8_t input[120];
         int8_t expected_1[12];
@@ -217,8 +216,8 @@ private:
             }
         }
 
-        TestWriter<int8_t> wr(12);
-        HIqDecimator<int8_t> dm(wr.Writer(), 5, 12);
+        TestWriter<int8_t> wr("hiqdecimator_test_testwriter", 12);
+        HIqDecimator<int8_t> dm("hiqdecimator_test_write_continuous", wr.Writer(), 5, 12);
 
         int i = 0;
         while( wr.Writes == 0 ) {

@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -7,7 +6,7 @@ class HSubtracter_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(test_subtracter_with_readers);
             UNITTEST(test_subtracter_with_reader_and_writer);
@@ -16,7 +15,7 @@ class HSubtracter_Test: public Test
             UNITTEST(test_subtracter_with_multiplexed_writers_and_consumer);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HSubtracter";
         }
@@ -26,9 +25,9 @@ class HSubtracter_Test: public Test
         void test_subtracter_with_readers()
         {
             int8_t input[5] = {0, 1, 2, 3, 4};
-            TestReader<int8_t> reader_1(input, 5);
-            TestReader<int8_t> reader_2(input, 5);
-            HSubtracter<int8_t> subtracter(&reader_1, &reader_2, 5);
+            TestReader<int8_t> reader_1("hsubtracter_test_testreader_1", input, 5);
+            TestReader<int8_t> reader_2("hsubtracter_test_testreader_2", input, 5);
+            HSubtracter<int8_t> subtracter("hsubtracter_test_with_readers", &reader_1, &reader_2, 5);
 
             int8_t output[5];
             ASSERT_IS_EQUAL(subtracter.Read(output, 5), 5);
@@ -46,9 +45,9 @@ class HSubtracter_Test: public Test
         void test_subtracter_with_reader_and_writer()
         {
             int8_t input_1[5] = {0, 1, 2, 3, 4};
-            TestReader<int8_t> reader(input_1, 5);
-            TestWriter<int8_t> writer(5);
-            HSubtracter<int8_t> subtracter(reader.Reader(), writer.Writer(), 5);
+            TestReader<int8_t> reader("hsubtracter_test_testreader", input_1, 5);
+            TestWriter<int8_t> writer("hsubtracter_test_testwriter", 5);
+            HSubtracter<int8_t> subtracter("hsubtracter_test_with_reader_and_writer", reader.Reader(), writer.Writer(), 5);
 
             int8_t input_2[5] = {4, 3, 2, 1, 0};
             int8_t expected[5] = {-4, -2, 0, 2, 4};
@@ -67,10 +66,10 @@ class HSubtracter_Test: public Test
         void test_subtracter_with_reader_and_consumer()
         {
             int8_t input_1[5] = {0, 1, 2, 3, 4};
-            TestReader<int8_t> reader(input_1, 5);
-            TestWriter<int8_t> writer_1(5);
-            HSubtracter<int8_t> subtracter(reader.Reader(), writer_1.Consumer(), 5);
-            TestWriter<int8_t> writer_2(subtracter.Consumer(), 5);
+            TestReader<int8_t> reader("hsubtracter_test_testreader", input_1, 5);
+            TestWriter<int8_t> writer_1("hsubtracter_test_testwriter_1", 5);
+            HSubtracter<int8_t> subtracter("hsubtracter_test_with_reader_and_consumer", reader.Reader(), writer_1.Consumer(), 5);
+            TestWriter<int8_t> writer_2("hsubtracter_test_testwriter_2", subtracter.Consumer(), 5);
 
             int8_t input_2[5] = {4, 3, 2, 1, 0};
             int8_t expected[5] = {-4, -2, 0, 2, 4};
@@ -89,8 +88,8 @@ class HSubtracter_Test: public Test
 
         void test_subtracter_with_multiplexed_writers()
         {
-            TestWriter<int8_t> writer(5);
-            HSubtracter<int8_t> subtracter(writer.Writer(), 5);
+            TestWriter<int8_t> writer("hsubtracter_test_testwriter", 5);
+            HSubtracter<int8_t> subtracter("hsubtracter_test_with_multiplexed_writers", writer.Writer(), 5);
 
             int8_t input_1[5] = {0, 1, 2, 3, 4};
             int8_t input_2[5] = {4, 3, 2, 1, 0};
@@ -111,9 +110,9 @@ class HSubtracter_Test: public Test
 
         void test_subtracter_with_multiplexed_writers_and_consumer()
         {
-            TestWriter<int8_t> writer_1(5);
-            HSubtracter<int8_t> subtracter(writer_1.Consumer(), 5);
-            TestWriter<int8_t> writer_2(subtracter.Consumer(), 5);
+            TestWriter<int8_t> writer_1("hsubtracter_test_testwriter_1", 5);
+            HSubtracter<int8_t> subtracter("hsubtracter_test_with_multiplexed_writers_and_consumers", writer_1.Consumer(), 5);
+            TestWriter<int8_t> writer_2("hsubtracter_test_testwriter_2", subtracter.Consumer(), 5);
 
             int8_t input_1[5] = {0, 1, 2, 3, 4};
             int8_t input_2[5] = {4, 3, 2, 1, 0};

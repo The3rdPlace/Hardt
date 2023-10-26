@@ -69,8 +69,8 @@ class HIqAddOrSubtractConverter: public HConverter<T, T> {
          * @param blocksize Number of samples to read per read
          * @param probe Probe
          */
-        HIqAddOrSubtractConverter(HReader<T>* reader, bool subtract, size_t blocksize, HProbe<T>* probe = nullptr):
-                HConverter<T, T>(reader, blocksize * 2, blocksize, probe),
+        HIqAddOrSubtractConverter(std::string id, HReader<T>* reader, bool subtract, size_t blocksize, HProbe<T>* probe = nullptr):
+                HConverter<T, T>(id, reader, blocksize * 2, blocksize, probe),
                 _subtract(subtract) {
 
             Init(blocksize * 2);
@@ -87,8 +87,8 @@ class HIqAddOrSubtractConverter: public HConverter<T, T> {
          * @param blocksize Number of samples to write per write
          * @param probe Probe
          */
-        HIqAddOrSubtractConverter(HWriter<T>* writer, bool subtract, size_t blocksize, HProbe<T>* probe = nullptr):
-                HConverter<T, T>(writer, blocksize, blocksize / 2, probe),
+        HIqAddOrSubtractConverter(std::string id, HWriter<T>* writer, bool subtract, size_t blocksize, HProbe<T>* probe = nullptr):
+                HConverter<T, T>(id, writer, blocksize, blocksize / 2, probe),
                 _subtract(subtract) {
 
             Init(blocksize);
@@ -105,8 +105,8 @@ class HIqAddOrSubtractConverter: public HConverter<T, T> {
          * @param blocksize Number of samples to write per write
          * @param probe Probe
         */
-        HIqAddOrSubtractConverter(HWriterConsumer<T>* consumer, bool subtract, size_t blocksize, HProbe<T>* probe = nullptr):
-                HConverter<T, T>(consumer, blocksize, blocksize / 2, probe),
+        HIqAddOrSubtractConverter(std::string id, HWriterConsumer<T>* consumer, bool subtract, size_t blocksize, HProbe<T>* probe = nullptr):
+                HConverter<T, T>(id, consumer, blocksize, blocksize / 2, probe),
                 _subtract(subtract) {
 
             Init(blocksize);

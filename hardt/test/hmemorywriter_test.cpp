@@ -1,6 +1,5 @@
 #include "test.h"
 
-#include <stdio.h>
 #include <iostream>
 
 #include "hmemorywriter.h"
@@ -9,14 +8,14 @@ class HMemoryWriter_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(test_writes_int8);
             UNITTEST(test_writes_int32);
             UNITTEST(test_writes_infinite);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HMemoryWriter";
         }
@@ -26,7 +25,7 @@ class HMemoryWriter_Test: public Test
         void test_writes_int8()
         {
             int8_t output[20] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            HMemoryWriter<int8_t> wr(output, 20);
+            HMemoryWriter<int8_t> wr("hmemorywriter_test_writes_int8", output, 20);
             int8_t input[5] = { 1, 2, 3, 4, 5 };
             int8_t expected[20] = { 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5 };
 
@@ -45,7 +44,7 @@ class HMemoryWriter_Test: public Test
         void test_writes_int32()
         {
             int32_t output[20] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            HMemoryWriter<int32_t> wr(output, 20);
+            HMemoryWriter<int32_t> wr("hmemorywriter_test_writes_int32", output, 20);
             int32_t input[5] = { 100001, 100002, 100003, 100004, 100005 };
             int32_t expected[20] = { 100001, 100002, 100003, 100004, 100005, 100001, 100002, 100003, 100004, 100005, 100001, 100002, 100003, 100004, 100005, 100001, 100002, 100003, 100004, 100005 };
 
@@ -64,7 +63,7 @@ class HMemoryWriter_Test: public Test
         void test_writes_infinite()
         {
             int8_t output[20] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            HMemoryWriter<int8_t> wr(output, 20, true);
+            HMemoryWriter<int8_t> wr("hmemorywriter_test_writes_infinite", output, 20, true);
             int8_t input[5] = { 1, 2, 3, 4, 5 };
             int8_t expected[20] = { 1, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 

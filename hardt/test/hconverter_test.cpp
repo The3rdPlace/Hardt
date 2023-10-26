@@ -122,7 +122,7 @@ class HConverter_Test: public Test
             int8_t expected[6] = {2, 4, 6, 8, 10, 12};
             int8_t output[6] = {0, 0 ,0 ,0 ,0 ,0};
 
-            TestReader<int8_t> reader(input, 6);
+            TestReader<int8_t> reader("hconverter_test_testreader", input, 6);
             TestConverter<int8_t, int8_t> converter("hconverter_test_int8_int8_read", &reader, 6, 2);
 
             converter.Read(output, 6);
@@ -161,7 +161,7 @@ class HConverter_Test: public Test
             int8_t expected[6] = {-24, -48, -72, -96, -120, 112};
             int8_t output[6] = {0, 0 ,0 ,0 ,0 ,0};
 
-            TestReader<int8_t> reader(input, 6);
+            TestReader<int8_t> reader("hconverter_test_testreader", input, 6);
             TestConverter<int8_t, int8_t> converter("hconverter_test_int8_int8_read_overflow", &reader, 6, 1000);
 
             converter.Read(output, 6);
@@ -200,7 +200,7 @@ class HConverter_Test: public Test
             int16_t expected[6] = {3000, 6000, 9000, 12000, 15000, 18000};
             int16_t output[6] = {0, 0 ,0 ,0 ,0 ,0};
 
-            TestReader<int8_t> reader(input, 6);
+            TestReader<int8_t> reader("hconverter_test_testreader", input, 6);
             TestConverter<int8_t, int16_t> converter("hconverter_test_int8_int16_read", &reader, 6, 3000);
 
             converter.Read(output, 6);
@@ -239,7 +239,7 @@ class HConverter_Test: public Test
             int8_t expected[12] = {2, 2, 4, 4, 6, 6, 8, 8, 10, 10, 12, 12};
             int8_t output[12] = {0, 0 ,0 ,0 ,0 ,0, 0, 0 ,0 ,0 ,0 ,0};
 
-            TestReader<int8_t> reader(input, 6);
+            TestReader<int8_t> reader("hconverter_test_testreader", input, 6);
             TestConverter_1_2<int8_t, int8_t> converter("hconverter_test_int8_int8_read_1_2", &reader, 6, 2);
 
             ASSERT_IS_EQUAL(converter.Read(output, 12), 12);
@@ -282,7 +282,7 @@ class HConverter_Test: public Test
             int8_t expected[6] = {4, 8, 12, 4, 8, 12};
             int8_t output[6] = {0, 0 ,0 ,0 ,0 ,0};
 
-            TestReader<int8_t> reader(input, 6);
+            TestReader<int8_t> reader("hconverter_test_testreader", input, 6);
             TestConverter_2_1<int8_t, int8_t> converter("hconverter_test_int8_int8_read_2_1", &reader, 12, 2);
 
             ASSERT_IS_EQUAL(converter.Read(output, 6), 6);

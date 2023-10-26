@@ -24,9 +24,9 @@ class HClickRemovingFilter_Test: public Test
 
         void test_clickremovingfilter_as_writer()
         {
-            TestWriter<int8_t> wr(8);
+            TestWriter<int8_t> wr("hclickremovingfilter_test_testwriter", 8);
             int8_t input[8] = {2, 4, 3, 4, 10, 6, 4, 2};
-            HClickRemovingFilter<int8_t> crf(wr.Writer(), 8);
+            HClickRemovingFilter<int8_t> crf("hclickremovingfilter_test_as_writer", wr.Writer(), 8);
 
             ASSERT_IS_EQUAL(crf.Write(input, 8), 8);
             ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, 8 * sizeof(int8_t)), 0);
@@ -50,8 +50,8 @@ class HClickRemovingFilter_Test: public Test
         void test_clickremovingfilter_as_reader()
         {
             int8_t output[8] = {2, 4, 3, 4, 10, 6, 4, 2};
-            TestReader<int8_t> rd(output, 8);
-            HClickRemovingFilter<int8_t> crf(&rd, 8);
+            TestReader<int8_t> rd("hclickremovingfilter_test_testreader", output, 8);
+            HClickRemovingFilter<int8_t> crf("hclickremovingfilter_test_as_reader", &rd, 8);
 
             int8_t received[8];
             ASSERT_IS_EQUAL(crf.Read(received, 8), 8);

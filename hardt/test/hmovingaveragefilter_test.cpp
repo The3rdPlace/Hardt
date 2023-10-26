@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -9,13 +8,13 @@ class HMovingAverageFilter_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(test_movingaveragefilter_as_writer);
             UNITTEST(test_movingaveragefilter_as_reader);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HMovingAverageFilter";
         }
@@ -113,9 +112,9 @@ class HMovingAverageFilter_Test: public Test
 
         void test_movingaveragefilter_as_writer()
         {
-            TestWriter<int8_t> wr(8);
+            TestWriter<int8_t> wr("hmovingaveragefilter_test_testwriter", 8);
             int8_t input[8] = {2, 4, 3, 4, 10, 6, 4, 2};
-            HMovingAverageFilter<int8_t> maf(wr.Writer(), 2, 8);
+            HMovingAverageFilter<int8_t> maf("hmovingaveragefilter_test_as_writer", wr.Writer(), 2, 8);
 
             ASSERT_IS_EQUAL(maf.Write(input, 8), 8);
             ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, 8 * sizeof(int8_t)), 0);
@@ -142,8 +141,8 @@ class HMovingAverageFilter_Test: public Test
         void test_movingaveragefilter_as_reader()
         {
             int8_t output[8] = {2, 4, 3, 4, 10, 6, 4, 2};
-            TestReader<int8_t> rd(output, 8);
-            HMovingAverageFilter<int8_t> maf(&rd, 2, 8);
+            TestReader<int8_t> rd("hmovingaveragefilter_test_testreader", output, 8);
+            HMovingAverageFilter<int8_t> maf("hmovingaveragefilter_test_as_reader", &rd, 2, 8);
 
             int8_t received[8];
             ASSERT_IS_EQUAL(maf.Read(received, 8), 8);

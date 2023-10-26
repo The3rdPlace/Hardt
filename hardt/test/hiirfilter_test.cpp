@@ -109,7 +109,7 @@ class HIirFilter_Test: public Test
         void test_filter_as_reader()
         {
             int16_t output[8] = {1, 2, 4, 8, 16, 32, 0, 0};
-            TestReader<int16_t> rd(output, 8);
+            TestReader<int16_t> rd("hiirfilter_test_testreader", output, 8);
             HIirFilter<int16_t> filter("hiirfilter_test_as_reader", &rd, coeefs, 5, 6);
 
             int16_t received[6];

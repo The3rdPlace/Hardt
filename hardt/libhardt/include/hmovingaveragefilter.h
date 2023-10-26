@@ -14,10 +14,9 @@ class HMovingAverageFilter: public HFilter<T>
         int _m;
         double* _previous;
         
-        void Init(size_t blocksize, int m) {
-            if( _previous != nullptr ) {
-                delete[] _previous;
-            }
+        void Init(int m) {
+            delete[] _previous;
+
             _previous = new double[m - 1];
             memset((void*) _previous, 0, sizeof(T) * (m - 1));
         }
@@ -25,35 +24,31 @@ class HMovingAverageFilter: public HFilter<T>
     public:
 
         /** Construct a new moving average filter with with a given M (number of samples to average over ) */
-        HMovingAverageFilter(HWriter<T>* writer, int m,  size_t blocksize, HProbe<T>* probe = NULL):
-            HFilter<T>(writer, blocksize, probe),
-            _m(m),
-            _previous(nullptr)
-        {
-            Init(blocksize, m);
+        HMovingAverageFilter(std::string id, HWriter<T>* writer, int m,  size_t blocksize, HProbe<T>* probe = NULL):
+                HFilter<T>(id, writer, blocksize, probe),
+                _m(m),
+                _previous(nullptr) {
+            Init(m);
         }
 
         /** Construct a new moving average filter with with a given M (number of samples to average over )  */
-        HMovingAverageFilter(HWriterConsumer<T>* consumer, int m, size_t blocksize, HProbe<T>* probe = NULL):
-            HFilter<T>(consumer, blocksize, probe),
-            _m(m),
-            _previous(nullptr)
-        {
-            Init(blocksize, m);            
+        HMovingAverageFilter(std::string id, HWriterConsumer<T>* consumer, int m, size_t blocksize, HProbe<T>* probe = NULL):
+                HFilter<T>(id, consumer, blocksize, probe),
+                _m(m),
+                _previous(nullptr) {
+            Init(m);
         }
 
         /** Construct a new moving average filter with with a given M (number of samples to average over )  */
-        HMovingAverageFilter(HReader<T>* reader, int m, size_t blocksize, HProbe<T>* probe = NULL):
-            HFilter<T>(reader, blocksize, probe),
-            _m(m),
-            _previous(nullptr)
-        {
-            Init(blocksize, m);
+        HMovingAverageFilter(std::string id, HReader<T>* reader, int m, size_t blocksize, HProbe<T>* probe = NULL):
+                HFilter<T>(id, reader, blocksize, probe),
+                _m(m),
+                _previous(nullptr) {
+            Init(m);
         }
 
         /** Default destructor */
-        ~HMovingAverageFilter()
-        {}
+        ~HMovingAverageFilter() = default;
 
         /** Called to run the filter calculations on a block of samples */
         void Filter(T* src, T* dest, size_t blocksize)

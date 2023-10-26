@@ -25,8 +25,8 @@ class HLinearMixer_Test: public Test
         void test_mixer_with_readers()
         {
             int8_t input[5] = {0, 1, 2, 3, 4};
-            TestReader<int8_t> reader_1(input, 5);
-            TestReader<int8_t> reader_2(input, 5);
+            TestReader<int8_t> reader_1("hlinearmixer_test_testreader_1", input, 5);
+            TestReader<int8_t> reader_2("hlinearmixer_test_testreader_2", input, 5);
             HLinearMixer<int8_t> mixer("hlinearmixer_test_with_readers", &reader_1, &reader_2, 5);
 
             int8_t output[5];
@@ -45,7 +45,7 @@ class HLinearMixer_Test: public Test
         void test_mixer_with_reader_and_writer()
         {
             int8_t input_1[5] = {0, 1, 2, 3, 4};
-            TestReader<int8_t> reader(input_1, 5);
+            TestReader<int8_t> reader("hlinearmixer_test_testreader", input_1, 5);
             TestWriter<int8_t> writer("hlinearmixer_test_testwriter", 5);
             HLinearMixer<int8_t> mixer("hlinearmixer_test_with_reader_and_writer", reader.Reader(), writer.Writer(), 5);
 
@@ -66,7 +66,7 @@ class HLinearMixer_Test: public Test
         void test_mixer_with_reader_and_consumer()
         {
             int8_t input_1[5] = {0, 1, 2, 3, 4};
-            TestReader<int8_t> reader(input_1, 5);
+            TestReader<int8_t> reader("hlinearmixer_test_testreader", input_1, 5);
             TestWriter<int8_t> writer_1("hlinearmixer_test_testwriter_1", 5);
             HLinearMixer<int8_t> mixer("hlinearmixer_test_with_reader_and_consumer", reader.Reader(), writer_1.Consumer(), 5);
             TestWriter<int8_t> writer_2("hlinearmixer_test_testwriter_2", mixer.Consumer(), 5);

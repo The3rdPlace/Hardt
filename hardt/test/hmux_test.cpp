@@ -29,8 +29,8 @@ class HMux_Test: public Test
         {
             int8_t stream_1[4] = {1, 3, 5, 7};
             int8_t stream_2[4] = {2, 4, 6, 8};
-            TestReader<int8_t> rd_1(stream_1, 4);
-            TestReader<int8_t> rd_2(stream_2, 4);
+            TestReader<int8_t> rd_1("hmux_test_testreader_1", stream_1, 4);
+            TestReader<int8_t> rd_2("hmux_test_testreader_2", stream_2, 4);
             std::vector< HReader<int8_t>* > readers = { &rd_1, &rd_2 };
             HMux<int8_t> mux("hmux_test_as_readers", readers, 8);
 
@@ -108,7 +108,7 @@ class HMux_Test: public Test
         void test_mux_as_duplex_reader()
         {
             int8_t stream_1[4] = {1, 2, 3, 4};
-            TestReader<int8_t> rd_1(stream_1, 4);
+            TestReader<int8_t> rd_1("hmux_test_testreader", stream_1, 4);
             std::vector< HReader<int8_t>* > readers = { &rd_1 };
             HMux<int8_t> mux("hmux_test_as_duplex_reader", readers, 8, true);
 

@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 
 #include "test.h"
@@ -7,13 +6,13 @@ class HMultiplexed2ComplexConverter_Test: public Test
 {
     public:
 
-        void run()
+        void run() override
         {
             UNITTEST(test_converter_read);
             UNITTEST(test_converter_write);
         }
 
-        const char* name()
+        const char* name() override
         {
             return "HMultiplexed2ComplexConverter";
         }
@@ -24,8 +23,8 @@ class HMultiplexed2ComplexConverter_Test: public Test
             std::complex<int8_t> expected[3] = {{1, 2}, {3, 4}, {5, 6}};
             std::complex<int8_t> output[3] = {0, 0 ,0};
 
-            TestReader<int8_t> rd(input, 6);
-            HMultiplexed2ComplexConverter<int8_t> converter(&rd, 6);
+            TestReader<int8_t> rd("hmultiplexed2complexconverter_testreader", input, 6);
+            HMultiplexed2ComplexConverter<int8_t> converter("hmultiplexed2complexconverter_read", &rd, 6);
 
             ASSERT_IS_EQUAL(converter.Read(output, 3), 3);
             ASSERT_IS_EQUAL(rd.Reads, 1);
@@ -46,8 +45,8 @@ class HMultiplexed2ComplexConverter_Test: public Test
             int8_t input[6] = {1, 2, 3, 4, 5, 6};
             std::complex<int8_t> expected[3] = {{1, 2}, {3, 4}, {5, 6}};
 
-            TestWriter<std::complex<int8_t>> wr(3);
-            HMultiplexed2ComplexConverter<int8_t> converter(&wr, 6);
+            TestWriter<std::complex<int8_t>> wr("hmultiplexed2complexconverter_testwriter", 3);
+            HMultiplexed2ComplexConverter<int8_t> converter("hmultiplexed2complexconverter_write", &wr, 6);
 
             ASSERT_IS_EQUAL(converter.Write(input, 6), 6);
             ASSERT_IS_EQUAL(wr.Writes, 1);
