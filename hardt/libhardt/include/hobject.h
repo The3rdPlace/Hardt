@@ -2,6 +2,7 @@
 #define __HOBJECT_H
 
 #include <string>
+#include <utility>
 
 /**
     Base class for (almost) all Hardt types.
@@ -12,10 +13,18 @@
 */
 class HObject
 {
+    private:
+
+        std::string _id;
+
     public:
 
+        explicit HObject(std::string id) {
+            _id = std::move(id);
+        }
+
         /** Get the object id */
-        virtual std::string GetId() = 0;
+        std::string GetId() { return _id; }
 };
 
 #endif

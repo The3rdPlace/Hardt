@@ -11,17 +11,11 @@
 template <class T>
 class HWriterConsumer: public HObject
 {
-    private:
-
-        std::string _id;
-
     public:
 
         /** Construct a new HObject */
         explicit HWriterConsumer<T>(std::string id):
-            _id(std::move(id)) {};
-
-        std::string GetId() { return _id; }
+            HObject(id) {};
 
         /** This function must be implemented if you inherit this interface */
         virtual void SetWriter(HWriter<T>* writer) = 0;
