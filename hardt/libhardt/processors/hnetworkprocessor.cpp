@@ -22,7 +22,7 @@ Class implementation
 
 template <class T>
 HNetworkProcessor<T>::HNetworkProcessor(std::string id, const char* address, int dataPort, int commandPort, HWriter<T>* writer, int blocksize, bool* terminationToken):
-    HProcessor<T>(id, writer, &_networkReader, blocksize, terminationToken),
+    HProcessor<T>(id, writer, _networkReader, blocksize, terminationToken),
     _isServer(false),
     _isWriter(true),
     _reader(nullptr),
@@ -43,7 +43,7 @@ HNetworkProcessor<T>::HNetworkProcessor(std::string id, const char* address, int
 
 template <class T>
 HNetworkProcessor<T>::HNetworkProcessor(std::string id, const char* address, int dataPort, int commandPort, int blocksize, bool* terminationToken):
-    HProcessor<T>(id, &_networkReader, blocksize, terminationToken),
+    HProcessor<T>(id, _networkReader, blocksize, terminationToken),
     _isServer(false),
     _isWriter(true),
     _reader(nullptr),
@@ -64,7 +64,7 @@ HNetworkProcessor<T>::HNetworkProcessor(std::string id, const char* address, int
 
 template <class T>
 HNetworkProcessor<T>::HNetworkProcessor(std::string id, const char* address, int dataPort, int commandPort, HReader<T>* reader, int blocksize, bool* terminationToken):
-    HProcessor<T>(id, &_networkWriter, reader, blocksize, terminationToken),
+    HProcessor<T>(id, _networkWriter, reader, blocksize, terminationToken),
     _isServer(false),
     _isWriter(false),
     _reader(reader),
@@ -85,7 +85,7 @@ HNetworkProcessor<T>::HNetworkProcessor(std::string id, const char* address, int
 
 template <class T>
 HNetworkProcessor<T>::HNetworkProcessor(std::string id, int dataPort, int commandPort, HWriter<T>* writer, int blocksize, bool* terminationToken):
-    HProcessor<T>(id, writer, &_networkReader, blocksize, terminationToken),
+    HProcessor<T>(id, writer, _networkReader, blocksize, terminationToken),
     _isServer(true),
     _isWriter(true),
     _reader(nullptr),
@@ -106,7 +106,7 @@ HNetworkProcessor<T>::HNetworkProcessor(std::string id, int dataPort, int comman
 
 template <class T>
 HNetworkProcessor<T>::HNetworkProcessor(std::string id, int dataPort, int commandPort, int blocksize, bool* terminationToken):
-    HProcessor<T>(id, &_networkReader, blocksize, terminationToken),
+    HProcessor<T>(id, _networkReader, blocksize, terminationToken),
     _isServer(true),
     _isWriter(true),
     _reader(nullptr),
@@ -127,7 +127,7 @@ HNetworkProcessor<T>::HNetworkProcessor(std::string id, int dataPort, int comman
 
 template <class T>
 HNetworkProcessor<T>::HNetworkProcessor(std::string id, int dataPort, int commandPort, HReader<T>* reader, int blocksize, bool* terminationToken):
-    HProcessor<T>(id, &_networkWriter, reader, blocksize, terminationToken),
+    HProcessor<T>(id, _networkWriter, reader, blocksize, terminationToken),
     _isServer(true),
     _isWriter(false),
     _reader(reader),
@@ -162,6 +162,15 @@ HNetworkProcessor<T>::~HNetworkProcessor()
         HLog("Closing command socket");
         close(this->_commandSocket);
     }
+
+    if( this->_networkReader != nullptr) {
+        delete _networkReader;
+        _networkReader = nullptr;
+    }
+    if( this->_networkWriter != nullptr) {
+        delete _networkWriter;
+        _networkWriter = nullptr;
+    }
     HLog("Done");
 
 }
@@ -178,6 +187,10 @@ void HNetworkProcessor<T>::InitServer()
     sigemptyset(&new_set);
     sigprocmask(SIG_BLOCK, &new_set, nullptr);
     HLog("SIGPIPE disabled");
+
+    // Create network reader and writer
+    _networkReader = new HNetworkReader<T>(HObject::GetId());
+    _networkWriter = new HNetworkWriter<T>(HObject::GetId());
 }
 
 template <class T>
@@ -286,6 +299,10 @@ void HNetworkProcessor<T>::InitClient()
         throw new HNetworkException("Failed to connect to server");
     }
     HLog("Connected");
+
+    // Create network reader and writer
+    _networkReader = new HNetworkReader<T>(HObject::GetId());
+    _networkWriter = new HNetworkWriter<T>(HObject::GetId());
 }
 
 template <class T>
@@ -418,8 +435,8 @@ void HNetworkProcessor<T>::RunClient(long unsigned int blocks)
 template <class T>
 void HNetworkProcessor<T>::RunProcessor(long unsigned int blocks)
 {
-    _networkReader.SetSocket(_clientSocket);
-    _networkWriter.SetSocket(_clientSocket);
+    _networkReader->SetSocket(_clientSocket);
+    _networkWriter->SetSocket(_clientSocket);
     HProcessor<T>::Run(blocks);
 }
 

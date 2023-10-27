@@ -28,8 +28,8 @@ class HNetworkProcessor : public HProcessor<T>
         int _clientSocket;
         struct sockaddr_in _address;
         const char* _server;
-        HNetworkReader<T> _networkReader;
-        HNetworkWriter<T> _networkWriter;
+        HNetworkReader<T>* _networkReader;
+        HNetworkWriter<T>* _networkWriter;
         bool* _terminated;
 
         bool _isServer;
