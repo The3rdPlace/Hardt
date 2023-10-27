@@ -72,6 +72,7 @@ class HReal2IqConverter: public HConverter<T, T> {
         /**
          * Create a new real-2-iq converter with a reader
          *
+         * @param id Element identifier
          * @param reader Upstream reader
          * @param blocksize Number of samples to read
          * @param probe Probe
@@ -84,6 +85,7 @@ class HReal2IqConverter: public HConverter<T, T> {
         /**
          * Create a new real-2-iq converter with a writer
          *
+         * @param id Element identifier
          * @param writer Downstream writer
          * @param blocksize Number of samples to write
          * @param probe Probe
@@ -96,6 +98,7 @@ class HReal2IqConverter: public HConverter<T, T> {
         /**
          * Create a new real-2-iq converter with a writerconsumer
          *
+         * @param id Element identifier
          * @param consumer Upstream consumer
          * @param blocksize Number of samples to write
          * @param probe Probe

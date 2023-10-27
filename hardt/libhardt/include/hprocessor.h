@@ -54,6 +54,7 @@ class HProcessor : public HWriterConsumer<T>
         /**
          * Construct a new HProcessor
          *
+         * @param id Element identifier
          * @param writer The writer
          * @param reader The reader
          * @param blocksize Number of samples to read and write per cycle
@@ -64,6 +65,7 @@ class HProcessor : public HWriterConsumer<T>
         /**
          * Construct a new HProcessor
          *
+         * @param id Element identifier
          * @param reader The reader
          * @param blocksize Number of samples to read and write per cycle
          * @param terminationToken The termination token. Set to true to halt the processor

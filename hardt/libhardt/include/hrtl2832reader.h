@@ -68,6 +68,7 @@ class HRtl2832Reader : public HReader<T>
         /**
          * Construct a new HRtl2832Reader
          *
+         * @param id Element identifier
          * @param device The device id of the selected RTL-2832 device (usually 0-indexed)
          * @param rate The samplerate to set on the RTL-2832 device
          * @param mode The reader mode (IQ, I, Q, REAL). I or Q enables direct sampling.

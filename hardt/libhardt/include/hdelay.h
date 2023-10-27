@@ -47,6 +47,7 @@ class HDelay : public HFilter<T>
         /**
          * Construct a new HDelay object that writes to a writer
          *
+         * @param id Element identifier
          * @param writer Downstream writer
          * @param blocksize Blocksize
          * @param rate Sample rate used
@@ -58,6 +59,7 @@ class HDelay : public HFilter<T>
         /**
          * Construct a new HDelay object that registers with an upstream writer
          *
+         * @param id Element identifier
          * @param consumer Upstream consumer
          * @param blocksize Blocksize
          * @param rate Sample rate used
@@ -69,6 +71,7 @@ class HDelay : public HFilter<T>
         /**
          * Construct a new HDelay object that reads from a reader
          *
+         * @param id Element identifier
          * @param reader Upstream reader
          * @param blocksize Blocksize
          * @param rate Sample rate used
@@ -80,6 +83,7 @@ class HDelay : public HFilter<T>
         /**
          * Construct a new HDelay object that writes to a writer
          *
+         * @param id Element identifier
          * @param writer Downstream writer
          * @param blocksize Blocksize
          * @param blocks Number of blocks to delay
@@ -90,6 +94,7 @@ class HDelay : public HFilter<T>
         /**
          * Construct a new HDelay object that registers with an upstream writer
          *
+         * @param id Element identifier
          * @param consumer Upstream consumer
          * @param blocksize Blocksize
          * @param blocks Number of blocks to delay
@@ -100,6 +105,7 @@ class HDelay : public HFilter<T>
         /**
          * Construct a new HDelay object that reads from a reader
          *
+         * @param id Element identifier
          * @param reader Upstream reader
          * @param blocksize Blocksize
          * @param blocks Number of blocks to delay

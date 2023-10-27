@@ -19,6 +19,11 @@ class HObject
 
     public:
 
+        /**
+         * Construct a new HObject
+         *
+         * @param id Element identifier
+         */
         explicit HObject(std::string id) {
             _id = std::move(id);
         }

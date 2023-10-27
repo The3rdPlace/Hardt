@@ -58,13 +58,13 @@ int main(int argc, char** argv) {
     try {
 
         // Create a sinus generator running at 1KHz and peak amplitude 20.000
-        HSineGenerator<int16_t> generator(RATE, FREQUENCY, AMPLITUDE);
+        HSineGenerator<int16_t> generator("sine generator", RATE, FREQUENCY, AMPLITUDE);
 
         // Create a processor
-        HStreamProcessor<int16_t> processor(generator.Reader(), BLOCKSIZE, &terminated);
+        HStreamProcessor<int16_t> processor("processor", generator.Reader(), BLOCKSIZE, &terminated);
 
         // Create a soundcard writer, to output the 1KHz signal to the selected sound device
-        HSoundcardWriter<int16_t> soundcard(SOUND_DEVICE, RATE, 1, FORMAT, BLOCKSIZE, processor.Consumer());
+        HSoundcardWriter<int16_t> soundcard("soundcard writer", SOUND_DEVICE, RATE, 1, FORMAT, BLOCKSIZE, processor.Consumer());
 
         // Start the processor and run untill terminated
         std::cout << "Running. Press CTRL+C to quit\n";

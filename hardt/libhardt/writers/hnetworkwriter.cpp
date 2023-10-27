@@ -66,6 +66,19 @@ HNetworkWriter<int16_t>::HNetworkWriter(std::string id, int socket);
 template
 HNetworkWriter<int32_t>::HNetworkWriter(std::string id, int socket);
 
+// SetSocket()
+template
+void HNetworkWriter<int8_t>::SetSocket(int socket);
+
+template
+void HNetworkWriter<uint8_t>::SetSocket(int socket);
+
+template
+void HNetworkWriter<int16_t>::SetSocket(int socket);
+
+template
+void HNetworkWriter<int32_t>::SetSocket(int socket);
+
 // Write()
 template
 int HNetworkWriter<int8_t>::Write(int8_t* src, size_t blocksize);

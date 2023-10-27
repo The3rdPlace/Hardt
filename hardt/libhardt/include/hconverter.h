@@ -47,6 +47,7 @@ class HConverter : public HReader<Tout>, public HWriter<Tin>, public HWriterCons
         /**
          * Construct a new HConverter that reads from a reader
          *
+         * @param id Element identifier
          * @param reader Upstream reader
          * @param blocksizeIn Number of input samples
          * @param blocksizeOut Number of output samples
@@ -68,6 +69,7 @@ class HConverter : public HReader<Tout>, public HWriter<Tin>, public HWriterCons
         /**
          * Construct a new HConverter that writes to a writer
          *
+         * @param id Element identifier
          * @param writer Downstream writer
          * @param blocksizeIn Number of input samples
          * @param blocksizeOut Number of output samples
@@ -90,6 +92,7 @@ class HConverter : public HReader<Tout>, public HWriter<Tin>, public HWriterCons
         /**
          * Construct a new HConverter that registers with an upstream writer
          *
+         * @param id Element identifier
          * @param consumer Upstream consumer
          * @param blocksizeIn Number of input samples
          * @param blocksizeOut Number of output samples

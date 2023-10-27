@@ -36,6 +36,7 @@ class HInterpolator: public HReader<T>, public HWriter<T>, public HWriterConsume
         /**
          * Construct a new HInterpolator that handle writers.
          *
+         * @param id Element identifier
          * @param writer The downstream writer
          * @param factor Interpolation factor, 1 or larger
          * @param blocksize The expected input and output blocksize
@@ -46,6 +47,7 @@ class HInterpolator: public HReader<T>, public HWriter<T>, public HWriterConsume
         /**
          * Construct a new HInterpolator that handle writer consumers.
          *
+         * @param id Element identifier
          * @param consumer The upstream consumer to receive this as a writer
          * @param factor Interpolation factor, 1 or larger
          * @param blocksize The expected input and output blocksize
@@ -56,6 +58,7 @@ class HInterpolator: public HReader<T>, public HWriter<T>, public HWriterConsume
         /**
          * Construct a new HInterpolator that handle readers.
          *
+         * @param id Element identifier
          * @param reader The upstream reader
          * @param factor Interpolation factor, 1 or larger
          * @param blocksize The expected input and output blocksize
@@ -68,6 +71,7 @@ class HInterpolator: public HReader<T>, public HWriter<T>, public HWriterConsume
         /**
          * Construct a new HInterpolator that handle writers.
          *
+         * @param id Element identifier
          * @param writer The downstream writer
          * @param factor Interpolation factor, 1 or larger
          * @param coefficients FIR coefficients for the lowpass FIR filter that removes spectral copies of the baseband signal
@@ -80,6 +84,7 @@ class HInterpolator: public HReader<T>, public HWriter<T>, public HWriterConsume
         /**
          * Construct a new HInterpolator that handle writer consumers.
          *
+         * @param id Element identifier
          * @param consumer The upstream consumer to receive this as a writer
          * @param factor Interpolation factor, 1 or larger
          * @param coefficients FIR coefficients for the lowpass FIR filter that removes spectral copies of the baseband signal
@@ -92,6 +97,7 @@ class HInterpolator: public HReader<T>, public HWriter<T>, public HWriterConsume
         /**
          * Construct a new HInterpolator that handle readers.
          *
+         * @param id Element identifier
          * @param reader The upstream reader
          * @param factor Interpolation factor, 1 or larger
          * @param coefficients FIR coefficients for the lowpass FIR filter that removes spectral copies of the baseband signal

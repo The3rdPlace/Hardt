@@ -56,6 +56,7 @@ class HSoundcardReader : public HReader<T>
         /**
          * Construct a new HSoundcardReader
          *
+         * @param id Element identifier
          * @param device Device id
          * @param rate Samplerate
          * @param channels Number of channels. If more than 1, then samples is returned multiplexed

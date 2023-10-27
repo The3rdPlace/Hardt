@@ -20,6 +20,7 @@ class HIq2IConverter : public HDecimator<T> {
         /**
          * Construct a new HIq2IConverter that handle writers.
          *
+         * @param id Element identifier
          * @param writer The downstream writer
          * @param blocksize The expected input and output blocksize
          * @param probe Probe
@@ -30,6 +31,7 @@ class HIq2IConverter : public HDecimator<T> {
         /**
          * Construct a new HIq2IConverter that handle writer consumers.
          *
+         * @param id Element identifier
          * @param consumer The upstream consumer to receive this as a writer
          * @param blocksize The expected input and output blocksize
          * @param probe Probe
@@ -40,6 +42,7 @@ class HIq2IConverter : public HDecimator<T> {
         /**
          * Construct a new HIq2IConverter that handle readers.
          *
+         * @param id Element identifier
          * @param reader The upstream reader
          * @param blocksize The expected input and output blocksize
          * @param probe Probe
