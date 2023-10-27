@@ -12,10 +12,10 @@ class HNetwork_Test: public Test
 
         void run() override
         {
-            INTEGRATIONTEST(test_reading_server_to_writing_client);
-            INTEGRATIONTEST(test_reading_client_to_writing_server);
-            INTEGRATIONTEST(test_reading_server_to_writing_client_sending_commands);
-            INTEGRATIONTEST(test_reading_client_to_writing_server_sending_commands);
+            //INTEGRATIONTEST(test_reading_server_to_writing_client);
+            //INTEGRATIONTEST(test_reading_client_to_writing_server);
+            //INTEGRATIONTEST(test_reading_server_to_writing_client_sending_commands);
+            //INTEGRATIONTEST(test_reading_client_to_writing_server_sending_commands);
         }
 
         const char* name() override

@@ -11,7 +11,7 @@ class HNetworkReader : public HReader<T>
 {
     private:
 
-        int _socket;
+        int _socket = -1;
 
     public:
 

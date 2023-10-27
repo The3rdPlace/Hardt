@@ -56,6 +56,7 @@ class HIq2AbsConverter: public HConverter<T, T> {
          * BEWARE that reading 'blocksize samples will read
          * 'blocksize' samples from the previous reader and
          *
+         * @param id Element identifier
          * @param reader Upstream reader
          * @param blocksize Number of samples to read per read
          * @param probe Probe
@@ -71,6 +72,7 @@ class HIq2AbsConverter: public HConverter<T, T> {
          * BEWARE that writing 'blocksize' samples will write
          * 'blocksize/2' samples to the next writer
          *
+         * @param id Element identifier
          * @param writer Downstream writer
          * @param blocksize Number of samples to write per write
          * @param probe Probe
@@ -86,6 +88,7 @@ class HIq2AbsConverter: public HConverter<T, T> {
          * BEWARE that writing 'blocksize' samples will write
          * 'blocksize/2' samples to the next writer
          *
+         * @param id Element identifier
          * @param consumer Upstream consumer
          * @param blocksize Number of samples to write per write
          * @param probe Probe

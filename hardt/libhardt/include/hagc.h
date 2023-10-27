@@ -42,6 +42,7 @@ class HAgc : public HGain<T>
         /**
          * Construct a new HAgc object that writes to a writer
          *
+         * @param id Element identifier
          * @param writer Downstream writer
          * @param level Desired output level
          * @param average Number of blocks to average over when comparing to desired output level
@@ -55,6 +56,7 @@ class HAgc : public HGain<T>
         /**
          * Construct a new HAgc object that registers with an upstream writer
          *
+         * @param id Element identifier
          * @param consumer Upstream consumer
          * @param level Desired output level
          * @param average Number of blocks to average over when comparing to desired output level
@@ -68,6 +70,7 @@ class HAgc : public HGain<T>
         /**
          * Construct a new HAgc object that reads from a reader
          *
+         * @param id Element identifier
          * @param reader Upstream reader
          * @param level Desired output level
          * @param average Number of blocks to average over when comparing to desired output level

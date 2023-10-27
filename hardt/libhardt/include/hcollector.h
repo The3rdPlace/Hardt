@@ -36,6 +36,7 @@ class HCollector: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
         /**
          * Construct a new HCollector that handle writers
          *
+         * @param id Element identifier
          * @param writer The downstream writer
          * @param blocksizeIn Input blocksize
          * @param blocksizeOut Output blocksize
@@ -46,6 +47,7 @@ class HCollector: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
         /**
          * Construct a new HCollector that handle writer consumers
          *
+         * @param id Element identifier
          * @param consumer The upstream consumer
          * @param blocksizeIn Input blocksize
          * @param blocksizeOut Output blocksize
@@ -56,6 +58,7 @@ class HCollector: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
         /**
          * Construct a new HCollector that handle readers
          *
+         * @param id Element identifier
          * @param reader The upstream reader
          * @param blocksizeIn Input blocksize
          * @param blocksizeOut Output blocksize

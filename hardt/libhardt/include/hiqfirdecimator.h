@@ -39,6 +39,7 @@ class HIqFirDecimator: public HReader<T>, public HWriter<T>, public HWriterConsu
         /**
          * Construct a new HIqFirDecimator that handle writers.
          *
+         * @param id Element identifier
          * @param writer The downstream writer
          * @param factor Decimation factor, 1 or larger
          * @param coefficients FIR coefficients
@@ -57,6 +58,7 @@ class HIqFirDecimator: public HReader<T>, public HWriter<T>, public HWriterConsu
         /**
          * Construct a new HIqFirDecimator that handle writer consumers.
          *
+         * @param id Element identifier
          * @param consumer Upstream consumer
          * @param factor Decimation factor, 1 or larger
          * @param coefficients FIR coefficients
@@ -75,6 +77,7 @@ class HIqFirDecimator: public HReader<T>, public HWriter<T>, public HWriterConsu
         /**
          * Construct a new HIqFirDecimator that handle readers.
          *
+         * @param id Element identifier
          * @param reader = The upstream reader
          * @param factor Decimation factor, 1 or larger
          * @param coefficients FIR coefficients

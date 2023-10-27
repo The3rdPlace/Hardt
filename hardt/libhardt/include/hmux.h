@@ -52,6 +52,7 @@ class HMux : public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
         /**
          * Construct a new HMux
          *
+         * @param id Element identifier
          * @param readers A list o reader to read from
          * @param blocksize Number of blocks to read
          * @param duplex If set to true, the number of readers _must_ be 1. Read
@@ -63,6 +64,7 @@ class HMux : public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
         /**
          * Construct a new HMux
          *
+         * @param id Element identifier
          * @param writer The writer to write the final multiplexed signal to
          * @param writers Number of writers, writing to this multiplexer
          * @param blocksize Number of blocks to write
@@ -75,6 +77,7 @@ class HMux : public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
         /**
          * Construct a new HMux
          *
+         * @param id Element identifier
          * @param consumers The upstream consumers
          * @param blocksize Number of blocks to write
          * @param duplex If set to true, the number of upstream writers _must_ be 1. When

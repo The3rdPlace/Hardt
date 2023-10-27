@@ -134,7 +134,7 @@ HNetworkProcessor<T>::HNetworkProcessor(std::string id, int dataPort, int comman
     _writer(nullptr),
     _dataPort(dataPort),
     _commandPort(commandPort),
-    _server(NULL),
+    _server(nullptr),
     _clientSocket(-1),
     _serverSocket(-1),
     _commandSocket(-1),

@@ -61,6 +61,7 @@ class HIq2RealConverter: public HConverter<T, T> {
          * 'blocksize' samples from the previous reader and
          * return 'blocksize/2' samples
          *
+         * @param id Element identifier
          * @param reader Upstream reader
          * @param blocksize Number of samples to read
          * @param probe Probe
@@ -77,6 +78,7 @@ class HIq2RealConverter: public HConverter<T, T> {
          * BEWARE that writing 'blocksize' samples will write
          * 'blocksize/2' samples to the next writer
          *
+         * @param id Element identifier
          * @param writer Downstream writer
          * @param blocksize Number of samples to write
          * @param probe Probe
@@ -93,6 +95,7 @@ class HIq2RealConverter: public HConverter<T, T> {
          * BEWARE that writing 'blocksize' samples will write
          * 'blocksize/2' samples to the next writer
          *
+         * @param id Element identifier
          * @param consumer Upstream consumer
          * @param blocksize Number of samples to write
          * @param probe Probe

@@ -35,6 +35,7 @@ class HGenerator : public HReader<T>
         /**
          * Construct a new HGenerator
          *
+         * @param id Element identifier
          * @param rate Sample rate of the generator
          * @param frequency Generator frequency
          * @param amplitude Generator amplitude (max abs. value)

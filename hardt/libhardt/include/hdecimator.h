@@ -33,6 +33,7 @@ class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
         /**
          * Construct a new HDecimator that handle writers.
          *
+         * @param id Element identifier
          * @param writer The downstream writer
          * @param factor Decimation factor, 1 or larger
          * @param blocksize The expected input and output blocksize
@@ -50,6 +51,7 @@ class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
         /**
          * Construct a new HDecimator that handle writer consumers.
          *
+         * @param id Element identifier
          * @param consumer The upstream consumer to receive this as a writer
          * @param  factor Decimation factor, 1 or larger
          * @param blocksize The expected input and output blocksize
@@ -67,6 +69,7 @@ class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
         /**
          * Construct a new HDecimator that handle readers.
          *
+         * @param id Element identifier
          * @param reader The upstream reader
          * @param factor Decimation factor, 1 or larger
          * @param blocksize The expected input and output blocksize

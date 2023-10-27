@@ -44,6 +44,8 @@ class HGaussianFilter : public HFilter<T>
     public:
 
         /** Construct a new HGaussianFilter object that writes to a writer
+         *
+         * @param id Element identifier
          * @param writer Downstream writer
          * @param blocksize Blocksize
          * @param strength Filter strength in db
@@ -59,6 +61,8 @@ class HGaussianFilter : public HFilter<T>
         }
 
         /** Construct a new HGaussianFilter object that registers with an upstream writer
+         *
+         * @param id Element identifier
          * @param consumer Upstream consumer
          * @param blocksize Blocksize
          * @param strength Filter strength in db
@@ -74,6 +78,8 @@ class HGaussianFilter : public HFilter<T>
         }
 
         /** Construct a new HGaussianFilter object that reads from a reader
+         *
+         * @param id Element identifier
          * @param reader Upstream reader
          * @param blocksize Blocksize
          * @param strength Filter strength in db
