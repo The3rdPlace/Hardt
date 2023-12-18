@@ -22,7 +22,7 @@ Class implementation
 
 template <class T>
 HNetworkProcessor<T>::HNetworkProcessor(std::string id, const char* address, int dataPort, int commandPort, HWriter<T>* writer, int blocksize, bool* terminationToken):
-    HProcessor<T>(id, writer, _networkReader, blocksize, terminationToken),
+    HProcessor<T>(id, writer, &_networkReader, blocksize, terminationToken),
     _isServer(false),
     _isWriter(true),
     _reader(nullptr),
@@ -34,8 +34,8 @@ HNetworkProcessor<T>::HNetworkProcessor(std::string id, const char* address, int
     _serverSocket(-1),
     _commandSocket(-1),
     _terminated(terminationToken),
-    _networkReader(nullptr),
-    _networkWriter(nullptr)
+    _networkReader(id + " (networkReader)"),
+    _networkWriter(id + " (networkWriter)")
 {
     HLog("HNetworkProcessor(client)(address=%s, dataPort=%d, commandPort=%d, writer=*, terminationToken=%d), blocksize is %d", address, dataPort, commandPort, *terminationToken, blocksize);
     InitClient();
@@ -43,7 +43,7 @@ HNetworkProcessor<T>::HNetworkProcessor(std::string id, const char* address, int
 
 template <class T>
 HNetworkProcessor<T>::HNetworkProcessor(std::string id, const char* address, int dataPort, int commandPort, int blocksize, bool* terminationToken):
-    HProcessor<T>(id, _networkReader, blocksize, terminationToken),
+    HProcessor<T>(id, &_networkReader, blocksize, terminationToken),
     _isServer(false),
     _isWriter(true),
     _reader(nullptr),
@@ -55,8 +55,8 @@ HNetworkProcessor<T>::HNetworkProcessor(std::string id, const char* address, int
     _serverSocket(-1),
     _commandSocket(-1),
     _terminated(terminationToken),
-    _networkReader(nullptr),
-    _networkWriter(nullptr)
+    _networkReader(id + " (networkReader)"),
+    _networkWriter(id + " (networkWriter)")
 {
     HLog("HNetworkProcessor(client)(address=%s, dataPort=%d, commandPort=%d, terminationToken=%d), blocksize is %d", address, dataPort, commandPort, *terminationToken, blocksize);
     InitClient();
@@ -64,7 +64,7 @@ HNetworkProcessor<T>::HNetworkProcessor(std::string id, const char* address, int
 
 template <class T>
 HNetworkProcessor<T>::HNetworkProcessor(std::string id, const char* address, int dataPort, int commandPort, HReader<T>* reader, int blocksize, bool* terminationToken):
-    HProcessor<T>(id, _networkWriter, reader, blocksize, terminationToken),
+    HProcessor<T>(id, &_networkWriter, reader, blocksize, terminationToken),
     _isServer(false),
     _isWriter(false),
     _reader(reader),
@@ -76,8 +76,8 @@ HNetworkProcessor<T>::HNetworkProcessor(std::string id, const char* address, int
     _serverSocket(-1),
     _commandSocket(-1),
     _terminated(terminationToken),
-    _networkReader(nullptr),
-    _networkWriter(nullptr)
+    _networkReader(id + " (networkReader)"),
+    _networkWriter(id + " (networkWriter)")
 {
     HLog("HNetworkProcessor(client)(address=%s, dataPort=%d, commandPort=%d, reader=*, terminationToken=%d), blocksize is %d", address, dataPort, commandPort, *terminationToken, blocksize);
     InitClient();
@@ -85,7 +85,7 @@ HNetworkProcessor<T>::HNetworkProcessor(std::string id, const char* address, int
 
 template <class T>
 HNetworkProcessor<T>::HNetworkProcessor(std::string id, int dataPort, int commandPort, HWriter<T>* writer, int blocksize, bool* terminationToken):
-    HProcessor<T>(id, writer, _networkReader, blocksize, terminationToken),
+    HProcessor<T>(id, writer, &_networkReader, blocksize, terminationToken),
     _isServer(true),
     _isWriter(true),
     _reader(nullptr),
@@ -97,8 +97,8 @@ HNetworkProcessor<T>::HNetworkProcessor(std::string id, int dataPort, int comman
     _serverSocket(-1),
     _commandSocket(-1),
     _terminated(terminationToken),
-    _networkReader(nullptr),
-    _networkWriter(nullptr)
+    _networkReader(id + " (networkReader)"),
+    _networkWriter(id + " (networkWriter)")
 {
     HLog("HNetworkProcessor(server)(dataPort=%d, commandPort=%d, writer=*, terminationToken=%d), blocksize is %d", dataPort, commandPort, *terminationToken, blocksize);
     InitServer();
@@ -106,7 +106,7 @@ HNetworkProcessor<T>::HNetworkProcessor(std::string id, int dataPort, int comman
 
 template <class T>
 HNetworkProcessor<T>::HNetworkProcessor(std::string id, int dataPort, int commandPort, int blocksize, bool* terminationToken):
-    HProcessor<T>(id, _networkReader, blocksize, terminationToken),
+    HProcessor<T>(id, &_networkReader, blocksize, terminationToken),
     _isServer(true),
     _isWriter(true),
     _reader(nullptr),
@@ -118,8 +118,8 @@ HNetworkProcessor<T>::HNetworkProcessor(std::string id, int dataPort, int comman
     _serverSocket(-1),
     _commandSocket(-1),
     _terminated(terminationToken),
-    _networkReader(nullptr),
-    _networkWriter(nullptr)
+    _networkReader(id + " (networkReader)"),
+    _networkWriter(id + " (networkWriter)")
 {
     HLog("HNetworkProcessor(server)(dataPort=%d, commandPort=%d, terminationToken=%d), blocksize is %d", dataPort, commandPort, *terminationToken, blocksize);
     InitServer();
@@ -127,7 +127,7 @@ HNetworkProcessor<T>::HNetworkProcessor(std::string id, int dataPort, int comman
 
 template <class T>
 HNetworkProcessor<T>::HNetworkProcessor(std::string id, int dataPort, int commandPort, HReader<T>* reader, int blocksize, bool* terminationToken):
-    HProcessor<T>(id, _networkWriter, reader, blocksize, terminationToken),
+    HProcessor<T>(id, &_networkWriter, reader, blocksize, terminationToken),
     _isServer(true),
     _isWriter(false),
     _reader(reader),
@@ -139,8 +139,8 @@ HNetworkProcessor<T>::HNetworkProcessor(std::string id, int dataPort, int comman
     _serverSocket(-1),
     _commandSocket(-1),
     _terminated(terminationToken),
-    _networkReader(nullptr),
-    _networkWriter(nullptr)
+    _networkReader(id + " (networkReader)"),
+    _networkWriter(id + " (networkWriter)")
 {
     HLog("HNetworkProcessor(server)(dataPort=%d, commandPort=%d, reader=*, terminationToken=%d), blocksize is %d", dataPort, commandPort, *terminationToken, blocksize);
     InitServer();
@@ -162,17 +162,7 @@ HNetworkProcessor<T>::~HNetworkProcessor()
         HLog("Closing command socket");
         close(this->_commandSocket);
     }
-
-    if( this->_networkReader != nullptr) {
-        delete _networkReader;
-        _networkReader = nullptr;
-    }
-    if( this->_networkWriter != nullptr) {
-        delete _networkWriter;
-        _networkWriter = nullptr;
-    }
     HLog("Done");
-
 }
 
 template <class T>
@@ -187,16 +177,12 @@ void HNetworkProcessor<T>::InitServer()
     sigemptyset(&new_set);
     sigprocmask(SIG_BLOCK, &new_set, nullptr);
     HLog("SIGPIPE disabled");
-
-    // Create network reader and writer
-    _networkReader = new HNetworkReader<T>(HObject::GetId());
-    _networkWriter = new HNetworkWriter<T>(HObject::GetId());
 }
 
 template <class T>
 void HNetworkProcessor<T>::InitServerDataPort()
 {
-    if ((this->_serverSocket = socket(AF_INET, SOCK_STREAM, 0)) == 0)
+    if ((this->_serverSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
         HError("Failed to create server socket");
         throw new HInitializationException("Failed to create server socket");
@@ -204,10 +190,15 @@ void HNetworkProcessor<T>::InitServerDataPort()
     HLog("Created server socket");
 
     // Forcefully attaching socket to the selected port
-    int opt = 0;
-    if (setsockopt(_serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)))
+    int opt = 1;
+    if (setsockopt(_serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
     {
-        HError("setsockopt() failed");
+        HError("setsockopt():SO_REUSEADDR failed");
+        throw new HInitializationException("setsockopt() failed");
+    }
+    if (setsockopt(_serverSocket, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt)) < 0)
+    {
+        HError("setsockopt():SO_REUSEPORT failed");
         throw new HInitializationException("setsockopt() failed");
     }
 
@@ -217,9 +208,9 @@ void HNetworkProcessor<T>::InitServerDataPort()
     _address.sin_port = htons( _dataPort );
 
     // Forcefully attaching socket to the selected port
-    if (bind(_serverSocket, (struct sockaddr *)&_address, sizeof(_address))<0)
+    if (bind(_serverSocket, (struct sockaddr *)&_address, sizeof(_address)) < 0)
     {
-        HError("bind() failed for port %d on INADDR_ANY", _dataPort);
+        HError("bind() failed for port %d on INADDR_ANY due to '%s'", _dataPort, strerror(errno));
         throw new HInitializationException("bind() failed");
     }
     HLog("Bound to INADDR_ANY on port %d", _dataPort);
@@ -299,10 +290,6 @@ void HNetworkProcessor<T>::InitClient()
         throw new HNetworkException("Failed to connect to server");
     }
     HLog("Connected");
-
-    // Create network reader and writer
-    _networkReader = new HNetworkReader<T>(HObject::GetId());
-    _networkWriter = new HNetworkWriter<T>(HObject::GetId());
 }
 
 template <class T>
@@ -435,8 +422,8 @@ void HNetworkProcessor<T>::RunClient(long unsigned int blocks)
 template <class T>
 void HNetworkProcessor<T>::RunProcessor(long unsigned int blocks)
 {
-    _networkReader->SetSocket(_clientSocket);
-    _networkWriter->SetSocket(_clientSocket);
+    _networkReader.SetSocket(_clientSocket);
+    _networkWriter.SetSocket(_clientSocket);
     HProcessor<T>::Run(blocks);
 }
 
