@@ -40,6 +40,7 @@ class HReader : public HObject
             return ReadImpl(dest, blocksize);
         }
 
+        /** Read a block of samples (implementation) */
         virtual int ReadImpl(T* dest, size_t blocksize) = 0;
 
         /** Initialize before first read */
