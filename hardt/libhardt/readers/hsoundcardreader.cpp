@@ -94,7 +94,7 @@ HSoundcardReader<T>::~HSoundcardReader()
 }
 
 template <class T>
-int HSoundcardReader<T>::Read(T* dest, size_t blocksize)
+int HSoundcardReader<T>::ReadImpl(T* dest, size_t blocksize)
 {
     // Requested blocksize can not be larger than the device blocksize
     // (actively preventing large reads that would inhibit performance and
@@ -264,16 +264,16 @@ HSoundcardReader<int32_t>::~HSoundcardReader();
 
 // Read()
 template
-int HSoundcardReader<int8_t>::Read(int8_t* dest, size_t blocksize);
+int HSoundcardReader<int8_t>::ReadImpl(int8_t* dest, size_t blocksize);
 
 template
-int HSoundcardReader<uint8_t>::Read(uint8_t* dest, size_t blocksize);
+int HSoundcardReader<uint8_t>::ReadImpl(uint8_t* dest, size_t blocksize);
 
 template
-int HSoundcardReader<int16_t>::Read(int16_t* dest, size_t blocksize);
+int HSoundcardReader<int16_t>::ReadImpl(int16_t* dest, size_t blocksize);
 
 template
-int HSoundcardReader<int32_t>::Read(int32_t* dest, size_t blocksize);
+int HSoundcardReader<int32_t>::ReadImpl(int32_t* dest, size_t blocksize);
 
 //! @endcond
 #endif

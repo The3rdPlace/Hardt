@@ -22,7 +22,7 @@ class HWriter : public HObject
         virtual ~HWriter() = default;
 
         /** Write a block of samples */
-        virtual int Write(T* src, size_t blocksize) = 0;
+        virtual int WriteImpl(T* src, size_t blocksize) = 0;
 
         /** Initialize before first write */
         virtual bool Start()

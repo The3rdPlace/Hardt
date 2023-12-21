@@ -123,7 +123,7 @@ int HIqFirDecimator<T>::Write(T* src, size_t blocksize) {
 }
 
 template <class T>
-int HIqFirDecimator<T>::Read(T* dest, size_t blocksize) {
+int HIqFirDecimator<T>::ReadImpl(T* dest, size_t blocksize) {
 
     if( _reader == nullptr )
     {
@@ -273,16 +273,16 @@ int HIqFirDecimator<int32_t>::Write(int32_t* src, size_t blocksize);
 
 // Read()
 template
-int HIqFirDecimator<int8_t>::Read(int8_t* dest, size_t blocksize);
+int HIqFirDecimator<int8_t>::ReadImpl(int8_t* dest, size_t blocksize);
 
 template
-int HIqFirDecimator<uint8_t>::Read(uint8_t* dest, size_t blocksize);
+int HIqFirDecimator<uint8_t>::ReadImpl(uint8_t* dest, size_t blocksize);
 
 template
-int HIqFirDecimator<int16_t>::Read(int16_t* dest, size_t blocksize);
+int HIqFirDecimator<int16_t>::ReadImpl(int16_t* dest, size_t blocksize);
 
 template
-int HIqFirDecimator<int32_t>::Read(int32_t* dest, size_t blocksize);
+int HIqFirDecimator<int32_t>::ReadImpl(int32_t* dest, size_t blocksize);
 
 //! @endcond
 #endif

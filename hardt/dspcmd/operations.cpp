@@ -973,7 +973,7 @@ class FilterSpectrumReader : public HReader<T>
             delete vfo;
         }
 
-        int Read(T* dest, size_t blocksize)
+        int ReadImpl(T* dest, size_t blocksize)
         {
             // At end of sweep ?
             if( _freq >= _freqStop )

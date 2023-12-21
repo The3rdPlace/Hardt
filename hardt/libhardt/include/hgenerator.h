@@ -54,7 +54,7 @@ class HGenerator : public HReader<T>
          * @param dest Destination buffer
          * @param blocksize Number of samples to read
          * */
-        int Read(T* dest, size_t blocksize);
+        int ReadImpl(T* dest, size_t blocksize);
 
         /** Calculate and fill generator sample lookup table */
         void Calculate(int frequency, T amplitude, float phase);

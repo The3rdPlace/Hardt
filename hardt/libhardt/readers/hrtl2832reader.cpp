@@ -197,7 +197,7 @@ void HRtl2832Reader<int32_t>::CopyBlock(int32_t * dest, unsigned char* src , siz
 }
 
 template <class T>
-int HRtl2832Reader<T>::Read(T* dest, size_t blocksize)
+int HRtl2832Reader<T>::ReadImpl(T* dest, size_t blocksize)
 {
     // Always read the configured blocksize
     if( blocksize != _blocksize )
@@ -463,16 +463,16 @@ HRtl2832Reader<int32_t>::~HRtl2832Reader();
 
 // Read()
 template
-int HRtl2832Reader<int8_t>::Read(int8_t* dest, size_t blocksize);
+int HRtl2832Reader<int8_t>::ReadImpl(int8_t* dest, size_t blocksize);
 
 template
-int HRtl2832Reader<uint8_t>::Read(uint8_t* dest, size_t blocksize);
+int HRtl2832Reader<uint8_t>::ReadImpl(uint8_t* dest, size_t blocksize);
 
 template
-int HRtl2832Reader<int16_t>::Read(int16_t* dest, size_t blocksize);
+int HRtl2832Reader<int16_t>::ReadImpl(int16_t* dest, size_t blocksize);
 
 template
-int HRtl2832Reader<int32_t>::Read(int32_t* dest, size_t blocksize);
+int HRtl2832Reader<int32_t>::ReadImpl(int32_t* dest, size_t blocksize);
 
 // SetCenterFrequency
 template

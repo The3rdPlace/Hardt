@@ -31,7 +31,7 @@ class HMemoryReader : public HReader<T>
                 _infinite(infinite) {}
 
         /** Read a block of samples */
-        int Read(T* dest, size_t blocksize)
+        int ReadImpl(T* dest, size_t blocksize)
         {
             if( _pos + blocksize > _size ) {
                 return 0;

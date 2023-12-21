@@ -222,7 +222,7 @@ int HCascadedBiQuadFilter<T>::Write(T* src, size_t blocksize)
 }
 
 template <class T>
-int HCascadedBiQuadFilter<T>::Read(T* dest, size_t blocksize)
+int HCascadedBiQuadFilter<T>::ReadImpl(T* dest, size_t blocksize)
 {
     if( blocksize > _blocksize )
     {
@@ -394,16 +394,16 @@ int HCascadedBiQuadFilter<int32_t>::Write(int32_t* src, size_t blocksize);
 
 // Read()
 template
-int HCascadedBiQuadFilter<int8_t>::Read(int8_t* dest, size_t blocksize);
+int HCascadedBiQuadFilter<int8_t>::ReadImpl(int8_t* dest, size_t blocksize);
 
 template
-int HCascadedBiQuadFilter<uint8_t>::Read(uint8_t* dest, size_t blocksize);
+int HCascadedBiQuadFilter<uint8_t>::ReadImpl(uint8_t* dest, size_t blocksize);
 
 template
-int HCascadedBiQuadFilter<int16_t>::Read(int16_t* dest, size_t blocksize);
+int HCascadedBiQuadFilter<int16_t>::ReadImpl(int16_t* dest, size_t blocksize);
 
 template
-int HCascadedBiQuadFilter<int32_t>::Read(int32_t* dest, size_t blocksize);
+int HCascadedBiQuadFilter<int32_t>::ReadImpl(int32_t* dest, size_t blocksize);
 
 // Start()
 template

@@ -25,7 +25,7 @@ class HNetworkReader : public HReader<T>
         void SetSocket(int socket);
 
         /** Read a block of samples from the network */
-        int Read(T* dest, size_t blocksize);
+        int ReadImpl(T* dest, size_t blocksize);
 
         /** Execute and/or pass on a command */
         bool Command(HCommand* command) {

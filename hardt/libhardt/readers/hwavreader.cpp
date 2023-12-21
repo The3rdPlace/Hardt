@@ -12,7 +12,7 @@ HWavReader<T>::HWavReader(std::string id, const char* filename, HProbe<T>* probe
 template <class T>
 bool HWavReader<T>::Start()
 {
-    return HFileReader<T>::Start() && HFileReader<T>::Read((T*) &_header, 44 / sizeof(T)) == 44 / sizeof(T);
+    return HFileReader<T>::Start() && HFileReader<T>::ReadImpl((T*) &_header, 44 / sizeof(T)) == 44 / sizeof(T);
 }
 
 /********************************************************************

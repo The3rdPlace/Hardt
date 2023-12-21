@@ -30,7 +30,7 @@ class HFileReader : public HReader<T>
         {}
 
         /** Read a block of samples */
-        virtual int Read(T* dest, size_t blocksize)
+        virtual int ReadImpl(T* dest, size_t blocksize)
         {
             // Read next chunk
             _stream.read((char*) dest, blocksize * sizeof(T));

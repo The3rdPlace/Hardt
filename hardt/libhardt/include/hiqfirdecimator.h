@@ -118,7 +118,7 @@ class HIqFirDecimator: public HReader<T>, public HWriter<T>, public HWriterConsu
          * @param dest Destination buffer
          * @param blocksize Number of samples to write
          */
-        int Read(T* dest, size_t blocksize);
+        int ReadImpl(T* dest, size_t blocksize);
 
         /**
          * Call Start() on up- or downstream components

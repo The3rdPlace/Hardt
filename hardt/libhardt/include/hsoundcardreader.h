@@ -77,7 +77,7 @@ class HSoundcardReader : public HReader<T>
          * @param dest Destination buffer
          * @param blocksize Number of samples to read
          */
-        int Read(T* dest, size_t blocksize);
+        int ReadImpl(T* dest, size_t blocksize);
 
         /**
          * Callback method, should only be called by the PortAudio layer

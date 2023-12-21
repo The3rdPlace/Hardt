@@ -92,7 +92,7 @@ class HCollector: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
          * @param blocksize Number of samples to read
          * @returns The number of samples read
          */
-        int Read(T* dest, size_t blocksize);
+        int ReadImpl(T* dest, size_t blocksize);
 
         /**
          * Call Start() on up- or downstream component

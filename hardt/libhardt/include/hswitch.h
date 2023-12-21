@@ -89,7 +89,7 @@ class HSwitch: public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
         int Write(T* src, size_t blocksize);
 
         /** Read a block of samples */
-        int Read(T* dest, size_t blocksize);
+        int ReadImpl(T* dest, size_t blocksize);
 
         /** Set switch position */
         void SetPosition(int position);
