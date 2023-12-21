@@ -219,7 +219,7 @@ void HNetworkProcessor<T>::InitServerDataPort()
 template <class T>
 void HNetworkProcessor<T>::InitServerCommandPort()
 {
-    if ((this->_commandSocket = socket(AF_INET, SOCK_STREAM, 0)) == 0)
+    if ((this->_commandSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
         HError("Failed to create command socket");
         throw new HInitializationException("Failed to create command socket");
@@ -227,10 +227,15 @@ void HNetworkProcessor<T>::InitServerCommandPort()
     HLog("Created command socket");
 
     // Forcefully attaching socket to the selected port
-    int opt = 0;
-    if (setsockopt(_commandSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)))
+    int opt = 1;
+    if (setsockopt(_commandSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
     {
         HError("setsockopt() failed");
+        throw new HInitializationException("setsockopt() failed");
+    }
+    if (setsockopt(_commandSocket, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt)) < 0)
+    {
+        HError("setsockopt():SO_REUSEPORT failed");
         throw new HInitializationException("setsockopt() failed");
     }
 
@@ -240,7 +245,7 @@ void HNetworkProcessor<T>::InitServerCommandPort()
     _address.sin_port = htons( _commandPort );
 
     // Forcefully attaching socket to the selected port
-    if (bind(_commandSocket, (struct sockaddr *)&_address, sizeof(_address))<0)
+    if (bind(_commandSocket, (struct sockaddr *)&_address, sizeof(_address)) < 0)
     {
         HError("bind() failed for port %d on INADDR_ANY", _commandPort);
         throw new HInitializationException("bind() failed");
