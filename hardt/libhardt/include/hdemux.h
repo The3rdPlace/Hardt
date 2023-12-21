@@ -48,7 +48,7 @@ class HDeMux : public HWriter<T>, public HWriterConsumer<T>, public HReader<T>
         int Write(T* src, size_t blocksize);
 
         /** Read a block of samples */
-        int Read(T* dest, size_t blocksize);
+        int ReadImpl(T* dest, size_t blocksize);
 
         /** Implements HWriterConsumer::SetWriter() */
         void SetWriter(HWriter<T>* writer)

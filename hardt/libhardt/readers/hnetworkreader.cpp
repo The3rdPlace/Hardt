@@ -26,7 +26,7 @@ void HNetworkReader<T>::SetSocket(int socket)
 }
 
 template <class T>
-int HNetworkReader<T>::Read(T* dest, size_t blocksize)
+int HNetworkReader<T>::ReadImpl(T* dest, size_t blocksize)
 {
     // Read data
     int total = 0;
@@ -90,16 +90,16 @@ void HNetworkReader<int32_t>::SetSocket(int socket);
 
 // Read()
 template
-int HNetworkReader<int8_t>::Read(int8_t* dest, size_t blocksize);
+int HNetworkReader<int8_t>::ReadImpl(int8_t* dest, size_t blocksize);
 
 template
-int HNetworkReader<uint8_t>::Read(uint8_t* dest, size_t blocksize);
+int HNetworkReader<uint8_t>::ReadImpl(uint8_t* dest, size_t blocksize);
 
 template
-int HNetworkReader<int16_t>::Read(int16_t* dest, size_t blocksize);
+int HNetworkReader<int16_t>::ReadImpl(int16_t* dest, size_t blocksize);
 
 template
-int HNetworkReader<int32_t>::Read(int32_t* dest, size_t blocksize);
+int HNetworkReader<int32_t>::ReadImpl(int32_t* dest, size_t blocksize);
 
 //! @endcond
 #endif

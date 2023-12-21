@@ -22,7 +22,7 @@ class HNullReader : public HReader<T>
         }
 
         /** Read a block of silence */
-        int Read(T* dest, size_t blocksize);
+        int ReadImpl(T* dest, size_t blocksize);
 
         /** Execute or carry through a command */
         bool Command(HCommand* command) {

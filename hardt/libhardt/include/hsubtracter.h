@@ -49,7 +49,7 @@ class HSubtracter : public HReader<T>, public HWriter<T>, public HWriterConsumer
         void Init(size_t blocksize);
 
         /** Read a block of samples */
-        int Read(T* dest, size_t blocksize);
+        int ReadImpl(T* dest, size_t blocksize);
 
         /** Write a block of samples */
         int Write(T* src, size_t blocksize);

@@ -211,7 +211,7 @@ class Test
                     }
                 }
 
-                int Read(T* dest, size_t blocksize)
+                int ReadImpl(T* dest, size_t blocksize)
                 {
                     if (!_multipleReads && !_first)
                     {

@@ -109,7 +109,7 @@ class HIqDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer
          * @param dest Destination buffer
          * @param blocksize Number of samples to read
          */
-        int Read(T* dest, size_t blocksize);
+        int ReadImpl(T* dest, size_t blocksize);
 
         /**
          * @return Call Start() on up- or downstream components

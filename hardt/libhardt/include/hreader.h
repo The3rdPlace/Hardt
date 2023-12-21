@@ -36,7 +36,11 @@ class HReader : public HObject
         virtual ~HReader() = default;
 
         /** Read a block of samples */
-        virtual int Read(T* dest, size_t blocksize) = 0;
+        int Read(T* dest, size_t blocksize) {
+            return ReadImpl(dest, blocksize);
+        }
+
+        virtual int ReadImpl(T* dest, size_t blocksize) = 0;
 
         /** Initialize before first read */
         virtual bool Start()

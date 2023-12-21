@@ -81,7 +81,7 @@ void HIqMultiplier<T>::Init(std::string id, H_SAMPLE_RATE rate, int frequency, i
 }
 
 template <class T>
-int HIqMultiplier<T>::Read(T* dest, size_t blocksize)
+int HIqMultiplier<T>::ReadImpl(T* dest, size_t blocksize)
 {
     if( blocksize > _blocksize )
     {
@@ -271,16 +271,16 @@ void HIqMultiplier<int32_t>::Init(std::string id, H_SAMPLE_RATE rate, int freque
 
 // Read()
 template
-int HIqMultiplier<int8_t>::Read(int8_t* dest, size_t blocksize);
+int HIqMultiplier<int8_t>::ReadImpl(int8_t* dest, size_t blocksize);
 
 template
-int HIqMultiplier<uint8_t>::Read(uint8_t* dest, size_t blocksize);
+int HIqMultiplier<uint8_t>::ReadImpl(uint8_t* dest, size_t blocksize);
 
 template
-int HIqMultiplier<int16_t>::Read(int16_t* dest, size_t blocksize);
+int HIqMultiplier<int16_t>::ReadImpl(int16_t* dest, size_t blocksize);
 
 template
-int HIqMultiplier<int32_t>::Read(int32_t* dest, size_t blocksize);
+int HIqMultiplier<int32_t>::ReadImpl(int32_t* dest, size_t blocksize);
 
 // Write()
 template

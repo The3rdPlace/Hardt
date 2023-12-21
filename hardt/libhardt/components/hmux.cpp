@@ -99,7 +99,7 @@ HMux<T>::~HMux()
 }
 
 template <class T>
-int HMux<T>::Read(T* dest, size_t blocksize)
+int HMux<T>::ReadImpl(T* dest, size_t blocksize)
 {
     if( blocksize != _blocksize ) {
         HError("Incorrect blocksize in read. Expected %d but %d was requested", _blocksize, blocksize);
@@ -235,16 +235,16 @@ HMux<int32_t>::~HMux();
 
 // Read
 template
-int HMux<int8_t>::Read(int8_t* dest, size_t blocksize);
+int HMux<int8_t>::ReadImpl(int8_t* dest, size_t blocksize);
 
 template
-int HMux<uint8_t>::Read(uint8_t* dest, size_t blocksize);
+int HMux<uint8_t>::ReadImpl(uint8_t* dest, size_t blocksize);
 
 template
-int HMux<int16_t>::Read(int16_t* dest, size_t blocksize);
+int HMux<int16_t>::ReadImpl(int16_t* dest, size_t blocksize);
 
 template
-int HMux<int32_t>::Read(int32_t* dest, size_t blocksize);
+int HMux<int32_t>::ReadImpl(int32_t* dest, size_t blocksize);
 
 // Write
 template

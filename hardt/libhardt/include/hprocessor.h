@@ -96,7 +96,7 @@ class HProcessor : public HWriterConsumer<T>
          * @param blocksize Number of samples to read
          * @returns Number of blocks read
          */
-        int Read(T* dest, int blocksize);
+        int ReadImpl(T* dest, int blocksize);
 
         /**
          * Write directly to the associated writer

@@ -71,7 +71,7 @@ void HMultiplier<T>::Init(std::string id, H_SAMPLE_RATE rate, int frequency, int
 }
 
 template <class T>
-int HMultiplier<T>::Read(T* dest, size_t blocksize)
+int HMultiplier<T>::ReadImpl(T* dest, size_t blocksize)
 {
     if( blocksize > _blocksize )
     {
@@ -241,16 +241,16 @@ void HMultiplier<int32_t>::Init(std::string id, H_SAMPLE_RATE rate, int frequenc
 
 // Read()
 template
-int HMultiplier<int8_t>::Read(int8_t* dest, size_t blocksize);
+int HMultiplier<int8_t>::ReadImpl(int8_t* dest, size_t blocksize);
 
 template
-int HMultiplier<uint8_t>::Read(uint8_t* dest, size_t blocksize);
+int HMultiplier<uint8_t>::ReadImpl(uint8_t* dest, size_t blocksize);
 
 template
-int HMultiplier<int16_t>::Read(int16_t* dest, size_t blocksize);
+int HMultiplier<int16_t>::ReadImpl(int16_t* dest, size_t blocksize);
 
 template
-int HMultiplier<int32_t>::Read(int32_t* dest, size_t blocksize);
+int HMultiplier<int32_t>::ReadImpl(int32_t* dest, size_t blocksize);
 
 // Write()
 template

@@ -58,7 +58,7 @@ class HMultiplier : public HReader<T>, public HWriter<T>, public HWriterConsumer
         void Init(std::string id, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
         /** Read a block of samples */
-        int Read(T* dest, size_t blocksize);
+        int ReadImpl(T* dest, size_t blocksize);
 
         /** Write a block of samples */
         int Write(T* src, size_t blocksize);

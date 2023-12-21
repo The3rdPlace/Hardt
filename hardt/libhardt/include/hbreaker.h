@@ -51,7 +51,7 @@ class HBreaker : public HFilter<T>
             return _off ? blocksize : HFilter<T>::Write(src, blocksize);
         }
 
-        int Read(T* dest, size_t blocksize) {
+        int ReadImpl(T* dest, size_t blocksize) {
             return _off ? 0 : HFilter<T>::Read(dest, blocksize);
         }
 };

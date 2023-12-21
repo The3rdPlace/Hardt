@@ -212,7 +212,7 @@ int HInterpolator<T>::Write(T* src, size_t blocksize)
 }
 
 template <class T>
-int HInterpolator<T>::Read(T* dest, size_t blocksize)
+int HInterpolator<T>::ReadImpl(T* dest, size_t blocksize)
 {
     if( _reader == nullptr )
     {
@@ -396,16 +396,16 @@ int HInterpolator<int32_t>::Write(int32_t* src, size_t blocksize);
 
 // Read()
 template
-int HInterpolator<int8_t>::Read(int8_t* dest, size_t blocksize);
+int HInterpolator<int8_t>::ReadImpl(int8_t* dest, size_t blocksize);
 
 template
-int HInterpolator<uint8_t>::Read(uint8_t* dest, size_t blocksize);
+int HInterpolator<uint8_t>::ReadImpl(uint8_t* dest, size_t blocksize);
 
 template
-int HInterpolator<int16_t>::Read(int16_t* dest, size_t blocksize);
+int HInterpolator<int16_t>::ReadImpl(int16_t* dest, size_t blocksize);
 
 template
-int HInterpolator<int32_t>::Read(int32_t* dest, size_t blocksize);
+int HInterpolator<int32_t>::ReadImpl(int32_t* dest, size_t blocksize);
 
 //! @endcond
 #endif

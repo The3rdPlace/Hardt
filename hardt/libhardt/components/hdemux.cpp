@@ -106,7 +106,7 @@ int HDeMux<T>::Write(T* src, size_t blocksize)
 }
 
 template <class T>
-int HDeMux<T>::Read(T* dest, size_t blocksize)
+int HDeMux<T>::ReadImpl(T* dest, size_t blocksize)
 {
     if( _nextReader == 0 ) {
         if( _reader->Read(_readBuffer, blocksize * _readers) == 0 ) {
@@ -198,16 +198,16 @@ int HDeMux<int32_t>::Write(int32_t* src, size_t blocksize);
 
 // Read
 template
-int HDeMux<int8_t>::Read(int8_t * dest, size_t blocksize);
+int HDeMux<int8_t>::ReadImpl(int8_t * dest, size_t blocksize);
 
 template
-int HDeMux<uint8_t>::Read(uint8_t * dest, size_t blocksize);
+int HDeMux<uint8_t>::ReadImpl(uint8_t * dest, size_t blocksize);
 
 template
-int HDeMux<int16_t>::Read(int16_t * dest, size_t blocksize);
+int HDeMux<int16_t>::ReadImpl(int16_t * dest, size_t blocksize);
 
 template
-int HDeMux<int32_t>::Read(int32_t * dest, size_t blocksize);
+int HDeMux<int32_t>::ReadImpl(int32_t * dest, size_t blocksize);
 
 //! @endcond
 #endif

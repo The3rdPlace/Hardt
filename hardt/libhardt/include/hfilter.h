@@ -120,7 +120,7 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
         }
 
         /** Read a block of samples */
-        int Read(T* dest, size_t blocksize) {
+        int ReadImpl(T* dest, size_t blocksize) {
 
             if( blocksize > _blocksize )
             {

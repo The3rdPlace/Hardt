@@ -39,7 +39,7 @@ HProcessor<T>::~HProcessor()
 }
 
 template <class T>
-int HProcessor<T>::Read(T* dest, int blocksize)
+int HProcessor<T>::ReadImpl(T* dest, int blocksize)
 {
     try
     {
@@ -98,7 +98,7 @@ void HProcessor<T>::Run(long unsigned int blocks)
         int len;
         try
         {
-            len = HProcessor<T>::Read(_buffer, _blocksize);
+            len = HProcessor<T>::ReadImpl(_buffer, _blocksize);
             if( len == 0 )
             {
                 HLog("Zero read from the reader, stopping");
@@ -229,16 +229,16 @@ HProcessor<int32_t>::~HProcessor();
 
 // Read()
 template
-int HProcessor<int8_t>::Read(int8_t* dest, int blocksize);
+int HProcessor<int8_t>::ReadImpl(int8_t* dest, int blocksize);
 
 template
-int HProcessor<uint8_t>::Read(uint8_t* dest, int blocksize);
+int HProcessor<uint8_t>::ReadImpl(uint8_t* dest, int blocksize);
 
 template
-int HProcessor<int16_t>::Read(int16_t* dest, int blocksize);
+int HProcessor<int16_t>::ReadImpl(int16_t* dest, int blocksize);
 
 template
-int HProcessor<int32_t>::Read(int32_t* dest, int blocksize);
+int HProcessor<int32_t>::ReadImpl(int32_t* dest, int blocksize);
 
 // Write()
 template

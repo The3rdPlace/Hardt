@@ -22,7 +22,7 @@ HGenerator<T>::~HGenerator()
 }
 
 template <class T>
-int HGenerator<T>::Read(T* dest, size_t blocksize)
+int HGenerator<T>::ReadImpl(T* dest, size_t blocksize)
 {
     for( int i = 0; i < blocksize; i++)
     {
@@ -437,22 +437,22 @@ HGenerator<double>::~HGenerator();
 
 // Read
 template
-int HGenerator<int8_t>::Read(int8_t* dest, size_t blocksize);
+int HGenerator<int8_t>::ReadImpl(int8_t* dest, size_t blocksize);
 
 template
-int HGenerator<uint8_t>::Read(uint8_t* dest, size_t blocksize);
+int HGenerator<uint8_t>::ReadImpl(uint8_t* dest, size_t blocksize);
 
 template
-int HGenerator<int16_t>::Read(int16_t* dest, size_t blocksize);
+int HGenerator<int16_t>::ReadImpl(int16_t* dest, size_t blocksize);
 
 template
-int HGenerator<int32_t>::Read(int32_t* dest, size_t blocksize);
+int HGenerator<int32_t>::ReadImpl(int32_t* dest, size_t blocksize);
 
 template
-int HGenerator<float>::Read(float* dest, size_t blocksize);
+int HGenerator<float>::ReadImpl(float* dest, size_t blocksize);
 
 template
-int HGenerator<double>::Read(double* dest, size_t blocksize);
+int HGenerator<double>::ReadImpl(double* dest, size_t blocksize);
 
 //! @endcond
 #endif
