@@ -150,7 +150,7 @@ int HLinearMixer<T>::ReadImpl(T* dest, size_t blocksize)
 }
 
 template <class T>
-int HLinearMixer<T>::Write(T* src, size_t blocksize)
+int HLinearMixer<T>::WriteImpl(T* src, size_t blocksize)
 {
     if( blocksize > _blocksize )
     {
@@ -353,16 +353,16 @@ int HLinearMixer<int32_t>::ReadImpl(int32_t* dest, size_t blocksize);
 
 // Write()
 template
-int HLinearMixer<int8_t>::Write(int8_t* src, size_t blocksize);
+int HLinearMixer<int8_t>::WriteImpl(int8_t* src, size_t blocksize);
 
 template
-int HLinearMixer<uint8_t>::Write(uint8_t* src, size_t blocksize);
+int HLinearMixer<uint8_t>::WriteImpl(uint8_t* src, size_t blocksize);
 
 template
-int HLinearMixer<int16_t>::Write(int16_t* src, size_t blocksize);
+int HLinearMixer<int16_t>::WriteImpl(int16_t* src, size_t blocksize);
 
 template
-int HLinearMixer<int32_t>::Write(int32_t* src, size_t blocksize);
+int HLinearMixer<int32_t>::WriteImpl(int32_t* src, size_t blocksize);
 
 // Start()
 template

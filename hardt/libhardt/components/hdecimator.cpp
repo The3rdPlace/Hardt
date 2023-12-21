@@ -78,7 +78,7 @@ void HDecimator<T>::Init() {
 }
 
 template <class T>
-int HDecimator<T>::Write(T* src, size_t blocksize)
+int HDecimator<T>::WriteImpl(T* src, size_t blocksize)
 {
     // Decimate
     for(; _pos < blocksize; _pos += _factor) {
@@ -216,16 +216,16 @@ void HDecimator<int32_t>::Init();
 
 // Write()
 template
-int HDecimator<int8_t>::Write(int8_t* src, size_t blocksize);
+int HDecimator<int8_t>::WriteImpl(int8_t* src, size_t blocksize);
 
 template
-int HDecimator<uint8_t>::Write(uint8_t* src, size_t blocksize);
+int HDecimator<uint8_t>::WriteImpl(uint8_t* src, size_t blocksize);
 
 template
-int HDecimator<int16_t>::Write(int16_t* src, size_t blocksize);
+int HDecimator<int16_t>::WriteImpl(int16_t* src, size_t blocksize);
 
 template
-int HDecimator<int32_t>::Write(int32_t* src, size_t blocksize);
+int HDecimator<int32_t>::WriteImpl(int32_t* src, size_t blocksize);
 
 // Read()
 template

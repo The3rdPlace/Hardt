@@ -48,7 +48,7 @@ class HCustomWriter : public HWriter<T>
         }
 
         /** Write a block of data */
-        int Write(T* src, size_t blocksize)
+        int WriteImpl(T* src, size_t blocksize)
         {
             return _customWriteFunc(src, blocksize);
         }

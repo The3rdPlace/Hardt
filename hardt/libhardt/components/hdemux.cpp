@@ -78,7 +78,7 @@ HDeMux<T>::~HDeMux()
 }
 
 template <class T>
-int HDeMux<T>::Write(T* src, size_t blocksize)
+int HDeMux<T>::WriteImpl(T* src, size_t blocksize)
 {
     int pos = 0;
     int writer = 0;
@@ -185,16 +185,16 @@ HDeMux<int32_t>::~HDeMux();
 
 // Write
 template
-int HDeMux<int8_t>::Write(int8_t* src, size_t blocksize);
+int HDeMux<int8_t>::WriteImpl(int8_t* src, size_t blocksize);
 
 template
-int HDeMux<uint8_t>::Write(uint8_t* src, size_t blocksize);
+int HDeMux<uint8_t>::WriteImpl(uint8_t* src, size_t blocksize);
 
 template
-int HDeMux<int16_t>::Write(int16_t* src, size_t blocksize);
+int HDeMux<int16_t>::WriteImpl(int16_t* src, size_t blocksize);
 
 template
-int HDeMux<int32_t>::Write(int32_t* src, size_t blocksize);
+int HDeMux<int32_t>::WriteImpl(int32_t* src, size_t blocksize);
 
 // Read
 template

@@ -93,7 +93,7 @@ class HMux : public HReader<T>, public HWriter<T>, public HWriterConsumer<T>
         int ReadImpl(T* dest, size_t blocksize);
 
         /** Write a block of samples */
-        int Write(T* src, size_t blocksize);
+        int WriteImpl(T* src, size_t blocksize);
 
         /** Execute or carry through a command */
         bool Command(HCommand* command) {

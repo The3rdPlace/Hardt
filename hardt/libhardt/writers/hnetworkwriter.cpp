@@ -26,7 +26,7 @@ void HNetworkWriter<T>::SetSocket(int socket)
 }
 
 template <class T>
-int HNetworkWriter<T>::Write(T* src, size_t blocksize)
+int HNetworkWriter<T>::WriteImpl(T* src, size_t blocksize)
 {
     int out = send(_socket, (void*) src, blocksize *  sizeof(T), 0 );
     if( out >= 0 )
@@ -81,16 +81,16 @@ void HNetworkWriter<int32_t>::SetSocket(int socket);
 
 // Write()
 template
-int HNetworkWriter<int8_t>::Write(int8_t* src, size_t blocksize);
+int HNetworkWriter<int8_t>::WriteImpl(int8_t* src, size_t blocksize);
 
 template
-int HNetworkWriter<uint8_t>::Write(uint8_t* src, size_t blocksize);
+int HNetworkWriter<uint8_t>::WriteImpl(uint8_t* src, size_t blocksize);
 
 template
-int HNetworkWriter<int16_t>::Write(int16_t* src, size_t blocksize);
+int HNetworkWriter<int16_t>::WriteImpl(int16_t* src, size_t blocksize);
 
 template
-int HNetworkWriter<int32_t>::Write(int32_t* src, size_t blocksize);
+int HNetworkWriter<int32_t>::WriteImpl(int32_t* src, size_t blocksize);
 
 //! @endcond
 #endif

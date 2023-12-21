@@ -21,6 +21,10 @@ class HWriter : public HObject
         /** Virtual destructor enabling delete on derived objects */
         virtual ~HWriter() = default;
 
+        int Write(T* src, size_t blocksize) {
+            return WriteImpl(src, blocksize);
+        }
+        
         /** Write a block of samples */
         virtual int WriteImpl(T* src, size_t blocksize) = 0;
 

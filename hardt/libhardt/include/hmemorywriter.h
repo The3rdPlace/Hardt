@@ -46,7 +46,7 @@ class HMemoryWriter : public HWriter<T>, public HWriterConsumer<T>
         }
 
         /** Write a block of samples */
-        int Write(T* src, size_t blocksize)
+        int WriteImpl(T* src, size_t blocksize)
         {
             if( _pos + blocksize > _size ) {
                 return 0;

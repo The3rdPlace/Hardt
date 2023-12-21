@@ -53,7 +53,7 @@ int HProcessor<T>::ReadImpl(T* dest, int blocksize)
 }
 
 template <class T>
-int HProcessor<T>::Write(T* src, int blocksize)
+int HProcessor<T>::WriteImpl(T* src, int blocksize)
 {
     try
     {
@@ -120,7 +120,7 @@ void HProcessor<T>::Run(long unsigned int blocks)
         try
         {
             _metrics.Writes++;
-            shipped = HProcessor<T>::Write(_buffer, len);
+            shipped = HProcessor<T>::WriteImpl(_buffer, len);
             if( shipped <= 0 )
             {
                 HLog("Zero write to the writer, stopping");
@@ -242,16 +242,16 @@ int HProcessor<int32_t>::ReadImpl(int32_t* dest, int blocksize);
 
 // Write()
 template
-int HProcessor<int8_t>::Write(int8_t* src, int blocksize);
+int HProcessor<int8_t>::WriteImpl(int8_t* src, int blocksize);
 
 template
-int HProcessor<uint8_t>::Write(uint8_t* src, int blocksize);
+int HProcessor<uint8_t>::WriteImpl(uint8_t* src, int blocksize);
 
 template
-int HProcessor<int16_t>::Write(int16_t* src, int blocksize);
+int HProcessor<int16_t>::WriteImpl(int16_t* src, int blocksize);
 
 template
-int HProcessor<int32_t>::Write(int32_t* src, int blocksize);
+int HProcessor<int32_t>::WriteImpl(int32_t* src, int blocksize);
 
 // Start()
 template

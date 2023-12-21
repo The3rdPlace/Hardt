@@ -166,7 +166,7 @@ void HInterpolator<T>::Init(float* coefficients) {
 }
 
 template <class T>
-int HInterpolator<T>::Write(T* src, size_t blocksize)
+int HInterpolator<T>::WriteImpl(T* src, size_t blocksize)
 {
     if( _writer == nullptr )
     {
@@ -383,16 +383,16 @@ void HInterpolator<int32_t>::Init(float* coefficients);
 
 // Write()
 template
-int HInterpolator<int8_t>::Write(int8_t* src, size_t blocksize);
+int HInterpolator<int8_t>::WriteImpl(int8_t* src, size_t blocksize);
 
 template
-int HInterpolator<uint8_t>::Write(uint8_t* src, size_t blocksize);
+int HInterpolator<uint8_t>::WriteImpl(uint8_t* src, size_t blocksize);
 
 template
-int HInterpolator<int16_t>::Write(int16_t* src, size_t blocksize);
+int HInterpolator<int16_t>::WriteImpl(int16_t* src, size_t blocksize);
 
 template
-int HInterpolator<int32_t>::Write(int32_t* src, size_t blocksize);
+int HInterpolator<int32_t>::WriteImpl(int32_t* src, size_t blocksize);
 
 // Read()
 template

@@ -109,7 +109,7 @@ int HIqMultiplier<T>::ReadImpl(T* dest, size_t blocksize)
 }
 
 template <class T>
-int HIqMultiplier<T>::Write(T* src, size_t blocksize)
+int HIqMultiplier<T>::WriteImpl(T* src, size_t blocksize)
 {
     if( blocksize > _blocksize )
     {
@@ -284,16 +284,16 @@ int HIqMultiplier<int32_t>::ReadImpl(int32_t* dest, size_t blocksize);
 
 // Write()
 template
-int HIqMultiplier<int8_t>::Write(int8_t* src, size_t blocksize);
+int HIqMultiplier<int8_t>::WriteImpl(int8_t* src, size_t blocksize);
 
 template
-int HIqMultiplier<uint8_t>::Write(uint8_t* src, size_t blocksize);
+int HIqMultiplier<uint8_t>::WriteImpl(uint8_t* src, size_t blocksize);
 
 template
-int HIqMultiplier<int16_t>::Write(int16_t* src, size_t blocksize);
+int HIqMultiplier<int16_t>::WriteImpl(int16_t* src, size_t blocksize);
 
 template
-int HIqMultiplier<int32_t>::Write(int32_t* src, size_t blocksize);
+int HIqMultiplier<int32_t>::WriteImpl(int32_t* src, size_t blocksize);
 
 // Start()
 template

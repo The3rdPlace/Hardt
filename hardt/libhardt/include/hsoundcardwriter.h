@@ -49,7 +49,7 @@ class HSoundcardWriter : public HWriter<T>
         ~HSoundcardWriter();
 
         /** Write a block of samples to the soundcard */
-        int Write(T* src, size_t blocksize);
+        int WriteImpl(T* src, size_t blocksize);
 
         /** Callback method, should only be called by the PortAudio layer */
         static int callback( const void *inputBuffer, void *outputBuffer,

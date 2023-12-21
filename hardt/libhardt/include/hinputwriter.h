@@ -45,7 +45,7 @@ class HInputWriter : public HWriter<T>, public HWriterConsumer<T>
             _started(false) {}
 
         /** Write a block of samples */
-        int Write(T* src, size_t blocksize) {
+        int WriteImpl(T* src, size_t blocksize) {
             if( _autostart && !_started ) {
                 _started = Start();
             }

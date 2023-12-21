@@ -86,7 +86,7 @@ void HIqFirDecimator<T>::Init(float* coefficients, int points) {
 }
 
 template <class T>
-int HIqFirDecimator<T>::Write(T* src, size_t blocksize) {
+int HIqFirDecimator<T>::WriteImpl(T* src, size_t blocksize) {
 
     if( _writer == nullptr )
     {
@@ -260,16 +260,16 @@ void HIqFirDecimator<int32_t>::Init(float* coefficients, int points);
 
 // Write()
 template
-int HIqFirDecimator<int8_t>::Write(int8_t* src, size_t blocksize);
+int HIqFirDecimator<int8_t>::WriteImpl(int8_t* src, size_t blocksize);
 
 template
-int HIqFirDecimator<uint8_t>::Write(uint8_t* src, size_t blocksize);
+int HIqFirDecimator<uint8_t>::WriteImpl(uint8_t* src, size_t blocksize);
 
 template
-int HIqFirDecimator<int16_t>::Write(int16_t* src, size_t blocksize);
+int HIqFirDecimator<int16_t>::WriteImpl(int16_t* src, size_t blocksize);
 
 template
-int HIqFirDecimator<int32_t>::Write(int32_t* src, size_t blocksize);
+int HIqFirDecimator<int32_t>::WriteImpl(int32_t* src, size_t blocksize);
 
 // Read()
 template

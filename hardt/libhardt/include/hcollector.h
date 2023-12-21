@@ -83,7 +83,7 @@ class HCollector: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
          * @param blocksize Number of samples in the buffer
          * @returns Number of samples written
          */
-        int Write(T* src, size_t blocksize);
+        int WriteImpl(T* src, size_t blocksize);
 
         /**
          * Read a block of samples

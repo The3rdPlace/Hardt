@@ -120,7 +120,7 @@ HSoundcardWriter<T>::~HSoundcardWriter()
 }
 
 template <class T>
-int HSoundcardWriter<T>::Write(T* src, size_t blocksize)
+int HSoundcardWriter<T>::WriteImpl(T* src, size_t blocksize)
 {
     // Requested blocksize can not be larger than the device blocksize
     // (actively preventing large writes that would inhibit performance and
@@ -291,16 +291,16 @@ HSoundcardWriter<int32_t>::~HSoundcardWriter();
 
 // Read()
 template
-int HSoundcardWriter<int8_t>::Write(int8_t* dest, size_t blocksize);
+int HSoundcardWriter<int8_t>::WriteImpl(int8_t* dest, size_t blocksize);
 
 template
-int HSoundcardWriter<uint8_t>::Write(uint8_t* dest, size_t blocksize);
+int HSoundcardWriter<uint8_t>::WriteImpl(uint8_t* dest, size_t blocksize);
 
 template
-int HSoundcardWriter<int16_t>::Write(int16_t* dest, size_t blocksize);
+int HSoundcardWriter<int16_t>::WriteImpl(int16_t* dest, size_t blocksize);
 
 template
-int HSoundcardWriter<int32_t>::Write(int32_t* dest, size_t blocksize);
+int HSoundcardWriter<int32_t>::WriteImpl(int32_t* dest, size_t blocksize);
 
 //! @endcond
 #endif

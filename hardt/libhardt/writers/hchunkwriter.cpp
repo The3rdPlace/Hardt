@@ -4,7 +4,7 @@
 #include "hchunkwriter.h"
 
 template <class T>
-int HChunkWriter<T>::Write(T* src, size_t blocksize)
+int HChunkWriter<T>::WriteImpl(T* src, size_t blocksize)
 {
     // Check if chunking is disabled
     if( _chunksize == 0 )
@@ -42,16 +42,16 @@ Explicit instantiation
 
 // WriteChunk()
 template
-int HChunkWriter<int8_t>::Write(int8_t* src, size_t chunkSize);
+int HChunkWriter<int8_t>::WriteImpl(int8_t* src, size_t chunkSize);
 
 template
-int HChunkWriter<uint8_t>::Write(uint8_t* src, size_t chunkSize);
+int HChunkWriter<uint8_t>::WriteImpl(uint8_t* src, size_t chunkSize);
 
 template
-int HChunkWriter<int16_t>::Write(int16_t* src, size_t chunkSize);
+int HChunkWriter<int16_t>::WriteImpl(int16_t* src, size_t chunkSize);
 
 template
-int HChunkWriter<int32_t>::Write(int32_t* src, size_t chunkSize);
+int HChunkWriter<int32_t>::WriteImpl(int32_t* src, size_t chunkSize);
 
 //! @endcond
 #endif

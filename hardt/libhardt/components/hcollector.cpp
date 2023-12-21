@@ -62,7 +62,7 @@ HCollector<T>::~HCollector()
 }
 
 template <class T>
-int HCollector<T>::Write(T* src, size_t blocksize)
+int HCollector<T>::WriteImpl(T* src, size_t blocksize)
 {
     if( blocksize != _blocksizeIn )
     {
@@ -202,16 +202,16 @@ HCollector<int32_t>::~HCollector();
 
 // Write()
 template
-int HCollector<int8_t>::Write(int8_t* src, size_t blocksize);
+int HCollector<int8_t>::WriteImpl(int8_t* src, size_t blocksize);
 
 template
-int HCollector<uint8_t>::Write(uint8_t* src, size_t blocksize);
+int HCollector<uint8_t>::WriteImpl(uint8_t* src, size_t blocksize);
 
 template
-int HCollector<int16_t>::Write(int16_t* src, size_t blocksize);
+int HCollector<int16_t>::WriteImpl(int16_t* src, size_t blocksize);
 
 template
-int HCollector<int32_t>::Write(int32_t* src, size_t blocksize);
+int HCollector<int32_t>::WriteImpl(int32_t* src, size_t blocksize);
 
 // Read()
 template

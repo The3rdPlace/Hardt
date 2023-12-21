@@ -61,7 +61,7 @@ class HMultiplier : public HReader<T>, public HWriter<T>, public HWriterConsumer
         int ReadImpl(T* dest, size_t blocksize);
 
         /** Write a block of samples */
-        int Write(T* src, size_t blocksize);
+        int WriteImpl(T* src, size_t blocksize);
 
         /** Set writer */
         void SetWriter(HWriter<T>* writer)

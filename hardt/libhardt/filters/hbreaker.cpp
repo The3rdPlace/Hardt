@@ -94,9 +94,9 @@ bool HBreaker<T>::Stop()
 }
 
 /*template <class T>
-int HBreaker<T>::Write(T* src, size_t blocksize) {
+int HBreaker<T>::WriteImpl(T* src, size_t blocksize) {
 
-    return _off ? blocksize : HFilter<T>::Write(src, blocksize);
+    return _off ? blocksize : HFilter<T>::WriteImpl(src, blocksize);
     return blocksize;
 }*/
 

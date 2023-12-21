@@ -78,7 +78,7 @@ void HIqDecimator<T>::Init() {
 }
 
 template <class T>
-int HIqDecimator<T>::Write(T* src, size_t blocksize)
+int HIqDecimator<T>::WriteImpl(T* src, size_t blocksize)
 {
     // Decimate
     for(; _pos < blocksize; _pos += _factor * 2) {
@@ -218,16 +218,16 @@ void HIqDecimator<int32_t>::Init();
 
 // Write()
 template
-int HIqDecimator<int8_t>::Write(int8_t* src, size_t blocksize);
+int HIqDecimator<int8_t>::WriteImpl(int8_t* src, size_t blocksize);
 
 template
-int HIqDecimator<uint8_t>::Write(uint8_t* src, size_t blocksize);
+int HIqDecimator<uint8_t>::WriteImpl(uint8_t* src, size_t blocksize);
 
 template
-int HIqDecimator<int16_t>::Write(int16_t* src, size_t blocksize);
+int HIqDecimator<int16_t>::WriteImpl(int16_t* src, size_t blocksize);
 
 template
-int HIqDecimator<int32_t>::Write(int32_t* src, size_t blocksize);
+int HIqDecimator<int32_t>::WriteImpl(int32_t* src, size_t blocksize);
 
 // Read()
 template

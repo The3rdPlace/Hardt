@@ -4,7 +4,7 @@
 #include "hsplitter.h"
 
 template <class T>
-int HSplitter<T>::Write(T* src, size_t blocksize)
+int HSplitter<T>::WriteImpl(T* src, size_t blocksize)
 {
     for( typename std::vector< HWriter<T>* >::iterator it = _writers.begin(); it != _writers.end(); it++ )
     {
@@ -75,16 +75,16 @@ Explicit instantiation
 
 // Write()
 template
-int HSplitter<int8_t>::Write(int8_t* src, size_t blocksize);
+int HSplitter<int8_t>::WriteImpl(int8_t* src, size_t blocksize);
 
 template
-int HSplitter<uint8_t>::Write(uint8_t* src, size_t blocksize);
+int HSplitter<uint8_t>::WriteImpl(uint8_t* src, size_t blocksize);
 
 template
-int HSplitter<int16_t>::Write(int16_t* src, size_t blocksize);
+int HSplitter<int16_t>::WriteImpl(int16_t* src, size_t blocksize);
 
 template
-int HSplitter<int32_t>::Write(int32_t* src, size_t blocksize);
+int HSplitter<int32_t>::WriteImpl(int32_t* src, size_t blocksize);
 
 // Start()
 template
