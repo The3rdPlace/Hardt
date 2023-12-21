@@ -177,7 +177,7 @@ class HConverter : public HReader<Tout>, public HWriter<Tin>, public HWriterCons
          * @param blocksize Number of input samples
          * @returns Number of samples written
          */
-        int Write(Tin* src, size_t blocksize) {
+        int WriteImpl(Tin* src, size_t blocksize) {
             if( blocksize != _blocksizeIn )
             {
                 HError("Request for conversion-write with blocksize %d expected %d blocks", blocksize, _blocksizeIn);

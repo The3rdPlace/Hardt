@@ -63,7 +63,7 @@ HSwitch<T>::~HSwitch()
 }
 
 template <class T>
-int HSwitch<T>::Write(T* src, size_t blocksize)
+int HSwitch<T>::WriteImpl(T* src, size_t blocksize)
 {
     if( !_isWriter )
     {
@@ -269,16 +269,16 @@ HSwitch<int32_t>::~HSwitch();
 
 // Write()
 template
-int HSwitch<int8_t>::Write(int8_t* src, size_t blocksize);
+int HSwitch<int8_t>::WriteImpl(int8_t* src, size_t blocksize);
 
 template
-int HSwitch<uint8_t>::Write(uint8_t* src, size_t blocksize);
+int HSwitch<uint8_t>::WriteImpl(uint8_t* src, size_t blocksize);
 
 template
-int HSwitch<int16_t>::Write(int16_t* src, size_t blocksize);
+int HSwitch<int16_t>::WriteImpl(int16_t* src, size_t blocksize);
 
 template
-int HSwitch<int32_t>::Write(int32_t* src, size_t blocksize);
+int HSwitch<int32_t>::WriteImpl(int32_t* src, size_t blocksize);
 
 // Read()
 template

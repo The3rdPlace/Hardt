@@ -37,7 +37,7 @@ class HProbe: public HFileWriter<T>
         }
 
         /** Write to the probe file. Write errors is silently ignored! */
-        int Write(T* src, size_t blocksize)
+        int WriteImpl(T* src, size_t blocksize)
         {
             return HFileWriter<T>::Write(src, blocksize);
         }

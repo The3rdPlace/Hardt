@@ -96,7 +96,7 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
         }
 
         /** Write a block of samples */
-        int Write(T* src, size_t blocksize) {
+        int WriteImpl(T* src, size_t blocksize) {
 
             if( blocksize > _blocksize )
             {

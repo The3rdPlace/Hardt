@@ -66,7 +66,7 @@ class HCascadedBiQuadFilter: public HReader<T>, public HWriter<T>, public HWrite
         ~HCascadedBiQuadFilter();
 
         /** Write a block of samples to the filter */
-        int Write(T* src, size_t blocksize);
+        int WriteImpl(T* src, size_t blocksize);
 
         /** Read a block of samples from the filter */
         int ReadImpl(T* dest, size_t blocksize);

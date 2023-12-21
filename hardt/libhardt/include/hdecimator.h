@@ -104,7 +104,7 @@ class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
          * @param src Source buffer
          * @param blocksize Number of samples to write
          */
-        int Write(T* src, size_t blocksize);
+        int WriteImpl(T* src, size_t blocksize);
 
         /**
          * Read a block of samples

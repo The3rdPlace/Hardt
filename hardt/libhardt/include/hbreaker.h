@@ -47,7 +47,7 @@ class HBreaker : public HFilter<T>
         /** Cleanup after last write */
         bool Stop();
 
-        int Write(T* src, size_t blocksize) {
+        int WriteImpl(T* src, size_t blocksize) {
             return _off ? blocksize : HFilter<T>::Write(src, blocksize);
         }
 

@@ -54,7 +54,7 @@ class HFileWriter : public HWriter<T>
         }
 
         /** Write to the file */
-        virtual int Write(T* src, size_t blocksize)
+        virtual int WriteImpl(T* src, size_t blocksize)
         {
             _stream.write((char*) src, blocksize * sizeof(T));
             return blocksize;

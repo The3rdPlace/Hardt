@@ -27,7 +27,7 @@ class HNetworkWriter : public HWriter<T>
         void SetSocket(int socket);
 
         /** Write a block of samples */
-        int Write(T* src, size_t blocksize);
+        int WriteImpl(T* src, size_t blocksize);
 
         /** Execute and/or pass on a command */
         bool Command(HCommand* command) {

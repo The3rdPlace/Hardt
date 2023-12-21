@@ -8,7 +8,7 @@
 #include "hbufferedwriter.h"
 
 template <class T>
-int HBufferedWriter<T>::Write(T* src, size_t blocksize)
+int HBufferedWriter<T>::WriteImpl(T* src, size_t blocksize)
 {
     // Check if buffering is disabled
     if( !_enabled )
@@ -87,16 +87,16 @@ Explicit instantiation
 
 // Write()
 template
-int HBufferedWriter<int8_t>::Write(int8_t* src, size_t blocksize);
+int HBufferedWriter<int8_t>::WriteImpl(int8_t* src, size_t blocksize);
 
 template
-int HBufferedWriter<uint8_t>::Write(uint8_t* src, size_t blocksize);
+int HBufferedWriter<uint8_t>::WriteImpl(uint8_t* src, size_t blocksize);
 
 template
-int HBufferedWriter<int16_t>::Write(int16_t* src, size_t blocksize);
+int HBufferedWriter<int16_t>::WriteImpl(int16_t* src, size_t blocksize);
 
 template
-int HBufferedWriter<int32_t>::Write(int32_t* src, size_t blocksize);
+int HBufferedWriter<int32_t>::WriteImpl(int32_t* src, size_t blocksize);
 
 // Drain()
 template

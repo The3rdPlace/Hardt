@@ -127,7 +127,7 @@ class HInterpolator: public HReader<T>, public HWriter<T>, public HWriterConsume
          * @param src Source buffer
          * @param blocksize Number of samples in the buffer
          * */
-        int Write(T* src, size_t blocksize);
+        int WriteImpl(T* src, size_t blocksize);
 
         /**
          * Read a block of samples

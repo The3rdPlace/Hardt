@@ -357,7 +357,7 @@ class Test
                     }
                 }
 
-                int Write(T* src, size_t blocksize)
+                int WriteImpl(T* src, size_t blocksize)
                 {
                     if (!_multipleWrites && !_first)
                     {

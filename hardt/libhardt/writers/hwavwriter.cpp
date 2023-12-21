@@ -23,7 +23,7 @@ bool HWavWriter<T>::Start()
     // can safely divide 44 by the size of the datatype (1, 2) to get
     // the correct number of bytes to write
     HLog("Writing header");
-    return HFileWriter<T>::Write((T*) &_header, 44 / sizeof(T)) == 44 / sizeof(T);
+    return HFileWriter<T>::WriteImpl((T*) &_header, 44 / sizeof(T)) == 44 / sizeof(T);
 }
 
 template <class T>
@@ -39,7 +39,7 @@ bool HWavWriter<T>::Stop()
     // Update header
     HFileWriter<T>::Seek(0);
     HLog("Updating header");
-    HFileWriter<T>::Write((T*) &_header, 44 / sizeof(T));
+    HFileWriter<T>::WriteImpl((T*) &_header, 44 / sizeof(T));
 
     // Call parent Stop()
     HLog("Stopping underlying HFileWriter");
@@ -47,12 +47,12 @@ bool HWavWriter<T>::Stop()
 }
 
 template <class T>
-int HWavWriter<T>::Write(T* dest, size_t blocksize)
+int HWavWriter<T>::WriteImpl(T* dest, size_t blocksize)
 {
     // Do note that size contains the size in blocks, eg. number of samples,
     // not the final size in bytes..!
     _size += blocksize;
-    return HFileWriter<T>::Write(dest, blocksize);
+    return HFileWriter<T>::WriteImpl(dest, blocksize);
 }
 
 
@@ -89,16 +89,16 @@ bool HWavWriter<int32_t>::Stop();
 
 // Write()
 template
-int HWavWriter<int8_t>::Write(int8_t* dest, size_t blocksize);
+int HWavWriter<int8_t>::WriteImpl(int8_t* dest, size_t blocksize);
 
 template
-int HWavWriter<uint8_t>::Write(uint8_t* dest, size_t blocksize);
+int HWavWriter<uint8_t>::WriteImpl(uint8_t* dest, size_t blocksize);
 
 template
-int HWavWriter<int16_t>::Write(int16_t* dest, size_t blocksize);
+int HWavWriter<int16_t>::WriteImpl(int16_t* dest, size_t blocksize);
 
 template
-int HWavWriter<int32_t>::Write(int32_t* dest, size_t blocksize);
+int HWavWriter<int32_t>::WriteImpl(int32_t* dest, size_t blocksize);
 
 //! @endcond
 #endif

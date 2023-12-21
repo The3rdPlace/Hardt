@@ -99,7 +99,7 @@ int HMultiplier<T>::ReadImpl(T* dest, size_t blocksize)
 }
 
 template <class T>
-int HMultiplier<T>::Write(T* src, size_t blocksize)
+int HMultiplier<T>::WriteImpl(T* src, size_t blocksize)
 {
     if( blocksize > _blocksize )
     {
@@ -254,16 +254,16 @@ int HMultiplier<int32_t>::ReadImpl(int32_t* dest, size_t blocksize);
 
 // Write()
 template
-int HMultiplier<int8_t>::Write(int8_t* src, size_t blocksize);
+int HMultiplier<int8_t>::WriteImpl(int8_t* src, size_t blocksize);
 
 template
-int HMultiplier<uint8_t>::Write(uint8_t* src, size_t blocksize);
+int HMultiplier<uint8_t>::WriteImpl(uint8_t* src, size_t blocksize);
 
 template
-int HMultiplier<int16_t>::Write(int16_t* src, size_t blocksize);
+int HMultiplier<int16_t>::WriteImpl(int16_t* src, size_t blocksize);
 
 template
-int HMultiplier<int32_t>::Write(int32_t* src, size_t blocksize);
+int HMultiplier<int32_t>::WriteImpl(int32_t* src, size_t blocksize);
 
 // Start()
 template

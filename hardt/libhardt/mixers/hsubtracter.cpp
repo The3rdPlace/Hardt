@@ -153,7 +153,7 @@ int HSubtracter<T>::ReadImpl(T* dest, size_t blocksize)
 }
 
 template <class T>
-int HSubtracter<T>::Write(T* src, size_t blocksize)
+int HSubtracter<T>::WriteImpl(T* src, size_t blocksize)
 {
     if( blocksize > _blocksize )
     {
@@ -366,16 +366,16 @@ int HSubtracter<int32_t>::ReadImpl(int32_t* dest, size_t blocksize);
 
 // Write()
 template
-int HSubtracter<int8_t>::Write(int8_t* src, size_t blocksize);
+int HSubtracter<int8_t>::WriteImpl(int8_t* src, size_t blocksize);
 
 template
-int HSubtracter<uint8_t>::Write(uint8_t* src, size_t blocksize);
+int HSubtracter<uint8_t>::WriteImpl(uint8_t* src, size_t blocksize);
 
 template
-int HSubtracter<int16_t>::Write(int16_t* src, size_t blocksize);
+int HSubtracter<int16_t>::WriteImpl(int16_t* src, size_t blocksize);
 
 template
-int HSubtracter<int32_t>::Write(int32_t* src, size_t blocksize);
+int HSubtracter<int32_t>::WriteImpl(int32_t* src, size_t blocksize);
 
 // Start()
 template

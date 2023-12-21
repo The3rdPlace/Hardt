@@ -82,7 +82,7 @@ void HFirDecimator<T>::Init(float* coefficients, int points) {
 }
 
 template <class T>
-int HFirDecimator<T>::Write(T* src, size_t blocksize)
+int HFirDecimator<T>::WriteImpl(T* src, size_t blocksize)
 {
     if( _writer == nullptr )
     {
@@ -249,16 +249,16 @@ void HFirDecimator<int32_t>::Init(float* coefficients, int points);
 
 // Write()
 template
-int HFirDecimator<int8_t>::Write(int8_t* src, size_t blocksize);
+int HFirDecimator<int8_t>::WriteImpl(int8_t* src, size_t blocksize);
 
 template
-int HFirDecimator<uint8_t>::Write(uint8_t* src, size_t blocksize);
+int HFirDecimator<uint8_t>::WriteImpl(uint8_t* src, size_t blocksize);
 
 template
-int HFirDecimator<int16_t>::Write(int16_t* src, size_t blocksize);
+int HFirDecimator<int16_t>::WriteImpl(int16_t* src, size_t blocksize);
 
 template
-int HFirDecimator<int32_t>::Write(int32_t* src, size_t blocksize);
+int HFirDecimator<int32_t>::WriteImpl(int32_t* src, size_t blocksize);
 
 // Read()
 template

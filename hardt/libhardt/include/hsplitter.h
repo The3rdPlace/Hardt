@@ -46,7 +46,7 @@ class HSplitter : public HWriter<T>, public HWriterConsumer<T>
         }
 
         /** Write a block of samples */
-        int Write(T* src, size_t blocksize);
+        int WriteImpl(T* src, size_t blocksize);
 
         /** Initialize before first write */
         bool Start();
