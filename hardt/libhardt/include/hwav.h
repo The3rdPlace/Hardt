@@ -12,6 +12,7 @@
 #include <cstdlib>
 #include <string>
 #include <unistd.h>
+#include <stdint.h>
 
 /**
     This class contains the basic description of a wav file, a generic header
