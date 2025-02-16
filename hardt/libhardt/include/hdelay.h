@@ -6,7 +6,6 @@
 #include "hreader.h"
 #include "hwriter.h"
 #include "hwriterconsumer.h"
-#include "hprobe.h"
 
 /**
     A filter providing a delay of the input samples
@@ -52,9 +51,9 @@ class HDelay : public HFilter<T>
          * @param blocksize Blocksize
          * @param rate Sample rate used
          * @param seconds Seconds to delay the input
-         * @param probe Probe
+         *
          */
-        HDelay(std::string id, HWriter<T>* writer, size_t blocksize, H_SAMPLE_RATE rate, int seconds, HProbe<T>* probe = NULL);
+        HDelay(std::string id, HWriter<T>* writer, size_t blocksize, H_SAMPLE_RATE rate, int seconds);
 
         /**
          * Construct a new HDelay object that registers with an upstream writer
@@ -64,9 +63,9 @@ class HDelay : public HFilter<T>
          * @param blocksize Blocksize
          * @param rate Sample rate used
          * @param seconds Seconds to delay the input
-         * @param probe Probe
+         *
          */
-        HDelay(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, H_SAMPLE_RATE rate, int seconds, HProbe<T>* probe = NULL);
+        HDelay(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, H_SAMPLE_RATE rate, int seconds);
 
         /**
          * Construct a new HDelay object that reads from a reader
@@ -76,9 +75,9 @@ class HDelay : public HFilter<T>
          * @param blocksize Blocksize
          * @param rate Sample rate used
          * @param seconds Seconds to delay the input
-         * @param probe Probe
+         *
          */
-        HDelay(std::string id, HReader<T>* reader, size_t blocksize, H_SAMPLE_RATE rate, int seconds, HProbe<T>* probe = NULL);
+        HDelay(std::string id, HReader<T>* reader, size_t blocksize, H_SAMPLE_RATE rate, int seconds);
 
         /**
          * Construct a new HDelay object that writes to a writer
@@ -87,9 +86,9 @@ class HDelay : public HFilter<T>
          * @param writer Downstream writer
          * @param blocksize Blocksize
          * @param blocks Number of blocks to delay
-         * @param probe Probe
+         *
          */
-        HDelay(std::string id, HWriter<T>* writer, size_t blocksize, int blocks, HProbe<T>* probe = NULL);
+        HDelay(std::string id, HWriter<T>* writer, size_t blocksize, int blocks);
 
         /**
          * Construct a new HDelay object that registers with an upstream writer
@@ -98,9 +97,9 @@ class HDelay : public HFilter<T>
          * @param consumer Upstream consumer
          * @param blocksize Blocksize
          * @param blocks Number of blocks to delay
-         * @param probe Probe
+         *
          */
-        HDelay(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, int blocks, HProbe<T>* probe = NULL);
+        HDelay(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, int blocks);
 
         /**
          * Construct a new HDelay object that reads from a reader
@@ -109,9 +108,9 @@ class HDelay : public HFilter<T>
          * @param reader Upstream reader
          * @param blocksize Blocksize
          * @param blocks Number of blocks to delay
-         * @param probe Probe
+         *
          */
-        HDelay(std::string id, HReader<T>* reader, size_t blocksize, int blocks, HProbe<T>* probe = NULL);
+        HDelay(std::string id, HReader<T>* reader, size_t blocksize, int blocks);
 
         /** Default destructor */
         ~HDelay();

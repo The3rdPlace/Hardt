@@ -6,7 +6,6 @@
 #include "hreader.h"
 #include "hwriter.h"
 #include "hwriterconsumer.h"
-#include "hprobe.h"
 
 /**
     A filter providing automatic gain (or attenuation)
@@ -49,9 +48,9 @@ class HAgc : public HGain<T>
          * @param blocksize Blocksize
          * @param increment When a larger or smaller gain is needed, gain is increased/decreased by this fraction of the full needed increment
          * @param allowUnity Allow use of unity gain (1), do not reduce gain further
-         * @param probe Probe
+         * 
          */
-        HAgc(std::string id, HWriter<T>* writer, T level, int average, size_t blocksize, int increment = 4, bool allowUnity = false, HProbe<T>* probe = NULL);
+        HAgc(std::string id, HWriter<T>* writer, T level, int average, size_t blocksize, int increment = 4, bool allowUnity = false);
 
         /**
          * Construct a new HAgc object that registers with an upstream writer
@@ -63,9 +62,9 @@ class HAgc : public HGain<T>
          * @param blocksize Blocksize
          * @param increment When a larger or smaller gain is needed, gain is increased/decreased by this fraction of the full needed increment
          * @param allowUnity Allow use of unity gain (1), do not reduce gain further
-         * @param probe Probe
+         * 
          */
-        HAgc(std::string id, HWriterConsumer<T>* consumer, T level, int average, size_t blocksize, int increment = 1, bool allowUnity = false, HProbe<T>* probe = NULL);
+        HAgc(std::string id, HWriterConsumer<T>* consumer, T level, int average, size_t blocksize, int increment = 1, bool allowUnity = false);
 
         /**
          * Construct a new HAgc object that reads from a reader
@@ -77,9 +76,9 @@ class HAgc : public HGain<T>
          * @param blocksize Blocksize
          * @param increment When a larger or smaller gain is needed, gain is increased/decreased by this fraction of the full needed increment
          * @param allowUnity Allow use of unity gain (1), do not reduce gain further
-         * @param probe Probe
+         * 
          */
-        HAgc(std::string id, HReader<T>* reader, T level, int average, size_t blocksize, int increment = 1, bool allowUnity = false, HProbe<T>* probe = NULL);
+        HAgc(std::string id, HReader<T>* reader, T level, int average, size_t blocksize, int increment = 1, bool allowUnity = false);
 
         /** Default destructor */
         ~HAgc();

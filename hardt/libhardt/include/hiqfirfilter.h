@@ -27,13 +27,13 @@ class HIqFirFilter : public HFilter<T>
     public:
 
         /** Construct a new HIqFirFilter that writes to a writer */
-        HIqFirFilter(std::string id, HWriter<T>* writer, float* coefficients, int length, size_t blocksize, HProbe<T>* probe = NULL);
+        HIqFirFilter(std::string id, HWriter<T>* writer, float* coefficients, int length, size_t blocksize);
 
         /** Construct a new HIqFirFilter that registers with an upstream writer */
-        HIqFirFilter(std::string id, HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize, HProbe<T>* probe = NULL);
+        HIqFirFilter(std::string id, HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize);
 
         /** Construct a new HIqFirFilter that reads from a reader */
-        HIqFirFilter(std::string id, HReader<T>* reader, float* coefficients, int length, size_t blocksize, HProbe<T>* probe = NULL);
+        HIqFirFilter(std::string id, HReader<T>* reader, float* coefficients, int length, size_t blocksize);
 
         /** Default destructor */
         ~HIqFirFilter();

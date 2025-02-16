@@ -10,7 +10,6 @@
 #include "hwriter.h"
 #include "hwriterconsumer.h"
 #include "hreader.h"
-#include "hprobe.h"
 
 #include <complex>
 
@@ -30,24 +29,24 @@ class HComplexFilter : public HFilter<std::complex<T>>
     public:
 
         /** Construct a new HComplexFilter object that writes to a writer */
-        HComplexFilter(std::string id, HWriter<std::complex<T>>* writer, size_t blocksize, std::complex<T>* response, HProbe<std::complex<T>>* probe = NULL):
-            HFilter<std::complex<T>>(id, writer, blocksize, probe),
+        HComplexFilter(std::string id, HWriter<std::complex<T>>* writer, size_t blocksize, std::complex<T>* response):
+            HFilter<std::complex<T>>(id, writer, blocksize),
             _blocksize(blocksize) {
 
             Init(response);
         }
 
         /** Construct a new HComplexFilter object that registers with an upstream writer */
-        HComplexFilter(std::string id, HWriterConsumer<std::complex<T>>* consumer, size_t blocksize, std::complex<T>* response, HProbe<std::complex<T>>* probe = NULL):
-                HFilter<std::complex<T>>(id, consumer, blocksize, probe),
+        HComplexFilter(std::string id, HWriterConsumer<std::complex<T>>* consumer, size_t blocksize, std::complex<T>* response):
+                HFilter<std::complex<T>>(id, consumer, blocksize),
                 _blocksize(blocksize) {
 
             Init(response);
         }
 
         /** Construct a new HComplexFilter object that reads from a reader */
-        HComplexFilter(std::string id, HReader<std::complex<T>>* reader, size_t blocksize, std::complex<T>* response, HProbe<std::complex<T>>* probe = NULL):
-                HFilter<std::complex<T>>(id, reader, blocksize, probe),
+        HComplexFilter(std::string id, HReader<std::complex<T>>* reader, size_t blocksize, std::complex<T>* response):
+                HFilter<std::complex<T>>(id, reader, blocksize),
                 _blocksize(blocksize) {
 
             Init(response);

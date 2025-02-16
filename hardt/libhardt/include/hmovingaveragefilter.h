@@ -24,24 +24,24 @@ class HMovingAverageFilter: public HFilter<T>
     public:
 
         /** Construct a new moving average filter with with a given M (number of samples to average over ) */
-        HMovingAverageFilter(std::string id, HWriter<T>* writer, int m,  size_t blocksize, HProbe<T>* probe = NULL):
-                HFilter<T>(id, writer, blocksize, probe),
+        HMovingAverageFilter(std::string id, HWriter<T>* writer, int m,  size_t blocksize):
+                HFilter<T>(id, writer, blocksize),
                 _m(m),
                 _previous(nullptr) {
             Init(m);
         }
 
         /** Construct a new moving average filter with with a given M (number of samples to average over )  */
-        HMovingAverageFilter(std::string id, HWriterConsumer<T>* consumer, int m, size_t blocksize, HProbe<T>* probe = NULL):
-                HFilter<T>(id, consumer, blocksize, probe),
+        HMovingAverageFilter(std::string id, HWriterConsumer<T>* consumer, int m, size_t blocksize):
+                HFilter<T>(id, consumer, blocksize),
                 _m(m),
                 _previous(nullptr) {
             Init(m);
         }
 
         /** Construct a new moving average filter with with a given M (number of samples to average over )  */
-        HMovingAverageFilter(std::string id, HReader<T>* reader, int m, size_t blocksize, HProbe<T>* probe = NULL):
-                HFilter<T>(id, reader, blocksize, probe),
+        HMovingAverageFilter(std::string id, HReader<T>* reader, int m, size_t blocksize):
+                HFilter<T>(id, reader, blocksize),
                 _m(m),
                 _previous(nullptr) {
             Init(m);

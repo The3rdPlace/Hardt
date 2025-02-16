@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <iostream>
 
+#include "hprobe.h"
 #include "test.h"
 
 class HProbe_Test: public Test

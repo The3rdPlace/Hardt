@@ -1,8 +1,6 @@
 #ifndef __HFILTER_H
 #define __HFILTER_H
 
-#include "hprobe.h"
-
 /**
     Base class for filter implementations.
     This class defines a pure virtual method, Filter(), which must be
@@ -17,8 +15,6 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
 
         HWriter<T>* _writer;
         HReader<T>* _reader;
-
-        HProbe<T>* _probe;
 
         T* _buffer;
 
@@ -36,30 +32,26 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
         int _blocksize;
 
         /** Construct a new HFilter that writes to a writer */
-        HFilter(std::string id, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL):
+        HFilter(std::string id, HWriter<T>* writer, size_t blocksize):
             HReader<T>(id),
             HWriter<T>(id),
             HWriterConsumer<T>(id),
             _writer(writer),
             _reader(NULL),
             _blocksize(blocksize),
-            _probe(probe),
             _enabled(true) {
-
             HLog("HFilter(HWriter*)");
             Init();
         }
 
         /** Construct a new HFilter that registers with an upstream writer */
-        HFilter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL):
+        HFilter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize):
             HReader<T>(id),
             HWriter<T>(id),
             HWriterConsumer<T>(id),
             _reader(NULL),
             _blocksize(blocksize),
-            _probe(probe),
             _enabled(true) {
-
             HLog("HFilter(HWriter*)");
             Init();
 
@@ -67,16 +59,14 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
         }
 
         /** Construct a new HFilter that reads from a reader */
-        HFilter(std::string id, HReader<T>* reader, size_t blocksize, HProbe<T>* probe = NULL):
+        HFilter(std::string id, HReader<T>* reader, size_t blocksize):
             HReader<T>(id),
             HWriter<T>(id),
             HWriterConsumer<T>(id),
             _writer(NULL),
             _reader(reader),
             _blocksize(blocksize),
-            _probe(probe),
             _enabled(true) {
-
             HLog("HFilter(HReader*)");
             Init();
         }
@@ -111,11 +101,6 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
             }
             int written = _writer->Write(_buffer, blocksize);
 
-            if( _probe != NULL )
-            {
-                _probe->Write(_buffer, blocksize);
-            }
-
             return written;
         }
 
@@ -133,11 +118,6 @@ class HFilter : public HFilterBase<T>, public HWriter<T>, public HReader<T>, pub
                 Filter(_buffer, dest, received);
             } else {
                 memcpy((void*) dest, (void*) _buffer, sizeof(T) * blocksize);
-            }
-
-            if( _probe != NULL )
-            {
-                _probe->Write(_buffer, blocksize);
             }
 
             return received;

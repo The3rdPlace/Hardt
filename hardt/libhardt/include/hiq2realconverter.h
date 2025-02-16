@@ -6,7 +6,6 @@
 #include "hwriter.h"
 #include "hwriterconsumer.h"
 #include "hconverter.h"
-#include "hprobe.h"
 #include "hfft.h"
 
 /** Convert from IQ to realvalued samples.
@@ -64,10 +63,10 @@ class HIq2RealConverter: public HConverter<T, T> {
          * @param id Element identifier
          * @param reader Upstream reader
          * @param blocksize Number of samples to read
-         * @param probe Probe
+         *
          */
-        HIq2RealConverter(std::string id, HReader<T>* reader, size_t blocksize, HProbe<T>* probe = nullptr):
-                HConverter<T, T>(id, reader, blocksize * 2, blocksize, probe) {
+        HIq2RealConverter(std::string id, HReader<T>* reader, size_t blocksize):
+                HConverter<T, T>(id, reader, blocksize * 2, blocksize) {
 
             Init(blocksize * 2);
         }
@@ -81,10 +80,10 @@ class HIq2RealConverter: public HConverter<T, T> {
          * @param id Element identifier
          * @param writer Downstream writer
          * @param blocksize Number of samples to write
-         * @param probe Probe
+         *
          */
-        HIq2RealConverter(std::string id, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = nullptr):
-                HConverter<T, T>(id, writer, blocksize, blocksize / 2, probe) {
+        HIq2RealConverter(std::string id, HWriter<T>* writer, size_t blocksize):
+                HConverter<T, T>(id, writer, blocksize, blocksize / 2) {
 
             Init(blocksize);
         }
@@ -98,10 +97,10 @@ class HIq2RealConverter: public HConverter<T, T> {
          * @param id Element identifier
          * @param consumer Upstream consumer
          * @param blocksize Number of samples to write
-         * @param probe Probe
+         *
          */
-        HIq2RealConverter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = nullptr):
-                HConverter<T, T>(id, consumer, blocksize, blocksize / 2, probe) {
+        HIq2RealConverter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize):
+                HConverter<T, T>(id, consumer, blocksize, blocksize / 2) {
 
             Init(blocksize);
         }

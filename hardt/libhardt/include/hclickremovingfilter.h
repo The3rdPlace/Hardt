@@ -5,7 +5,6 @@
 #include "hreader.h"
 #include "hwriter.h"
 #include "hwriterconsumer.h"
-#include "hprobe.h"
 
 /**
     A filter providing click removal by changing samples that exceed
@@ -17,13 +16,13 @@ class HClickRemovingFilter : public HFilter<T>
     public:
 
         /** Construct a new HClickRemovingFilter object that writes to a writer */
-        HClickRemovingFilter(std::string id, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL);
+        HClickRemovingFilter(std::string id, HWriter<T>* writer, size_t blocksize);
 
         /** Construct a new HClickRemovingFilter object that registers with an upstream writer */
-        HClickRemovingFilter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL);
+        HClickRemovingFilter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize);
 
         /** Construct a new HClickRemovingFilter object that reads from a reader */
-        HClickRemovingFilter(std::string id, HReader<T>* reader, size_t blocksize, HProbe<T>* probe = NULL);
+        HClickRemovingFilter(std::string id, HReader<T>* reader, size_t blocksize);
 
         /** Default destructor */
         ~HClickRemovingFilter();

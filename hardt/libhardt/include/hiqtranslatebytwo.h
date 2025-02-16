@@ -5,7 +5,6 @@
 #include "hwriter.h"
 #include "hwriterconsumer.h"
 #include "hreader.h"
-#include "hprobe.h"
 
 /**
     Translating the input samples by two.
@@ -25,16 +24,16 @@ class HIqTranslateByTwo : public HFilter<T>
     public:
 
         /** Construct a new HIqTranslateByTwo object that writes to a writer */
-        HIqTranslateByTwo(std::string id, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL):
-            HFilter<T>(id, writer, blocksize, probe) {}
+        HIqTranslateByTwo(std::string id, HWriter<T>* writer, size_t blocksize):
+            HFilter<T>(id, writer, blocksize) {}
 
         /** Construct a new HIqTranslateByTwo object that registers with an upstream writer */
-        HIqTranslateByTwo(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL):
-            HFilter<T>(id, consumer, blocksize, probe) {}
+        HIqTranslateByTwo(std::string id, HWriterConsumer<T>* consumer, size_t blocksize):
+            HFilter<T>(id, consumer, blocksize) {}
 
         /** Construct a new HIqTranslateByTwo object that reads from a reader */
-        HIqTranslateByTwo(std::string id, HReader<T>* reader, size_t blocksize, HProbe<T>* probe = NULL):
-            HFilter<T>(id, reader, blocksize, probe) {}
+        HIqTranslateByTwo(std::string id, HReader<T>* reader, size_t blocksize):
+            HFilter<T>(id, reader, blocksize) {}
 
         /** Default destructor */
         ~HIqTranslateByTwo() {}

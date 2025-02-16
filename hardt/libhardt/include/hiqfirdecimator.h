@@ -5,7 +5,6 @@
 #include "hreader.h"
 #include "hwriter.h"
 #include "hwriterconsumer.h"
-#include "hprobe.h"
 #include "hfir.h"
 
 #include <vector>
@@ -19,8 +18,6 @@ class HIqFirDecimator: public HReader<T>, public HWriter<T>, public HWriterConsu
         HWriter<T>* _writer;
         HReader<T>* _reader;
         size_t _blocksize;
-
-        HProbe<T>* _probe;
 
         int _factor;
         T* _buffer;
@@ -51,9 +48,9 @@ class HIqFirDecimator: public HReader<T>, public HWriter<T>, public HWriterConsu
          *                write chunks from both branches alternating. In that case, set
          *                'collect=false'. A write of 1024 samples will then immediately
          *                result in a write of 1024/factor samples to the next writer.
-         * @param probe Probe
+         *
          */
-        HIqFirDecimator(std::string id, HWriter<T>* writer, int factor, float* coefficients, int points, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
+        HIqFirDecimator(std::string id, HWriter<T>* writer, int factor, float* coefficients, int points, size_t blocksize, bool collect = true);
 
         /**
          * Construct a new HIqFirDecimator that handle writer consumers.
@@ -70,9 +67,9 @@ class HIqFirDecimator: public HReader<T>, public HWriter<T>, public HWriterConsu
          *                write chunks from both branches alternating. In that case, set
          *                'collect=false'. A write of 1024 samples will then immediately
          *                result in a write of 1024/factor samples to the next writer.
-         * @param probe Probe
+         *
          */
-        HIqFirDecimator(std::string id, HWriterConsumer<T>* consumer, int factor, float* coefficients, int points, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
+        HIqFirDecimator(std::string id, HWriterConsumer<T>* consumer, int factor, float* coefficients, int points, size_t blocksize, bool collect = true);
 
         /**
          * Construct a new HIqFirDecimator that handle readers.
@@ -90,9 +87,9 @@ class HIqFirDecimator: public HReader<T>, public HWriter<T>, public HWriterConsu
          *                'collect=false'. A write of 1024 samples will then immediately
          *                result in a read of 1024 samples from the previous reader and
          *                return only 1024/factor samples.
-         * @param probe Probe
+         *
          */
-        HIqFirDecimator(std::string id, HReader<T>* reader, int factor, float* coefficients, int points, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
+        HIqFirDecimator(std::string id, HReader<T>* reader, int factor, float* coefficients, int points, size_t blocksize, bool collect = true);
 
         /** Implements HWriterConsumer::SetWriter() */
         void SetWriter(HWriter<T>* writer) {

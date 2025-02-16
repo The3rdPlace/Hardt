@@ -6,7 +6,6 @@
 #include "hreader.h"
 #include "hfilterbase.h"
 #include "hfilter.h"
-#include "hprobe.h"
 
 /********************************************************************
 Explicit instantiation

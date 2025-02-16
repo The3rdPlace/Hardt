@@ -10,7 +10,6 @@
 #include "hobject.h"
 #include "hreader.h"
 #include "hfft.h"
-#include "hprobe.h"
 #include "hcommand.h"
 #include "hrtl2832.h"
 
@@ -33,7 +32,6 @@ class HRtl2832Reader : public HReader<T>
         std::thread* _current;
         rtlsdr_dev_t *_dev;
         size_t _blocksize;
-        HProbe<T>* _probe;
 
         // Data accessed by the (static) callback function
         struct CallbackData
@@ -80,9 +78,9 @@ class HRtl2832Reader : public HReader<T>
          *                  must however still be of length 'blocksize' due to the multiplexing
          * @param offset Set to true to use tuner offset mode (only E4000 tuners)
          * @param correction Frequency correction in ppm
-         * @param probe Probe
+         *
          */
-        HRtl2832Reader(std::string id, int device, H_SAMPLE_RATE rate, HRtl2832::MODE mode, int gain, int32_t frequency, int blocksize, bool offset = 0, int correction = 0, HProbe<T>* probe = nullptr);
+        HRtl2832Reader(std::string id, int device, H_SAMPLE_RATE rate, HRtl2832::MODE mode, int gain, int32_t frequency, int blocksize, bool offset = 0, int correction = 0);
 
         /**
          * Default destructor

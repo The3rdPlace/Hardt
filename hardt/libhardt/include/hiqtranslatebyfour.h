@@ -5,7 +5,6 @@
 #include "hwriter.h"
 #include "hwriterconsumer.h"
 #include "hreader.h"
-#include "hprobe.h"
 
 /**
     Translating the input samples by four.
@@ -42,18 +41,18 @@ class HIqTranslateByFour : public HFilter<T>
     public:
 
         /** Construct a new HIqTranslateByFour object that writes to a writer */
-        HIqTranslateByFour(std::string id, HWriter<T>* writer, size_t blocksize, bool isQ = false, HProbe<T>* probe = NULL):
-            HFilter<T>(id, writer, blocksize, probe),
+        HIqTranslateByFour(std::string id, HWriter<T>* writer, size_t blocksize, bool isQ = false):
+            HFilter<T>(id, writer, blocksize),
             _isQ(isQ) {}
 
         /** Construct a new HIqTranslateByFour object that registers with an upstream writer */
-        HIqTranslateByFour(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, bool isQ = false, HProbe<T>* probe = NULL):
-            HFilter<T>(id, consumer, blocksize, probe),
+        HIqTranslateByFour(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, bool isQ = false):
+            HFilter<T>(id, consumer, blocksize),
             _isQ(isQ) {}
 
         /** Construct a new HIqTranslateByFour object that reads from a reader */
-        HIqTranslateByFour(std::string id, HReader<T>* reader, size_t blocksize, bool isQ = false, HProbe<T>* probe = NULL):
-            HFilter<T>(id, reader, blocksize, probe),
+        HIqTranslateByFour(std::string id, HReader<T>* reader, size_t blocksize, bool isQ = false):
+            HFilter<T>(id, reader, blocksize),
             _isQ(isQ) {}
 
         /** Default destructor */

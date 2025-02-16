@@ -5,7 +5,6 @@
 #include "hwriter.h"
 #include "hwriterconsumer.h"
 #include "hreader.h"
-#include "hprobe.h"
 
 /**
     Translating the input samples by two.
@@ -25,16 +24,16 @@ class HTranslateByTwo : public HFilter<T>
     public:
 
         /** Construct a new HTranslateByTwo object that writes to a writer */
-        HTranslateByTwo(std::string id, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL):
-            HFilter<T>(id, writer, blocksize, probe) {}
+        HTranslateByTwo(std::string id, HWriter<T>* writer, size_t blocksize):
+            HFilter<T>(id, writer, blocksize) {}
 
         /** Construct a new HTranslateByTwo object that registers with an upstream writer */
-        HTranslateByTwo(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL):
-            HFilter<T>(id, consumer, blocksize, probe) {}
+        HTranslateByTwo(std::string id, HWriterConsumer<T>* consumer, size_t blocksize):
+            HFilter<T>(id, consumer, blocksize) {}
 
         /** Construct a new HTranslateByTwo object that reads from a reader */
-        HTranslateByTwo(std::string id, HReader<T>* reader, size_t blocksize, HProbe<T>* probe = NULL):
-            HFilter<T>(id, reader, blocksize, probe) {}
+        HTranslateByTwo(std::string id, HReader<T>* reader, size_t blocksize):
+            HFilter<T>(id, reader, blocksize) {}
 
         /** Default destructor */
         ~HTranslateByTwo() {}

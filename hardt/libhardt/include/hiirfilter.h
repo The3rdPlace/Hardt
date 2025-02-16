@@ -32,13 +32,13 @@ class HIirFilter : public HFilter<T>
     public:
 
         /** Construct a new HIIrFilter that writes to a writer */
-        HIirFilter(std::string id, HWriter<T>* writer, float* coefficients, int length, size_t blocksize, HProbe<T>* prope = NULL);
+        HIirFilter(std::string id, HWriter<T>* writer, float* coefficients, int length, size_t blocksize);
 
         /** Construct a new HIIrFilter that registers with an upstream writer */
-        HIirFilter(std::string id, HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize, HProbe<T>* probe = NULL);
+        HIirFilter(std::string id, HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize);
 
         /** Construct a new HIirFilter that reads from a reader */
-        HIirFilter(std::string id, HReader<T>* reader, float* coefficients, int length, size_t blocksize, HProbe<T>* probe = NULL);
+        HIirFilter(std::string id, HReader<T>* reader, float* coefficients, int length, size_t blocksize);
 
         /** Default destructor */
         ~HIirFilter();

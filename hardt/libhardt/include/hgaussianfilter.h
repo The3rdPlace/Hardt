@@ -9,7 +9,6 @@
 #include "hwriter.h"
 #include "hwriterconsumer.h"
 #include "hreader.h"
-#include "hprobe.h"
 
 #include <complex>
 
@@ -50,10 +49,9 @@ class HGaussianFilter : public HFilter<T>
          * @param blocksize Blocksize
          * @param strength Filter strength in db
          * @param n FFT size
-         * @param probe A probe
          * */
-        HGaussianFilter(std::string id, HWriter<T>* writer, size_t blocksize, int strength, int n, HProbe<T>* probe = NULL):
-            HFilter<T>(id, writer, blocksize, probe),
+        HGaussianFilter(std::string id, HWriter<T>* writer, size_t blocksize, int strength, int n):
+            HFilter<T>(id, writer, blocksize),
             _blocksize(blocksize),
             _strength(strength),
             _n(n) {
@@ -67,10 +65,9 @@ class HGaussianFilter : public HFilter<T>
          * @param blocksize Blocksize
          * @param strength Filter strength in db
          * @param n FFT size
-         * @param probe A probe
          * */
-        HGaussianFilter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, int strength, int n, HProbe<T>* probe = NULL):
-            HFilter<T>(id, consumer, blocksize, probe),
+        HGaussianFilter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, int strength, int n):
+            HFilter<T>(id, consumer, blocksize),
             _blocksize(blocksize),
             _strength(strength),
             _n(n) {
@@ -84,10 +81,9 @@ class HGaussianFilter : public HFilter<T>
          * @param blocksize Blocksize
          * @param strength Filter strength in db
          * @param n FFT size
-         * @param probe A probe
          * */
-        HGaussianFilter(std::string id, HReader<T>* reader, size_t blocksize, int strength, int n, HProbe<T>* probe = NULL):
-            HFilter<T>(id, reader, blocksize, probe),
+        HGaussianFilter(std::string id, HReader<T>* reader, size_t blocksize, int strength, int n):
+            HFilter<T>(id, reader, blocksize),
             _blocksize(blocksize),
             _strength(strength),
             _n(n) {

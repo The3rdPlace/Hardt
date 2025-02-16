@@ -1,8 +1,6 @@
 #ifndef __HSOUNDCARDREADER_H
 #define __HSOUNDCARDREADER_H
 
-#include "hprobe.h"
-
 #include <mutex>
 #include <condition_variable>
 
@@ -38,9 +36,6 @@ class HSoundcardReader : public HReader<T>
         // Housekeeping
         bool _isInitialized;
 
-        // A probe
-        HProbe<T>* _probe;
-
         /**
          * Implements Start() to begin sampling
          */
@@ -62,9 +57,9 @@ class HSoundcardReader : public HReader<T>
          * @param channels Number of channels. If more than 1, then samples is returned multiplexed
          * @param format Sample format
          * @param blocksize Number of samples per chunk read
-         * @param probe Probe
+         *
          */
-        HSoundcardReader(std::string id, int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int blocksize = DEFAULT_BLOCKSIZE, HProbe<T>* probe = nullptr);
+        HSoundcardReader(std::string id, int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int blocksize = DEFAULT_BLOCKSIZE);
 
         /**
          * Default destructor

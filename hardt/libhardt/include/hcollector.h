@@ -4,7 +4,6 @@
 #include "hreader.h"
 #include "hwriter.h"
 #include "hwriterconsumer.h"
-#include "hprobe.h"
 
 #include <vector>
 
@@ -26,8 +25,6 @@ class HCollector: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
         size_t _blocksizeIn;
         size_t _blocksizeOut;
 
-        HProbe<T>* _probe;
-
         T* _buffer;
         int _collected;
 
@@ -40,9 +37,9 @@ class HCollector: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
          * @param writer The downstream writer
          * @param blocksizeIn Input blocksize
          * @param blocksizeOut Output blocksize
-         * @param probe Probe
+         *
          */
-        HCollector(std::string id, HWriter<T>* writer, size_t blocksizeIn, size_t blocksizeOut, HProbe<T>* probe = nullptr);
+        HCollector(std::string id, HWriter<T>* writer, size_t blocksizeIn, size_t blocksizeOut);
 
         /**
          * Construct a new HCollector that handle writer consumers
@@ -51,9 +48,9 @@ class HCollector: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
          * @param consumer The upstream consumer
          * @param blocksizeIn Input blocksize
          * @param blocksizeOut Output blocksize
-         * @param probe Probe
+         *
          */
-        HCollector(std::string id, HWriterConsumer<T>* consumer, size_t blocksizeIn, size_t blocksizeOut, HProbe<T>* probe = nullptr);
+        HCollector(std::string id, HWriterConsumer<T>* consumer, size_t blocksizeIn, size_t blocksizeOut);
 
         /**
          * Construct a new HCollector that handle readers
@@ -62,9 +59,9 @@ class HCollector: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
          * @param reader The upstream reader
          * @param blocksizeIn Input blocksize
          * @param blocksizeOut Output blocksize
-         * @param probe Probe
+         *
          */
-        HCollector(std::string id, HReader<T>* reader, size_t blocksizeIn, size_t blocksizeOut, HProbe<T>* probe = nullptr);
+        HCollector(std::string id, HReader<T>* reader, size_t blocksizeIn, size_t blocksizeOut);
 
         /** Implements HWriterConsumer::SetWriter() */
         void SetWriter(HWriter<T>* writer);

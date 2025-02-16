@@ -10,7 +10,6 @@ class HFilter_Test: public Test
         {
             UNITTEST(test_filter_as_writer);
             UNITTEST(test_filter_as_reader);
-            UNITTEST(test_filter_with_probe);
             UNITTEST(test_read_coeffs_single_line);
             UNITTEST(test_read_coeffs_separators);
             UNITTEST(test_read_coeffs_mixed);
@@ -42,12 +41,12 @@ class HFilter_Test: public Test
 
             public:
 
-                TestFilter(std::string id, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = nullptr):
-                    HFilter<T>(id, writer, blocksize, probe)
+                TestFilter(std::string id, HWriter<T>* writer, size_t blocksize):
+                    HFilter<T>(id, writer, blocksize)
                 {}
 
-                TestFilter(std::string id, HReader<T>* reader, size_t blocksize, HProbe<T>* probe = nullptr):
-                    HFilter<T>(id, reader, blocksize, probe)
+                TestFilter(std::string id, HReader<T>* reader, size_t blocksize):
+                    HFilter<T>(id, reader, blocksize)
                 {}
         };
 
@@ -105,25 +104,6 @@ class HFilter_Test: public Test
 
             ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
             ASSERT_IS_EQUAL(rd.Commands, 1);
-        }
-
-        void test_filter_with_probe()
-        {
-            TestWriter<int8_t> wr("hfilter_test_testwriter", 6);
-            TestFilter<int8_t> filter("hfilter_test_with_probe", &wr, 6);
-            HProbe<int8_t> probe("hfilter_test", true);
-
-            int8_t input[8] = {1, 2, 4, 8, 16, 32, 0, 0};
-            ASSERT_IS_EQUAL(filter.Write(input, 6), 6);
-            ASSERT_IS_EQUAL(memcmp((void*) wr.Received, (void*) expected, 6 * sizeof(int8_t)), 0);
-
-            std::ifstream resultfile("PROBE_hfilter_test.pcm", std::ios::in | std::ios::binary | std::ios::ate);
-            if( !resultfile.is_open() ) {
-                ASSERT_FAIL("No probe file found");
-            }
-
-            ASSERT_IS_TRUE(filter.Command(&TestNopCommand));
-            ASSERT_IS_EQUAL(wr.Commands, 1);
         }
 
         void test_read_coeffs_single_line()

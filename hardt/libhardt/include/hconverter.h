@@ -1,8 +1,6 @@
 #ifndef __HCONVERTER_H
 #define __HCONVERTER_H
 
-#include "hprobe.h"
-
 /**
     Base class for Converters that convert one type to another.
 
@@ -18,8 +16,6 @@ class HConverter : public HReader<Tout>, public HWriter<Tin>, public HWriterCons
         HWriter<Tout>* _writer;
         size_t _blocksizeIn;
         size_t _blocksizeOut;
-
-        HProbe<Tout>* _probe;
 
         Tin *_input;
         Tout *_output;
@@ -51,9 +47,9 @@ class HConverter : public HReader<Tout>, public HWriter<Tin>, public HWriterCons
          * @param reader Upstream reader
          * @param blocksizeIn Number of input samples
          * @param blocksizeOut Number of output samples
-         * @param probe Probe
+         *
          */
-        HConverter(std::string id, HReader<Tin>* reader, size_t blocksizeIn, size_t blocksizeOut, HProbe<Tout>* probe = nullptr):
+        HConverter(std::string id, HReader<Tin>* reader, size_t blocksizeIn, size_t blocksizeOut):
             HReader<Tout>(id),
             HWriter<Tin>(id),
             HWriterConsumer<Tout>(id),
@@ -61,8 +57,7 @@ class HConverter : public HReader<Tout>, public HWriter<Tin>, public HWriterCons
             _writer(nullptr),
             _blocksizeIn(blocksizeIn),
             _blocksizeOut(blocksizeOut),
-            _output(NULL),
-            _probe(probe) {
+            _output(NULL) {
             _input = new Tin[blocksizeIn];
         }
 
@@ -73,9 +68,9 @@ class HConverter : public HReader<Tout>, public HWriter<Tin>, public HWriterCons
          * @param writer Downstream writer
          * @param blocksizeIn Number of input samples
          * @param blocksizeOut Number of output samples
-         * @param probe Probe
+         *
          */
-        HConverter(std::string id, HWriter<Tout>* writer, size_t blocksizeIn, size_t blocksizeOut, HProbe<Tout>* probe = nullptr):
+        HConverter(std::string id, HWriter<Tout>* writer, size_t blocksizeIn, size_t blocksizeOut):
             HReader<Tout>(id),
             HWriter<Tin>(id),
             HWriterConsumer<Tout>(id),
@@ -83,9 +78,7 @@ class HConverter : public HReader<Tout>, public HWriter<Tin>, public HWriterCons
             _writer(writer),
             _blocksizeIn(blocksizeIn),
             _blocksizeOut(blocksizeOut),
-            _input(NULL),
-            _probe(probe) {
-
+            _input(NULL) {
             _output = new Tout[blocksizeOut];
         }
 
@@ -96,9 +89,9 @@ class HConverter : public HReader<Tout>, public HWriter<Tin>, public HWriterCons
          * @param consumer Upstream consumer
          * @param blocksizeIn Number of input samples
          * @param blocksizeOut Number of output samples
-         * @param probe Probe
+         *
          */
-        HConverter(std::string id, HWriterConsumer<Tin>* consumer, size_t blocksizeIn, size_t blocksizeOut, HProbe<Tout>* probe = nullptr):
+        HConverter(std::string id, HWriterConsumer<Tin>* consumer, size_t blocksizeIn, size_t blocksizeOut):
             HReader<Tout>(id),
             HWriter<Tin>(id),
             HWriterConsumer<Tout>(id),
@@ -106,9 +99,7 @@ class HConverter : public HReader<Tout>, public HWriter<Tin>, public HWriterCons
             _writer(nullptr),
             _blocksizeIn(blocksizeIn),
             _blocksizeOut(blocksizeOut),
-            _input(NULL),
-            _probe(probe) {
-
+            _input(NULL) {
             _output = new Tout[blocksizeOut];
             consumer->SetWriter(this->Writer());
         }
@@ -163,10 +154,6 @@ class HConverter : public HReader<Tout>, public HWriter<Tin>, public HWriterCons
                 throw new HConverterIOException("Converted incorrect number of blocks");
             }
 
-            if( _probe != nullptr ) {
-                _probe->Write(dest, converted);
-            }
-
             return _blocksizeOut;
         };
 
@@ -196,10 +183,6 @@ class HConverter : public HReader<Tout>, public HWriter<Tin>, public HWriterCons
             {
                 HError("Request for write with blocksize %d wrote %d blocks", _blocksizeOut, written);
                 throw new HConverterIOException("Wrote incorrect number of blocks to output writer");
-            }
-
-            if( _probe != nullptr ) {
-                _probe->Write(_output, converted);
             }
 
             return _blocksizeIn;

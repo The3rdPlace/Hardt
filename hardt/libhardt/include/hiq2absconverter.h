@@ -5,7 +5,6 @@
 #include "hreader.h"
 #include "hwriter.h"
 #include "hwriterconsumer.h"
-#include "hprobe.h"
 #include "hconverter.h"
 
 /** Convert from IQ to absolute value of each complex I+jQ sample
@@ -22,8 +21,6 @@ template <class T>
 class HIq2AbsConverter: public HConverter<T, T> {
 
     private:
-
-        HProbe<T>* _probe;
 
         /**
          * Convert the input samples to the output format
@@ -59,10 +56,10 @@ class HIq2AbsConverter: public HConverter<T, T> {
          * @param id Element identifier
          * @param reader Upstream reader
          * @param blocksize Number of samples to read per read
-         * @param probe Probe
+         *
          */
-        HIq2AbsConverter(std::string id, HReader<T>* reader, size_t blocksize, HProbe<T>* probe = nullptr):
-                HConverter<T, T>(id, reader, blocksize * 2, blocksize, probe) {
+        HIq2AbsConverter(std::string id, HReader<T>* reader, size_t blocksize):
+                HConverter<T, T>(id, reader, blocksize * 2, blocksize) {
             Init(blocksize * 2);
         }
 
@@ -75,10 +72,10 @@ class HIq2AbsConverter: public HConverter<T, T> {
          * @param id Element identifier
          * @param writer Downstream writer
          * @param blocksize Number of samples to write per write
-         * @param probe Probe
+         *
          */
-        HIq2AbsConverter(std::string id, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = nullptr):
-                HConverter<T, T>(id, writer, blocksize, blocksize / 2, probe) {
+        HIq2AbsConverter(std::string id, HWriter<T>* writer, size_t blocksize):
+                HConverter<T, T>(id, writer, blocksize, blocksize / 2) {
             Init(blocksize);
         }
 
@@ -91,10 +88,10 @@ class HIq2AbsConverter: public HConverter<T, T> {
          * @param id Element identifier
          * @param consumer Upstream consumer
          * @param blocksize Number of samples to write per write
-         * @param probe Probe
+         *
         */
-        HIq2AbsConverter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = nullptr):
-                HConverter<T, T>(id, consumer, blocksize, blocksize / 2, probe) {
+        HIq2AbsConverter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize):
+                HConverter<T, T>(id, consumer, blocksize, blocksize / 2) {
             Init(blocksize);
         }
 

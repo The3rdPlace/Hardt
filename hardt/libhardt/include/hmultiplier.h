@@ -4,7 +4,6 @@
 #include "hreader.h"
 #include "hwriter.h"
 #include "hwriterconsumer.h"
-#include "hprobe.h"
 
 /**
     Multiplier (unlinear mixer).
@@ -38,18 +37,16 @@ class HMultiplier : public HReader<T>, public HWriter<T>, public HWriterConsumer
         HLocalOscillator<T>* _localOscillator;
         int _scaling;
 
-        HProbe<T>* _probe;
-
     public:
 
         /** Construct a new HMultiplier (frequency mixer) */
-        HMultiplier(std::string id, HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<T>* probe = NULL);
+        HMultiplier(std::string id, HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
         /** Construct a new HMultiplier (frequency mixer) */
-        HMultiplier(std::string id, HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<T>* probe = NULL);
+        HMultiplier(std::string id, HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
         /** Construct a new HMultiplier (frequency mixer) */
-        HMultiplier(std::string id, HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<T>* probe = NULL);
+        HMultiplier(std::string id, HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
         /** Default destructor */
         ~HMultiplier();

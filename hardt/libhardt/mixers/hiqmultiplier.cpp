@@ -5,46 +5,40 @@
 #include "hiqmultiplier.h"
 
 template <class T>
-HIqMultiplier<T>::HIqMultiplier(std::string id, HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<T>* probe):
+HIqMultiplier<T>::HIqMultiplier(std::string id, HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize):
     HReader<T>(id),
     HWriter<T>(id),
     HWriterConsumer<T>(id),
     _reader(reader),
     _writer(NULL),
     _blocksize(blocksize),
-    _probe(probe),
-    _scaling(oscillatorAmplitude)
-{
+    _scaling(oscillatorAmplitude) {
     HLog("HIqMultiplier(HReader*, %d, %d, %d)", rate, frequency, blocksize);
     Init(id, rate, frequency, oscillatorAmplitude, blocksize);
 }
 
 template <class T>
-HIqMultiplier<T>::HIqMultiplier(std::string id, HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<T>* probe):
+HIqMultiplier<T>::HIqMultiplier(std::string id, HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize):
     HReader<T>(id),
     HWriter<T>(id),
     HWriterConsumer<T>(id),
     _reader(NULL),
     _writer(writer),
     _blocksize(blocksize),
-    _probe(probe),
-    _scaling(oscillatorAmplitude)
-{
+    _scaling(oscillatorAmplitude) {
     HLog("HIqMultiplier(HWriter*, %d, %d, %d)", rate, frequency, blocksize);
     Init(id, rate, frequency, oscillatorAmplitude, blocksize);
 }
 
 template <class T>
-HIqMultiplier<T>::HIqMultiplier(std::string id, HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<T>* probe):
+HIqMultiplier<T>::HIqMultiplier(std::string id, HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize):
     HReader<T>(id),
     HWriter<T>(id),
     HWriterConsumer<T>(id),
     _reader(NULL),
     _writer(NULL),
     _blocksize(blocksize),
-    _probe(probe),
-    _scaling(oscillatorAmplitude)
-{
+    _scaling(oscillatorAmplitude) {
     HLog("HIqMultiplier(HWriterConsumer*, %d, %d, %d)", rate, frequency, blocksize);
     Init(id, rate, frequency, oscillatorAmplitude, blocksize);
 
@@ -100,11 +94,6 @@ int HIqMultiplier<T>::ReadImpl(T* dest, size_t blocksize)
     // Mix signals
     Mix(_buffer, dest, blocksize);
 
-    if( _probe != NULL )
-    {
-        _probe->Write(dest, blocksize);
-    }
-
     return blocksize;
 }
 
@@ -126,11 +115,6 @@ int HIqMultiplier<T>::WriteImpl(T* src, size_t blocksize)
     {
         HLog("Zero write to writer, stopping");
         return 0;
-    }
-
-    if( _probe != NULL )
-    {
-        _probe->Write(_buffer, blocksize);
     }
 
     return blocksize;
@@ -208,40 +192,40 @@ Explicit instantiation
 
 // HIqMultiplier
 template
-HIqMultiplier<int8_t>::HIqMultiplier(std::string id, HReader<int8_t>* reader_1, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<int8_t>* probe);
+HIqMultiplier<int8_t>::HIqMultiplier(std::string id, HReader<int8_t>* reader_1, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-HIqMultiplier<uint8_t>::HIqMultiplier(std::string id, HReader<uint8_t>* reader_1, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<uint8_t>* probe);
+HIqMultiplier<uint8_t>::HIqMultiplier(std::string id, HReader<uint8_t>* reader_1, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-HIqMultiplier<int16_t>::HIqMultiplier(std::string id, HReader<int16_t>* reader_1, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<int16_t>* probe);
+HIqMultiplier<int16_t>::HIqMultiplier(std::string id, HReader<int16_t>* reader_1, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-HIqMultiplier<int32_t>::HIqMultiplier(std::string id, HReader<int32_t>* reader_1, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<int32_t>* probe);
+HIqMultiplier<int32_t>::HIqMultiplier(std::string id, HReader<int32_t>* reader_1, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-HIqMultiplier<int8_t>::HIqMultiplier(std::string id, HWriter<int8_t>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<int8_t>* probe);
+HIqMultiplier<int8_t>::HIqMultiplier(std::string id, HWriter<int8_t>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-HIqMultiplier<uint8_t>::HIqMultiplier(std::string id, HWriter<uint8_t>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<uint8_t>* probe);
+HIqMultiplier<uint8_t>::HIqMultiplier(std::string id, HWriter<uint8_t>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-HIqMultiplier<int16_t>::HIqMultiplier(std::string id, HWriter<int16_t>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<int16_t>* probe);
+HIqMultiplier<int16_t>::HIqMultiplier(std::string id, HWriter<int16_t>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-HIqMultiplier<int32_t>::HIqMultiplier(std::string id, HWriter<int32_t>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<int32_t>* probe);
+HIqMultiplier<int32_t>::HIqMultiplier(std::string id, HWriter<int32_t>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-HIqMultiplier<int8_t>::HIqMultiplier(std::string id, HWriterConsumer<int8_t>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<int8_t>* probe);
+HIqMultiplier<int8_t>::HIqMultiplier(std::string id, HWriterConsumer<int8_t>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-HIqMultiplier<uint8_t>::HIqMultiplier(std::string id, HWriterConsumer<uint8_t>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<uint8_t>* probe);
+HIqMultiplier<uint8_t>::HIqMultiplier(std::string id, HWriterConsumer<uint8_t>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-HIqMultiplier<int16_t>::HIqMultiplier(std::string id, HWriterConsumer<int16_t>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<int16_t>* probe);
+HIqMultiplier<int16_t>::HIqMultiplier(std::string id, HWriterConsumer<int16_t>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-HIqMultiplier<int32_t>::HIqMultiplier(std::string id, HWriterConsumer<int32_t>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<int32_t>* probe);
+HIqMultiplier<int32_t>::HIqMultiplier(std::string id, HWriterConsumer<int32_t>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 // ~HIqMultiplier()
 template

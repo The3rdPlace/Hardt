@@ -5,7 +5,6 @@
 #include "hreader.h"
 #include "hwriter.h"
 #include "hwriterconsumer.h"
-#include "hprobe.h"
 #include "hconverter.h"
 
 /** Convert from IQ to I+J or I-J.
@@ -21,8 +20,6 @@ template <class T>
 class HIqAddOrSubtractConverter: public HConverter<T, T> {
 
     private:
-
-        HProbe<T>* _probe;
 
         bool _subtract;
 
@@ -68,10 +65,10 @@ class HIqAddOrSubtractConverter: public HConverter<T, T> {
          * @param reader Upstream reader
          * @param subtract Set to true to subtract instead of adding
          * @param blocksize Number of samples to read per read
-         * @param probe Probe
+         *
          */
-        HIqAddOrSubtractConverter(std::string id, HReader<T>* reader, bool subtract, size_t blocksize, HProbe<T>* probe = nullptr):
-                HConverter<T, T>(id, reader, blocksize * 2, blocksize, probe),
+        HIqAddOrSubtractConverter(std::string id, HReader<T>* reader, bool subtract, size_t blocksize):
+                HConverter<T, T>(id, reader, blocksize * 2, blocksize),
                 _subtract(subtract) {
 
             Init(blocksize * 2);
@@ -87,10 +84,10 @@ class HIqAddOrSubtractConverter: public HConverter<T, T> {
          * @param writer Downstream writer
          * @param subtract Set to true to subtract instead of adding
          * @param blocksize Number of samples to write per write
-         * @param probe Probe
+         *
          */
-        HIqAddOrSubtractConverter(std::string id, HWriter<T>* writer, bool subtract, size_t blocksize, HProbe<T>* probe = nullptr):
-                HConverter<T, T>(id, writer, blocksize, blocksize / 2, probe),
+        HIqAddOrSubtractConverter(std::string id, HWriter<T>* writer, bool subtract, size_t blocksize):
+                HConverter<T, T>(id, writer, blocksize, blocksize / 2),
                 _subtract(subtract) {
 
             Init(blocksize);
@@ -106,10 +103,10 @@ class HIqAddOrSubtractConverter: public HConverter<T, T> {
          * @param consumer Upstream consumer
          * @param subtract Set to true to subtract instead of adding
          * @param blocksize Number of samples to write per write
-         * @param probe Probe
+         *
         */
-        HIqAddOrSubtractConverter(std::string id, HWriterConsumer<T>* consumer, bool subtract, size_t blocksize, HProbe<T>* probe = nullptr):
-                HConverter<T, T>(id, consumer, blocksize, blocksize / 2, probe),
+        HIqAddOrSubtractConverter(std::string id, HWriterConsumer<T>* consumer, bool subtract, size_t blocksize):
+                HConverter<T, T>(id, consumer, blocksize, blocksize / 2),
                 _subtract(subtract) {
 
             Init(blocksize);

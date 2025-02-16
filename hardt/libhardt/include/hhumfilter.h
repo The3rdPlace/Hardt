@@ -31,32 +31,32 @@ class HHumFilter : public HCombFilter<T>
     public:
 
         /** Construct a new HHumFilter that writes to a writer */
-        HHumFilter(std::string id, HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, int cutoffFrequency, size_t blocksize, HProbe<T>* probe = NULL):
-            HCombFilter<T>(id, writer, rate, frequency, -0.5, blocksize, probe)
+        HHumFilter(std::string id, HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, int cutoffFrequency, size_t blocksize):
+            HCombFilter<T>(id, writer, rate, frequency, -0.5, blocksize)
         {
             HLog("HHumFilter(HWriter*, %d, %d, %d, %d)", rate, frequency, cutoffFrequency, blocksize);
             _feedbackFilter = new HBiQuadFilter<HLowpassBiQuad<T>, T>(id, (HReader<T>*) NULL, cutoffFrequency, rate, 0.5, 0, 1);
-            _outputFilter = new HBiQuadFilter<HHighpassBiQuad<T>, T>(id, (HReader<T>*) NULL, cutoffFrequency, rate, 0.6, 0, 1, probe);
+            _outputFilter = new HBiQuadFilter<HHighpassBiQuad<T>, T>(id, (HReader<T>*) NULL, cutoffFrequency, rate, 0.6, 0, 1);
             _buffer = new T[blocksize];
         }
 
         /** Construct a new HHumFilter that register with an upstream writer */
-        HHumFilter(std::string id, HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int frequency, int cutoffFrequency, size_t blocksize, HProbe<T>* probe = NULL):
-            HCombFilter<T>(id, consumer, rate, frequency, -0.5, blocksize, probe)
+        HHumFilter(std::string id, HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int frequency, int cutoffFrequency, size_t blocksize):
+            HCombFilter<T>(id, consumer, rate, frequency, -0.5, blocksize)
         {
             HLog("HHumFilter(HWriter*, %d, %d, %d, %d)", rate, frequency, cutoffFrequency, blocksize);
             _feedbackFilter = new HBiQuadFilter<HLowpassBiQuad<T>, T>(id, (HReader<T>*) NULL, cutoffFrequency, rate, 0.5, 0, 1);
-            _outputFilter = new HBiQuadFilter<HHighpassBiQuad<T>, T>(id, (HReader<T>*) NULL, cutoffFrequency, rate, 0.6, 0, 1, probe);
+            _outputFilter = new HBiQuadFilter<HHighpassBiQuad<T>, T>(id, (HReader<T>*) NULL, cutoffFrequency, rate, 0.6, 0, 1);
             _buffer = new T[blocksize];
         }
 
         /** Construct a new HHumFilter that reads from a reader */
-        HHumFilter(std::string id, HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, int cutoffFrequency, size_t blocksize, HProbe<T>* probe = NULL):
-            HCombFilter<T>(id, reader, rate, frequency, -0.5, blocksize, probe)
+        HHumFilter(std::string id, HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, int cutoffFrequency, size_t blocksize):
+            HCombFilter<T>(id, reader, rate, frequency, -0.5, blocksize)
         {
             HLog("HHumFilter(HReader*, %d, %d, %d, %d)", rate, frequency, cutoffFrequency, blocksize);
             _feedbackFilter = new HBiQuadFilter<HLowpassBiQuad<T>, T>(id, (HReader<T>*) NULL, cutoffFrequency, rate, 0.5, 0, 1);
-            _outputFilter = new HBiQuadFilter<HHighpassBiQuad<T>, T>(id, (HReader<T>*) NULL, cutoffFrequency, rate, 0.6, 0, 1, probe);
+            _outputFilter = new HBiQuadFilter<HHighpassBiQuad<T>, T>(id, (HReader<T>*) NULL, cutoffFrequency, rate, 0.6, 0, 1);
             _buffer = new T[blocksize];
         }
 

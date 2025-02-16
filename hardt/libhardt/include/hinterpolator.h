@@ -4,7 +4,6 @@
 #include "hreader.h"
 #include "hwriter.h"
 #include "hwriterconsumer.h"
-#include "hprobe.h"
 
 #include <vector>
 
@@ -17,8 +16,6 @@ class HInterpolator: public HReader<T>, public HWriter<T>, public HWriterConsume
         HWriter<T>* _writer;
         HReader<T>* _reader;
         size_t _blocksize;
-
-        HProbe<T>* _probe;
 
         int _factor;
         T* _inBuffer; 
@@ -40,9 +37,9 @@ class HInterpolator: public HReader<T>, public HWriter<T>, public HWriterConsume
          * @param writer The downstream writer
          * @param factor Interpolation factor, 1 or larger
          * @param blocksize The expected input and output blocksize
-         * @param probe Probe
+         *
          */
-        HInterpolator(std::string id, HWriter<T>* writer, int factor, size_t blocksize, HProbe<T>* probe = nullptr);
+        HInterpolator(std::string id, HWriter<T>* writer, int factor, size_t blocksize);
 
         /**
          * Construct a new HInterpolator that handle writer consumers.
@@ -51,9 +48,9 @@ class HInterpolator: public HReader<T>, public HWriter<T>, public HWriterConsume
          * @param consumer The upstream consumer to receive this as a writer
          * @param factor Interpolation factor, 1 or larger
          * @param blocksize The expected input and output blocksize
-         * @param probe Probe
+         *
          */
-        HInterpolator(std::string id, HWriterConsumer<T>* consumer, int factor, size_t blocksize, HProbe<T>* probe = nullptr);
+        HInterpolator(std::string id, HWriterConsumer<T>* consumer, int factor, size_t blocksize);
 
         /**
          * Construct a new HInterpolator that handle readers.
@@ -62,9 +59,9 @@ class HInterpolator: public HReader<T>, public HWriter<T>, public HWriterConsume
          * @param reader The upstream reader
          * @param factor Interpolation factor, 1 or larger
          * @param blocksize The expected input and output blocksize
-         * @param probe Probe
+         *
          */
-        HInterpolator(std::string id, HReader<T>* reader, int factor, size_t blocksize, HProbe<T>* probe = nullptr);
+        HInterpolator(std::string id, HReader<T>* reader, int factor, size_t blocksize);
 
     public:
 
@@ -77,9 +74,9 @@ class HInterpolator: public HReader<T>, public HWriter<T>, public HWriterConsume
          * @param coefficients FIR coefficients for the lowpass FIR filter that removes spectral copies of the baseband signal
          * @param length Number of FIR coefficients
          * @param blocksize The expected input and output blocksize
-         * @param probe Probe
+         *
          */
-        HInterpolator(std::string id, HWriter<T>* writer, int factor, float* coefficients, int length, size_t blocksize, HProbe<T>* probe = nullptr);
+        HInterpolator(std::string id, HWriter<T>* writer, int factor, float* coefficients, int length, size_t blocksize);
 
         /**
          * Construct a new HInterpolator that handle writer consumers.
@@ -90,9 +87,9 @@ class HInterpolator: public HReader<T>, public HWriter<T>, public HWriterConsume
          * @param coefficients FIR coefficients for the lowpass FIR filter that removes spectral copies of the baseband signal
          * @param length Number of FIR coefficients
          * @param blocksize The expected input and output blocksize
-         * @param probe Probe
+         *
          */
-        HInterpolator(std::string id, HWriterConsumer<T>* consumer, int factor, float* coefficients, int length, size_t blocksize, HProbe<T>* probe = nullptr);
+        HInterpolator(std::string id, HWriterConsumer<T>* consumer, int factor, float* coefficients, int length, size_t blocksize);
 
         /**
          * Construct a new HInterpolator that handle readers.
@@ -103,9 +100,9 @@ class HInterpolator: public HReader<T>, public HWriter<T>, public HWriterConsume
          * @param coefficients FIR coefficients for the lowpass FIR filter that removes spectral copies of the baseband signal
          * @param length Number of FIR coefficients
          * @param blocksize The expected input and output blocksize
-         * @param probe Probe
+         *
          */
-        HInterpolator(std::string id, HReader<T>* reader, int factor, float* coefficients, int length, size_t blocksize, HProbe<T>* probe = nullptr);
+        HInterpolator(std::string id, HReader<T>* reader, int factor, float* coefficients, int length, size_t blocksize);
 
         /**
          * Implements HWriterConsumer::SetWriter()

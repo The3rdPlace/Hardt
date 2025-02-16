@@ -5,22 +5,22 @@
 #include "hardt.h"
 
 template <class T>
-HClickRemovingFilter<T>::HClickRemovingFilter(std::string id, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe):
-    HFilter<T>(id, writer, blocksize, probe)
+HClickRemovingFilter<T>::HClickRemovingFilter(std::string id, HWriter<T>* writer, size_t blocksize):
+    HFilter<T>(id, writer, blocksize)
 {
     HLog("HClickRemovingFilter(HWriter*, %d)", blocksize);
 }
 
 template <class T>
-HClickRemovingFilter<T>::HClickRemovingFilter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe):
-    HFilter<T>(id, consumer, blocksize, probe)
+HClickRemovingFilter<T>::HClickRemovingFilter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize):
+    HFilter<T>(id, consumer, blocksize)
 {
     HLog("HClickRemovingFilter(HWriterConsumer*, %d)", blocksize);
 }
 
 template <class T>
-HClickRemovingFilter<T>::HClickRemovingFilter(std::string id, HReader<T>* reader, size_t blocksize, HProbe<T>* probe):
-    HFilter<T>(id, reader, blocksize, probe)
+HClickRemovingFilter<T>::HClickRemovingFilter(std::string id, HReader<T>* reader, size_t blocksize):
+    HFilter<T>(id, reader, blocksize)
 {
     HLog("HClickRemovingFilter(HReader*, %d)", blocksize);
 }
@@ -58,40 +58,40 @@ Explicit instantiation
 
 // HClickRemovingFilter
 template
-HClickRemovingFilter<int8_t>::HClickRemovingFilter(std::string id, HWriter<int8_t>* writer, size_t blocksize, HProbe<int8_t>* probe);
+HClickRemovingFilter<int8_t>::HClickRemovingFilter(std::string id, HWriter<int8_t>* writer, size_t blocksize);
 
 template
-HClickRemovingFilter<uint8_t>::HClickRemovingFilter(std::string id, HWriter<uint8_t>* writer, size_t blocksize, HProbe<uint8_t>* probe);
+HClickRemovingFilter<uint8_t>::HClickRemovingFilter(std::string id, HWriter<uint8_t>* writer, size_t blocksize);
 
 template
-HClickRemovingFilter<int16_t>::HClickRemovingFilter(std::string id, HWriter<int16_t>* writer, size_t blocksize, HProbe<int16_t>* probe);
+HClickRemovingFilter<int16_t>::HClickRemovingFilter(std::string id, HWriter<int16_t>* writer, size_t blocksize);
 
 template
-HClickRemovingFilter<int32_t>::HClickRemovingFilter(std::string id, HWriter<int32_t>* writer, size_t blocksize, HProbe<int32_t>* probe);
+HClickRemovingFilter<int32_t>::HClickRemovingFilter(std::string id, HWriter<int32_t>* writer, size_t blocksize);
 
 template
-HClickRemovingFilter<int8_t>::HClickRemovingFilter(std::string id, HWriterConsumer<int8_t>* consumer, size_t blocksize, HProbe<int8_t>* probe);
+HClickRemovingFilter<int8_t>::HClickRemovingFilter(std::string id, HWriterConsumer<int8_t>* consumer, size_t blocksize);
 
 template
-HClickRemovingFilter<uint8_t>::HClickRemovingFilter(std::string id, HWriterConsumer<uint8_t>* consumer, size_t blocksize, HProbe<uint8_t>* probe);
+HClickRemovingFilter<uint8_t>::HClickRemovingFilter(std::string id, HWriterConsumer<uint8_t>* consumer, size_t blocksize);
 
 template
-HClickRemovingFilter<int16_t>::HClickRemovingFilter(std::string id, HWriterConsumer<int16_t>* consumer, size_t blocksize, HProbe<int16_t>* probe);
+HClickRemovingFilter<int16_t>::HClickRemovingFilter(std::string id, HWriterConsumer<int16_t>* consumer, size_t blocksize);
 
 template
-HClickRemovingFilter<int32_t>::HClickRemovingFilter(std::string id, HWriterConsumer<int32_t>* consumer, size_t blocksize, HProbe<int32_t>* probe);
+HClickRemovingFilter<int32_t>::HClickRemovingFilter(std::string id, HWriterConsumer<int32_t>* consumer, size_t blocksize);
 
 template
-HClickRemovingFilter<int8_t>::HClickRemovingFilter(std::string id, HReader<int8_t>* reader, size_t blocksize, HProbe<int8_t>* probe);
+HClickRemovingFilter<int8_t>::HClickRemovingFilter(std::string id, HReader<int8_t>* reader, size_t blocksize);
 
 template
-HClickRemovingFilter<uint8_t>::HClickRemovingFilter(std::string id, HReader<uint8_t>* reader, size_t blocksize, HProbe<uint8_t>* probe);
+HClickRemovingFilter<uint8_t>::HClickRemovingFilter(std::string id, HReader<uint8_t>* reader, size_t blocksize);
 
 template
-HClickRemovingFilter<int16_t>::HClickRemovingFilter(std::string id, HReader<int16_t>* reader, size_t blocksize, HProbe<int16_t>* probe);
+HClickRemovingFilter<int16_t>::HClickRemovingFilter(std::string id, HReader<int16_t>* reader, size_t blocksize);
 
 template
-HClickRemovingFilter<int32_t>::HClickRemovingFilter(std::string id, HReader<int32_t>* reader, size_t blocksize, HProbe<int32_t>* probe);
+HClickRemovingFilter<int32_t>::HClickRemovingFilter(std::string id, HReader<int32_t>* reader, size_t blocksize);
 
 // ~HClickRemovingFilter()
 template

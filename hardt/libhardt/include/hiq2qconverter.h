@@ -24,10 +24,10 @@ public:
      * @param id Element identifier
      * @param writer The downstream writer
      * @param blocksize The expected input and output blocksize
-     * @param probe Probe
+     *
      */
-    HIq2QConverter(std::string id, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = nullptr):
-            HDecimator<T>(id, writer, 2, blocksize, true, 1, probe) {}
+    HIq2QConverter(std::string id, HWriter<T>* writer, size_t blocksize):
+            HDecimator<T>(id, writer, 2, blocksize, true, 1) {}
 
     /**
      * Construct a new HIq2IConverter that handle writer consumers.
@@ -35,10 +35,10 @@ public:
      * @param id Element identifier
      * @param consumer The upstream consumer to receive this as a writer
      * @param blocksize The expected input and output blocksize
-     * @param probe Probe
+     *
      */
-    HIq2QConverter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = nullptr):
-            HDecimator<T>(id, consumer, 2, blocksize, true, 1, probe) {}
+    HIq2QConverter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize):
+            HDecimator<T>(id, consumer, 2, blocksize, true, 1) {}
 
     /**
      * Construct a new HIq2IConverter that handle readers.
@@ -46,10 +46,10 @@ public:
      * @param id Element identifier
      * @param reader The upstream reader
      * @param blocksize The expected input and output blocksize
-     * @param probe Probe
+     *
      */
-    HIq2QConverter(std::string id, HReader<T>* reader, size_t blocksize, HProbe<T>* probe = nullptr):
-            HDecimator<T>(id, reader, 2, blocksize, true, 1, probe) {}
+    HIq2QConverter(std::string id, HReader<T>* reader, size_t blocksize):
+            HDecimator<T>(id, reader, 2, blocksize, true, 1) {}
 
 };
 

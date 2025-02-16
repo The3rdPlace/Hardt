@@ -4,8 +4,8 @@
 #include "hiirfilter.h"
 
 template <class T>
-HIirFilter<T>::HIirFilter(std::string id, HWriter<T>* writer, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
-    HFilter<T>(id, writer, blocksize, probe),
+HIirFilter<T>::HIirFilter(std::string id, HWriter<T>* writer, float* coefficients, int length, size_t blocksize):
+    HFilter<T>(id, writer, blocksize),
     _length(length / 2),
     _firstLength(length)
 {
@@ -15,8 +15,8 @@ HIirFilter<T>::HIirFilter(std::string id, HWriter<T>* writer, float* coefficient
 }
 
 template <class T>
-HIirFilter<T>::HIirFilter(std::string id, HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
-    HFilter<T>(id, consumer, blocksize, probe),
+HIirFilter<T>::HIirFilter(std::string id, HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize):
+    HFilter<T>(id, consumer, blocksize),
     _length(length / 2),
     _firstLength(length)
 {
@@ -28,8 +28,8 @@ HIirFilter<T>::HIirFilter(std::string id, HWriterConsumer<T>* consumer, float* c
 }
 
 template <class T>
-HIirFilter<T>::HIirFilter(std::string id, HReader<T>* reader, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
-    HFilter<T>(id, reader, blocksize, probe),
+HIirFilter<T>::HIirFilter(std::string id, HReader<T>* reader, float* coefficients, int length, size_t blocksize):
+    HFilter<T>(id, reader, blocksize),
     _length(length / 2),
     _firstLength(length)
 {
@@ -162,40 +162,40 @@ Explicit instantiation
 
 // HIirFilter
 template
-HIirFilter<int8_t>::HIirFilter(std::string id, HWriter<int8_t>* writer, float* coefficients, int length, size_t blocksize, HProbe<int8_t>* probe);
+HIirFilter<int8_t>::HIirFilter(std::string id, HWriter<int8_t>* writer, float* coefficients, int length, size_t blocksize);
 
 template
-HIirFilter<uint8_t>::HIirFilter(std::string id, HWriter<uint8_t>* writer, float* coefficients, int length, size_t blocksize, HProbe<uint8_t>* probe);
+HIirFilter<uint8_t>::HIirFilter(std::string id, HWriter<uint8_t>* writer, float* coefficients, int length, size_t blocksize);
 
 template
-HIirFilter<int16_t>::HIirFilter(std::string id, HWriter<int16_t>* writer, float* coefficients, int length, size_t blocksize, HProbe<int16_t>* probe);
+HIirFilter<int16_t>::HIirFilter(std::string id, HWriter<int16_t>* writer, float* coefficients, int length, size_t blocksize);
 
 template
-HIirFilter<int32_t>::HIirFilter(std::string id, HWriter<int32_t>* writer, float* coefficients, int length, size_t blocksize, HProbe<int32_t>* probe);
+HIirFilter<int32_t>::HIirFilter(std::string id, HWriter<int32_t>* writer, float* coefficients, int length, size_t blocksize);
 
 template
-HIirFilter<int8_t>::HIirFilter(std::string id, HWriterConsumer<int8_t>* consumer, float* coefficients, int length, size_t blocksize, HProbe<int8_t>* probe);
+HIirFilter<int8_t>::HIirFilter(std::string id, HWriterConsumer<int8_t>* consumer, float* coefficients, int length, size_t blocksize);
 
 template
-HIirFilter<uint8_t>::HIirFilter(std::string id, HWriterConsumer<uint8_t>* consumer, float* coefficients, int length, size_t blocksize, HProbe<uint8_t>* probe);
+HIirFilter<uint8_t>::HIirFilter(std::string id, HWriterConsumer<uint8_t>* consumer, float* coefficients, int length, size_t blocksize);
 
 template
-HIirFilter<int16_t>::HIirFilter(std::string id, HWriterConsumer<int16_t>* consumer, float* coefficients, int length, size_t blocksize, HProbe<int16_t>* probe);
+HIirFilter<int16_t>::HIirFilter(std::string id, HWriterConsumer<int16_t>* consumer, float* coefficients, int length, size_t blocksize);
 
 template
-HIirFilter<int32_t>::HIirFilter(std::string id, HWriterConsumer<int32_t>* consumer, float* coefficients, int length, size_t blocksize, HProbe<int32_t>* probe);
+HIirFilter<int32_t>::HIirFilter(std::string id, HWriterConsumer<int32_t>* consumer, float* coefficients, int length, size_t blocksize);
 
 template
-HIirFilter<int8_t>::HIirFilter(std::string id, HReader<int8_t>* reader, float* coefficients, int length, size_t blocksize, HProbe<int8_t>* probe);
+HIirFilter<int8_t>::HIirFilter(std::string id, HReader<int8_t>* reader, float* coefficients, int length, size_t blocksize);
 
 template
-HIirFilter<uint8_t>::HIirFilter(std::string id, HReader<uint8_t>* reader, float* coefficients, int length, size_t blocksize, HProbe<uint8_t>* probe);
+HIirFilter<uint8_t>::HIirFilter(std::string id, HReader<uint8_t>* reader, float* coefficients, int length, size_t blocksize);
 
 template
-HIirFilter<int16_t>::HIirFilter(std::string id, HReader<int16_t>* reader, float* coefficients, int length, size_t blocksize, HProbe<int16_t>* probe);
+HIirFilter<int16_t>::HIirFilter(std::string id, HReader<int16_t>* reader, float* coefficients, int length, size_t blocksize);
 
 template
-HIirFilter<int32_t>::HIirFilter(std::string id, HReader<int32_t>* reader, float* coefficients, int length, size_t blocksize, HProbe<int32_t>* probe);
+HIirFilter<int32_t>::HIirFilter(std::string id, HReader<int32_t>* reader, float* coefficients, int length, size_t blocksize);
 
 // Init
 template

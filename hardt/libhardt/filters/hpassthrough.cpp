@@ -4,27 +4,26 @@
 #include "hwriter.h"
 #include "hwriterconsumer.h"
 #include "hreader.h"
-#include "hprobe.h"
 
 #include "hpassthrough.h"
 
 template <class T>
-HPassThrough<T>::HPassThrough(std::string id, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe):
-    HFilter<T>(id, writer, blocksize, probe)
+HPassThrough<T>::HPassThrough(std::string id, HWriter<T>* writer, size_t blocksize):
+    HFilter<T>(id, writer, blocksize)
 {
     HLog("HPassThrough(HWriter*, %d)", blocksize);
 }
 
 template <class T>
-HPassThrough<T>::HPassThrough(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe):
-    HFilter<T>(id, consumer, blocksize, probe)
+HPassThrough<T>::HPassThrough(std::string id, HWriterConsumer<T>* consumer, size_t blocksize):
+    HFilter<T>(id, consumer, blocksize)
 {
     HLog("HPassThrough(HWriterConsumer*, %d)", blocksize);
 }
 
 template <class T>
-HPassThrough<T>::HPassThrough(std::string id, HReader<T>* reader, size_t blocksize, HProbe<T>* probe):
-    HFilter<T>(id, reader, blocksize, probe)
+HPassThrough<T>::HPassThrough(std::string id, HReader<T>* reader, size_t blocksize):
+    HFilter<T>(id, reader, blocksize)
 {
     HLog("HPassThrough(HReader*, %d)", blocksize);
 }
@@ -48,40 +47,40 @@ Explicit instantiation
 
 // HPassThrough
 template
-HPassThrough<int8_t>::HPassThrough(std::string id, HWriter<int8_t>* writer, size_t blocksize, HProbe<int8_t>* probe);
+HPassThrough<int8_t>::HPassThrough(std::string id, HWriter<int8_t>* writer, size_t blocksize);
 
 template
-HPassThrough<uint8_t>::HPassThrough(std::string id, HWriter<uint8_t>* writer, size_t blocksize, HProbe<uint8_t>* probe);
+HPassThrough<uint8_t>::HPassThrough(std::string id, HWriter<uint8_t>* writer, size_t blocksize);
 
 template
-HPassThrough<int16_t>::HPassThrough(std::string id, HWriter<int16_t>* writer, size_t blocksize, HProbe<int16_t>* probe);
+HPassThrough<int16_t>::HPassThrough(std::string id, HWriter<int16_t>* writer, size_t blocksize);
 
 template
-HPassThrough<int32_t>::HPassThrough(std::string id, HWriter<int32_t>* writer, size_t blocksize, HProbe<int32_t>* probe);
+HPassThrough<int32_t>::HPassThrough(std::string id, HWriter<int32_t>* writer, size_t blocksize);
 
 template
-HPassThrough<int8_t>::HPassThrough(std::string id, HWriterConsumer<int8_t>* consumer, size_t blocksize, HProbe<int8_t>* probe);
+HPassThrough<int8_t>::HPassThrough(std::string id, HWriterConsumer<int8_t>* consumer, size_t blocksize);
 
 template
-HPassThrough<uint8_t>::HPassThrough(std::string id, HWriterConsumer<uint8_t>* consumer, size_t blocksize, HProbe<uint8_t>* probe);
+HPassThrough<uint8_t>::HPassThrough(std::string id, HWriterConsumer<uint8_t>* consumer, size_t blocksize);
 
 template
-HPassThrough<int16_t>::HPassThrough(std::string id, HWriterConsumer<int16_t>* consumer, size_t blocksize, HProbe<int16_t>* probe);
+HPassThrough<int16_t>::HPassThrough(std::string id, HWriterConsumer<int16_t>* consumer, size_t blocksize);
 
 template
-HPassThrough<int32_t>::HPassThrough(std::string id, HWriterConsumer<int32_t>* consumer, size_t blocksize, HProbe<int32_t>* probe);
+HPassThrough<int32_t>::HPassThrough(std::string id, HWriterConsumer<int32_t>* consumer, size_t blocksize);
 
 template
-HPassThrough<int8_t>::HPassThrough(std::string id, HReader<int8_t>* reader, size_t blocksize, HProbe<int8_t>* probe);
+HPassThrough<int8_t>::HPassThrough(std::string id, HReader<int8_t>* reader, size_t blocksize);
 
 template
-HPassThrough<uint8_t>::HPassThrough(std::string id, HReader<uint8_t>* reader, size_t blocksize, HProbe<uint8_t>* probe);
+HPassThrough<uint8_t>::HPassThrough(std::string id, HReader<uint8_t>* reader, size_t blocksize);
 
 template
-HPassThrough<int16_t>::HPassThrough(std::string id, HReader<int16_t>* reader, size_t blocksize, HProbe<int16_t>* probe);
+HPassThrough<int16_t>::HPassThrough(std::string id, HReader<int16_t>* reader, size_t blocksize);
 
 template
-HPassThrough<int32_t>::HPassThrough(std::string id, HReader<int32_t>* reader, size_t blocksize, HProbe<int32_t>* probe);
+HPassThrough<int32_t>::HPassThrough(std::string id, HReader<int32_t>* reader, size_t blocksize);
 
 // ~HPassThrough()
 template

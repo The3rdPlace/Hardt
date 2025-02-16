@@ -5,14 +5,13 @@
 #include "hmultiplier.h"
 
 template <class T>
-HMultiplier<T>::HMultiplier(std::string id, HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<T>* probe):
+HMultiplier<T>::HMultiplier(std::string id, HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize):
     HReader<T>(id),
     HWriter<T>(id),
     HWriterConsumer<T>(id),
     _reader(reader),
     _writer(NULL),
     _blocksize(blocksize),
-    _probe(probe),
     _scaling(oscillatorAmplitude)
 {
     HLog("HMultiplier(HReader*, %d, %d, %d)", rate, frequency, blocksize);
@@ -20,14 +19,13 @@ HMultiplier<T>::HMultiplier(std::string id, HReader<T>* reader, H_SAMPLE_RATE ra
 }
 
 template <class T>
-HMultiplier<T>::HMultiplier(std::string id, HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<T>* probe):
+HMultiplier<T>::HMultiplier(std::string id, HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize):
     HReader<T>(id),
     HWriter<T>(id),
     HWriterConsumer<T>(id),
     _reader(NULL),
     _writer(writer),
     _blocksize(blocksize),
-    _probe(probe),
     _scaling(oscillatorAmplitude)
 {
     HLog("HMultiplier(HWriter*, %d, %d, %d)", rate, frequency, blocksize);
@@ -35,14 +33,13 @@ HMultiplier<T>::HMultiplier(std::string id, HWriter<T>* writer, H_SAMPLE_RATE ra
 }
 
 template <class T>
-HMultiplier<T>::HMultiplier(std::string id, HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<T>* probe):
+HMultiplier<T>::HMultiplier(std::string id, HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize):
     HReader<T>(id),
     HWriter<T>(id),
     HWriterConsumer<T>(id),
     _reader(NULL),
     _writer(NULL),
     _blocksize(blocksize),
-    _probe(probe),
     _scaling(oscillatorAmplitude)
 {
     HLog("HMultiplier(HWriterConsumer*, %d, %d, %d)", rate, frequency, blocksize);
@@ -90,11 +87,6 @@ int HMultiplier<T>::ReadImpl(T* dest, size_t blocksize)
     // Mix signals
     Mix(_buffer, dest, blocksize);
 
-    if( _probe != NULL )
-    {
-        _probe->Write(dest, blocksize);
-    }
-
     return blocksize;
 }
 
@@ -116,11 +108,6 @@ int HMultiplier<T>::WriteImpl(T* src, size_t blocksize)
     {
         HLog("Zero write to writer, stopping");
         return 0;
-    }
-
-    if( _probe != NULL )
-    {
-        _probe->Write(_buffer, blocksize);
     }
 
     return blocksize;
@@ -178,40 +165,40 @@ Explicit instantiation
 
 // HMultiplier
 template
-HMultiplier<int8_t>::HMultiplier(std::string id, HReader<int8_t>* reader_1, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<int8_t>* probe);
+HMultiplier<int8_t>::HMultiplier(std::string id, HReader<int8_t>* reader_1, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-HMultiplier<uint8_t>::HMultiplier(std::string id, HReader<uint8_t>* reader_1, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<uint8_t>* probe);
+HMultiplier<uint8_t>::HMultiplier(std::string id, HReader<uint8_t>* reader_1, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-HMultiplier<int16_t>::HMultiplier(std::string id, HReader<int16_t>* reader_1, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<int16_t>* probe);
+HMultiplier<int16_t>::HMultiplier(std::string id, HReader<int16_t>* reader_1, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-HMultiplier<int32_t>::HMultiplier(std::string id, HReader<int32_t>* reader_1, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<int32_t>* probe);
+HMultiplier<int32_t>::HMultiplier(std::string id, HReader<int32_t>* reader_1, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-HMultiplier<int8_t>::HMultiplier(std::string id, HWriter<int8_t>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<int8_t>* probe);
+HMultiplier<int8_t>::HMultiplier(std::string id, HWriter<int8_t>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-HMultiplier<uint8_t>::HMultiplier(std::string id, HWriter<uint8_t>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<uint8_t>* probe);
+HMultiplier<uint8_t>::HMultiplier(std::string id, HWriter<uint8_t>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-HMultiplier<int16_t>::HMultiplier(std::string id, HWriter<int16_t>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<int16_t>* probe);
+HMultiplier<int16_t>::HMultiplier(std::string id, HWriter<int16_t>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-HMultiplier<int32_t>::HMultiplier(std::string id, HWriter<int32_t>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<int32_t>* probe);
+HMultiplier<int32_t>::HMultiplier(std::string id, HWriter<int32_t>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-HMultiplier<int8_t>::HMultiplier(std::string id, HWriterConsumer<int8_t>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<int8_t>* probe);
+HMultiplier<int8_t>::HMultiplier(std::string id, HWriterConsumer<int8_t>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-HMultiplier<uint8_t>::HMultiplier(std::string id, HWriterConsumer<uint8_t>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<uint8_t>* probe);
+HMultiplier<uint8_t>::HMultiplier(std::string id, HWriterConsumer<uint8_t>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-HMultiplier<int16_t>::HMultiplier(std::string id, HWriterConsumer<int16_t>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<int16_t>* probe);
+HMultiplier<int16_t>::HMultiplier(std::string id, HWriterConsumer<int16_t>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 template
-HMultiplier<int32_t>::HMultiplier(std::string id, HWriterConsumer<int32_t>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<int32_t>* probe);
+HMultiplier<int32_t>::HMultiplier(std::string id, HWriterConsumer<int32_t>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
 // ~HMultiplier()
 template

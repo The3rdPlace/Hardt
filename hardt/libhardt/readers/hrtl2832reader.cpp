@@ -11,14 +11,12 @@ Class implementation
 ********************************************************************/
 
 template <class T>
-HRtl2832Reader<T>::HRtl2832Reader(std::string id, int device, H_SAMPLE_RATE rate, HRtl2832::MODE mode, int gain, int32_t frequency, int blocksize, bool offset, int correction, HProbe<T>* probe):
+HRtl2832Reader<T>::HRtl2832Reader(std::string id, int device, H_SAMPLE_RATE rate, HRtl2832::MODE mode, int gain, int32_t frequency, int blocksize, bool offset, int correction):
     HReader<T>(id),
     _isInitialized(false),
     _isStarted(false),
     _mode(mode),
-    _blocksize(blocksize),
-    _probe(probe)
-{
+    _blocksize(blocksize) {
     HLog("HRtl2832Reader(device=%d, rate=%d, blocksize=%d)", device, rate, blocksize);
 
     // Buffer length must be a multiple of 512 and maximum 16384/8192
@@ -249,11 +247,6 @@ int HRtl2832Reader<T>::ReadImpl(T* dest, size_t blocksize)
             _cbd.rdloc = 0;
         }
 
-        // Write to probe ?
-        if( _probe != nullptr ) {
-            _probe->Write(dest, blocksize);
-        }
-
         // We always reads the entire buffer as given
         return blocksize;
     }
@@ -437,16 +430,16 @@ Explicit instantiation
 
 // HRtl2832Reader()
 template
-HRtl2832Reader<int8_t>::HRtl2832Reader(std::string id, int device, H_SAMPLE_RATE rate, HRtl2832::MODE mode, int gain, int32_t frequency, int blocksize, bool offset, int correction, HProbe<int8_t>* probe);
+HRtl2832Reader<int8_t>::HRtl2832Reader(std::string id, int device, H_SAMPLE_RATE rate, HRtl2832::MODE mode, int gain, int32_t frequency, int blocksize, bool offset, int correction);
 
 template
-HRtl2832Reader<uint8_t>::HRtl2832Reader(std::string id, int device, H_SAMPLE_RATE rate, HRtl2832::MODE mode, int gain, int32_t frequency, int blocksize, bool offset, int correction, HProbe<uint8_t>* probe);
+HRtl2832Reader<uint8_t>::HRtl2832Reader(std::string id, int device, H_SAMPLE_RATE rate, HRtl2832::MODE mode, int gain, int32_t frequency, int blocksize, bool offset, int correction);
 
 template
-HRtl2832Reader<int16_t>::HRtl2832Reader(std::string id, int device, H_SAMPLE_RATE rate, HRtl2832::MODE mode, int gain, int32_t frequency, int blocksize, bool offset, int correction, HProbe<int16_t>* probe);
+HRtl2832Reader<int16_t>::HRtl2832Reader(std::string id, int device, H_SAMPLE_RATE rate, HRtl2832::MODE mode, int gain, int32_t frequency, int blocksize, bool offset, int correction);
 
 template
-HRtl2832Reader<int32_t>::HRtl2832Reader(std::string id, int device, H_SAMPLE_RATE rate, HRtl2832::MODE mode, int gain, int32_t frequency, int blocksize, bool offset, int correction, HProbe<int32_t>* probe);
+HRtl2832Reader<int32_t>::HRtl2832Reader(std::string id, int device, H_SAMPLE_RATE rate, HRtl2832::MODE mode, int gain, int32_t frequency, int blocksize, bool offset, int correction);
 
 // ~HRtl2832Reader()
 template

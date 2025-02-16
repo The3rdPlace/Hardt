@@ -34,13 +34,13 @@ class HCombFilter : public HFilter<T>
     public:
 
         /** Construct a new HCombFilter that writes to a writer */
-        HCombFilter(std::string id, HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize, HProbe<T>* probe = NULL);
+        HCombFilter(std::string id, HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize);
 
         /** Construct a new HCombFilter that registers with an upstream writer */
-        HCombFilter(std::string id, HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize, HProbe<T>* probe = NULL);
+        HCombFilter(std::string id, HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize);
 
         /** Constructs a new HCombFilter that reads from a reader */
-        HCombFilter(std::string id, HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize, HProbe<T>* probe = NULL);
+        HCombFilter(std::string id, HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, float alpha, size_t blocksize);
 
         /** Default destructor */
         ~HCombFilter();

@@ -14,20 +14,20 @@ class HBiQuadFilter: public HIirFilter<T>
 
         /** Construct a new HBiQuadFilter. The biquad type must be given together with the base
             datatype and the filter specifications */
-        HBiQuadFilter(std::string id, HWriter<T>* writer, float fCutOff, float rate, float quality, float gain,  size_t blocksize, HProbe<T>* probe = NULL):
-            HIirFilter<T>(id, writer, (BIQUAD(fCutOff, rate, quality, gain)).Calculate(), 5, blocksize, probe)
+        HBiQuadFilter(std::string id, HWriter<T>* writer, float fCutOff, float rate, float quality, float gain,  size_t blocksize):
+            HIirFilter<T>(id, writer, (BIQUAD(fCutOff, rate, quality, gain)).Calculate(), 5, blocksize)
         {}
 
         /** Construct a new HBiQuadFilter. The biquad type must be given together with the base
             datatype and the filter specifications */
-        HBiQuadFilter(std::string id, HWriterConsumer<T>* consumer, float fCutOff, float rate, float quality, float gain,  size_t blocksize, HProbe<T>* probe = NULL):
-            HIirFilter<T>(id, consumer, (BIQUAD(fCutOff, rate, quality, gain)).Calculate(), 5, blocksize, probe)
+        HBiQuadFilter(std::string id, HWriterConsumer<T>* consumer, float fCutOff, float rate, float quality, float gain,  size_t blocksize):
+            HIirFilter<T>(id, consumer, (BIQUAD(fCutOff, rate, quality, gain)).Calculate(), 5, blocksize)
         {}
 
         /** Construct a new HBiQuadFilter. The biquad type must be given together with the base
             datatype and the filter specifications */
-        HBiQuadFilter(std::string id, HReader<T>* reader, float fCutOff, float rate, float quality, float gain,  size_t blocksize, HProbe<T>* probe = NULL):
-            HIirFilter<T>(id, reader, (BIQUAD(fCutOff, rate, quality, gain)).Calculate(), 5, blocksize, probe)
+        HBiQuadFilter(std::string id, HReader<T>* reader, float fCutOff, float rate, float quality, float gain,  size_t blocksize):
+            HIirFilter<T>(id, reader, (BIQUAD(fCutOff, rate, quality, gain)).Calculate(), 5, blocksize)
         {}
 
         /** Default destructor */

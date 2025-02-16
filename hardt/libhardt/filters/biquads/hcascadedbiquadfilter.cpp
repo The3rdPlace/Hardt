@@ -3,7 +3,6 @@
 
 #include "hwriter.h"
 #include "hwriterconsumer.h"
-#include "hprobe.h"
 #include "hreader.h"
 
 #include <vector>
@@ -11,7 +10,7 @@
 #include "hcascadedbiquadfilter.h"
 
 template <class T>
-HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HWriter<T>* writer, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
+HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HWriter<T>* writer, float* coefficients, int length, size_t blocksize):
     HReader<T>(id),
     HWriter<T>(id),
     HWriterConsumer<T>(id),
@@ -33,7 +32,7 @@ HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HWriter<T>* writ
     {
         if( i == _filterCount - 1 )
         {
-            _filters[i] = new HIirFilter<T>(id, writer, &coefficients[i * 5], 5, blocksize, probe);
+            _filters[i] = new HIirFilter<T>(id, writer, &coefficients[i * 5], 5, blocksize);
         }
         else
         {
@@ -43,7 +42,7 @@ HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HWriter<T>* writ
 }
 
 template <class T>
-HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
+HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize):
     HReader<T>(id),
     HWriter<T>(id),
     HWriterConsumer<T>(id),
@@ -65,7 +64,7 @@ HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<
     {
         if( i == 0 )
         {
-            _filters[i] = new HIirFilter<T>(id, consumer, &coefficients[i * 5], 5, blocksize, probe);
+            _filters[i] = new HIirFilter<T>(id, consumer, &coefficients[i * 5], 5, blocksize);
         }
         else
         {
@@ -75,7 +74,7 @@ HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<
 }
 
 template <class T>
-HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HReader<T>* reader, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
+HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HReader<T>* reader, float* coefficients, int length, size_t blocksize):
     HReader<T>(id),
     HWriter<T>(id),
     HWriterConsumer<T>(id),
@@ -97,7 +96,7 @@ HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HReader<T>* read
     {
         if( i == 0 )
         {
-            _filters[i] = new HIirFilter<T>(id, reader, &coefficients[i * 5], 5, blocksize, probe);
+            _filters[i] = new HIirFilter<T>(id, reader, &coefficients[i * 5], 5, blocksize);
         }
         else
         {
@@ -107,7 +106,7 @@ HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HReader<T>* read
 }
 
 template <class T>
-HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HWriter<T>* writer, std::vector<float*> biquadCoefficients, size_t blocksize, HProbe<T>* probe):
+HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HWriter<T>* writer, std::vector<float*> biquadCoefficients, size_t blocksize):
     HReader<T>(id),
     HWriter<T>(id),
     HWriterConsumer<T>(id),
@@ -124,7 +123,7 @@ HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HWriter<T>* writ
     {
         if( i == _filterCount - 1 )
         {
-            _filters[i] = new HIirFilter<T>(id, writer, biquadCoefficients.at(i), 5, blocksize, probe);
+            _filters[i] = new HIirFilter<T>(id, writer, biquadCoefficients.at(i), 5, blocksize);
         }
         else
         {
@@ -134,7 +133,7 @@ HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HWriter<T>* writ
 }
 
 template <class T>
-HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<T>* consumer, std::vector<float*> biquadCoefficients, size_t blocksize, HProbe<T>* probe):
+HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<T>* consumer, std::vector<float*> biquadCoefficients, size_t blocksize):
     HReader<T>(id),
     HWriter<T>(id),
     HWriterConsumer<T>(id),
@@ -151,7 +150,7 @@ HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<
     {
         if( i == 0 )
         {
-            _filters[i] = new HIirFilter<T>(id, consumer, biquadCoefficients.at(i), 5, blocksize, probe);
+            _filters[i] = new HIirFilter<T>(id, consumer, biquadCoefficients.at(i), 5, blocksize);
         }
         else
         {
@@ -161,7 +160,7 @@ HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<
 }
 
 template <class T>
-HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HReader<T>* reader, std::vector<float*> biquadCoefficients, size_t blocksize, HProbe<T>* probe):
+HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HReader<T>* reader, std::vector<float*> biquadCoefficients, size_t blocksize):
     HReader<T>(id),
     HWriter<T>(id),
     HWriterConsumer<T>(id),
@@ -178,7 +177,7 @@ HCascadedBiQuadFilter<T>::HCascadedBiQuadFilter(std::string id, HReader<T>* read
     {
         if( i == 0 )
         {
-            _filters[i] = new HIirFilter<T>(id, reader, biquadCoefficients.at(i), 5, blocksize, probe);
+            _filters[i] = new HIirFilter<T>(id, reader, biquadCoefficients.at(i), 5, blocksize);
         }
         else
         {
@@ -294,76 +293,76 @@ Explicit instantiation
 
 // HCascadedBiQuadFilter
 template
-HCascadedBiQuadFilter<int8_t>::HCascadedBiQuadFilter(std::string id, HWriter<int8_t>* writer, float* coefficients, int length, size_t blocksize, HProbe<int8_t>* probe);
+HCascadedBiQuadFilter<int8_t>::HCascadedBiQuadFilter(std::string id, HWriter<int8_t>* writer, float* coefficients, int length, size_t blocksize);
 
 template
-HCascadedBiQuadFilter<uint8_t>::HCascadedBiQuadFilter(std::string id, HWriter<uint8_t>* writer, float* coefficients, int length, size_t blocksize, HProbe<uint8_t>* probe);
+HCascadedBiQuadFilter<uint8_t>::HCascadedBiQuadFilter(std::string id, HWriter<uint8_t>* writer, float* coefficients, int length, size_t blocksize);
 
 template
-HCascadedBiQuadFilter<int16_t>::HCascadedBiQuadFilter(std::string id, HWriter<int16_t>* writer, float* coefficients, int length, size_t blocksize, HProbe<int16_t>* probe);
+HCascadedBiQuadFilter<int16_t>::HCascadedBiQuadFilter(std::string id, HWriter<int16_t>* writer, float* coefficients, int length, size_t blocksize);
 
 template
-HCascadedBiQuadFilter<int32_t>::HCascadedBiQuadFilter(std::string id, HWriter<int32_t>* writer, float* coefficients, int length, size_t blocksize, HProbe<int32_t>* probe);
+HCascadedBiQuadFilter<int32_t>::HCascadedBiQuadFilter(std::string id, HWriter<int32_t>* writer, float* coefficients, int length, size_t blocksize);
 
 template
-HCascadedBiQuadFilter<int8_t>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<int8_t>* consumer, float* coefficients, int length, size_t blocksize, HProbe<int8_t>* probe);
+HCascadedBiQuadFilter<int8_t>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<int8_t>* consumer, float* coefficients, int length, size_t blocksize);
 
 template
-HCascadedBiQuadFilter<uint8_t>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<uint8_t>* consumer, float* coefficients, int length, size_t blocksize, HProbe<uint8_t>* probe);
+HCascadedBiQuadFilter<uint8_t>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<uint8_t>* consumer, float* coefficients, int length, size_t blocksize);
 
 template
-HCascadedBiQuadFilter<int16_t>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<int16_t>* consumer, float* coefficients, int length, size_t blocksize, HProbe<int16_t>* probe);
+HCascadedBiQuadFilter<int16_t>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<int16_t>* consumer, float* coefficients, int length, size_t blocksize);
 
 template
-HCascadedBiQuadFilter<int32_t>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<int32_t>* consumer, float* coefficients, int length, size_t blocksize, HProbe<int32_t>* probe);
+HCascadedBiQuadFilter<int32_t>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<int32_t>* consumer, float* coefficients, int length, size_t blocksize);
 
 template
-HCascadedBiQuadFilter<int8_t>::HCascadedBiQuadFilter(std::string id, HReader<int8_t>* reader, float* coefficients, int length, size_t blocksize, HProbe<int8_t>* probe);
+HCascadedBiQuadFilter<int8_t>::HCascadedBiQuadFilter(std::string id, HReader<int8_t>* reader, float* coefficients, int length, size_t blocksize);
 
 template
-HCascadedBiQuadFilter<uint8_t>::HCascadedBiQuadFilter(std::string id, HReader<uint8_t>* reader, float* coefficients, int length, size_t blocksize, HProbe<uint8_t>* probe);
+HCascadedBiQuadFilter<uint8_t>::HCascadedBiQuadFilter(std::string id, HReader<uint8_t>* reader, float* coefficients, int length, size_t blocksize);
 
 template
-HCascadedBiQuadFilter<int16_t>::HCascadedBiQuadFilter(std::string id, HReader<int16_t>* reader, float* coefficients, int length, size_t blocksize, HProbe<int16_t>* probe);
+HCascadedBiQuadFilter<int16_t>::HCascadedBiQuadFilter(std::string id, HReader<int16_t>* reader, float* coefficients, int length, size_t blocksize);
 
 template
-HCascadedBiQuadFilter<int32_t>::HCascadedBiQuadFilter(std::string id, HReader<int32_t>* reader, float* coefficients, int length, size_t blocksize, HProbe<int32_t>* probe);
+HCascadedBiQuadFilter<int32_t>::HCascadedBiQuadFilter(std::string id, HReader<int32_t>* reader, float* coefficients, int length, size_t blocksize);
 
 template
-HCascadedBiQuadFilter<int8_t>::HCascadedBiQuadFilter(std::string id, HWriter<int8_t>* writer, std::vector<float*> biquadCoefficients, size_t blocksize, HProbe<int8_t>* probe);
+HCascadedBiQuadFilter<int8_t>::HCascadedBiQuadFilter(std::string id, HWriter<int8_t>* writer, std::vector<float*> biquadCoefficients, size_t blocksize);
 
 template
-HCascadedBiQuadFilter<uint8_t>::HCascadedBiQuadFilter(std::string id, HWriter<uint8_t>* writer, std::vector<float*> biquadCoefficients, size_t blocksize, HProbe<uint8_t>* probe);
+HCascadedBiQuadFilter<uint8_t>::HCascadedBiQuadFilter(std::string id, HWriter<uint8_t>* writer, std::vector<float*> biquadCoefficients, size_t blocksize);
 
 template
-HCascadedBiQuadFilter<int16_t>::HCascadedBiQuadFilter(std::string id, HWriter<int16_t>* writer, std::vector<float*> biquadCoefficients, size_t blocksize, HProbe<int16_t>* probe);
+HCascadedBiQuadFilter<int16_t>::HCascadedBiQuadFilter(std::string id, HWriter<int16_t>* writer, std::vector<float*> biquadCoefficients, size_t blocksize);
 
 template
-HCascadedBiQuadFilter<int32_t>::HCascadedBiQuadFilter(std::string id, HWriter<int32_t>* writer, std::vector<float*> biquadCoefficients, size_t blocksize, HProbe<int32_t>* probe);
+HCascadedBiQuadFilter<int32_t>::HCascadedBiQuadFilter(std::string id, HWriter<int32_t>* writer, std::vector<float*> biquadCoefficients, size_t blocksize);
 
 template
-HCascadedBiQuadFilter<int8_t>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<int8_t>* consumer, std::vector<float*> biquadCoefficients, size_t blocksize, HProbe<int8_t>* probe);
+HCascadedBiQuadFilter<int8_t>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<int8_t>* consumer, std::vector<float*> biquadCoefficients, size_t blocksize);
 
 template
-HCascadedBiQuadFilter<uint8_t>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<uint8_t>* consumer, std::vector<float*> biquadCoefficients, size_t blocksize, HProbe<uint8_t>* probe);
+HCascadedBiQuadFilter<uint8_t>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<uint8_t>* consumer, std::vector<float*> biquadCoefficients, size_t blocksize);
 
 template
-HCascadedBiQuadFilter<int16_t>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<int16_t>* consumer, std::vector<float*> biquadCoefficients, size_t blocksize, HProbe<int16_t>* probe);
+HCascadedBiQuadFilter<int16_t>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<int16_t>* consumer, std::vector<float*> biquadCoefficients, size_t blocksize);
 
 template
-HCascadedBiQuadFilter<int32_t>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<int32_t>* consumer, std::vector<float*> biquadCoefficients, size_t blocksize, HProbe<int32_t>* probe);
+HCascadedBiQuadFilter<int32_t>::HCascadedBiQuadFilter(std::string id, HWriterConsumer<int32_t>* consumer, std::vector<float*> biquadCoefficients, size_t blocksize);
 
 template
-HCascadedBiQuadFilter<int8_t>::HCascadedBiQuadFilter(std::string id, HReader<int8_t>* reader, std::vector<float*> biquadCoefficients, size_t blocksize, HProbe<int8_t>* probe);
+HCascadedBiQuadFilter<int8_t>::HCascadedBiQuadFilter(std::string id, HReader<int8_t>* reader, std::vector<float*> biquadCoefficients, size_t blocksize);
 
 template
-HCascadedBiQuadFilter<uint8_t>::HCascadedBiQuadFilter(std::string id, HReader<uint8_t>* reader, std::vector<float*> biquadCoefficients, size_t blocksize, HProbe<uint8_t>* probe);
+HCascadedBiQuadFilter<uint8_t>::HCascadedBiQuadFilter(std::string id, HReader<uint8_t>* reader, std::vector<float*> biquadCoefficients, size_t blocksize);
 
 template
-HCascadedBiQuadFilter<int16_t>::HCascadedBiQuadFilter(std::string id, HReader<int16_t>* reader, std::vector<float*> biquadCoefficients, size_t blocksize, HProbe<int16_t>* probe);
+HCascadedBiQuadFilter<int16_t>::HCascadedBiQuadFilter(std::string id, HReader<int16_t>* reader, std::vector<float*> biquadCoefficients, size_t blocksize);
 
 template
-HCascadedBiQuadFilter<int32_t>::HCascadedBiQuadFilter(std::string id, HReader<int32_t>* reader, std::vector<float*> biquadCoefficients, size_t blocksize, HProbe<int32_t>* probe);
+HCascadedBiQuadFilter<int32_t>::HCascadedBiQuadFilter(std::string id, HReader<int32_t>* reader, std::vector<float*> biquadCoefficients, size_t blocksize);
 
 
 // ~HCascadedBiQuadFilter()

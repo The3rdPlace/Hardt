@@ -4,8 +4,8 @@
 #include "hbaseband.h"
 
 template <class T>
-HBaseband<T>::HBaseband(std::string id, HWriter<T>* writer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<T>* probe):
-    HFilter<T>(id, writer, blocksize, probe),
+HBaseband<T>::HBaseband(std::string id, HWriter<T>* writer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize):
+    HFilter<T>(id, writer, blocksize),
     _blocksize(blocksize),
     _rate(rate),
     _center(center),
@@ -17,8 +17,8 @@ HBaseband<T>::HBaseband(std::string id, HWriter<T>* writer, H_SAMPLE_RATE rate, 
 }
 
 template <class T>
-HBaseband<T>::HBaseband(std::string id, HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<T>* probe):
-    HFilter<T>(id, consumer, blocksize, probe),
+HBaseband<T>::HBaseband(std::string id, HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize):
+    HFilter<T>(id, consumer, blocksize),
     _blocksize(blocksize),
     _rate(rate),
     _center(center),
@@ -31,8 +31,8 @@ HBaseband<T>::HBaseband(std::string id, HWriterConsumer<T>* consumer, H_SAMPLE_R
 }
 
 template <class T>
-HBaseband<T>::HBaseband(std::string id, HReader<T>* reader, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<T>* probe):
-    HFilter<T>(id, reader, blocksize, probe),
+HBaseband<T>::HBaseband(std::string id, HReader<T>* reader, H_SAMPLE_RATE rate, int center, int width, size_t blocksize):
+    HFilter<T>(id, reader, blocksize),
     _blocksize(blocksize),
     _rate(rate),
     _center(center),
@@ -122,40 +122,40 @@ Explicit instantiation
 
 // HBaseband
 template
-HBaseband<int8_t>::HBaseband(std::string id, HWriter<int8_t>* writer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<int8_t>* probe);
+HBaseband<int8_t>::HBaseband(std::string id, HWriter<int8_t>* writer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize);
 
 template
-HBaseband<uint8_t>::HBaseband(std::string id, HWriter<uint8_t>* writer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<uint8_t>* probe);
+HBaseband<uint8_t>::HBaseband(std::string id, HWriter<uint8_t>* writer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize);
 
 template
-HBaseband<int16_t>::HBaseband(std::string id, HWriter<int16_t>* writer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<int16_t>* probe);
+HBaseband<int16_t>::HBaseband(std::string id, HWriter<int16_t>* writer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize);
 
 template
-HBaseband<int32_t>::HBaseband(std::string id, HWriter<int32_t>* writer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<int32_t>* probe);
+HBaseband<int32_t>::HBaseband(std::string id, HWriter<int32_t>* writer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize);
 
 template
-HBaseband<int8_t>::HBaseband(std::string id, HWriterConsumer<int8_t>* consumer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<int8_t>* probe);
+HBaseband<int8_t>::HBaseband(std::string id, HWriterConsumer<int8_t>* consumer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize);
 
 template
-HBaseband<uint8_t>::HBaseband(std::string id, HWriterConsumer<uint8_t>* consumer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<uint8_t>* probe);
+HBaseband<uint8_t>::HBaseband(std::string id, HWriterConsumer<uint8_t>* consumer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize);
 
 template
-HBaseband<int16_t>::HBaseband(std::string id, HWriterConsumer<int16_t>* consumer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<int16_t>* probe);
+HBaseband<int16_t>::HBaseband(std::string id, HWriterConsumer<int16_t>* consumer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize);
 
 template
-HBaseband<int32_t>::HBaseband(std::string id, HWriterConsumer<int32_t>* consumer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<int32_t>* probe);
+HBaseband<int32_t>::HBaseband(std::string id, HWriterConsumer<int32_t>* consumer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize);
 
 template
-HBaseband<int8_t>::HBaseband(std::string id, HReader<int8_t>* reader, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<int8_t>* probe);
+HBaseband<int8_t>::HBaseband(std::string id, HReader<int8_t>* reader, H_SAMPLE_RATE rate, int center, int width, size_t blocksize);
 
 template
-HBaseband<uint8_t>::HBaseband(std::string id, HReader<uint8_t>* reader, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<uint8_t>* probe);
+HBaseband<uint8_t>::HBaseband(std::string id, HReader<uint8_t>* reader, H_SAMPLE_RATE rate, int center, int width, size_t blocksize);
 
 template
-HBaseband<int16_t>::HBaseband(std::string id, HReader<int16_t>* reader, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<int16_t>* probe);
+HBaseband<int16_t>::HBaseband(std::string id, HReader<int16_t>* reader, H_SAMPLE_RATE rate, int center, int width, size_t blocksize);
 
 template
-HBaseband<int32_t>::HBaseband(std::string id, HReader<int32_t>* reader, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<int32_t>* probe);
+HBaseband<int32_t>::HBaseband(std::string id, HReader<int32_t>* reader, H_SAMPLE_RATE rate, int center, int width, size_t blocksize);
 
 // ~HBaseband()
 template

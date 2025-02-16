@@ -5,7 +5,6 @@
 #include "hreader.h"
 #include "hwriter.h"
 #include "hwriterconsumer.h"
-#include "hprobe.h"
 #include "hsoundcard.h"
 #include "hfft.h"
 
@@ -39,13 +38,13 @@ class HBaseband : public HFilter<T>
     public:
 
         /** Construct a new HBaseband filter that writes to a writer */
-        HBaseband(std::string id, HWriter<T>* writer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<T>* probe = NULL);
+        HBaseband(std::string id, HWriter<T>* writer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize);
 
         /** Construct a new HBaseband filter that registers with an upstream writer */
-        HBaseband(std::string id, HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<T>* probe = NULL);
+        HBaseband(std::string id, HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int center, int width, size_t blocksize);
 
         /** Construct a new HBaseband filter that reads from a reader */
-        HBaseband(std::string id, HReader<T>* reader, H_SAMPLE_RATE rate, int center, int width, size_t blocksize, HProbe<T>* probe = NULL);
+        HBaseband(std::string id, HReader<T>* reader, H_SAMPLE_RATE rate, int center, int width, size_t blocksize);
 
         /** Default destructor */
         ~HBaseband();

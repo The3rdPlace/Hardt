@@ -28,18 +28,16 @@ class HIqMultiplier : public HReader<T>, public HWriter<T>, public HWriterConsum
         HLocalOscillator<T>* _localCosOscillator;
         int _scaling;
 
-        HProbe<T>* _probe;
-
     public:
 
         /** Construct a new HIqMultiplier (frequency mixer) */
-        HIqMultiplier(std::string id, HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<T>* probe = NULL);
+        HIqMultiplier(std::string id, HReader<T>* reader, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
         /** Construct a new HIqMultiplier (frequency mixer) */
-        HIqMultiplier(std::string id, HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<T>* probe = NULL);
+        HIqMultiplier(std::string id, HWriter<T>* writer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
         /** Construct a new HIqMultiplier (frequency mixer) */
-        HIqMultiplier(std::string id, HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize, HProbe<T>* probe = NULL);
+        HIqMultiplier(std::string id, HWriterConsumer<T>* consumer, H_SAMPLE_RATE rate, int frequency, int oscillatorAmplitude, size_t blocksize);
 
         /** Default destructor */
         ~HIqMultiplier();

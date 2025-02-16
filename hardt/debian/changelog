@@ -1,3 +1,10 @@
+hardt (2.0-1) RELEASED; urgency=low
+
+  [ Henrik Witt-Hansen ]
+  * New major version with some cleanups and added an id on all classes
+
+ -- Mackie <henrik@hardttoolkit.org>  Sat, 15 Feb 2025 21:16:00 +0100
+
 hardt (1.2-13) RELEASED; urgency=medium
 
   [ Henrik Witt-Hansen ]

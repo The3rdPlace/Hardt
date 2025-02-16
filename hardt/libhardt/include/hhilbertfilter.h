@@ -24,20 +24,20 @@ class HHilbertFilter : public HFilter<T>
     public:
 
         /** Construct a new HHilbertFilter object that writes to a writer */
-        HHilbertFilter(std::string id, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe = NULL):
-            HFilter<T>(id, writer, blocksize, probe) {
+        HHilbertFilter(std::string id, HWriter<T>* writer, size_t blocksize):
+            HFilter<T>(id, writer, blocksize) {
             Init(blocksize);
         }
 
         /** Construct a new HHilbertFilter object that registers with an upstream writer */
-        HHilbertFilter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe = NULL):
-            HFilter<T>(id, consumer, blocksize, probe){
+        HHilbertFilter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize):
+            HFilter<T>(id, consumer, blocksize){
             Init(blocksize);
         }
 
         /** Construct a new HHilbertFilter object that reads from a reader */
-        HHilbertFilter(std::string id, HReader<T>* reader, size_t blocksize, HProbe<T>* probe = NULL):
-            HFilter<T>(id, reader, blocksize, probe){
+        HHilbertFilter(std::string id, HReader<T>* reader, size_t blocksize):
+            HFilter<T>(id, reader, blocksize){
             Init(blocksize);
         }
 

@@ -4,7 +4,6 @@
 #include "hreader.h"
 #include "hwriter.h"
 #include "hwriterconsumer.h"
-#include "hprobe.h"
 
 #include <vector>
 
@@ -17,8 +16,6 @@ class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
         HWriter<T>* _writer;
         HReader<T>* _reader;
         size_t _blocksize;
-
-        HProbe<T>* _probe;
 
         int _factor;
         T* _buffer;        
@@ -44,9 +41,9 @@ class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
          *                'collect=false'. A write of 1024 samples will then immediately
          *                result in a write of 1024/factor samples to the next writer.
          * @param start Begin decimating from this position in the buffer
-         * @param probe Probe
+         *
          */
-        HDecimator(std::string id, HWriter<T>* writer, int factor, size_t blocksize, bool collect = true, int start = 0, HProbe<T>* probe = nullptr);
+        HDecimator(std::string id, HWriter<T>* writer, int factor, size_t blocksize, bool collect = true, int start = 0);
 
         /**
          * Construct a new HDecimator that handle writer consumers.
@@ -62,9 +59,9 @@ class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
          *                'collect=false'. A write of 1024 samples will then immediately
          *                result in a write of 1024/factor samples to the next writer.
          * @param start Begin decimating from this position in the buffer
-         * @param probe Probe
+         *
          */
-        HDecimator(std::string id, HWriterConsumer<T>* consumer, int factor, size_t blocksize, bool collect = true, int start = 0, HProbe<T>* probe = nullptr);
+        HDecimator(std::string id, HWriterConsumer<T>* consumer, int factor, size_t blocksize, bool collect = true, int start = 0);
 
         /**
          * Construct a new HDecimator that handle readers.
@@ -80,9 +77,9 @@ class HDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer<T
          *                'collect=false'. Constructing with 'blocksize=1024' then a Read()
          *                with 'blocksize=256' will then be expected.
          * @param start Begin decimating from this position in the buffer
-         * @param probe Probe
+         *
          */
-        HDecimator(std::string id, HReader<T>* reader, int factor, size_t blocksize, bool collect = true, int start = 0, HProbe<T>* probe = nullptr);
+        HDecimator(std::string id, HReader<T>* reader, int factor, size_t blocksize, bool collect = true, int start = 0);
 
         /**
          * Implements HWriterConsumer::SetWriter()

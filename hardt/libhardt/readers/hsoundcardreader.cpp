@@ -8,12 +8,10 @@ Class implementation
 ********************************************************************/
 
 template <class T>
-HSoundcardReader<T>::HSoundcardReader(std::string id, int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int blocksize, HProbe<T>* probe):
+HSoundcardReader<T>::HSoundcardReader(std::string id, int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int blocksize):
     HReader<T>(id),
     _isInitialized(false),
-    _isStarted(false),
-    _probe(probe)
-{
+    _isStarted(false) {
     HLog("HSoundCardReader(device=%d, rate=%d, channels=%d, format=%d, blocksize=%d)", device, rate, channels, format, blocksize);
 
     // Initialize resources used by the callback function
@@ -132,11 +130,6 @@ int HSoundcardReader<T>::ReadImpl(T* dest, size_t blocksize)
             _cbd.rdloc = 0;
         }
 
-        // Probe output ?
-        if( _probe != nullptr ) {
-            _probe->Write(dest, _cbd.framesize);
-        }
-
         // We always reads the entire buffer as given
         return _cbd.framesize;
     }
@@ -238,16 +231,16 @@ Explicit instantiation
 
 // HSoundcardReader()
 template
-HSoundcardReader<int8_t>::HSoundcardReader(std::string id, int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int blocksize = DEFAULT_BLOCKSIZE, HProbe<int8_t>* probe);
+HSoundcardReader<int8_t>::HSoundcardReader(std::string id, int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int blocksize = DEFAULT_BLOCKSIZE);
 
 template
-HSoundcardReader<uint8_t>::HSoundcardReader(std::string id, int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int blocksize = DEFAULT_BLOCKSIZE, HProbe<uint8_t>* probe);
+HSoundcardReader<uint8_t>::HSoundcardReader(std::string id, int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int blocksize = DEFAULT_BLOCKSIZE);
 
 template
-HSoundcardReader<int16_t>::HSoundcardReader(std::string id, int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int blocksize = DEFAULT_BLOCKSIZE, HProbe<int16_t>* probe);
+HSoundcardReader<int16_t>::HSoundcardReader(std::string id, int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int blocksize = DEFAULT_BLOCKSIZE);
 
 template
-HSoundcardReader<int32_t>::HSoundcardReader(std::string id, int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int blocksize = DEFAULT_BLOCKSIZE, HProbe<int32_t>* probe);
+HSoundcardReader<int32_t>::HSoundcardReader(std::string id, int device, H_SAMPLE_RATE rate, int channels, H_SAMPLE_FORMAT format, int blocksize = DEFAULT_BLOCKSIZE);
 
 // ~HSoundcardReader()
 template

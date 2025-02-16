@@ -4,7 +4,6 @@
 #include "hreader.h"
 #include "hwriter.h"
 #include "hwriterconsumer.h"
-#include "hprobe.h"
 #include "hfir.h"
 
 #include <vector>
@@ -18,8 +17,6 @@ class HFirDecimator: public HReader<T>, public HWriter<T>, public HWriterConsume
         HWriter<T>* _writer;
         HReader<T>* _reader;
         size_t _blocksize;
-
-        HProbe<T>* _probe;
 
         int _factor;
         T* _buffer;
@@ -48,9 +45,9 @@ class HFirDecimator: public HReader<T>, public HWriter<T>, public HWriterConsume
          *                write chunks from both branches alternating. In that case, set
          *                'collect=false'. A write of 1024 samples will then immediately
          *                result in a write of 1024/factor samples to the next writer.
-         * @param probe Probe
+         *
          */
-        HFirDecimator(std::string id, HWriter<T>* writer, int factor, float* coefficients, int points, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
+        HFirDecimator(std::string id, HWriter<T>* writer, int factor, float* coefficients, int points, size_t blocksize, bool collect = true);
 
         /**
          * Construct a new HFirDecimator that handle writer consumers.
@@ -67,9 +64,9 @@ class HFirDecimator: public HReader<T>, public HWriter<T>, public HWriterConsume
          *                write chunks from both branches alternating. In that case, set
          *                'collect=false'. A write of 1024 samples will then immediately
          *                result in a write of 1024/factor samples to the next writer.
-         * @param probe Probe
+         *
          */
-        HFirDecimator(std::string id, HWriterConsumer<T>* consumer, int factor, float* coefficients, int points, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
+        HFirDecimator(std::string id, HWriterConsumer<T>* consumer, int factor, float* coefficients, int points, size_t blocksize, bool collect = true);
 
         /**
          * Construct a new HFirDecimator that handle readers.
@@ -86,9 +83,9 @@ class HFirDecimator: public HReader<T>, public HWriter<T>, public HWriterConsume
          *                write chunks from both branches alternating. In that case, set
          *                'collect=false'. A write of 1024 samples will then immediately
          *                result in a write of 1024/factor samples to the next writer.
-         * @param probe Probe
+         *
          */
-        HFirDecimator(std::string id, HReader<T>* reader, int factor, float* coefficients, int points, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
+        HFirDecimator(std::string id, HReader<T>* reader, int factor, float* coefficients, int points, size_t blocksize, bool collect = true);
 
         /**
          * Implements HWriterConsumer::SetWriter()

@@ -4,8 +4,8 @@
 #include "hfirfilter.h"
 
 template <class T>
-HFirFilter<T>::HFirFilter(std::string id, HWriter<T>* writer, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
-    HFilter<T>(id, writer, blocksize, probe) {
+HFirFilter<T>::HFirFilter(std::string id, HWriter<T>* writer, float* coefficients, int length, size_t blocksize):
+    HFilter<T>(id, writer, blocksize) {
 
     HLog("HFirFilter(HWriter*)");
     HLog("_length = %d", length);
@@ -13,8 +13,8 @@ HFirFilter<T>::HFirFilter(std::string id, HWriter<T>* writer, float* coefficient
 }
 
 template <class T>
-HFirFilter<T>::HFirFilter(std::string id, HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
-    HFilter<T>(id, consumer, blocksize, probe) {
+HFirFilter<T>::HFirFilter(std::string id, HWriterConsumer<T>* consumer, float* coefficients, int length, size_t blocksize):
+    HFilter<T>(id, consumer, blocksize) {
 
     HLog("HFirFilter(HWriterConsumer*)");
     HLog("_length = %d", length);
@@ -24,8 +24,8 @@ HFirFilter<T>::HFirFilter(std::string id, HWriterConsumer<T>* consumer, float* c
 }
 
 template <class T>
-HFirFilter<T>::HFirFilter(std::string id, HReader<T>* reader, float* coefficients, int length, size_t blocksize, HProbe<T>* probe):
-    HFilter<T>(id, reader, blocksize, probe) {
+HFirFilter<T>::HFirFilter(std::string id, HReader<T>* reader, float* coefficients, int length, size_t blocksize):
+    HFilter<T>(id, reader, blocksize) {
 
     HLog("HFirFilter(HReader*)");
     HLog("_length = %d", length);
@@ -66,40 +66,40 @@ Explicit instantiation
 
 // HFirFilter
 template
-HFirFilter<int8_t>::HFirFilter(std::string id, HWriter<int8_t>* writer, float* coefficients, int length, size_t blocksize, HProbe<int8_t>* probe);
+HFirFilter<int8_t>::HFirFilter(std::string id, HWriter<int8_t>* writer, float* coefficients, int length, size_t blocksize);
 
 template
-HFirFilter<uint8_t>::HFirFilter(std::string id, HWriter<uint8_t>* writer, float* coefficients, int length, size_t blocksize, HProbe<uint8_t>* probe);
+HFirFilter<uint8_t>::HFirFilter(std::string id, HWriter<uint8_t>* writer, float* coefficients, int length, size_t blocksize);
 
 template
-HFirFilter<int16_t>::HFirFilter(std::string id, HWriter<int16_t>* writer, float* coefficients, int length, size_t blocksize, HProbe<int16_t>* probe);
+HFirFilter<int16_t>::HFirFilter(std::string id, HWriter<int16_t>* writer, float* coefficients, int length, size_t blocksize);
 
 template
-HFirFilter<int32_t>::HFirFilter(std::string id, HWriter<int32_t>* writer, float* coefficients, int length, size_t blocksize, HProbe<int32_t>* probe);
+HFirFilter<int32_t>::HFirFilter(std::string id, HWriter<int32_t>* writer, float* coefficients, int length, size_t blocksize);
 
 template
-HFirFilter<int8_t>::HFirFilter(std::string id, HWriterConsumer<int8_t>* consumer, float* coefficients, int length, size_t blocksize, HProbe<int8_t>* probe);
+HFirFilter<int8_t>::HFirFilter(std::string id, HWriterConsumer<int8_t>* consumer, float* coefficients, int length, size_t blocksize);
 
 template
-HFirFilter<uint8_t>::HFirFilter(std::string id, HWriterConsumer<uint8_t>* consumer, float* coefficients, int length, size_t blocksize, HProbe<uint8_t>* probe);
+HFirFilter<uint8_t>::HFirFilter(std::string id, HWriterConsumer<uint8_t>* consumer, float* coefficients, int length, size_t blocksize);
 
 template
-HFirFilter<int16_t>::HFirFilter(std::string id, HWriterConsumer<int16_t>* consumer, float* coefficients, int length, size_t blocksize, HProbe<int16_t>* probe);
+HFirFilter<int16_t>::HFirFilter(std::string id, HWriterConsumer<int16_t>* consumer, float* coefficients, int length, size_t blocksize);
 
 template
-HFirFilter<int32_t>::HFirFilter(std::string id, HWriterConsumer<int32_t>* consumer, float* coefficients, int length, size_t blocksize, HProbe<int32_t>* probe);
+HFirFilter<int32_t>::HFirFilter(std::string id, HWriterConsumer<int32_t>* consumer, float* coefficients, int length, size_t blocksize);
 
 template
-HFirFilter<int8_t>::HFirFilter(std::string id, HReader<int8_t>* reader, float* coefficients, int length, size_t blocksize, HProbe<int8_t>* probe);
+HFirFilter<int8_t>::HFirFilter(std::string id, HReader<int8_t>* reader, float* coefficients, int length, size_t blocksize);
 
 template
-HFirFilter<uint8_t>::HFirFilter(std::string id, HReader<uint8_t>* reader, float* coefficients, int length, size_t blocksize, HProbe<uint8_t>* probe);
+HFirFilter<uint8_t>::HFirFilter(std::string id, HReader<uint8_t>* reader, float* coefficients, int length, size_t blocksize);
 
 template
-HFirFilter<int16_t>::HFirFilter(std::string id, HReader<int16_t>* reader, float* coefficients, int length, size_t blocksize, HProbe<int16_t>* probe);
+HFirFilter<int16_t>::HFirFilter(std::string id, HReader<int16_t>* reader, float* coefficients, int length, size_t blocksize);
 
 template
-HFirFilter<int32_t>::HFirFilter(std::string id, HReader<int32_t>* reader, float* coefficients, int length, size_t blocksize, HProbe<int32_t>* probe);
+HFirFilter<int32_t>::HFirFilter(std::string id, HReader<int32_t>* reader, float* coefficients, int length, size_t blocksize);
 
 // Init
 template

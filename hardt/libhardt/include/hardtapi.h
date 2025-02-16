@@ -21,7 +21,6 @@
 #include "hgenerator.h"
 #include "hfilterbase.h"
 #include "hfilter.h"
-#include "hprobe.h"
 
 #include "hchunkwriter.h"
 #include "hconverter.h"

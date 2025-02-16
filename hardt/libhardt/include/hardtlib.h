@@ -131,6 +131,4 @@ Include api function declarations
 Debug and diagnostics
 ********************************************************************/
 
-#include "hprobe.h"
-
 #endif

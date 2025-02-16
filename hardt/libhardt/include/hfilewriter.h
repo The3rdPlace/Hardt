@@ -1,9 +1,9 @@
 #ifndef __HFILEWRITER_H
 #define __HFILEWRITER_H
 
-#include <stdio.h>
 #include <fstream>
 
+#include "hardt.h"
 #include "hwriter.h"
 #include "hwriterconsumer.h"
 

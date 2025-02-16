@@ -4,7 +4,6 @@
 #include "hreader.h"
 #include "hwriter.h"
 #include "hwriterconsumer.h"
-#include "hprobe.h"
 
 #include <vector>
 
@@ -17,8 +16,6 @@ class HIqDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer
         HWriter<T>* _writer;
         HReader<T>* _reader;
         size_t _blocksize;
-
-        HProbe<T>* _probe;
 
         int _factor;
         T* _buffer;
@@ -43,9 +40,9 @@ class HIqDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer
          *                write chunks from both branches alternating. In that case, set
          *                'collect=false'. A write of 1024 samples will then immediately
          *                result in a write of 1024/factor samples to the next writer.
-         * @param probe Probe
+         *
          */
-        HIqDecimator(std::string id, HWriter<T>* writer, int factor, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
+        HIqDecimator(std::string id, HWriter<T>* writer, int factor, size_t blocksize, bool collect = true);
 
         /**
          * Construct a new HIqDecimator that handle writer consumers.
@@ -60,9 +57,9 @@ class HIqDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer
          *                write chunks from both branches alternating. In that case, set
          *                'collect=false'. A write of 1024 samples will then immediately
          *                result in a write of 1024/factor samples to the next writer.
-         * @param probe Probe
+         *
          */
-        HIqDecimator(std::string id, HWriterConsumer<T>* consumer, int factor, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
+        HIqDecimator(std::string id, HWriterConsumer<T>* consumer, int factor, size_t blocksize, bool collect = true);
 
         /**
          * Construct a new HIqDecimator that handle readers.
@@ -77,9 +74,9 @@ class HIqDecimator: public HReader<T>, public HWriter<T>, public HWriterConsumer
          *                read chunks from both branches alternating. In that case, set
          *                'collect=false'. Constructing with 'blocksize=1024' then a Read()
          *                with 'blocksize=256' will then be expected.
-         * @param probe Probe
+         *
          */
-        HIqDecimator(std::string id, HReader<T>* reader, int factor, size_t blocksize, bool collect = true, HProbe<T>* probe = nullptr);
+        HIqDecimator(std::string id, HReader<T>* reader, int factor, size_t blocksize, bool collect = true);
 
         /**
          * Implements HWriterConsumer::SetWriter()

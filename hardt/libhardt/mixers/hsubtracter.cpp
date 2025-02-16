@@ -4,12 +4,11 @@
 #include "hwriter.h"
 #include "hwriterconsumer.h"
 #include "hreader.h"
-#include "hprobe.h"
 
 #include "hsubtracter.h"
 
 template <class T>
-HSubtracter<T>::HSubtracter(std::string id, HReader<T>* reader_1, HReader<T>* reader_2, size_t blocksize, HProbe<T>* probe):
+HSubtracter<T>::HSubtracter(std::string id, HReader<T>* reader_1, HReader<T>* reader_2, size_t blocksize):
     HReader<T>(id),
     HWriter<T>(id),
     HWriterConsumer<T>(id),
@@ -17,16 +16,14 @@ HSubtracter<T>::HSubtracter(std::string id, HReader<T>* reader_1, HReader<T>* re
     _reader_2(reader_2),
     _writer(NULL),
     _blocksize(blocksize),
-    _probe(probe),
     _wait(false),
-    _started(false)
-{
+    _started(false) {
     HLog("HSubtracter(HReader*, HReader*)");
     Init(blocksize);
 }
 
 template <class T>
-HSubtracter<T>::HSubtracter(std::string id, HReader<T>* reader, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe):
+HSubtracter<T>::HSubtracter(std::string id, HReader<T>* reader, HWriter<T>* writer, size_t blocksize):
     HReader<T>(id),
     HWriter<T>(id),
     HWriterConsumer<T>(id),
@@ -34,16 +31,14 @@ HSubtracter<T>::HSubtracter(std::string id, HReader<T>* reader, HWriter<T>* writ
     _reader_2(NULL),
     _writer(writer),
     _blocksize(blocksize),
-    _probe(probe),
     _wait(false),
-    _started(false)
-{
+    _started(false) {
     HLog("HSubtracter(HReader*, HWriter*)");
     Init(blocksize);
 }
 
 template <class T>
-HSubtracter<T>::HSubtracter(std::string id, HWriter<T>* writer, size_t blocksize, HProbe<T>* probe):
+HSubtracter<T>::HSubtracter(std::string id, HWriter<T>* writer, size_t blocksize):
     HReader<T>(id),
     HWriter<T>(id),
     HWriterConsumer<T>(id),
@@ -51,16 +46,14 @@ HSubtracter<T>::HSubtracter(std::string id, HWriter<T>* writer, size_t blocksize
     _reader_2(NULL),
     _writer(writer),
     _blocksize(blocksize),
-    _probe(probe),
     _wait(false),
-    _started(false)
-{
+    _started(false) {
     HLog("HSubtracter(HWriter*)");
     Init(blocksize);
 }
 
 template <class T>
-HSubtracter<T>::HSubtracter(std::string id, HReader<T>* reader, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe):
+HSubtracter<T>::HSubtracter(std::string id, HReader<T>* reader, HWriterConsumer<T>* consumer, size_t blocksize):
     HReader<T>(id),
     HWriter<T>(id),
     HWriterConsumer<T>(id),
@@ -68,16 +61,15 @@ HSubtracter<T>::HSubtracter(std::string id, HReader<T>* reader, HWriterConsumer<
     _reader_2(NULL),
     _writer(NULL),
     _blocksize(blocksize),
-    _probe(probe),_wait(false),
-    _started(false)
-{
+    _wait(false),
+    _started(false) {
     HLog("HSubtracter(HReader*, HWriterConsumer*)");
     Init(blocksize);
     consumer->SetWriter(this->Writer());
 }
 
 template <class T>
-HSubtracter<T>::HSubtracter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize, HProbe<T>* probe):
+HSubtracter<T>::HSubtracter(std::string id, HWriterConsumer<T>* consumer, size_t blocksize):
     HReader<T>(id),
     HWriter<T>(id),
     HWriterConsumer<T>(id),
@@ -85,9 +77,8 @@ HSubtracter<T>::HSubtracter(std::string id, HWriterConsumer<T>* consumer, size_t
     _reader_2(NULL),
     _writer(NULL),
     _blocksize(blocksize),
-    _probe(probe),_wait(false),
-    _started(false)
-{
+     _wait(false),
+    _started(false) {
     HLog("HSubtracter(HWriterConsumer*)");
     Init(blocksize);
     consumer->SetWriter(this->Writer());
@@ -144,11 +135,6 @@ int HSubtracter<T>::ReadImpl(T* dest, size_t blocksize)
         dest[i] = _buffer_1[i] - _buffer_2[i];
     }
 
-    if( _probe != NULL )
-    {
-        _probe->Write(dest, blocksize);
-    }
-
     return blocksize;
 }
 
@@ -195,11 +181,6 @@ int HSubtracter<T>::WriteImpl(T* src, size_t blocksize)
     {
         HError("Short write to writer, stopping %d", written);
         return 0;
-    }
-
-    if( _probe != NULL )
-    {
-        _probe->Write(_buffer_2, blocksize);
     }
 
     return blocksize;
@@ -266,64 +247,64 @@ Explicit instantiation
 
 // HSubtracter
 template
-HSubtracter<int8_t>::HSubtracter(std::string id, HReader<int8_t>* reader_1, HReader<int8_t>* reader_2, size_t blocksize, HProbe<int8_t>* probe);
+HSubtracter<int8_t>::HSubtracter(std::string id, HReader<int8_t>* reader_1, HReader<int8_t>* reader_2, size_t blocksize);
 
 template
-HSubtracter<uint8_t>::HSubtracter(std::string id, HReader<uint8_t>* reader_1, HReader<uint8_t>* reader_2, size_t blocksize, HProbe<uint8_t>* probe);
+HSubtracter<uint8_t>::HSubtracter(std::string id, HReader<uint8_t>* reader_1, HReader<uint8_t>* reader_2, size_t blocksize);
 
 template
-HSubtracter<int16_t>::HSubtracter(std::string id, HReader<int16_t>* reader_1, HReader<int16_t>* reader_2, size_t blocksize, HProbe<int16_t>* probe);
+HSubtracter<int16_t>::HSubtracter(std::string id, HReader<int16_t>* reader_1, HReader<int16_t>* reader_2, size_t blocksize);
 
 template
-HSubtracter<int32_t>::HSubtracter(std::string id, HReader<int32_t>* reader_1, HReader<int32_t>* reader_2, size_t blocksize, HProbe<int32_t>* probe);
+HSubtracter<int32_t>::HSubtracter(std::string id, HReader<int32_t>* reader_1, HReader<int32_t>* reader_2, size_t blocksize);
 
 template
-HSubtracter<int8_t>::HSubtracter(std::string id, HReader<int8_t>* reader, HWriter<int8_t>* writer, size_t blocksize, HProbe<int8_t>* probe);
+HSubtracter<int8_t>::HSubtracter(std::string id, HReader<int8_t>* reader, HWriter<int8_t>* writer, size_t blocksize);
 
 template
-HSubtracter<uint8_t>::HSubtracter(std::string id, HReader<uint8_t>* reader, HWriter<uint8_t>* writer, size_t blocksize, HProbe<uint8_t>* probe);
+HSubtracter<uint8_t>::HSubtracter(std::string id, HReader<uint8_t>* reader, HWriter<uint8_t>* writer, size_t blocksize);
 
 template
-HSubtracter<int16_t>::HSubtracter(std::string id, HReader<int16_t>* reader, HWriter<int16_t>* writer, size_t blocksize, HProbe<int16_t>* probe);
+HSubtracter<int16_t>::HSubtracter(std::string id, HReader<int16_t>* reader, HWriter<int16_t>* writer, size_t blocksize);
 
 template
-HSubtracter<int32_t>::HSubtracter(std::string id, HReader<int32_t>* reader, HWriter<int32_t>* writer, size_t blocksize, HProbe<int32_t>* probe);
+HSubtracter<int32_t>::HSubtracter(std::string id, HReader<int32_t>* reader, HWriter<int32_t>* writer, size_t blocksize);
 
 template
-HSubtracter<int8_t>::HSubtracter(std::string id, HWriter<int8_t>* writer, size_t blocksize, HProbe<int8_t>* probe);
+HSubtracter<int8_t>::HSubtracter(std::string id, HWriter<int8_t>* writer, size_t blocksize);
 
 template
-HSubtracter<uint8_t>::HSubtracter(std::string id, HWriter<uint8_t>* writer, size_t blocksize, HProbe<uint8_t>* probe);
+HSubtracter<uint8_t>::HSubtracter(std::string id, HWriter<uint8_t>* writer, size_t blocksize);
 
 template
-HSubtracter<int16_t>::HSubtracter(std::string id, HWriter<int16_t>* writer, size_t blocksize, HProbe<int16_t>* probe);
+HSubtracter<int16_t>::HSubtracter(std::string id, HWriter<int16_t>* writer, size_t blocksize);
 
 template
-HSubtracter<int32_t>::HSubtracter(std::string id, HWriter<int32_t>* writer, size_t blocksize, HProbe<int32_t>* probe);
+HSubtracter<int32_t>::HSubtracter(std::string id, HWriter<int32_t>* writer, size_t blocksize);
 
 template
-HSubtracter<int8_t>::HSubtracter(std::string id, HReader<int8_t>* reader, HWriterConsumer<int8_t>* consumer, size_t blocksize, HProbe<int8_t>* probe);
+HSubtracter<int8_t>::HSubtracter(std::string id, HReader<int8_t>* reader, HWriterConsumer<int8_t>* consumer, size_t blocksize);
 
 template
-HSubtracter<uint8_t>::HSubtracter(std::string id, HReader<uint8_t>* reader, HWriterConsumer<uint8_t>* consumer, size_t blocksize, HProbe<uint8_t>* probe);
+HSubtracter<uint8_t>::HSubtracter(std::string id, HReader<uint8_t>* reader, HWriterConsumer<uint8_t>* consumer, size_t blocksize);
 
 template
-HSubtracter<int16_t>::HSubtracter(std::string id, HReader<int16_t>* reader, HWriterConsumer<int16_t>* consumer, size_t blocksize, HProbe<int16_t>* probe);
+HSubtracter<int16_t>::HSubtracter(std::string id, HReader<int16_t>* reader, HWriterConsumer<int16_t>* consumer, size_t blocksize);
 
 template
-HSubtracter<int32_t>::HSubtracter(std::string id, HReader<int32_t>* reader, HWriterConsumer<int32_t>* consumer, size_t blocksize, HProbe<int32_t>* probe);
+HSubtracter<int32_t>::HSubtracter(std::string id, HReader<int32_t>* reader, HWriterConsumer<int32_t>* consumer, size_t blocksize);
 
 template
-HSubtracter<int8_t>::HSubtracter(std::string id, HWriterConsumer<int8_t>* consumer, size_t blocksize, HProbe<int8_t>* probe);
+HSubtracter<int8_t>::HSubtracter(std::string id, HWriterConsumer<int8_t>* consumer, size_t blocksize);
 
 template
-HSubtracter<uint8_t>::HSubtracter(std::string id, HWriterConsumer<uint8_t>* consumer, size_t blocksize, HProbe<uint8_t>* probe);
+HSubtracter<uint8_t>::HSubtracter(std::string id, HWriterConsumer<uint8_t>* consumer, size_t blocksize);
 
 template
-HSubtracter<int16_t>::HSubtracter(std::string id, HWriterConsumer<int16_t>* consumer, size_t blocksize, HProbe<int16_t>* probe);
+HSubtracter<int16_t>::HSubtracter(std::string id, HWriterConsumer<int16_t>* consumer, size_t blocksize);
 
 template
-HSubtracter<int32_t>::HSubtracter(std::string id, HWriterConsumer<int32_t>* consumer, size_t blocksize, HProbe<int32_t>* probe);
+HSubtracter<int32_t>::HSubtracter(std::string id, HWriterConsumer<int32_t>* consumer, size_t blocksize);
 
 // ~HSubtracter()
 template
