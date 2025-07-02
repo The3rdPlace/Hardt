@@ -48,11 +48,11 @@ class HBreaker : public HFilter<T>
         bool Stop();
 
         int WriteImpl(T* src, size_t blocksize) {
-            return _off ? blocksize : HFilter<T>::Write(src, blocksize);
+            return _off ? blocksize : HFilter<T>::WriteImpl(src, blocksize);
         }
 
         int ReadImpl(T* dest, size_t blocksize) {
-            return _off ? 0 : HFilter<T>::Read(dest, blocksize);
+            return _off ? 0 : HFilter<T>::ReadImpl(dest, blocksize);
         }
 };
 

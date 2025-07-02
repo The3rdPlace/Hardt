@@ -93,13 +93,6 @@ bool HBreaker<T>::Stop()
     return true;
 }
 
-/*template <class T>
-int HBreaker<T>::WriteImpl(T* src, size_t blocksize) {
-
-    return _off ? blocksize : HFilter<T>::WriteImpl(src, blocksize);
-    return blocksize;
-}*/
-
 /********************************************************************
 Explicit instantiation
 ********************************************************************/
